@@ -1,2 +1,8 @@
+*.png -text -diff
+*.jpg -text -diff
 * text=auto
-* text eol=lf
+*.cpp text eol=lf
+*.hpp text eol=lf
+*.h text eol=lf
+*.md text eol=lf
+
