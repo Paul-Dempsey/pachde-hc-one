@@ -1,45 +1,17 @@
 #pragma once
-#ifndef INC_PRESETS_HPP
-#define INC_PRESETS_HPP
+#ifndef PRESETS_HPP_INCLUDED
+#define PRESETS_HPP_INCLUDED
 #include "plugin.hpp"
 namespace pachde {
 
-#if 0
-constexpr const size_t STRING_POOL_SIZE = 16*1024;
-
-template <const int max_string_length, const size_t pool_size>
-class StringPool
-{
-    char data[pool_size];
-    char * next = data;
-    char * end = data;
-    char * const lim = data + pool_size;
-
-public:
-    size_t used() { return next - data; }
-    size_t remaining() { return pool_size - used; }
-
-    void reset() {
-        end = next = data;
-    }
-
-    // truncates to max_string or limit of the pool capacity
-    void build(char ch) {
-        if ((end - next < max_string_length) && (end < lim-1)) {
-            *end++ = ch;
-        }
-    }
-
-    const char * finish() {
-        if (end >= lim) return nullptr;
-
-        const char * result = next;
-        *end++ = 0;
-        next = end;
-        return result;
-    }
+struct MinPreset {
+    std::string name;
+    std::string text;
+    uint8_t bank_hi; // cc0
+    uint8_t bank_lo; // cc32
+    uint8_t number;  // program change
 };
-#endif
+
 
 template<const size_t size>
 class FixedStringBuffer {
@@ -64,14 +36,6 @@ public:
             *end++ = a;
         }
     }
-};
-
-struct MinPreset {
-    std::string name;
-    std::string text;
-    uint8_t bank_hi; // cc0
-    uint8_t bank_lo; // cc32
-    uint8_t number;  // program change
 };
 
 class Preset {

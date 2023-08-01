@@ -16,8 +16,8 @@ HC-One is not affiliated with or sponsored by Haken Audio.
 
 ## Acknowledgements
 
-Special thanks to Lippold Haken, not only for creating the Continuum,
-but for his generous support by sharing technical details that make this software possible.
+Special thanks to Lippold Haken (and all of the Haken Audio team), for creating the Continuum.
+Lippold has provided generous support by sharing technical details that make this software possible.
 
 ## Modules
 
