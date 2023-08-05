@@ -97,7 +97,6 @@ public:
     void clear() {
         _name.clear();
         _text.clear();
-        parsed = false;
         default_macros();
     }
 
