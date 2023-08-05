@@ -2,16 +2,16 @@
 #ifndef PRESETS_HPP_INCLUDED
 #define PRESETS_HPP_INCLUDED
 #include "plugin.hpp"
+#include "text.hpp"
+
 namespace pachde {
 
-struct MinPreset {
-    std::string name;
-    std::string text;
-    uint8_t bank_hi; // cc0
-    uint8_t bank_lo; // cc32
-    uint8_t number;  // program change
-};
-
+inline const char * preset_type_name(uint8_t bank_hi) {
+    if (127 == bank_hi) return "system";
+    if (126 == bank_hi) return "edit";
+    if (0 == bank_hi) return "user";
+    return "?";
+}
 
 template<const size_t size>
 class FixedStringBuffer {
@@ -22,8 +22,8 @@ class FixedStringBuffer {
 public:
     FixedStringBuffer() { clear(); }
 
-    bool empty() { return end == data; }
-    const char * str() { return data; }
+    bool empty() const { return end == data; }
+    const char * str() const { return data; }
 
     void clear() {
         *data = 0;
@@ -38,12 +38,12 @@ public:
     }
 };
 
+static const char * const PRESET_FORMAT = "%s\n(%s %d.%d)";
+
 class Preset {
     FixedStringBuffer<32> _name;
     FixedStringBuffer<256> _text;
     std::string id;
-
-    bool parsed;
 
     void default_macros()
     {
@@ -78,12 +78,12 @@ public:
 
     void clear_name() { _name.clear(); }
     void clear_text() { _text.clear(); }
-    bool name_empty() { return _name.empty(); }
-    bool text_empty() { return _text.empty(); }
-    const char * name() { return _name.str(); }
-    const char * text() { return _text.str(); }
+    bool name_empty() const { return _name.empty(); }
+    bool text_empty() const { return _text.empty(); }
+    const char * name() const { return _name.str(); }
+    const char * text() const { return _text.str(); }
 
-    Preset() : parsed(false), bank_hi(0), bank_lo(126), number(0)
+    Preset() : bank_hi(0), bank_lo(126), number(0)
     {
         id.reserve(16);
         macro[0].reserve(56); // max according to the EaganMatrix Programming cookbook
@@ -152,7 +152,42 @@ public:
                 } break;
             }
         }
-        parsed = true;
+    }
+
+    std::string describe() {
+        return format_string(PRESET_FORMAT, name(), preset_type_name(bank_hi), bank_lo, number + 1);
+    }
+};
+
+struct MinPreset {
+    std::string name;
+    std::string text;
+    uint8_t bank_hi; // cc0
+    uint8_t bank_lo; // cc32
+    uint8_t number;  // program change
+    bool favorite;
+
+    MinPreset() : bank_hi(0), bank_lo(0), number(0), favorite(false) {}
+
+    MinPreset(const Preset& preset) 
+    :   name(preset.name()),
+        text(preset.text()),
+        bank_hi(preset.bank_hi),
+        bank_lo(preset.bank_lo),
+        number(preset.number)
+    {
+    }
+
+    std::string describe() {
+        return format_string(PRESET_FORMAT, name.c_str(), preset_type_name(bank_hi), bank_lo, number + 1);
+    }
+
+    bool is_user_preset() const {
+        return 0 == bank_hi;
+    }
+
+    bool is_sys_preset() const {
+        return 127 == bank_hi;
     }
 };
 

@@ -117,6 +117,8 @@ constexpr const uint8_t EMCC_RountInitial   = 28;
 constexpr const uint8_t EMCC_Pedal1         = 29;
 constexpr const uint8_t EMCC_Pedal2         = 30;
 constexpr const uint8_t EMCC_Advance        = 31; //127 next, 64=next layer
+constexpr const uint8_t EMCC_Category       = 32;
+
 constexpr const uint8_t EMCC_Polyphony      = 39;
 constexpr const uint8_t EMCC_BendRange      = 40; //MPE_MIN=12, default|max=96
 constexpr const uint8_t EMCC_YCC            = 41; //0=none, 127 = no_shelf
@@ -398,6 +400,11 @@ inline void SetCC(midi::Message& msg, uint8_t channel, uint8_t cc, uint8_t value
     msg.bytes[0] = MidiStatus_CC | channel;
     msg.bytes[1] = cc;
     msg.bytes[2] = value;
+}
+inline void SetProgramChange(midi::Message& msg, uint8_t channel, uint8_t program)
+{
+    msg.bytes[0] = MidiStatus_ProgramChange | channel;
+    msg.bytes[1] = program;
 }
 inline uint8_t GetCC(const midi::Message& msg) { return msg.bytes[1]; }
 inline uint8_t GetRawStatus(const midi::Message& msg) { return msg.bytes[0] & 0xf0; }

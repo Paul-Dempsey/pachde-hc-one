@@ -10,29 +10,31 @@ constexpr const float TWO_HP = 30.0f;
 constexpr const float HALF_HP = 7.5f;
 
 void DrawLogo(NVGcontext * vg, float x, float y, NVGcolor fill, float scale = 1.0f);
+void FillHeart(NVGcontext* vg, float x, float y, float square, NVGcolor fill);
+void StrokeHeart(NVGcontext* vg, float x, float y, float square, NVGcolor stroke, float stroke_width = 1.0f);
 
-struct USB_A_Port : app::SvgPort {
+// struct USB_A_Port : app::SvgPort {
 
-	USB_A_Port() {
-		SvgPort::setSvg(Svg::load(asset::plugin(pluginInstance, "res/USB-A-blue.svg")));
-	}
+// 	USB_A_Port() {
+// 		SvgPort::setSvg(Svg::load(asset::plugin(pluginInstance, "res/USB-A-blue.svg")));
+// 	}
 
-    void guideColor(const NVGcolor& co) {
-        if (nullptr == sw || nullptr == sw->svg || nullptr == sw->svg->handle || nullptr == sw->svg->handle->shapes) {
-            return;
-        }
-        PackedColor color = toPacked(co);
-        auto filled = 0;
-        for (auto shape = this->sw->svg->handle->shapes; shape && (filled < 2); shape = shape->next) {
-            auto d = shape->id[0];
-            if ((0 == shape->id[1]) && (d == 'b' || d == 't')) {
-                shape->fill.color = color;
-                ++filled;
-            }
-        }
-        this->fb->dirty = true;
-    }
-};
+//     void guideColor(const NVGcolor& co) {
+//         if (nullptr == sw || nullptr == sw->svg || nullptr == sw->svg->handle || nullptr == sw->svg->handle->shapes) {
+//             return;
+//         }
+//         PackedColor color = toPacked(co);
+//         auto filled = 0;
+//         for (auto shape = this->sw->svg->handle->shapes; shape && (filled < 2); shape = shape->next) {
+//             auto d = shape->id[0];
+//             if ((0 == shape->id[1]) && (d == 'b' || d == 't')) {
+//                 shape->fill.color = color;
+//                 ++filled;
+//             }
+//         }
+//         this->fb->dirty = true;
+//     }
+// };
 
 struct PickMidi : app::MidiButton {
     rack::ui::Tooltip* tip = nullptr;

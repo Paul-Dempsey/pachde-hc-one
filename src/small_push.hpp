@@ -5,7 +5,7 @@
 
 namespace pachde {
 
-struct SmallPush: OpaqueWidget
+struct SmallPush : OpaqueWidget
 {
     bool pressed = false;
     bool ctrl = false;

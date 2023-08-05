@@ -88,4 +88,64 @@ void DrawLogo(NVGcontext * vg, float x, float y, NVGcolor fill, float scale)
     nvgRestore(vg);
 }
 
+void heart_path(NVGcontext* vg)
+{
+    nvgBeginPath(vg);
+    nvgMoveTo(vg, 50.f, 14.5f);
+    nvgQuadTo(vg, 51.88014,11.675824, 54.28907,9.0659343);
+    nvgQuadTo(vg, 56.698,6.456044, 59.518215,4.4299451 );
+    nvgQuadTo(vg, 62.338425,2.4038461, 65.481785,1.2019231 );
+    nvgQuadTo(vg, 68.625145,0, 71.97415,0 );
+    nvgQuadTo(vg, 77.790836,0, 82.873093,2.5755494 );
+    nvgQuadTo(vg, 87.955343,5.151099, 91.774386,9.6153843 );
+    nvgQuadTo(vg, 95.593421,14.079671, 97.796707,20.020604 );
+    nvgQuadTo(vg, 100,25.961539, 100,32.760989 );
+    nvgQuadTo(vg, 100,35.302198, 99.383071,39.010989);
+    nvgQuadTo(vg, 98.766143,42.71978, 96.915386,47.458791 );
+    nvgQuadTo(vg, 95.064621,52.1978, 91.656871,57.967035 );
+    nvgQuadTo(vg, 88.249114,63.736265, 82.667443,70.32967 );
+    nvgQuadTo(vg, 77.085779,76.923071, 69.00705,84.375 );
+    nvgQuadTo(vg, 60.92832,91.826921, 49.706228,100 );
+    nvgQuadTo(vg, 38.366627,91.620879, 30.287896,84.203293 );
+    nvgQuadTo(vg, 22.209166,76.785714, 16.686251,70.26099 );
+    nvgQuadTo(vg, 11.163337,63.736265, 7.8437136,58.138735 );
+    nvgQuadTo(vg, 4.5240893,52.54121, 2.7908343,47.870879 );
+    nvgQuadTo(vg, 1.0575793,43.200549, 0.52878964,39.423077 );
+    nvgQuadTo(vg, 0,35.645604, 0,32.760989 );
+    nvgQuadTo(vg, 0,25.961539, 2.2326674,20.020604 );
+    nvgQuadTo(vg, 4.4653349,14.079671, 8.2843714,9.6153843 );
+    nvgQuadTo(vg, 12.103408,5.151099, 17.244419,2.5755494 );
+    nvgQuadTo(vg, 22.385429,0, 28.202115,0);
+    nvgQuadTo(vg, 31.492362,0, 34.606346,1.2019231 );
+    nvgQuadTo(vg, 37.720329,2.4038461, 40.511164,4.4299451 );
+    nvgQuadTo(vg, 43.301997,6.456044, 45.710929,9.0659343 );
+    nvgQuadTo(vg, 48.119859,11.675824, 50,14.491758);
+    nvgClosePath(vg);
+}
+
+void FillHeart(NVGcontext* vg, float x, float y, float square, NVGcolor fill)
+{
+    nvgSave(vg);
+    nvgTranslate(vg, x, y);
+    float scale = square / 100.f;
+    nvgScale(vg, scale, scale);
+    nvgFillColor(vg, fill);
+    heart_path(vg);
+    nvgFill(vg);
+    nvgRestore(vg);
+}
+
+void StrokeHeart(NVGcontext* vg, float x, float y, float square, NVGcolor stroke, float stroke_width)
+{
+    nvgSave(vg);
+    nvgTranslate(vg, x, y);
+    float scale = square / 100.f;
+    nvgScale(vg, scale, scale);
+    nvgStrokeColor(vg, stroke);
+    nvgStrokeWidth(vg, stroke_width * 10.f);
+    heart_path(vg);
+    nvgStroke(vg);
+    nvgRestore(vg);
+}
+
 }

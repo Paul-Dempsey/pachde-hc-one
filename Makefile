@@ -9,6 +9,7 @@ SOURCES += src/plugin.cpp
 SOURCES += src/port.cpp
 SOURCES += src/small_push.cpp
 SOURCES += src/text.cpp
+SOURCES += src/HC-1/preset_widget.cpp
 SOURCES += src/HC-1/HC-1.cpp
 SOURCES += src/HC-1/HC-1-ui.cpp
 

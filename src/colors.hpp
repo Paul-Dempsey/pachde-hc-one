@@ -40,7 +40,7 @@ enum Ramp {
     G_WHITE = G_100
 };
 extern const NVGcolor GrayRamp[];
-inline const NVGcolor RampGray(Ramp g)
+inline const NVGcolor& RampGray(Ramp g)
 {
     return GrayRamp[rack::math::clamp(g, G_BLACK, G_WHITE)];
 }

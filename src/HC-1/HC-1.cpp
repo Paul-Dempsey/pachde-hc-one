@@ -11,8 +11,11 @@ bool is_EMDevice(const std::string name) {
     return false;
 }
 
+
 Hc1Module::Hc1Module() : midiInput(this)
 {
+    presets.reserve(700);
+    user_presets.reserve(128);
     config(Params::NUM_PARAMS, Inputs::NUM_INPUTS, Outputs::NUM_OUTPUTS, Lights::NUM_LIGHTS);
     configCCParam(em_midi::EMCC_i,   true, this, M1_PARAM, 0.f, EM_Max14f, EM_Max14f/2.f, "i");
     configCCParam(em_midi::EMCC_ii,  true, this, M2_PARAM, 0.f, EM_Max14f, EM_Max14f/2.f, "ii");
@@ -82,12 +85,17 @@ void Hc1Module::onReset()
     data_stream = -1;
     download_message_id = -1;
     waiting_for_handshake = false;
-    download_message_id = -1; 
     recirculator = 0;
     requested_config = false;
     have_config = false;
     requested_updates = false;
+    requested_presets = false;
+    have_presets = false;
+    device_initialized = false;
+    waiting_for_device_init = false;
     preset0.clear();
+    presets.clear();
+    user_presets.clear();
     findEM();
     midiInput.setChannel(-1);
     midiOutput.setChannel(-1);
@@ -133,9 +141,49 @@ void Hc1Module::sendCC(uint8_t channel, uint8_t cc, uint8_t value)
     midiOutput.sendMessage(msg);
 }
 
+void Hc1Module::sendProgramChange(uint8_t channel, uint8_t program)
+{
+    midi::Message msg;
+    SetProgramChange(msg, channel, program);
+    midiOutput.sendMessage(msg);
+}
+
+void Hc1Module::sendResetAllreceivers()
+{
+    midi::Message msg;
+    msg.bytes[0] = 0xff;
+    midiOutput.sendMessage(msg);
+}
+
+// void Hc1Module::chooseUserPreset(uint8_t index)
+// {
+//     midi::Message msg;
+//     if (128 == index) {
+//         SetCC(msg, EM_SettingsChannel, 0, 126);
+//         midiOutput.sendMessage(msg);
+        
+//         SetCC(msg, EM_SettingsChannel, 32, 1);
+//         midiOutput.sendMessage(msg);
+        
+//         SetProgramChange(msg, EM_SettingsChannel, 1);
+//         midiOutput.sendMessage(msg);
+
+//     } else {
+//         SetCC(msg, EM_SettingsChannel, 0, 0);
+//         midiOutput.sendMessage(msg);
+        
+//         SetCC(msg, EM_SettingsChannel, 32, 0);
+//         midiOutput.sendMessage(msg);
+        
+//         SetProgramChange(msg, EM_SettingsChannel, index);
+//         midiOutput.sendMessage(msg);
+
+//     }
+// }
+
 void Hc1Module::transmitRequestUpdates()
 {
-    DebugLog("request updates");
+    DebugLog("Request updates");
     requested_updates = true;
     sendCC(EM_SettingsChannel, EMCC_Preserve, 1);
 }
@@ -143,9 +191,32 @@ void Hc1Module::transmitRequestUpdates()
 void Hc1Module::transmitRequestConfiguration()
 {
     //sendEditorPresent();
-    DebugLog("request configuration");
+    DebugLog("Request configuration");
     requested_config = true;
-    sendCC(EM_SettingsChannel, EMCC_Download, configToMidi);
+    sendCC(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::configToMidi);
+}
+
+void Hc1Module::transmitRequestPresets()
+{
+    DebugLog("Request presets");
+    requested_presets = true;
+    have_presets = false;
+    presets.clear();
+    // todo: disable routing surface to midi/cvc to avoid interruption while loading
+    sendCC(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::userToMidi);
+}
+
+void Hc1Module::transmitInitDevice()
+{
+    DebugLog("---- INIT DEVICE ----");
+    sendResetAllreceivers();
+    for (uint8_t channel = 0; channel < 12; ++channel) {
+        sendCC(channel, MidiCC_Reset, 0);
+        sendCC(channel, MidiCC_AllSoundOff, 0);
+    }
+    waiting_for_device_init = true;
+    sendCC(EM_SettingsChannel, EMCC_EditorPresent, tick_tock ? 85 : 42);
+    tick_tock = !tick_tock;
 }
 
 void Hc1Module::sendEditorPresent()
@@ -180,8 +251,12 @@ void Hc1Module::sendNoteOff(uint8_t channel, uint8_t note)
 void Hc1Module::handle_ch16_cc(uint8_t cc, uint8_t value)
 {
     switch (cc) {
-        case MidiCC_BankSelect:  preset0.bank_hi = value; break;
-        case 32: preset0.bank_lo = value; break;
+        case MidiCC_BankSelect: 
+            preset0.bank_hi = in_sys_names ? 127 : value;
+            break;
+        case 32:
+            preset0.bank_lo = value;
+            break;
 
         case EMCC_RecirculatorType: recirculator = value; break;
 
@@ -189,17 +264,20 @@ void Hc1Module::handle_ch16_cc(uint8_t cc, uint8_t value)
             switch (value) {
                 case EM_StreamType::Name:
                     assert(data_stream == -1);
-                    DebugLog("Begin name");
+                    //DebugLog("Begin name");
                     if (data_stream != EM_StreamType::Name) {
                         preset0.clear_name();
                     }
                     preset0.clear_name();
                     data_stream = value;
+                    if (in_sys_names || in_user_names) {
+                        beginPreset();
+                    }
                     break;
                     
                 case EM_StreamType::ConText:
                     assert(data_stream == -1);
-                    DebugLog("Begin Text");
+                    //DebugLog("Begin Text");
                     if (data_stream != EM_StreamType::ConText) {
                         preset0.clear_text();
                     }
@@ -209,11 +287,13 @@ void Hc1Module::handle_ch16_cc(uint8_t cc, uint8_t value)
                 case EM_StreamType::DataEnd:
                     switch (data_stream) {
                         case EM_StreamType::Name:
-                            DebugLog("End name");
+                            //DebugLog("End name");
                             break;
                         case EM_StreamType::ConText:
-                            DebugLog("End Text");
-                            preset0.parse_text();
+                            //DebugLog("End Text");
+                            if (!is_gathering_presets()) {
+                                preset0.parse_text();
+                            }
                             break;
                     }
                     data_stream = -1;
@@ -237,65 +317,54 @@ void Hc1Module::handle_ch16_cc(uint8_t cc, uint8_t value)
             download_message_id = value;
             switch (value) {
                 case EM_DownloadItem::archiveOk:
-                    DebugLog("archiveOk");
+                    //DebugLog("archiveOk");
                     break;
+
                 case EM_DownloadItem::archiveFail:
-                    DebugLog("archiveFail");
+                    //DebugLog("archiveFail");
                     break;
+
                 case EM_DownloadItem::beginUserNames:
-                    DebugLog("beginUserNames");
+                    DebugLog("[---- beginUserNames ----]");
+                    in_user_names = true;
                     break;
+
                 case EM_DownloadItem::endUserNames:
-                    DebugLog("endUserNames");
+                    DebugLog("[---- endUserNames ----]");
+                    in_user_names = false;
+                    // chain to sys names
+                    sendCC(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::sysToMidi);
                     break;
+
                 case EM_DownloadItem::beginSysNames:
-                    DebugLog("beginSysNames");
+                    DebugLog("[---- beginSysNames ----]");
+                    in_sys_names = true;
                     break;
+
                 case EM_DownloadItem::endSysNames:
-                    DebugLog("endSysNames");
+                    DebugLog("[---- endSysNames ----]");
+                    in_sys_names = false;
+                    have_presets = true;
                     break;
             }
             break;
 
-        case EMCC_Info: {
-            switch (value) {
-                case InfoItem::archiveEof:
-                    DebugLog("archiveEof");
-                    if (!preset0.name_empty()) {
-                            have_config = true;
-                    }
-                    break;
-            }
-        } break;
+        // case EMCC_Info: {
+        //     switch (value) {
+        //         case InfoItem::archiveEof:
+        //             //DebugLog("archiveEof");
+        //             // if (!preset0.name_empty()) {
+        //             //     have_config = true;
+        //             // }
+        //             break;
+        //     }
+        // } break;
 
         case EMCC_Status: {
-            auto led = value & StatusItem::sLedBits;
+            StatusItem led = static_cast<StatusItem>(value & StatusItem::sLedBits);
             if (led) {
                 getLight(HEART_LIGHT).setBrightness(0.2f);
-                switch (led) {
-                    case StatusItem::ledBlue:
-                        ledColor = blue_light;
-                        break;
-                    case StatusItem::ledRed:
-                        ledColor = red_light;
-                        break;
-                    case StatusItem::ledBrightGreen:
-                        ledColor = bright_green_light;
-                        break;
-                    case StatusItem::ledGreen:
-                        ledColor = green_light;
-                        break;
-                    case StatusItem::ledWhite:
-                        ledColor = white_light;
-                        break;
-                    case StatusItem::ledYellow:
-                        ledColor = yellow_light;
-                        break;
-                    case StatusItem::ledPurple:
-                        ledColor = purple_light;
-                        break;
-                }
-                
+                ledColor = StatusColor(led);
             }
         } break;
 
@@ -303,12 +372,18 @@ void Hc1Module::handle_ch16_cc(uint8_t cc, uint8_t value)
             auto d = (value >> 5) -1;
             auto pct = (value & 0x1F) * 4;
             dsp[d] = pct;
-            DebugLog("DSP %d = %d%%", d, pct);
+            //DebugLog("DSP %d = %d%%", d, pct);
         } break;
 
         case EMCC_EditorReply:
             DebugLog("Editor Reply");
-            waiting_for_handshake = false;
+            if (waiting_for_device_init) {
+                DebugLog("---- END DEVICE INIT ----");
+                waiting_for_device_init = false;
+                device_initialized = true;
+            } else {
+                waiting_for_handshake = false;
+            }
             break;
     }
 }
@@ -320,7 +395,7 @@ void Hc1Module::handle_ch16_message(const midi::Message& msg)
     switch (status) {
         case MidiStatus_NoteOff:
         case MidiStatus_NoteOn:
-            DebugLog("Note unexpected on channel 16");
+            //DebugLog("Note unexpected on channel 16");
             break;
 
         case MidiStatus_PolyKeyPressure:
@@ -331,13 +406,30 @@ void Hc1Module::handle_ch16_message(const midi::Message& msg)
             break;
 
         case MidiStatus_ProgramChange:
-            preset0.number = msg.getValue();
-            if (!preset0.name_empty()) {
-                have_config = true;
+            if (in_preset) {
+                //DebugLog("---- END PRESET ----");
+                in_preset = false;
+                preset0.number = msg.getNote();
+                //DebugLog("%s (%d.%d.%d)", preset0.name(), preset0.bank_hi, preset0.bank_lo, preset0.number);
+                if (!preset0.name_empty() && !is_gathering_presets()) {
+                    have_config = true;
+                }
+                if (is_gathering_presets()) {
+                    if (!preset0.name_empty()) {
+                        std::string name = preset0.name();
+                        if (msg.getNote() != 126 && "-" != name && "Empty" != name) {
+                            if (in_user_names) {
+                                user_presets.push_back(std::make_shared<MinPreset>(preset0));
+                            } else {
+                                presets.push_back(std::make_shared<MinPreset>(preset0));
+                            }
+                        }
+                    }
+                }
             }
-            in_preset = false;
-            DebugLog("---- END PRESET ----");
-            sendEditorPresent();
+            if (!is_gathering_presets()) {
+                sendEditorPresent();
+            }
             break;
 
         case MidiStatus_ChannelPressure:
@@ -396,11 +488,17 @@ void Hc1Module::setRecirculatorCCValue(int id, uint8_t value)
     }
 }
 
-void Hc1Module::onSoundOff() {
+void Hc1Module::beginPreset()
+{
+    //DebugLog("---- BEGIN PRESET ----");
+    in_preset = true;
+    dsp[2] = dsp[1] = dsp[0] = 0;
+}
+
+void Hc1Module::onSoundOff()
+{
     if (!in_preset) {
-        DebugLog("---- BEGIN PRESET ----");
-        in_preset = true;
-        dsp[2] = dsp[1] = dsp[0] = 0;
+        beginPreset();
     }
 }
 
@@ -446,7 +544,7 @@ void Hc1Module::handle_ch0_message(const midi::Message& msg)
 
 void Hc1Module::processMidi(const midi::Message& msg)
 {
-    DebugLog("%lld %s", static_cast<long long int>(msg.frame), ToFormattedString(msg).c_str());
+    //DebugLog("%lld %s", static_cast<long long int>(msg.frame), ToFormattedString(msg).c_str());
     auto channel = msg.getChannel();
     switch (channel) {
         case EM_MasterChannel:
@@ -523,35 +621,54 @@ void Hc1Module::process(const ProcessArgs& args)
         }
     }
 
+    // Blink light at 1Hz
+    blinkPhase += args.sampleTime;
+    if (blinkPhase >= 1.f) {
+        blinkPhase -= 1.f;
+    }
+    //lights[BLINK_LIGHT].setBrightness(blinkPhase < 0.5f ? 1.f : 0.f);	
+
     heart_phase += args.sampleTime;
     if (heart_phase >= heart_time) {
         heart_phase -= heart_time;
         heart_time = 2.5f;
 
+        // TODO: fix this mess of conditionals and make a state machine
         if (inputDeviceId != midiInput.deviceId) {
             device_name = midiInput.getDeviceName(midiInput.deviceId);
             is_eagan_matrix = is_EMDevice(device_name);
             inputDeviceId = midiInput.deviceId;
         } else if (!is_eagan_matrix) {
             findEM();
-        } else if (is_eagan_matrix 
-            && !waiting_for_handshake
-            && (notesOn <= 0)
-            && !in_preset
-            ) {
-            if (!requested_config) {
-                transmitRequestConfiguration();
-            } else if (have_config) {
-                if (!requested_updates) {
-                    transmitRequestUpdates();
-                } else {
-                    sendEditorPresent();
+        } else if (is_eagan_matrix) {
+            if (!device_initialized) {
+                if (!waiting_for_device_init)
+                {
+                    transmitInitDevice();
+                }
+            } else if (
+                !waiting_for_handshake
+                && (notesOn <= 0)
+                && !in_preset
+                && !is_gathering_presets()
+                ) {
+
+                if (!requested_presets) {
+                    transmitRequestPresets();
+                } else if (!requested_config) {
+                    transmitRequestConfiguration();
+                } else if (have_config) {
+                    if (!requested_updates) {
+                        transmitRequestUpdates();
+                    } else {
+                        sendEditorPresent();
+                    }
                 }
             }
-        }
-    }
-}
+        } // matrix
+    }// heartbeat
+} // process
 
-}
+} //pachde
 
 Model *modelHc1 = createModel<pachde::Hc1Module, pachde::Hc1ModuleWidget>("pachde-hc-1");
