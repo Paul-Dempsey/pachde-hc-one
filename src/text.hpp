@@ -5,10 +5,6 @@ using namespace ::rack;
 
 namespace pachde {
 
-std::string format_string(const char *fmt, ...);
-size_t common_prefix_length(std::string alpha, std::string beta);
-std::string AbbreviatedName(std::string name);
-
 inline std::shared_ptr<window::Font> GetPluginFontSemiBold(const char * path = NULL)
 {
     return APP->window->loadFont(asset::plugin(pluginInstance, path ? path : "res/fonts/HankenGrotesk-SemiBold.ttf"));

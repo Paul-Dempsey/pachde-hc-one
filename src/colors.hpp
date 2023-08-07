@@ -73,6 +73,20 @@ inline const NVGcolor& RampGray(Ramp g)
 #define PORT_LIGHT_LIME    nvgHSL(90.f/360.f, 0.75f, 0.75f)
 #define PORT_LIGHT_VIOLET  nvgHSL(270.f/360.f, 0.75f, 0.75f)
 
+extern const NVGcolor blue_light;
+extern const NVGcolor green_light;
+extern const NVGcolor bright_green_light;
+extern const NVGcolor blue_green_light;
+extern const NVGcolor orange_light;
+extern const NVGcolor yellow_light;
+extern const NVGcolor red_light;
+extern const NVGcolor white_light;
+extern const NVGcolor purple_light;
+extern const NVGcolor preset_name_color;
+extern const NVGcolor gray_light;
+extern const NVGcolor no_light;
+extern const NVGcolor preset_name_color;
+
 #define IS_SAME_COLOR(p,q) (((p).r == (q).r) && ((p).g == (q).g) && ((p).b == (q).b) && ((p).a == (q).a))
 inline NVGcolor Overlay(NVGcolor color) { return nvgTransRGBAf(color, 0.2f); }
 inline NVGcolor Gray(float L) {
@@ -198,7 +212,7 @@ void Line(NVGcontext * vg, float x1, float y1, float x2, float y2, NVGcolor colo
 void CircleGradient(NVGcontext * vg, float cx, float cy, float r, NVGcolor top, NVGcolor bottom);
 void Circle(NVGcontext * vg, float cx, float cy, float r, NVGcolor fill);
 void OpenCircle(NVGcontext * vg, float cx, float cy, float r, NVGcolor stroke, float stroke_width = 1.f);
-
+void Dot(NVGcontext*vg, float x, float y, const NVGcolor& co, bool filled = true);
 
 template <class TMenuItem = rack::ui::MenuEntry>
 rack::ui::MenuEntry* createColorMenuItem(PackedColor previewColor, std::string text, std::string rightText, std::function<bool()> checked, std::function<void()> action, bool disabled = false, bool alwaysConsume = false)

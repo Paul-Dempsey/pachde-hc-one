@@ -1,0 +1,25 @@
+{
+    "configurations": [
+        {
+            "name": "mingw64",
+            "includePath": [
+                "${workspaceFolder}/src/**",
+                "${workspaceFolder}/../../dep/**",
+                "${workspaceFolder}/../../include/**",
+                "C:/msys64/mingw64/include"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "windowsSdkVersion": "10.0.22621.0",
+            "compilerPath": "C:/msys64/mingw64/bin/gcc.exe",
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "windows-gcc-x64",
+            "configurationProvider": "ms-vscode.makefile-tools"
+        }
+    ],
+    "version": 4
+}

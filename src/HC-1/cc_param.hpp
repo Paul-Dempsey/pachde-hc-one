@@ -33,12 +33,12 @@ struct CCParamQuantity : rack::engine::ParamQuantity
                 if (high_resolution) {
                     uint8_t lo = to_send & 0x7f;
                     if (lo) {
-                        my_module->sendCC(EM_SettingsChannel, EMCC_PedalFraction, lo);
+                        my_module->sendControlChange(EM_SettingsChannel, EMCC_PedalFraction, lo);
                     }
                     uint8_t hi = to_send >> 7;
-                    my_module->sendCC(EM_SettingsChannel, cc, hi);
+                    my_module->sendControlChange(EM_SettingsChannel, cc, hi);
                 } else {
-                    my_module->sendCC(EM_SettingsChannel, cc, to_send & 0x7f);
+                    my_module->sendControlChange(EM_SettingsChannel, cc, to_send & 0x7f);
                 }
             }
         }

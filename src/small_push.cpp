@@ -4,6 +4,8 @@ namespace pachde {
 
 void SmallPush::draw(const DrawArgs& args)
 {
+    TipWidget::draw(args);
+
     auto vg = args.vg;
     float center = box.size.x/2.f;
     CircleGradient(vg, center, center, center, collar1, collar2);

@@ -16,9 +16,7 @@ struct MidiInputProxy : midi::Input
     MidiInputProxy(IProcessMidi * processor) : handler(processor) { }
     void onMessage(const midi::Message& message) override
     {
-        if (handler){
-            handler->processMidi(message);
-        }
+        handler->processMidi(message);
     }
 };
 

@@ -1,37 +1,13 @@
 #include "HC-1.hpp"
 #include "cc_param.hpp"
 #include "../components.hpp"
+#include "../misc.hpp"
 #include "../small_push.hpp"
 #include "../port.hpp"
-#include "preset_widget.hpp"
+#include "../tab_bar.hpp"
+#include "../preset_widget.hpp"
 
 namespace pachde {
-
-std::string FilterDeviceName(std::string text)
-{
-    #ifdef ARCH_WIN
-    if (!text.empty()) {
-        text.erase(text.find_last_not_of("0123456789"));
-    }
-    #endif
-    #ifdef ARCH_LIN
-    if (!text.empty()) {
-        auto pos = text.find(':');
-        if (std::string::npos != pos) {
-            return text.substr(pos);
-        }
-    }
-    #endif
-    return text;
-}
-
-void draw_status(NVGcontext*vg, float x, float y, bool filled, const NVGcolor& co) {
-    if (filled) {
-        Circle(vg, x, y, 3.f, co);
-    } else {
-        OpenCircle(vg, x, y, 2.75f, co, .5f);
-    }
-}
 
 struct MidiKnob : RoundSmallBlackKnob
 {
@@ -47,20 +23,6 @@ struct MidiKnob : RoundSmallBlackKnob
         }
     }
 };
-
-const NVGcolor blue_light         = nvgHSL(220.f/360.f, 0.85f, 0.5f);
-const NVGcolor green_light        = nvgHSL(120.f/360.f, 0.85f, 0.5f);
-const NVGcolor bright_green_light = nvgHSL(120.f/360.f, 0.85f, 0.9f);
-const NVGcolor orange_light       = nvgHSL(30.f/360.f, 0.85f, 0.5f);
-const NVGcolor yellow_light       = nvgHSL(60.f/360.f, 0.85f, 0.5f);
-const NVGcolor red_light          = nvgHSL(0.f, 0.85f, 0.5f);
-const NVGcolor white_light        = nvgRGB(0xef, 0xef, 0xef);
-const NVGcolor purple_light       = nvgHSL(270.f/360.f, 0.85f, 0.5f);
-const NVGcolor blue_green_light   = nvgHSL(180.f/360.f, 100.f, .5f);
-const NVGcolor gray_light         = GRAY50;
-const NVGcolor no_light           = COLOR_NONE;
-const NVGcolor preset_name_color  = nvgRGB(0xe6, 0xa2, 0x1a);
-
 
 const NVGcolor& StatusColor(StatusItem led) {
     switch (led) {
@@ -122,12 +84,20 @@ Hc1ModuleWidget::Hc1ModuleWidget(Hc1Module *module)
     addChild(createParamCentered<MidiKnob>(Vec(KNOB_LEFT + 3.f * KNOB_SPREAD, KNOB_ROW_2), module, Hc1Module::R4_PARAM));
     addChild(createParamCentered<MidiKnob>(Vec(KNOB_LEFT + 4.f * KNOB_SPREAD, KNOB_ROW_2), module, Hc1Module::RMIX_PARAM));
 
+    auto tab_bar = createWidget<TabBarWidget>(Vec(PRESET_LEFT, PRESET_TOP - 13.f));
+    tab_bar->setSize(Vec(320.f, 13.f));
+    tab_bar->addTab("Favorite");
+    tab_bar->addTab("User");
+    tab_bar->addTab("System");
+    tab_bar->selectTab(2);
+    addChild(tab_bar);
+
     presets.reserve(64);
     int x = PRESET_LEFT;
     int y = PRESET_TOP;
     for (int n = 0; n < 64; ++n) {
         auto p = createWidget<PresetWidget>(Vec(x, y));
-        p->setModule(module);
+        p->setPresetHolder(module);
         addChild(p);
         presets.push_back(p);
         x += p->box.size.x;
@@ -163,9 +133,9 @@ Hc1ModuleWidget::Hc1ModuleWidget(Hc1Module *module)
         #endif
         pb->onClick([module](bool ctrl, bool shift) {
             if (ctrl) {
-                module->sendNoteOff(0, 60);
+                module->sendNoteOff(0, 60, 0);
             } else {
-                module->sendNote(0, 60, 64);
+                module->sendNoteOn(0, 60, 64);
             }
         });
     }
@@ -208,9 +178,9 @@ void Hc1ModuleWidget::step()
             DirtyEvent e;
             status_light->onDirty(e);
         }
-        if (!have_preset_widgets && my_module->have_presets) {
+        if (!have_preset_widgets && my_module->hasPresets()) {
             populatePresetWidgets();
-        } else if (have_preset_widgets && !my_module->have_presets) {
+        } else if (have_preset_widgets && !my_module->hasPresets()) {
             clearPresetWidgets();
         }
     }
@@ -246,16 +216,19 @@ void Hc1ModuleWidget::drawLayer(const DrawArgs& args, int layer)
         if (FontOk(font)) {
             SetTextStyle(vg, font, preset_name_color, 16.f);
             if (my_module) {
-                std::string text = my_module->is_gathering_presets()
-                    ? format_string("[ Gathering Presets... %d ]", my_module->presets.size())
-                    : my_module->preset0.name();
+                std::string text = my_module->broken
+                    ? "[MIDI error-Please wait for recovery...]"
+                    : my_module->is_gathering_presets()
+                        ? format_string("[Gathering Presets... %d]", my_module->presets.size())
+                        : my_module->preset0.name();
                 CenterText(vg, box.size.x/2.f, 20.f, text.c_str(), nullptr);
             } else {
                 CenterText(vg, box.size.x/2.f, 20.f, "(Preset Name)", nullptr);
             }
         }
 
-        StrokeHeart(vg, box.size.x - (12.f + 3.5f), 3.5f, 12.f, PORT_PINK, .75f);
+        // FavoriteWidget to be
+        StrokeHeart(vg, box.size.x - (12.f + 3.5f), 4.5f, 12.f, PORT_PINK, .75f);
 
         // DSP status
         auto h = 10.f;
@@ -264,7 +237,7 @@ void Hc1ModuleWidget::drawLayer(const DrawArgs& args, int layer)
         auto y = box.size.y - 20.f - h;
         FillRect(vg, x-1.25f, y-1.25f, w*3+5.f, h+5.f, RampGray(G_30));
         uint8_t tdsp[] = {65, 30, 75};
-        uint8_t* pdsp = (my_module && my_module->have_presets) ? &my_module->dsp[0] : &tdsp[0];
+        uint8_t* pdsp = (my_module && my_module->hasPresets()) ? &my_module->dsp[0] : &tdsp[0];
         for (auto n = 0; n < 3; n++) {
             auto pct = pdsp[n];
             auto co = pct < 85 ? green_light : red_light;
@@ -283,7 +256,10 @@ void Hc1ModuleWidget::draw(const DrawArgs& args)
     if (my_module) {
         Circle(vg, 12.f + (my_module->tick_tock ? 1.5f : -1.5f), 26.f, 1.25f, COLOR_MAGENTA);
     }
-
+    if (my_module && my_module->anyPending()) {
+        // raw MIDI animation
+        Circle(vg, PRESET_LEFT + ((my_module->midi_count / 50) % 320), 3.f, 2.f, blue_green_light);
+    }
     auto font = GetPluginFontRegular();
     if (FontOk(font)) {
         std::string device_name;
@@ -302,23 +278,9 @@ void Hc1ModuleWidget::draw(const DrawArgs& args)
             if (my_module->is_eagan_matrix && (my_module->firmware_version > 0)) {
                 RightAlignText(vg, box.size.x - 7.5, box.size.y - 7.5f, format_string("v %.2f", my_module->firmware_version/100.f).c_str(), nullptr);
             }
-            // if (my_module->download_message_id >= 0)
-            // {
-            //     auto message = DownloadMessage(my_module->download_message_id);
-            //     if (nullptr != message) {
-            //         nvgText(vg, 22.f, 34.f, message, nullptr);
-            //     }
-            // }
         } else {
             RightAlignText(vg, box.size.x - 7.5, box.size.y - 7.5f, "v 10.09", nullptr);
         }
-
-        BoxRect(vg, PRESET_LEFT, PRESET_TOP - 13.f, 320.f, 13.f, RampGray(G_50), .75f);
-        Line(vg, PRESET_LEFT + 320.f *.333f, PRESET_TOP - 13.f, PRESET_LEFT + 320.f *.333f, PRESET_TOP, RampGray(G_50), .75f);
-        Line(vg, PRESET_LEFT + 320.f *.666f, PRESET_TOP - 13.f, PRESET_LEFT + 320.f *.666f, PRESET_TOP, RampGray(G_50), .75f);
-        CenterText(vg, PRESET_LEFT + (320.f / 6.f),         PRESET_TOP - 3.f, "Favorite", nullptr);
-        CenterText(vg, PRESET_LEFT + 160.f,                 PRESET_TOP - 3.f, "User", nullptr);
-        CenterText(vg, PRESET_LEFT + 320.f - (320.f / 6.f), PRESET_TOP - 3.f, "System", nullptr);
     }
 
     // labels
@@ -326,7 +288,7 @@ void Hc1ModuleWidget::draw(const DrawArgs& args)
     if (FontOk(font)) {
         SetTextStyle(vg, font, RampGray(G_90), 12.f);
         float y = KNOB_ROW_1 + 22.f;
-        if (my_module && my_module->have_config) {
+        if (my_module && my_module->hasConfig()) {
             CenterText(vg, KNOB_LEFT, y, my_module->preset0.macro[0].c_str(), nullptr);
             CenterText(vg, KNOB_LEFT +       KNOB_SPREAD, y, my_module->preset0.macro[1].c_str(), nullptr);
             CenterText(vg, KNOB_LEFT + 2.f * KNOB_SPREAD, y, my_module->preset0.macro[2].c_str(), nullptr);
@@ -357,28 +319,29 @@ void Hc1ModuleWidget::draw(const DrawArgs& args)
     if (my_module) {
         float left = 60.f;
         float spacing = 6.25f;
-        bool on;
         float y = box.size.y - 7.5f;
-        draw_status(vg, left, y, true, my_module && my_module->is_eagan_matrix ? green_light : orange_light);
+        bool on;
+        Dot(vg, left, y, my_module->is_eagan_matrix ? green_light : orange_light);
 
-        on = my_module && my_module->device_initialized;
-        draw_status(vg, left + spacing, y, on, on ? blue_light : orange_light);
+        on = my_module->hasDevice();
+        Dot(vg, left + spacing, y, on ? blue_light : orange_light, on);
 
-        on = my_module && my_module->waiting_for_handshake;
-        draw_status(vg, left + 2.f * spacing, y, true, on ? orange_light : blue_light);
+        on = my_module->handshakePending();
+        Dot(vg, left + 2.f * spacing, y, on ? orange_light : blue_light);
 
-        on = my_module && (my_module->in_user_names || my_module->in_sys_names || my_module->have_presets);
-        draw_status(vg, left + 3.f * spacing, y, on, 
-            my_module->have_presets 
-                ? blue_light
-                : (my_module->in_user_names
-                    ? yellow_light
-                    : (my_module->in_sys_names
-                        ? orange_light
-                        : gray_light)));
+        on = my_module->in_user_names || my_module->in_sys_names || my_module->hasPresets();
+        Dot(vg, left + 3.f * spacing, y, 
+              my_module->broken        ? red_light
+            : my_module->hasPresets()  ? blue_light
+            : my_module->in_user_names ? yellow_light
+            : my_module->in_sys_names  ? orange_light
+            : gray_light
+            , on
+            );
 
-        on = my_module && my_module->notesOn > 0;
-        draw_status(vg, left + 4.f * spacing, y, on, on ? purple_light : gray_light);
+        on = my_module->notesOn > 0;
+        Dot(vg, left + 4.f * spacing, y, on ? purple_light : gray_light, on);
+        Dot(vg, left + 5.f * spacing, y, (my_module->broken || my_module->stateError()) ? red_light : my_module->anyPending() ? yellow_light : green_light);
     }
 
     DrawLogo(vg, box.size.x /2.f - 12.f, RACK_GRID_HEIGHT - ONE_HP, RampGray(G_90));

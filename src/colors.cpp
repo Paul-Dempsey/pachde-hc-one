@@ -26,6 +26,19 @@ float Hue1(const NVGcolor& color)
     return result;
 }
 
+const NVGcolor blue_light         = nvgHSL(220.f/360.f, 0.85f, 0.5f);
+const NVGcolor green_light        = nvgHSL(120.f/360.f, 0.85f, 0.5f);
+const NVGcolor bright_green_light = nvgHSL(120.f/360.f, 0.85f, 0.9f);
+const NVGcolor orange_light       = nvgHSL(30.f/360.f, 0.85f, 0.5f);
+const NVGcolor yellow_light       = nvgHSL(60.f/360.f, 0.85f, 0.5f);
+const NVGcolor red_light          = nvgHSL(0.f, 0.85f, 0.5f);
+const NVGcolor white_light        = nvgRGB(0xef, 0xef, 0xef);
+const NVGcolor purple_light       = nvgHSL(270.f/360.f, 0.85f, 0.5f);
+const NVGcolor blue_green_light   = nvgHSL(180.f/360.f, 100.f, .5f);
+const NVGcolor gray_light         = GRAY50;
+const NVGcolor no_light           = COLOR_NONE;
+const NVGcolor preset_name_color  = nvgRGB(0xe6, 0xa2, 0x1a);
+
 
 NamedColor stock_colors[] = {
 	{ "#d blue", PackRGB(0x45, 0x7a, 0xa6) },
@@ -365,6 +378,15 @@ void OpenCircle(NVGcontext * vg, float cx, float cy, float r, NVGcolor stroke, f
     nvgStrokeWidth(vg, stroke_width);
     nvgCircle(vg, cx, cy, r);
     nvgStroke(vg);
+}
+
+void Dot(NVGcontext*vg, float x, float y, const NVGcolor& co, bool filled)
+{
+    if (filled) {
+        Circle(vg, x, y, 3.f, co);
+    } else {
+        OpenCircle(vg, x, y, 2.75f, co, .5f);
+    }
 }
 
 }

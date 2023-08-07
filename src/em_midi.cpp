@@ -1,5 +1,5 @@
 #include "em_midi.hpp"
-#include "text.hpp"
+#include "misc.hpp"
 
 namespace em_midi
 {
@@ -286,7 +286,7 @@ std::string ToFormattedString(const midi::Message& msg) {
                     ? continuumCC(msg.bytes[1])
                     : (channel == 14) ? "EM data" : midiCC(msg.bytes[1])
                 );
-        }
+        } break;
 
         case MidiStatus_ProgramChange:
             return pachde::format_string("ch%2d %s %3d",

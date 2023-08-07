@@ -8,6 +8,17 @@ using namespace ::rack;
 
 namespace em_midi {
 
+struct ISendMidi
+{
+    virtual void sendNoteOn(uint8_t channel, uint8_t note, uint8_t velocity) {}
+    virtual void sendNoteOff(uint8_t channel, uint8_t note, uint8_t velocity) {}
+    virtual void sendControlChange(uint8_t channel, uint8_t cc, uint8_t value) {}
+    virtual void sendProgramChange(uint8_t channel, uint8_t program) {}
+    virtual void sendKeyPressure(uint8_t channel, uint8_t note, uint8_t pressure) {}
+    virtual void sendChannelPressure(uint8_t channel, uint8_t pressure) {}
+    virtual void sendPitchBend(uint8_t channel, uint8_t bend_lo, uint8_t bend_hi) {}
+};
+
 constexpr const uint8_t MaxPresetName = 31; // editor truncates to here on loading a preset.
 constexpr const uint8_t MaxPresetNameSize = MaxPresetName + 1; // including zero termination
 
@@ -401,11 +412,13 @@ inline void SetCC(midi::Message& msg, uint8_t channel, uint8_t cc, uint8_t value
     msg.bytes[1] = cc;
     msg.bytes[2] = value;
 }
+
 inline void SetProgramChange(midi::Message& msg, uint8_t channel, uint8_t program)
 {
     msg.bytes[0] = MidiStatus_ProgramChange | channel;
     msg.bytes[1] = program;
 }
+
 inline uint8_t GetCC(const midi::Message& msg) { return msg.bytes[1]; }
 inline uint8_t GetRawStatus(const midi::Message& msg) { return msg.bytes[0] & 0xf0; }
 const char * StatusName(uint8_t status);

@@ -7,31 +7,17 @@
 #include "../presets.hpp"
 #include "../midi_input_proxy.hpp"
 #include "../text.hpp"
+#include "../colors.hpp"
 
 using namespace em_midi;
 namespace pachde {
 
 #define VERBOSE_LOG
-#ifdef VERBOSE_LOG
-#define DebugLog(format, ...) DEBUG(format, ##__VA_ARGS__)
-#else
-#define DebugLog(format, ...) {}
-#endif
-
-extern const NVGcolor blue_light;
-extern const NVGcolor green_light;
-extern const NVGcolor bright_green_light;
-extern const NVGcolor orange_light;
-extern const NVGcolor yellow_light;
-extern const NVGcolor red_light;
-extern const NVGcolor white_light;
-extern const NVGcolor purple_light;
-extern const NVGcolor preset_name_color;
-extern const NVGcolor gray_light;
+#include "../debug_log.hpp"
 
 const NVGcolor& StatusColor(StatusItem status);
 
-struct Hc1Module : Module, IProcessMidi
+struct Hc1Module : IPresetHolder, IProcessMidi, ISendMidi, Module
 {
     enum Params
     {
@@ -60,27 +46,50 @@ struct Hc1Module : Module, IProcessMidi
     std::vector< std::shared_ptr<MinPreset> > user_presets;
     
     bool is_eagan_matrix = false;
-    bool requested_presets = false;
-    bool have_presets = false;
-    bool requested_config = false;
-    bool have_config = false;
+
+    InitState preset_state = InitState::Uninitialized;
+    bool hasPresets() { return InitState::Complete == preset_state; }
+
+    InitState config_state = InitState::Uninitialized;
+    bool configPending() { return InitState::Pending == config_state; }
+    bool hasConfig() { return InitState::Complete == config_state; }
+
+    InitState device_state = InitState::Uninitialized;
+    bool hasDevice() { return InitState::Complete == device_state; }
+
+    InitState handshake = InitState::Uninitialized;
+    bool handshakePending() { return InitState::Pending == handshake; }
+
+    bool stateError() {
+        return InitState::Broken == preset_state
+            || InitState::Broken == config_state
+            || InitState::Broken == device_state
+            || InitState::Broken == handshake;
+    }
+    bool anyPending() {
+        return InitState::Pending == preset_state
+            || InitState::Pending == config_state
+            || InitState::Pending == device_state
+            || InitState::Pending == handshake;
+    }
+
     bool requested_updates = false;
-    bool waiting_for_handshake = false;
-    bool device_initialized = false;
-    bool waiting_for_device_init = false;
     bool in_preset = false;
     bool in_user_names = false;
     bool in_sys_names = false;
+    bool broken = false;
     uint16_t firmware_version = 0;
     uint8_t dsp[3] {0};
     int data_stream = -1;
-
+    uint64_t midi_count = 0;
+    float broken_idle = 0.f;
+    
     // heartbeat
     float heart_phase = 0.f;
     float heart_time = 1.0;
     bool tick_tock = true;
     NVGcolor ledColor = green_light;
-	float blinkPhase = 0.f;
+	//float blinkPhase = 0.f;
 
     // device management
     int inputDeviceId = -1;
@@ -103,9 +112,10 @@ struct Hc1Module : Module, IProcessMidi
 
     const std::string deviceName() { return device_name; }
     bool isEaganMatrix() { return is_eagan_matrix; }
-    bool is_gathering_presets() { return requested_presets && !have_presets; }
+    bool is_gathering_presets() { return preset_state == InitState::Pending; }
 
     Hc1Module();
+    void processMidi(const midi::Message& msg) override;
 
     // void onSampleRateChange() override {
     //     float rate = APP->engine->getSampleRate();
@@ -137,16 +147,29 @@ struct Hc1Module : Module, IProcessMidi
     bool isRecirculatorExtend() { return recirculator & EM_Recirculator::Extend; }
     void setRecirculatorCCValue(int id, uint8_t value);
 
-    void sendCC(uint8_t channel, uint8_t cc, uint8_t value);
-    void sendProgramChange(uint8_t channel, uint8_t program);
+    // ISendMidi
+    void sendNoteOn(uint8_t channel, uint8_t note, uint8_t velocity) override;
+    void sendNoteOff(uint8_t channel, uint8_t note, uint8_t velocity) override;
+    void sendControlChange(uint8_t channel, uint8_t cc, uint8_t value) override;
+    void sendProgramChange(uint8_t channel, uint8_t program) override;
+
+    // IPresetHolder
+    void setPreset(std::shared_ptr<MinPreset> preset) override;
+    bool isCurrentPreset(std::shared_ptr<MinPreset> preset) override
+    {
+        return preset && (preset->number == preset0.number
+            && preset->bank_hi == preset0.bank_hi
+            && preset->bank_lo == preset0.bank_lo
+            && 0 == preset->name.compare(preset0.name()));
+    }
+
     void sendResetAllreceivers();
     void transmitInitDevice();
     void transmitRequestUpdates();
     void transmitRequestConfiguration();
     void transmitRequestPresets();
     void sendEditorPresent();
-    void sendNote(uint8_t channel, uint8_t note, uint8_t velocity);
-    void sendNoteOff(uint8_t channel, uint8_t note);
+    void silence(bool reset);
     //void chooseUserPreset(uint8_t index);
     void beginPreset();
     void handle_ch16_cc(uint8_t cc, uint8_t value);
@@ -157,7 +180,6 @@ struct Hc1Module : Module, IProcessMidi
     void onSoundOff();
     void onChannel0CC(uint8_t cc, uint8_t value);
     void handle_ch0_message(const midi::Message& msg);
-    void processMidi(const midi::Message& msg) override;
     void processCV(int inputId);
     void processAllCV();
     void process(const ProcessArgs& args) override;

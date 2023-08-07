@@ -2,7 +2,7 @@
 #ifndef PRESETS_HPP_INCLUDED
 #define PRESETS_HPP_INCLUDED
 #include "plugin.hpp"
-#include "text.hpp"
+#include "misc.hpp"
 
 namespace pachde {
 
@@ -38,7 +38,7 @@ public:
     }
 };
 
-static const char * const PRESET_FORMAT = "%s\n(%s %d.%d)";
+static const char * const PRESET_FORMAT = "%s%c(%s %d.%d)";
 
 class Preset {
     FixedStringBuffer<32> _name;
@@ -153,8 +153,8 @@ public:
         }
     }
 
-    std::string describe() {
-        return format_string(PRESET_FORMAT, name(), preset_type_name(bank_hi), bank_lo, number + 1);
+    std::string describe(bool two_line = true) {
+        return format_string(PRESET_FORMAT, name(), two_line ? '\n' : ' ', preset_type_name(bank_hi), bank_lo, number + 1);
     }
 };
 
@@ -177,17 +177,46 @@ struct MinPreset {
     {
     }
 
-    std::string describe() {
-        return format_string(PRESET_FORMAT, name.c_str(), preset_type_name(bank_hi), bank_lo, number + 1);
+    std::string describe(bool two_line = true) {
+        return format_string(PRESET_FORMAT, name.c_str(), two_line ? '\n' : ' ', preset_type_name(bank_hi), bank_lo, number + 1);
     }
 
-    bool is_user_preset() const {
-        return 0 == bank_hi;
+    json_t* toJson() {
+        json_t* root = json_object();
+        json_object_set_new(root, "hi", json_integer(bank_hi));
+        json_object_set_new(root, "lo", json_integer(bank_lo));
+        json_object_set_new(root, "num", json_integer(number));
+        json_object_set_new(root, "name", json_stringn(name.c_str(), name.size()));
+        json_object_set_new(root, "fav", json_boolean(favorite));
+        return root;
     }
 
-    bool is_sys_preset() const {
-        return 127 == bank_hi;
+    void fromJson(const json_t* root) {
+        auto j = json_object_get(root, "hi");
+        if (j) {
+            bank_hi = json_integer_value(j);
+        }
+        j = json_object_get(root, "lo");
+        if (j) {
+            bank_lo = json_integer_value(j);
+        }
+        j = json_object_get(root, "num");
+        if (j) {
+            number = json_integer_value(j);
+        }
+        j = json_object_get(root, "name");
+        if (j) {
+            name = json_string_value(j);
+        }
+        favorite = GetBool(root, "fav", false);
     }
+
+};
+
+struct IPresetHolder
+{
+    virtual bool isCurrentPreset(std::shared_ptr<MinPreset> preset) { return false; }
+    virtual void setPreset(std::shared_ptr<MinPreset> preset) {}
 };
 
 }

@@ -1,14 +1,21 @@
 #include "preset_widget.hpp"
+#include "misc.hpp"
+#include "text.hpp"
+#include "components.hpp"
+#include "colors.hpp"
 
 namespace pachde {
 
 //const NVGcolor user_preset_color = nvgRGB(0x7e, 0x60, 0x9f);
 const NVGcolor user_preset_color = nvgRGB(0x3d, 0x21, 0x5d);
+
 void PresetWidget::draw(const DrawArgs& args)
 {
+    TipWidget::draw(args);
+
     auto vg = args.vg;
 
-    bool selected = module && preset && (0 == preset->name.compare(module->preset0.name()));
+    bool selected = holder && holder->isCurrentPreset(preset);
     bool user_preset = preset && (127 != preset->bank_hi);
     if (pressed) {
         FillRect(vg, 0, 0, box.size.x, box.size.y, preset_name_color);
