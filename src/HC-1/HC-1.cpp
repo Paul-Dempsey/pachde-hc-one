@@ -10,7 +10,7 @@ bool preset_order(const std::shared_ptr<MinPreset>& p1, const std::shared_ptr<Mi
     return c1 < c2;
 }
 
-Hc1Module::Hc1Module() : midiInput(this)
+Hc1Module::Hc1Module()
 {
     presets.reserve(700);
     user_presets.reserve(128);
@@ -77,7 +77,7 @@ void Hc1Module::dataFromJson(json_t *root)
 
 void Hc1Module::onReset()
 {
-    midiInput.reset();
+    midi::Input::reset();
     midiOutput.reset();
 
     broken = false;
@@ -125,11 +125,11 @@ void Hc1Module::findEMOut() {
 }
 
 void Hc1Module::findEM() {
-    for (auto id : midiInput.getDeviceIds()) {
-        auto dev_name = midiInput.getDeviceName(id);
+    for (auto id : midi::Input::getDeviceIds()) {
+        auto dev_name = midi::Input::getDeviceName(id);
         if (is_EMDevice(dev_name)) {
-            midiInput.setDeviceId(id);
-            midiInput.setChannel(-1);
+            midi::Input::setDeviceId(id);
+            midi::Input::setChannel(-1);
             inputDeviceId = id;
             device_name = dev_name;
             is_eagan_matrix = true;
@@ -537,7 +537,7 @@ void Hc1Module::handle_ch0_message(const midi::Message& msg)
 
 }
 
-void Hc1Module::processMidi(const midi::Message& msg)
+void Hc1Module::onMessage(const midi::Message& msg)
 {
     //DebugLog("%lld %s", static_cast<long long int>(msg.frame), ToFormattedString(msg).c_str());
     broken_idle = 0.f;
@@ -636,10 +636,10 @@ void Hc1Module::process(const ProcessArgs& args)
         if (broken) return;
 
         // TODO: fix this mess of conditionals and make a state machine
-        if (inputDeviceId != midiInput.deviceId) {
-            device_name = midiInput.getDeviceName(midiInput.deviceId);
+        if (inputDeviceId != midi::Input::deviceId) {
+            device_name = midi::Input::getDeviceName(midi::Input::deviceId);
             is_eagan_matrix = is_EMDevice(device_name);
-            inputDeviceId = midiInput.deviceId;
+            inputDeviceId = midi::Input::deviceId;
         } else if (!is_eagan_matrix) {
             findEM();
         } else if (is_eagan_matrix) {

@@ -5,7 +5,6 @@
 #include "../plugin.hpp"
 #include "../em_midi.hpp"
 #include "../presets.hpp"
-#include "../midi_input_proxy.hpp"
 #include "../text.hpp"
 #include "../colors.hpp"
 
@@ -17,7 +16,7 @@ namespace pachde {
 
 const NVGcolor& StatusColor(StatusItem status);
 
-struct Hc1Module : IPresetHolder, IProcessMidi, ISendMidi, Module
+struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
 {
     enum Params
     {
@@ -101,7 +100,6 @@ struct Hc1Module : IPresetHolder, IProcessMidi, ISendMidi, Module
     uint8_t recirculator = 0;
     int download_message_id = -1; // CC109
 
-    MidiInputProxy midiInput;
     midi::Output midiOutput;
 
     // cv processing
@@ -115,7 +113,9 @@ struct Hc1Module : IPresetHolder, IProcessMidi, ISendMidi, Module
     bool is_gathering_presets() { return preset_state == InitState::Pending; }
 
     Hc1Module();
-    void processMidi(const midi::Message& msg) override;
+
+    //midi::Input
+    void onMessage(const midi::Message& msg) override;
 
     // void onSampleRateChange() override {
     //     float rate = APP->engine->getSampleRate();

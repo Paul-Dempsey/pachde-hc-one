@@ -110,7 +110,7 @@ Hc1ModuleWidget::Hc1ModuleWidget(Hc1Module *module)
     auto pm = createWidget<PickMidi>(Vec(7.5f, box.size.y - 20.f));
     pm->describe("Choose Midi input");
     if (my_module) {
-        pm->setMidiPort(&my_module->midiInput);
+        pm->setMidiPort(my_module);
     }
     addChild(pm);
 
