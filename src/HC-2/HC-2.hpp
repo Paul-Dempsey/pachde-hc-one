@@ -5,6 +5,7 @@
 #include "../plugin.hpp"
 #include "../em_midi.hpp"
 #include "../presets.hpp"
+#include "../HC-1/HC-1.hpp"
 
 #define VERBOSE_LOG
 #include "../debug_log.hpp"
@@ -12,57 +13,30 @@
 using namespace em_midi;
 namespace pachde {
 
-struct Hc2Module : Module, ISendMidi, midi::Input
+struct Hc2Module : Module
 {
-    midi::Output midiOutput;
-    std::string device_name;
-    Preset preset0;
-    std::vector< std::shared_ptr<MinPreset> > presets;
-    std::vector< std::shared_ptr<MinPreset> > user_presets;
-    uint16_t firmware_version = 0;
-    uint64_t midi_count = 0;
 
-    bool tick_tock = true;
-    bool is_eagan_matrix = false;
+    Hc1Module* partner = nullptr;
+    bool partner_side = false;
 
     Hc2Module();
-    void onReset() override
-    {
-        preset0.clear();
-        presets.clear();
-        user_presets.clear();
-        is_eagan_matrix = false;
-        firmware_version = 0;
-        midi_count = 0;
-        midiOutput.reset();
-        Input::reset();
-        findEM();
-    }
+    void onExpanderChange(const ExpanderChangeEvent& e) override;
+
+    void refreshPartner();
+
     // json_t * dataToJson() override;
     // void dataFromJson(json_t *root) override;
-
-    void process(const ProcessArgs& args) override;
-
-    //midi::Input
-    void onMessage(const midi::Message& message) override;
-
-    // ISendMidi
-    void sendNoteOn(uint8_t channel, uint8_t note, uint8_t velocity) override;
-    void sendNoteOff(uint8_t channel, uint8_t note, uint8_t velocity) override;
-    void sendControlChange(uint8_t channel, uint8_t cc, uint8_t value) override;
-    void sendProgramChange(uint8_t channel, uint8_t program) override;
-
-    void findEMOut();
-    void findEM();
-
+    std::string getDeviceName();
+    //void process(const ProcessArgs& args) override;
 };
 
 struct Hc2ModuleWidget : ModuleWidget
 {
     Hc2Module * my_module;
-    std::vector<Widget*> presets;
 
     Hc2ModuleWidget(Hc2Module * module);
+    void drawExtenderConnector(const DrawArgs& args);
+    void drawCCMap(const DrawArgs& args);
     void draw(const DrawArgs& args) override;
 };
 

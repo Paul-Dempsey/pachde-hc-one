@@ -8,4 +8,4 @@ extern Plugin* pluginInstance;
 // Declare each Model, defined in each module source file
 
 extern Model* modelHc1;
-//extern Model* modelHc2;
+extern Model* modelHc2;

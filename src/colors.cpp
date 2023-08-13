@@ -307,6 +307,15 @@ void FillRect(NVGcontext *vg, float x, float y, float width, float height, NVGco
     nvgFill(vg);
 }
 
+void GradientRect(NVGcontext * vg, float x, float y, float width, float height, NVGcolor top, NVGcolor bottom, float y1, float y2)
+{
+    nvgBeginPath(vg);
+    auto gradient = nvgLinearGradient(vg, x, y1, x, y2, top, bottom);
+    nvgFillPaint(vg, gradient);
+    nvgRect(vg, x, y, width, height);
+    nvgFill(vg);
+}
+
 void RoundRect(NVGcontext *vg, float x, float y, float width, float height, NVGcolor color, float radius)
 {
     nvgBeginPath(vg);

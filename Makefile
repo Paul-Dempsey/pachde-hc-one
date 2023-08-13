@@ -15,8 +15,8 @@ SOURCES += src/text.cpp
 SOURCES += src/HC-1/HC-1.cpp
 SOURCES += src/HC-1/HC-1-ui.cpp
 
-# SOURCES += src/HC-2/HC-2.cpp
-# SOURCES += src/HC-2/HC-2-ui.cpp
+SOURCES += src/HC-2/HC-2.cpp
+SOURCES += src/HC-2/HC-2-ui.cpp
 
 DISTRIBUTABLES += res
 # DISTRIBUTABLES += presets

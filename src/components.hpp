@@ -12,6 +12,8 @@ constexpr const float HALF_HP = 7.5f;
 void DrawLogo(NVGcontext * vg, float x, float y, NVGcolor fill, float scale = 1.0f);
 void FillHeart(NVGcontext* vg, float x, float y, float square, NVGcolor fill);
 void StrokeHeart(NVGcontext* vg, float x, float y, float square, NVGcolor stroke, float stroke_width = 1.0f);
+void StrokePerson(NVGcontext* vg, float x, float y, float square, NVGcolor stroke, float stroke_width = 1.0f);
+void FillPerson(NVGcontext* vg, float x, float y, float square, NVGcolor fill);
 
 // struct USB_A_Port : app::SvgPort {
 

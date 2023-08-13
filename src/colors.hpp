@@ -205,6 +205,7 @@ Theme ParseTheme(std::string text);
 Theme ThemeFromJson(json_t * root);
 
 void FillRect(NVGcontext *vg, float x, float y, float width, float height, NVGcolor color);
+void GradientRect(NVGcontext * vg, float x, float y, float width, float height, NVGcolor top, NVGcolor bottom, float y1, float y2);
 void RoundRect(NVGcontext *vg, float x, float y, float width, float height, NVGcolor color, float radius);
 void BoxRect(NVGcontext *vg, float x, float y, float width, float height, NVGcolor color, float strokeWidth = 1.0);
 void RoundBoxRect(NVGcontext *vg, float x, float y, float width, float height, NVGcolor color, float radius, float strokeWidth = 1.0);

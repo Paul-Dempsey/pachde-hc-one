@@ -29,18 +29,21 @@ struct TabBarWidget : OpaqueWidget
             auto font = GetPluginFontRegular();
             if (FontOk(font)) {
                 SetTextStyle(vg, font, selected ? preset_name_color : RampGray(G_90), 12.f);
-                CenterText(vg, box.size.x * 0.5f, 10.f, title.c_str(), nullptr );
+                CenterText(vg, box.size.x * 0.5f, 9.f, title.c_str(), nullptr );
             }
         }
     };
 
     std::vector<TabWidget*> tabs;
 
+    int getSelectedTab() {
+        return std::distance(tabs.begin(), std::find_if(tabs.begin(), tabs.end(), [](TabWidget* p){ return p->selected; }));
+    }
+
     void addTab(std::string title) {
         auto tab = new TabWidget(title);
         addChild(tab);
         tabs.push_back(tab);
-        layout();
     }
 
     void layout()
@@ -63,14 +66,29 @@ struct TabBarWidget : OpaqueWidget
         }
     }
 
+    void onButton(const ButtonEvent& e) override
+    {
+        OpaqueWidget::onButton(e);
+        if (e.isConsumed()) {
+            unsigned n = 0;
+            for (auto p: tabs) {
+                if (p->box.contains(e.pos)) break;
+                 ++n;
+            }
+            if (n < tabs.size()) {
+                selectTab(n);
+            }
+        }
+    }
+
     void draw(const DrawArgs& args) override
     {
         OpaqueWidget::draw(args);
-        BoxRect(args.vg, 0, 0, box.size.x, box.size.y, RampGray(G_50), 0.75f);
+        BoxRect(args.vg, 0, 0, box.size.x -1.f, box.size.y, RampGray(G_40), 0.75f);
         if (tabs.size() > 1) {
             float width = box.size.x / tabs.size();
             for (float x = width; x < box.size.x; x += width) {
-                Line(args.vg, x, 0, x, box.size.y, RampGray(G_50), 0.75f);
+                Line(args.vg, x, 0, x, box.size.y, RampGray(G_40), 0.75f);
             }
         }
 

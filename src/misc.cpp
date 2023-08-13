@@ -32,7 +32,7 @@ size_t common_prefix_length(std::string alpha, std::string beta) {
 
 std::string AbbreviatedName(std::string name)
 {
-    if (name.size() <= 12) return name.substr(0, 8);
+    if (name.size() <= 9) return name.substr(0, 9);
     std::string result;
     bool was_space = true;
     for (unsigned char ch: name) {

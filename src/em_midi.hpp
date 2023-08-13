@@ -417,6 +417,7 @@ inline void SetProgramChange(midi::Message& msg, uint8_t channel, uint8_t progra
 {
     msg.bytes[0] = MidiStatus_ProgramChange | channel;
     msg.bytes[1] = program;
+    msg.bytes.resize(2);
 }
 
 inline uint8_t GetCC(const midi::Message& msg) { return msg.bytes[1]; }

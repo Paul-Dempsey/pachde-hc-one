@@ -15,7 +15,7 @@ struct PresetWidget : TipWidget
     IPresetHolder* holder = nullptr;
 
     PresetWidget() {
-        box.size.x = 40.f;
+        box.size.x = 320.f / 3.f;
         box.size.y = 27.f;
     }
 

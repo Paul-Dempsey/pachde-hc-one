@@ -38,7 +38,7 @@ public:
     }
 };
 
-static const char * const PRESET_FORMAT = "%s%c(%s %d.%d)";
+static const char * const PRESET_FORMAT = "%s%c(%s %d.%d)%c%s";
 
 class Preset {
     FixedStringBuffer<32> _name;
@@ -142,7 +142,7 @@ public:
                 } break;
                 case ParseState::Value: {
                     switch (ch) {
-                        case ' ': case '\r':case '\n':
+                        case ' ': case '\r': case '\n':
                             state = ParseState::Macro;
                             break;
                         default:
@@ -153,8 +153,11 @@ public:
         }
     }
 
-    std::string describe(bool two_line = true) {
-        return format_string(PRESET_FORMAT, name(), two_line ? '\n' : ' ', preset_type_name(bank_hi), bank_lo, number + 1);
+    std::string describe(bool multi_line = true) {
+        auto line_break = multi_line ? '\n' : ' ';
+        return format_string(PRESET_FORMAT, name(), 
+            line_break, preset_type_name(bank_hi), bank_lo, number + 1,
+            line_break, text());
     }
 };
 
@@ -165,20 +168,36 @@ struct MinPreset {
     uint8_t bank_lo; // cc32
     uint8_t number;  // program change
     bool favorite;
+    int favorite_order;
 
-    MinPreset() : bank_hi(0), bank_lo(0), number(0), favorite(false) {}
+    MinPreset() : bank_hi(0), bank_lo(0), number(0), favorite(false), favorite_order(-1) {}
 
     MinPreset(const Preset& preset) 
     :   name(preset.name()),
         text(preset.text()),
         bank_hi(preset.bank_hi),
         bank_lo(preset.bank_lo),
-        number(preset.number)
+        number(preset.number),
+        favorite(false),
+        favorite_order(-1)
     {
     }
 
-    std::string describe(bool two_line = true) {
-        return format_string(PRESET_FORMAT, name.c_str(), two_line ? '\n' : ' ', preset_type_name(bank_hi), bank_lo, number + 1);
+    std::string describe(bool multi_line = true) {
+        auto line_break = multi_line ? '\n' : ' ';
+        return format_string(PRESET_FORMAT, name.c_str(),
+            line_break, preset_type_name(bank_hi), bank_lo, number + 1,
+            line_break, text.c_str());
+    }
+
+    bool isSamePreset(const Preset& other) {
+        return (bank_lo == other.bank_lo) && (0 == name.compare(other.name()));
+    }
+    bool isSamePreset(const MinPreset& other) {
+        return (bank_lo == other.bank_lo) && (0 == name.compare(other.name));
+    }
+    bool isSysPreset() {
+        return 127 == bank_hi;
     }
 
     json_t* toJson() {
@@ -187,7 +206,9 @@ struct MinPreset {
         json_object_set_new(root, "lo", json_integer(bank_lo));
         json_object_set_new(root, "num", json_integer(number));
         json_object_set_new(root, "name", json_stringn(name.c_str(), name.size()));
+        json_object_set_new(root, "text", json_stringn(text.c_str(), text.size()));
         json_object_set_new(root, "fav", json_boolean(favorite));
+        json_object_set_new(root, "ord", json_integer(favorite_order));
         return root;
     }
 
@@ -208,15 +229,28 @@ struct MinPreset {
         if (j) {
             name = json_string_value(j);
         }
+        j = json_object_get(root, "text");
+        if (j) {
+            text = json_string_value(j);
+        }
         favorite = GetBool(root, "fav", false);
+        j = json_object_get(root, "ord");
+        if (j) {
+            favorite_order = json_integer_value(j);
+        } else {
+            favorite_order = -1;
+        }
     }
 
 };
+
 
 struct IPresetHolder
 {
     virtual bool isCurrentPreset(std::shared_ptr<MinPreset> preset) { return false; }
     virtual void setPreset(std::shared_ptr<MinPreset> preset) {}
+    virtual void addFavorite(std::shared_ptr<MinPreset> preset) {}
+    virtual void unFavorite(std::shared_ptr<MinPreset> preset) {}
 };
 
 }

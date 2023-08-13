@@ -28,5 +28,15 @@ enum class InitState {
     Broken
 };
 
+inline const char * InitStateName(InitState state) {
+    switch (state) {
+        case InitState::Uninitialized: return "Uninitialized";
+        case InitState::Pending: return "Pending";
+        case InitState::Complete: return "Complete";
+        case InitState::Broken: return "Broken";
+        default: return "(unknown)";
+    }
+}
+
 }
 #endif

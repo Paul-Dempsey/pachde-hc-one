@@ -16,8 +16,14 @@
       {
         "slug": "pachde-hc-1",
         "name": "HC-1",
-        "description": "Fast access to favorite presets on the Eagan matrix, with knobs and CV for the essential controls.",
+        "description": "Fast access to favorite presets on the Eagan Matrix, with knobs and CV for the essential controls.",
         "tags": [ "Controller", "MIDI" ]
+      },
+      {
+        "slug": "pachde-hc-2",
+        "name": "HC-2",
+        "description": "Eagan Matrix settings (must be paired with HC-1)",
+        "tags": [ "Controller", "MIDI", "Extender" ]
       }
     ]
   }

@@ -10,6 +10,9 @@ struct CCParamQuantity : rack::engine::ParamQuantity
     uint8_t cc = 0; // never a valid cc for param
     uint16_t last_value = 0;
     bool high_resolution = true;
+    bool enabled = true;
+
+    void enable(bool enable) { enabled = enable; }
 
     uint16_t convertValue(float value)  {
         return high_resolution
@@ -28,17 +31,19 @@ struct CCParamQuantity : rack::engine::ParamQuantity
         auto to_send = valueToSend();
         if (last_value != to_send) {
             last_value = to_send;
-            auto my_module = dynamic_cast<Hc1Module*>(module);
-            if (my_module) {
-                if (high_resolution) {
-                    uint8_t lo = to_send & 0x7f;
-                    if (lo) {
-                        my_module->sendControlChange(EM_SettingsChannel, EMCC_PedalFraction, lo);
+            if (enabled) {
+                auto my_module = dynamic_cast<Hc1Module*>(module);
+                if (my_module) {
+                    if (high_resolution) {
+                        uint8_t lo = to_send & 0x7f;
+                        if (lo) {
+                            my_module->sendControlChange(EM_SettingsChannel, EMCC_PedalFraction, lo);
+                        }
+                        uint8_t hi = to_send >> 7;
+                        my_module->sendControlChange(EM_SettingsChannel, cc, hi);
+                    } else {
+                        my_module->sendControlChange(EM_SettingsChannel, cc, to_send & 0x7f);
                     }
-                    uint8_t hi = to_send >> 7;
-                    my_module->sendControlChange(EM_SettingsChannel, cc, hi);
-                } else {
-                    my_module->sendControlChange(EM_SettingsChannel, cc, to_send & 0x7f);
                 }
             }
         }

@@ -316,7 +316,7 @@ const std::string RecirculatorName(EM_Recirculator r)
 {
     switch (r) {
         case EM_Recirculator::Reverb: return "Reverb";
-        case EM_Recirculator::ModDelay: return "Modulated Delay";
+        case EM_Recirculator::ModDelay: return "Mod Delay";
         case EM_Recirculator::SweptEcho: return "Swept Echo";
         case EM_Recirculator::AnalogEcho: return "Analog Echo";
         case EM_Recirculator::DigitalEchoLPF: return "Delay LPF";
