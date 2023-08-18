@@ -3,7 +3,6 @@
         {
             "name": "mingw64",
             "includePath": [
-                "${workspaceFolder}/src/**",
                 "${workspaceFolder}/../../dep/**",
                 "${workspaceFolder}/../../include/**",
                 "C:/msys64/mingw64/include"
