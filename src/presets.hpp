@@ -3,6 +3,7 @@
 #define PRESETS_HPP_INCLUDED
 #include "plugin.hpp"
 #include "misc.hpp"
+#include "preset_meta.hpp"
 
 namespace pachde {
 
@@ -164,6 +165,7 @@ public:
 struct MinPreset {
     std::string name;
     std::string text;
+    std::string meta_text;
     uint8_t bank_hi; // cc0
     uint8_t bank_lo; // cc32
     uint8_t number;  // program change
@@ -172,7 +174,7 @@ struct MinPreset {
 
     MinPreset() : bank_hi(0), bank_lo(0), number(0), favorite(false), favorite_order(-1) {}
 
-    MinPreset(const Preset& preset) 
+    explicit MinPreset(const Preset& preset) 
     :   name(preset.name()),
         text(preset.text()),
         bank_hi(preset.bank_hi),
@@ -183,11 +185,31 @@ struct MinPreset {
     {
     }
 
-    std::string describe(bool multi_line = true) {
-        auto line_break = multi_line ? '\n' : ' ';
+    // not cached
+    std::string make_text_json() {
+        return hcCategoryCode.make_category_json(text);
+    }
+
+    // cached
+    std::string meta() {
+        if (meta_text.empty() && !text.empty()) {
+            meta_text = make_text_json();
+        }
+        return meta_text;
+    }
+
+    void clear() {
+        name.clear();
+        text.clear();
+        meta_text.clear();
+    }
+
+    std::string describe(bool multi_line = true)
+    {
+        char line_break = multi_line ? '\n' : ' ';
         return format_string(PRESET_FORMAT, name.c_str(),
             line_break, preset_type_name(bank_hi), bank_lo, number + 1,
-            line_break, text.c_str());
+            line_break, meta().c_str());
     }
 
     bool isSamePreset(const Preset& other) {

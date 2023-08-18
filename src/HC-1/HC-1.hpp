@@ -11,6 +11,7 @@
 #include "../tab_bar.hpp"
 #include "../text.hpp"
 #include "../up_down_widget.hpp"
+#include "../preset_meta.hpp"
 
 using namespace em_midi;
 namespace pachde {
@@ -269,7 +270,7 @@ struct Hc1ModuleWidget : IPresetHolder, ModuleWidget
     UpDown* page_up;
     UpDown* page_down;
 
-    Hc1ModuleWidget(Hc1Module *module);
+    explicit Hc1ModuleWidget(Hc1Module *module);
     void setTab(PresetTab tab);
     void setPage(PresetTab tab, int page);
     void pageUp();

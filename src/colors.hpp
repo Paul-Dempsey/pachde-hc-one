@@ -103,15 +103,16 @@ inline NVGcolor nvgHSLAf(float h, float s, float l, float a)
     return color;
 }
 
-// 8-bit (0-255) abgr packed into an unsigned int.
-typedef unsigned int PackedColor;
 
-inline PackedColor PackRGB(unsigned int r, unsigned int g, unsigned int b) {
-    return r | (g << 8) | (b << 16) | (255 << 24);
+// 8-bit (0-255) abgr packed into a uint32_t.
+typedef uint32_t PackedColor;
+
+inline PackedColor PackRGBA(uint32_t r, uint32_t g, uint32_t b, uint32_t a) {
+    return r | (g << 8u) | (b << 16u) | (a << 24u);
 }
 
-inline PackedColor PackRGBA(unsigned int r, unsigned int g, unsigned int b, unsigned int a) {
-    return r | (g << 8) | (b << 16) | (a << 24);
+inline PackedColor PackRGB(uint32_t r, uint32_t g, uint32_t b) {
+    return PackRGBA(r, g, b, 255u);
 }
 
 inline NVGcolor fromPacked(PackedColor co)
@@ -121,10 +122,10 @@ inline NVGcolor fromPacked(PackedColor co)
 
 inline PackedColor toPacked(NVGcolor co) {
     return PackRGBA(
-        static_cast<unsigned int>(co.r * 255), 
-        static_cast<unsigned int>(co.g * 255),
-        static_cast<unsigned int>(co.b * 255),
-        static_cast<unsigned int>(co.a * 255));
+        static_cast<uint32_t>(co.r * 255), 
+        static_cast<uint32_t>(co.g * 255),
+        static_cast<uint32_t>(co.b * 255),
+        static_cast<uint32_t>(co.a * 255));
 }
 
 struct NamedColor {
@@ -197,8 +198,8 @@ inline float Hue(const NVGcolor& color) {
     return (rack::simd::atan2(SQRT3 * (color.g - color.b), 2 * color.r - color.g - color.b) + PI) / TWO_PI;
 }
 
-inline bool isColorTransparent(NVGcolor& color) { return color.a < 0.001f; }
-inline bool isColorVisible(NVGcolor& color) { return color.a > 0.001f; }
+inline bool isColorTransparent(const NVGcolor& color) { return color.a < 0.001f; }
+inline bool isColorVisible(const NVGcolor& color) { return color.a > 0.001f; }
 
 std::string ToString(Theme theme);
 Theme ParseTheme(std::string text);

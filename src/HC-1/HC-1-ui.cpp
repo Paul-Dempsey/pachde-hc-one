@@ -262,7 +262,7 @@ void  Hc1ModuleWidget::setTab(PresetTab new_tab) {
     if (my_module) my_module->tab = new_tab;
     tab = new_tab;
     tab_bar->selectTab(tab);
-    page = my_module->getTabPage(tab);
+    page = my_module ? my_module->getTabPage(tab) : 0;
     updatePresetWidgets();
 }
 
@@ -318,13 +318,13 @@ void Hc1ModuleWidget::drawLayer(const DrawArgs& args, int layer)
         }
 
         // DSP status
-        auto h = 10.f;
-        auto w = 2.5f;
-        auto x = box.size.x - 7.5f - 3.f*w - 2;
-        auto y = box.size.y - 20.f - h;
-        FillRect(vg, x-1.25f, y-1.25f, w*3+5.f, h+5.f, RampGray(G_30));
-        uint8_t tdsp[] = {65, 30, 75};
-        uint8_t* pdsp = (my_module && my_module->hasPresets()) ? &my_module->dsp[0] : &tdsp[0];
+        const float h = 10.f;
+        const float w = 2.5f;
+        const float y = box.size.y - 20.f - h;
+        float x = box.size.x - 7.5f - 3.f * w - 2;
+        FillRect(vg, x - 1.25f, y - 1.25f, w * 3.f + 5.f, h + 5.f, RampGray(G_30));
+        const uint8_t tdsp[] = {65, 30, 75};
+        const uint8_t* pdsp = (my_module && my_module->hasPresets()) ? &my_module->dsp[0] : &tdsp[0];
         for (auto n = 0; n < 3; n++) {
             auto pct = pdsp[n];
             auto co = pct < 85 ? green_light : red_light;
@@ -380,13 +380,12 @@ void Hc1ModuleWidget::draw(const DrawArgs& args)
         { // recirculator
             auto y = KNOB_ROW_2 - 16.f;
             Line(vg, 7.5f, y-2.f, box.size.x - 7.5f, y-2.f, RampGray(G_35), .5f);
-            auto text = RecirculatorName(rt).c_str();
             float bounds[4] = { 0, 0, 0, 0 };
-            nvgTextBounds(vg, 0, 0, text, nullptr, bounds);
+            nvgTextBounds(vg, 0, 0, RecirculatorName(rt).c_str(), nullptr, bounds);
             bounds[2] += 15.f; // pad
             FillRect(vg, (box.size.x * .5f) - (bounds[2] * .5f), y - 10.f, bounds[2], 14.f, RampGray(G_15));
             SetTextStyle(vg, font, RampGray(G_90), 12.f);
-            CenterText(vg, box.size.x * .5f, y, text, nullptr);
+            CenterText(vg, box.size.x * .5f, y, RecirculatorName(rt).c_str(), nullptr);
         }
     }
 

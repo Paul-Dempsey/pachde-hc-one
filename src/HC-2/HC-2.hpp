@@ -34,7 +34,7 @@ struct Hc2ModuleWidget : ModuleWidget
 {
     Hc2Module * my_module;
 
-    Hc2ModuleWidget(Hc2Module * module);
+    explicit Hc2ModuleWidget(Hc2Module * module);
     void drawExtenderConnector(const DrawArgs& args);
     void drawCCMap(const DrawArgs& args);
     void draw(const DrawArgs& args) override;

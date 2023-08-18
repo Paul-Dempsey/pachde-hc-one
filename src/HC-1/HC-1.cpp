@@ -455,15 +455,13 @@ void Hc1Module::unFavorite(std::shared_ptr<MinPreset> preset)
 
 void Hc1Module::setPreset(std::shared_ptr<MinPreset> preset)
 {
+    savedPreset = preset;
     if (!preset) return;
 
     DebugLog("Setting preset [%s]", preset ? preset->describe(false).c_str() : "(none)");
     sendControlChange(15, MidiCC_BankSelect, preset->bank_hi);
     sendControlChange(15, EMCC_Category, preset->bank_lo);
     sendProgramChange(15, preset->number);
-    if (savedPreset != preset) {
-        savedPreset = preset;
-    }
     //transmitRequestConfiguration();
     config_state = InitState::Pending;
 }
@@ -1002,7 +1000,7 @@ void Hc1Module::process(const ProcessArgs& args)
             inputDeviceId = midi::Input::deviceId;
         } else if (!is_eagan_matrix) {
             findEM();
-        } else if (is_eagan_matrix) {
+        } else {
             switch (device_state) {
                 case InitState::Uninitialized: transmitInitDevice(); return;
                 case InitState::Pending: return;

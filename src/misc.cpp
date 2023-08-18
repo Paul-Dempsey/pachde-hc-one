@@ -19,6 +19,7 @@ std::string format_string(const char *fmt, ...)
     va_list args;
     va_start(args, fmt);
     auto r = std::vsnprintf(&(*s.begin()), len + 1, fmt, args);
+    va_end(args);
     return r < 0 ? "??" : s;
 }
 
@@ -30,26 +31,26 @@ size_t common_prefix_length(std::string alpha, std::string beta) {
     return common;
 }
 
-std::string AbbreviatedName(std::string name)
-{
-    if (name.size() <= 9) return name.substr(0, 9);
-    std::string result;
-    bool was_space = true;
-    for (unsigned char ch: name) {
-        if (std::isupper(ch)) {
-            result.push_back(ch);
-        } else if (std::isdigit(ch)) {
-            result.push_back(ch);
-        } else {
-            auto space = std::isspace(ch);
-            if (!space && was_space) {
-                result.push_back(ch);
-            }
-            was_space = space;
-        }
-    }
-    return result;
-}
+// std::string AbbreviatedName(std::string name)
+// {
+//     if (name.size() <= 9) return name.substr(0, 9);
+//     std::string result;
+//     bool was_space = true;
+//     for (unsigned char ch: name) {
+//         if (std::isupper(ch)) {
+//             result.push_back(ch);
+//         } else if (std::isdigit(ch)) {
+//             result.push_back(ch);
+//         } else {
+//             auto space = std::isspace(ch);
+//             if (!space && was_space) {
+//                 result.push_back(ch);
+//             }
+//             was_space = space;
+//         }
+//     }
+//     return result;
+// }
 
 std::string FilterDeviceName(std::string text)
 {

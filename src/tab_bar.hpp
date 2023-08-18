@@ -15,7 +15,7 @@ struct TabBarWidget : OpaqueWidget
         bool selected;
         std::string title;
 
-        TabWidget(std::string title) : selected(false), title(title) {
+        explicit TabWidget(const std::string& title) : selected(false), title(title) {
             tip_text = format_string("%s presets", title.c_str());
         }
 
@@ -37,10 +37,10 @@ struct TabBarWidget : OpaqueWidget
     std::vector<TabWidget*> tabs;
 
     int getSelectedTab() {
-        return std::distance(tabs.begin(), std::find_if(tabs.begin(), tabs.end(), [](TabWidget* p){ return p->selected; }));
+        return std::distance(tabs.begin(), std::find_if(tabs.begin(), tabs.end(), [](const TabWidget* p){ return p->selected; }));
     }
 
-    void addTab(std::string title) {
+    void addTab(const std::string& title) {
         auto tab = new TabWidget(title);
         addChild(tab);
         tabs.push_back(tab);
