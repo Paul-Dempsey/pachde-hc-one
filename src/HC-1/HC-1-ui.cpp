@@ -8,21 +8,6 @@
 namespace pachde {
 #define MIDI_ANIMATION
 
-struct MidiKnob : RoundSmallBlackKnob
-{
-    void step() override {
-        RoundSmallBlackKnob::step();
-        auto pq = dynamic_cast<CCParamQuantity*>(getParamQuantity());
-        if (pq) {
-            //bool dirty = pq->last_value != pq->getValue();
-            pq->syncValue();
-            // if (dirty) {
-            //     this->fb->dirty = true;
-            // }
-        }
-    }
-};
-
 struct PDSmallButton : app::SvgSwitch {
     PDSmallButton() {
 		addFrame(Svg::load(asset::plugin(pluginInstance, "res/TinyPush_up.svg")));

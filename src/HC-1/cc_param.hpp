@@ -2,9 +2,10 @@
 #ifndef CC_PARAM_HPP_INCLUDED
 #define CC_PARAM_HPP_INCLUDED
 #include "HC-1.hpp"
-namespace pachde {
 
+namespace pachde {
 using namespace em_midi;
+
 struct CCParamQuantity : rack::engine::ParamQuantity
 {
     uint8_t cc = 0; // never a valid cc for param
@@ -22,8 +23,7 @@ struct CCParamQuantity : rack::engine::ParamQuantity
 
     uint16_t valueToSend() {
         auto p = getParam();
-        if (!p) return 0;
-        return convertValue(p->getValue());
+        return p ? convertValue(p->getValue()) : 0;
     }
 
     void syncValue() {
@@ -88,6 +88,16 @@ TCCPQ* configCCParam(uint8_t cc, bool hiRes, Module* module, int paramId, float 
 
     return q;
 }
+
+struct MidiKnob : RoundSmallBlackKnob
+{
+    void step() override {
+        RoundSmallBlackKnob::step();
+        if (auto pq = dynamic_cast<CCParamQuantity*>(getParamQuantity())) {
+            pq->syncValue();
+        }
+    }
+};
 
 }
 #endif

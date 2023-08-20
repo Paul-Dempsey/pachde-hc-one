@@ -19,7 +19,10 @@ namespace pachde {
 #define VERBOSE_LOG
 #include "../debug_log.hpp"
 
+int randomZeroTo(int size);
 const NVGcolor& StatusColor(StatusItem status);
+bool preset_order(const std::shared_ptr<MinPreset>& p1, const std::shared_ptr<MinPreset>& p2);
+bool favorite_order(const std::shared_ptr<MinPreset>& p1, const std::shared_ptr<MinPreset>& p2);
 
 struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
 {
