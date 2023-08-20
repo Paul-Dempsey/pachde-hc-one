@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg version="1.0" x="0px" y="0px" width="12px" height="12px" viewBox="0 0 12 12" xml:space="preserve"
+xmlns="http://www.w3.org/2000/svg"
+xmlns:svg="http://www.w3.org/2000/svg">
+<defs>
+	<linearGradient id="a" gradientUnits="userSpaceOnUse" 
+		x1="0" y1="1" x2="0" y2="11" >
+		<stop offset="0" style="stop-color:#2B2B2B" />
+		<stop offset="1" style="stop-color:#0b0b0b" />
+	</linearGradient>
+	<linearGradient id="b" gradientUnits="userSpaceOnUse" 
+		x1="0" y1="2" x2="0" y2="10" >
+		<stop offset="0" style="stop-color:#666565" />
+		<stop offset="1" style="stop-color:#0b0b0b" />
+	</linearGradient>
+</defs>
+<circle cx="6" cy="6" r="6" style="stroke-width:0"/>
+<circle cx="6" cy="5.96" r="5.4" style="fill:url(#a);stroke-width:0"/>
+<circle cx="6" cy="5.96" r="4.7" style="fill:#242424;stroke-width:0"/>
+<circle cx="6" cy="5.96" r="4.7" style="opacity:0.29;fill:url(#b);stroke-width:0"/>
+</svg>

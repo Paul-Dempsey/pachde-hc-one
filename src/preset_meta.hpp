@@ -56,11 +56,13 @@ public:
     HCCategoryCode();
 
     std::shared_ptr<PresetMeta> find(uint16_t key) const;
-    void foreach_code(std::string text, std::function<bool(uint16_t)> callback) const;
-    std::string make_category_json(std::string text) const;
-    std::vector<uint16_t> make_category_code_list(std::string text) const;
-    std::vector<std::shared_ptr<PresetMeta>> make_category_list(std::string text) const;
+    void foreach_code(const std::string&, std::function<bool(uint16_t)> callback) const;
+    std::vector<uint16_t> make_category_code_list(const std::string& text) const;
+    std::vector<std::shared_ptr<PresetMeta>> make_category_list(const std::string& text) const;
+    std::string make_category_json(const std::string& text) const;
+    std::string make_category_mulitline_text(const std::string& text) const;
 };
+
 extern const HCCategoryCode hcCategoryCode;
 
 }

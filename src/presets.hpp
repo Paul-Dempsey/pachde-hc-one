@@ -186,14 +186,14 @@ struct MinPreset {
     }
 
     // not cached
-    std::string make_text_json() {
-        return hcCategoryCode.make_category_json(text);
+    std::string make_friendly_text() {
+        return hcCategoryCode.make_category_mulitline_text(text);
     }
 
     // cached
     std::string meta() {
         if (meta_text.empty() && !text.empty()) {
-            meta_text = make_text_json();
+            meta_text = make_friendly_text();
         }
         return meta_text;
     }

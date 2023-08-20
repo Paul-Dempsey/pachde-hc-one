@@ -21,22 +21,16 @@ namespace pachde {
 
 const NVGcolor& StatusColor(StatusItem status);
 
-enum PresetTab {
-    User,
-    Favorite,
-    System,
-
-    First = User,
-    Last = System
-};
-
 struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
 {
     enum Params
     {
         M1_PARAM, M2_PARAM, M3_PARAM, M4_PARAM, M5_PARAM, M6_PARAM,
         R1_PARAM, R2_PARAM, R3_PARAM, R4_PARAM, RMIX_PARAM,
-        NUM_PARAMS
+        M1_REL_PARAM, M2_REL_PARAM, M3_REL_PARAM, M4_REL_PARAM, M5_REL_PARAM, M6_REL_PARAM,
+        R1_REL_PARAM, R2_REL_PARAM, R3_REL_PARAM, R4_REL_PARAM, RMIX_REL_PARAM,
+        NUM_PARAMS,
+        NUM_KNOBS = M1_REL_PARAM,
     };
     enum Inputs
     {
@@ -50,9 +44,12 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     };
     enum Lights
     {
+        M1_REL_LIGHT, M2_REL_LIGHT, M3_REL_LIGHT, M4_REL_LIGHT, M5_REL_LIGHT, M6_REL_LIGHT,
+        R1_REL_LIGHT, R2_REL_LIGHT, R3_REL_LIGHT, R4_REL_LIGHT, RMIX_REL_LIGHT,
         HEART_LIGHT,
         NUM_LIGHTS
     };
+    bool relative_param[NUM_KNOBS] {false};
 
     Preset preset0;
     std::vector<std::shared_ptr<MinPreset>> user_presets;
@@ -264,7 +261,7 @@ struct Hc1ModuleWidget : IPresetHolder, ModuleWidget
     bool have_preset_widgets = false;
     std::vector<PresetWidget*> presets;
     TabBarWidget* tab_bar;
-    PresetTab tab = PresetTab::User;
+    PresetTab tab = PresetTab::Favorite;
     int page = 0;
     FavoriteWidget* fave;
     UpDown* page_up;

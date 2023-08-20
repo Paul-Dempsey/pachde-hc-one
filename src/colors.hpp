@@ -10,6 +10,7 @@ namespace pachde {
 
 // HSL grays per InkScape
 #define GRAY05 nvgRGB(0x0d, 0x0d, 0x0d) // #0d0d0d
+#define GRAY08 nvgRGB(0x10, 0x10, 0x10) // #101010
 #define GRAY10 nvgRGB(0x1a, 0x1a, 0x1a) // #1a1a1a
 #define GRAY15 nvgRGB(0x26, 0x26, 0x26) // #262626
 #define GRAY18 nvgRGB(0X30, 0X30, 0X30) // #303030
@@ -32,7 +33,7 @@ namespace pachde {
 
 enum Ramp {
     G_0, G_BLACK = G_0,
-    G_05, G_10, G_15, G_18, G_20,
+    G_05, G_08, G_10, G_15, G_18, G_20,
     G_25, G_30, G_35, G_40,
     G_45, G_50, G_55, G_60,
     G_65, G_70, G_75, G_80,

@@ -23,6 +23,41 @@ struct MidiKnob : RoundSmallBlackKnob
     }
 };
 
+struct PDSmallButton : app::SvgSwitch {
+    PDSmallButton() {
+		addFrame(Svg::load(asset::plugin(pluginInstance, "res/TinyPush_up.svg")));
+		addFrame(Svg::load(asset::plugin(pluginInstance, "res/TinyPush_down.svg")));
+    }
+};
+
+template <typename TLight>
+struct PDLightButton : app::SvgSwitch {
+	app::ModuleLightWidget* light;
+
+	PDLightButton() {
+		addFrame(Svg::load(asset::plugin(pluginInstance, "res/TinyPush_up.svg")));
+		addFrame(Svg::load(asset::plugin(pluginInstance, "res/TinyPush_down.svg")));
+		light = new TLight;
+		// Move center of light to center of box
+		light->box.pos = box.size.div(2).minus(light->box.size.div(2));
+		addChild(light);
+	}
+
+	app::ModuleLightWidget* getLight() {
+		return light;
+	}
+};
+template <typename TLight>
+using SmallLightButton = PDLightButton<TLight>;
+
+template <typename TLight>
+struct PDLightLatch : PDLightButton<TLight> {
+	PDLightLatch() {
+		this->momentary = false;
+		this->latch = true;
+	}
+};
+
 const NVGcolor& StatusColor(StatusItem led) {
     switch (led) {
         case StatusItem::ledOff: return no_light;
@@ -39,16 +74,18 @@ const NVGcolor& StatusColor(StatusItem led) {
 }
 
 constexpr const float PRESET_TOP = 42.f;
-constexpr const float PRESET_LEFT = 10.f;
+constexpr const float PRESET_LEFT = 12.5f;
 constexpr const float PRESET_WIDTH = 320.f;
 
 constexpr const float KNOB_LEFT   = 45.f;
 constexpr const float KNOB_SPREAD = 54.f;
 constexpr const float KNOB_ROW_1  = 280.f;
-constexpr const float KNOB_ROW_2  = 331.f;
+constexpr const float KNOB_ROW_2  = 334.f;
 constexpr const float RKNOB_LEFT  = KNOB_LEFT - KNOB_SPREAD *.5f;
 
 constexpr const float CV_COLUMN_OFFSET = 21.f;
+constexpr const float RB_OFFSET = 17.75f;
+constexpr const float RB_VOFFSET = 14.5f;
 constexpr const float CV_ROW_1 = KNOB_ROW_1 + 6.f;
 constexpr const float CV_ROW_2 = KNOB_ROW_2 + 6.f;
 
@@ -90,17 +127,30 @@ Hc1ModuleWidget::Hc1ModuleWidget(Hc1Module *module)
     addChild(createParamCentered<MidiKnob>(Vec(KNOB_LEFT + 4.f * KNOB_SPREAD, KNOB_ROW_1), module, Hc1Module::M5_PARAM));
     addChild(createParamCentered<MidiKnob>(Vec(KNOB_LEFT + 5.f * KNOB_SPREAD, KNOB_ROW_1), module, Hc1Module::M6_PARAM));
 
+    addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<WhiteLight>>>(Vec(KNOB_LEFT                     - RB_OFFSET, CV_ROW_1 - RB_VOFFSET), module, Hc1Module::M1_REL_PARAM, Hc1Module::M1_REL_LIGHT));
+    addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<WhiteLight>>>(Vec(KNOB_LEFT +       KNOB_SPREAD - RB_OFFSET, CV_ROW_1 - RB_VOFFSET), module, Hc1Module::M2_REL_PARAM, Hc1Module::M2_REL_LIGHT));
+    addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<WhiteLight>>>(Vec(KNOB_LEFT + 2.f * KNOB_SPREAD - RB_OFFSET, CV_ROW_1 - RB_VOFFSET), module, Hc1Module::M3_REL_PARAM, Hc1Module::M3_REL_LIGHT));
+    addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<WhiteLight>>>(Vec(KNOB_LEFT + 3.f * KNOB_SPREAD - RB_OFFSET, CV_ROW_1 - RB_VOFFSET), module, Hc1Module::M4_REL_PARAM, Hc1Module::M4_REL_LIGHT));
+    addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<WhiteLight>>>(Vec(KNOB_LEFT + 4.f * KNOB_SPREAD - RB_OFFSET, CV_ROW_1 - RB_VOFFSET), module, Hc1Module::M5_REL_PARAM, Hc1Module::M5_REL_LIGHT));
+    addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<WhiteLight>>>(Vec(KNOB_LEFT + 5.f * KNOB_SPREAD - RB_OFFSET, CV_ROW_1 - RB_VOFFSET), module, Hc1Module::M6_REL_PARAM, Hc1Module::M6_REL_LIGHT));
+
     addChild(createParamCentered<MidiKnob>(Vec(RKNOB_LEFT +       KNOB_SPREAD, KNOB_ROW_2), module, Hc1Module::R1_PARAM));
     addChild(createParamCentered<MidiKnob>(Vec(RKNOB_LEFT + 2.f * KNOB_SPREAD, KNOB_ROW_2), module, Hc1Module::R2_PARAM));
     addChild(createParamCentered<MidiKnob>(Vec(RKNOB_LEFT + 3.f * KNOB_SPREAD, KNOB_ROW_2), module, Hc1Module::R3_PARAM));
     addChild(createParamCentered<MidiKnob>(Vec(RKNOB_LEFT + 4.f * KNOB_SPREAD, KNOB_ROW_2), module, Hc1Module::R4_PARAM));
     addChild(createParamCentered<MidiKnob>(Vec(RKNOB_LEFT + 5.f * KNOB_SPREAD, KNOB_ROW_2), module, Hc1Module::RMIX_PARAM));
 
+    addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<WhiteLight>>>(Vec(RKNOB_LEFT +       KNOB_SPREAD - RB_OFFSET, CV_ROW_2 - RB_VOFFSET), module, Hc1Module::R1_REL_PARAM, Hc1Module::R1_REL_LIGHT));
+    addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<WhiteLight>>>(Vec(RKNOB_LEFT + 2.f * KNOB_SPREAD - RB_OFFSET, CV_ROW_2 - RB_VOFFSET), module, Hc1Module::R2_REL_PARAM, Hc1Module::R2_REL_LIGHT));
+    addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<WhiteLight>>>(Vec(RKNOB_LEFT + 3.f * KNOB_SPREAD - RB_OFFSET, CV_ROW_2 - RB_VOFFSET), module, Hc1Module::R3_REL_PARAM, Hc1Module::R3_REL_LIGHT));
+    addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<WhiteLight>>>(Vec(RKNOB_LEFT + 4.f * KNOB_SPREAD - RB_OFFSET, CV_ROW_2 - RB_VOFFSET), module, Hc1Module::R4_REL_PARAM, Hc1Module::R4_REL_LIGHT));
+    addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<WhiteLight>>>(Vec(RKNOB_LEFT + 5.f * KNOB_SPREAD - RB_OFFSET, CV_ROW_2 - RB_VOFFSET), module, Hc1Module::RMIX_REL_PARAM, Hc1Module::RMIX_REL_LIGHT));
+
     tab_bar = createWidget<TabBarWidget>(Vec(PRESET_LEFT, PRESET_TOP - 13.f));
     tab_bar->setSize(Vec(PRESET_WIDTH, 13.f));
-    tab_bar->addTab("User");
-    tab_bar->addTab("Favorite");
-    tab_bar->addTab("System");
+    tab_bar->addTab("User", PresetTab::User);
+    tab_bar->addTab("Favorite", PresetTab::Favorite);
+    tab_bar->addTab("System", PresetTab::System);
     tab_bar->layout();
     tab_bar->selectTab(tab);
     addChild(tab_bar);
@@ -130,24 +180,21 @@ Hc1ModuleWidget::Hc1ModuleWidget(Hc1Module *module)
         }
     }
 
-    auto pm = createWidget<PickMidi>(Vec(7.5f, box.size.y - 20.f));
+    auto pm = createWidget<PickMidi>(Vec(7.5f, box.size.y - 16.f));
     pm->describe("Choose Midi input");
     if (my_module) {
         pm->setMidiPort(my_module);
     }
     addChild(pm);
 
-    pm = createWidget<PickMidi>(Vec(20.f, box.size.y - 20.f));
+    pm = createWidget<PickMidi>(Vec(20.f, box.size.y - 16.f));
     pm->describe("Choose Midi output");
     if (my_module) {
         pm->setMidiPort(&my_module->midiOutput);
     }
     addChild(pm);
 
-    auto pb = createWidget<SmallPush>(Vec(0, 0));
-    pb->box.size.x = 14.f;
-    pb->box.size.y = 14.f;
-    pb->center(Vec(45.f, box.size.y -10.f));
+    auto pb = createWidgetCentered<SmallPush>(Vec(45.f, box.size.y -10.f));
     if (module) {
         #ifdef ARCH_MAC
             pb->describe("Send test Note\nCmd+click = Note off");
@@ -367,23 +414,23 @@ void Hc1ModuleWidget::draw(const DrawArgs& args)
                 device_name = "(no Eagan Matrix available)";
             }
             nvgTextAlign(vg, NVGalign::NVG_ALIGN_LEFT);
-            nvgText(vg, box.size.x*.5f + 25.f, box.size.y - 7.5f, device_name.c_str(), nullptr);
+            nvgText(vg, box.size.x*.5f + 25.f, box.size.y - 3.f, device_name.c_str(), nullptr);
         }
 
         // firmware
         if (my_module && my_module->is_eagan_matrix && (my_module->firmware_version > 0)) {
-            RightAlignText(vg, box.size.x - 7.5, box.size.y - 7.5f, format_string("v %.2f", my_module->firmware_version/100.f).c_str(), nullptr);
+            RightAlignText(vg, box.size.x - 7.5, box.size.y - 3.f, format_string("v %.2f", my_module->firmware_version/100.f).c_str(), nullptr);
         } else {
-            RightAlignText(vg, box.size.x - 7.5, box.size.y - 7.5f, "v 00.00", nullptr);
+            RightAlignText(vg, box.size.x - 7.5, box.size.y - 3.f, "v 00.00", nullptr);
         }
 
         { // recirculator
-            auto y = KNOB_ROW_2 - 16.f;
+            auto y = KNOB_ROW_2 - 18.5f;
             Line(vg, 7.5f, y-2.f, box.size.x - 7.5f, y-2.f, RampGray(G_35), .5f);
             float bounds[4] = { 0, 0, 0, 0 };
             nvgTextBounds(vg, 0, 0, RecirculatorName(rt).c_str(), nullptr, bounds);
             bounds[2] += 15.f; // pad
-            FillRect(vg, (box.size.x * .5f) - (bounds[2] * .5f), y - 10.f, bounds[2], 14.f, RampGray(G_15));
+            FillRect(vg, (box.size.x * .5f) - (bounds[2] * .5f), y - 10.f, bounds[2], 14.f, RampGray(G_08));
             SetTextStyle(vg, font, RampGray(G_90), 12.f);
             CenterText(vg, box.size.x * .5f, y, RecirculatorName(rt).c_str(), nullptr);
         }
@@ -442,9 +489,10 @@ void Hc1ModuleWidget::draw(const DrawArgs& args)
             , on
             );
 
+        Dot(vg, left + 4.f * spacing, y, (my_module->broken || my_module->stateError()) ? red_light : my_module->anyPending() ? yellow_light : green_light);
+
         on = my_module->notesOn > 0;
-        Dot(vg, left + 4.f * spacing, y, on ? purple_light : gray_light, on);
-        Dot(vg, left + 5.f * spacing, y, (my_module->broken || my_module->stateError()) ? red_light : my_module->anyPending() ? yellow_light : green_light);
+        Dot(vg, left + 5.f * spacing, y, on ? purple_light : gray_light, on);
 
         // handshake tick/tock
         // if (my_module) {

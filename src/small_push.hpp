@@ -11,19 +11,18 @@ struct SmallPush : TipWidget
     bool pressed = false;
     bool ctrl = false;
     bool shift = false;
-    NVGcolor ring = COLOR_BRAND_MD;
-    NVGcolor collar1, collar2, bezel, bevel1, bevel2, face1, face2;
+
+    NVGcolor bezel, bevel1, bevel2, face, face1, face2;
 
     SmallPush()
-    { 
-        box.size.x = box.size.y = 20.f;
-        collar1 = RampGray(G_80);
-        collar2 = RampGray(G_60);
-        bezel   = RampGray(G_20);
-        bevel1  = RampGray(G_75);
-        bevel2  = RampGray(G_25);
-        face1   = RampGray(G_80); 
-        face2   = RampGray(G_10);
+    :   bezel(RampGray(G_BLACK)), 
+        bevel1(RampGray(G_50)),
+        bevel2(nvgRGB(0x0b, 0x0b, 0x0b)),
+        face(nvgRGB(0x2e,0x2e,0x2e)),
+        face1(nvgTransRGBAf(RampGray(G_50), .29f)),
+        face2(nvgTransRGBAf(nvgRGB(0x0b, 0x0b, 0x0b), .29f))
+    {
+        box.size.x = box.size.y = 12.f;
     }
 
     void describe(std::string description) {

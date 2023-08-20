@@ -21,26 +21,27 @@ void PresetWidget::draw(const DrawArgs& args)
         FillRect(vg, 0, 0, box.size.x, box.size.y, preset_name_color);
     }
     if (preset && (pressed || selected)) {
-        BoxRect(vg, .5, .5, box.size.x - 1.f, box.size.y-1.f, preset_name_color, 1.f);
+        BoxRect(vg, .75, .75, box.size.x - 1.5f, box.size.y-1.5f, preset_name_color, .75f);
+    } else if (preset && hovered) {
+        FillRect(vg, 1, 1, box.size.x-2, box.size.y-2, RampGray(G_30));
     } else {
-        BoxRect(vg, 0, 0, box.size.x, box.size.y, RampGray(G_40), .5f);
+        //BoxRect(vg, 0, 0, box.size.x, box.size.y, RampGray(G_40), .5f);
+        FillRect(vg, 1, 1, box.size.x-2, box.size.y-2, RampGray(G_20));
     }
     if (preset) {
         auto font = GetPluginFontRegular();
         if (FontOk(font)) {
             nvgSave(vg);
-            nvgScissor(vg, 1.f, 1.f, box.size.x-2.f, box.size.y-2.f);
+            nvgScissor(vg, 2.f, 2.f, box.size.x-4.f, box.size.y-4.f);
             SetTextStyle(vg, font, pressed ? RampGray(G_15) : RampGray(G_90), 12.f);
-            nvgText(vg, 1.5f, 10.5f, preset->name.c_str(), nullptr);
+            nvgText(vg, 2.5f, 11.5f, preset->name.c_str(), nullptr);
             nvgRestore(vg);
         }
-        if (!preset->isSysPreset()) {
-            FillPerson(vg, 2.3f, 13.5f, 8.f, RampGray(G_65));
-        }
         if (preset->favorite) {
-            FillHeart(vg, 10.f, 13.5f, 6.f, PORT_PINK);
-        } else {
-            StrokeHeart(vg, 10.f, 13.5f, 6.f, PORT_PINK, .5f);
+            FillHeart(vg, 4.f, 16.5f, 6.f, PORT_PINK);
+        }
+        if (!preset->isSysPreset()) {
+            FillPerson(vg, preset->favorite ? 12.f : 4.f, 15.5f, 8.f, nvgHSL(210.f/360.f, .5f, .5f));
         }
     }
 }

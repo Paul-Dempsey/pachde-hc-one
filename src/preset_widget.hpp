@@ -11,6 +11,7 @@ using namespace em_midi;
 struct PresetWidget : TipWidget
 {
     bool pressed = false;
+    bool hovered = false;
     std::shared_ptr<MinPreset> preset;
     IPresetHolder* holder = nullptr;
 
@@ -30,6 +31,20 @@ struct PresetWidget : TipWidget
     void setPreset(std::shared_ptr<MinPreset> patch) {
         preset = patch;
         tip_text = preset ? preset->describe() : "(no preset)";
+    }
+
+    void onHover(const HoverEvent& e) override {
+        TipWidget::onHover(e);
+        auto inset = box.shrink(Vec(2.f, 1.5f));
+        hovered = inset.contains(e.pos.plus(box.pos));
+        if (hovered) {
+            e.consume(this);
+        }
+    }
+
+    void onLeave(const LeaveEvent& e) override {
+        TipWidget::onLeave(e);
+        hovered = false;
     }
 
     void onDragStart(const DragStartEvent& e) override {

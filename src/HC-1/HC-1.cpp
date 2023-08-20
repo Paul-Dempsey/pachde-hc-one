@@ -38,6 +38,18 @@ Hc1Module::Hc1Module()
     configCCParam(em_midi::EMCC_R3,   false, this, R3_PARAM, 0.f, 127.f, 64.f, "R3")->snapEnabled = true;
     configCCParam(em_midi::EMCC_R4,   false, this, R4_PARAM, 0.f, 127.f, 64.f, "R4")->snapEnabled = true;
     configCCParam(em_midi::EMCC_RMIX, false, this, RMIX_PARAM, 0.f, 127.f, 64.f, "Recirculator Mix")->snapEnabled = true;
+    configSwitch(M1_REL_PARAM, 0.f, 1.f, 0.f,   "i CV relative");
+    configSwitch(M2_REL_PARAM, 0.f, 1.f, 0.f,   "ii CV relative");
+    configSwitch(M3_REL_PARAM, 0.f, 1.f, 0.f,   "iii CV relative");
+    configSwitch(M4_REL_PARAM, 0.f, 1.f, 0.f,   "iv CV relative");
+    configSwitch(M5_REL_PARAM, 0.f, 1.f, 0.f,   "v CV relative");
+    configSwitch(M6_REL_PARAM, 0.f, 1.f, 0.f,   "vi CV relative");
+    configSwitch(R1_REL_PARAM, 0.f, 1.f, 0.f,   "R1 CV relative");
+    configSwitch(R2_REL_PARAM, 0.f, 1.f, 0.f,   "R2 CV relative");
+    configSwitch(R3_REL_PARAM, 0.f, 1.f, 0.f,   "R3 CV relative");
+    configSwitch(R4_REL_PARAM, 0.f, 1.f, 0.f,   "R4 CV relative");
+    configSwitch(RMIX_REL_PARAM, 0.f, 1.f, 0.f, "RMix CV relative");
+
     configInput(M1_INPUT, "Macro i");
     configInput(M2_INPUT, "Macro ii");
     configInput(M3_INPUT, "Macro iii");
@@ -49,7 +61,21 @@ Hc1Module::Hc1Module()
     configInput(R3_INPUT, "R3");
     configInput(R4_INPUT, "R4");
     configInput(RMIX_INPUT, "Recirculator mix");
+
+    configLight(Lights::M1_REL_LIGHT,   "i CV relative");
+    configLight(Lights::M2_REL_LIGHT,   "ii CV relative");
+    configLight(Lights::M3_REL_LIGHT,   "iii CV relative");
+    configLight(Lights::M4_REL_LIGHT,   "iv CV relative");
+    configLight(Lights::M5_REL_LIGHT,   "v CV relative");
+    configLight(Lights::M6_REL_LIGHT,   "vi CV relative");
+    configLight(Lights::R1_REL_LIGHT,   "R1 CV relative");
+    configLight(Lights::R2_REL_LIGHT,   "R2 CV relative");
+    configLight(Lights::R3_REL_LIGHT,   "R3 CV relative");
+    configLight(Lights::R4_REL_LIGHT,   "R4 CV relative");
+    configLight(Lights::RMIX_REL_LIGHT, "RMix CV relative");
+
     configLight(Lights::HEART_LIGHT, "Device status");
+
     getLight(HEART_LIGHT).setBrightness(1.0f);
     findEM();
 }
@@ -929,12 +955,15 @@ void Hc1Module::onMessage(const midi::Message& msg)
 }
 
 void Hc1Module::processCV(int inputId) {
-    // TODO: relative mode for bipolar?
     auto in = getInput(inputId);
+
+    relative_param[inputId] = params[NUM_KNOBS + inputId].getValue() > .5f;
+    lights[inputId].setBrightness((relative_param[inputId] *.25f) + ((in.isConnected() && relative_param[inputId]) *.75f));
+
     if (in.isConnected()) {
         auto v = in.getVoltage();
         ParamQuantity* pq = getParamQuantity(inputId);
-        v = v * .1f * pq->getMaxValue();
+        v = v / 10.f * pq->getMaxValue();
         pq->setValue(v);
     }
 }

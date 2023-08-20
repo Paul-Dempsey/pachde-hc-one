@@ -135,7 +135,7 @@ std::shared_ptr<PresetMeta> HCCategoryCode::find(uint16_t key) const
     return data.cend() != item ? *item : nullptr;
 }
 
-void HCCategoryCode::foreach_code(std::string text, std::function<bool(uint16_t)> callback) const
+void HCCategoryCode::foreach_code(const std::string& text, std::function<bool(uint16_t)> callback) const
 {
     if (text.empty()) return;
     while (true) {
@@ -155,7 +155,7 @@ void HCCategoryCode::foreach_code(std::string text, std::function<bool(uint16_t)
     }
 }
 
-std::vector<uint16_t> HCCategoryCode::make_category_code_list(std::string text) const
+std::vector<uint16_t> HCCategoryCode::make_category_code_list(const std::string& text) const
 {
     std::vector<uint16_t> result;
     if (text.empty()) return result;
@@ -164,7 +164,7 @@ std::vector<uint16_t> HCCategoryCode::make_category_code_list(std::string text) 
     return result;
 }
 
-std::vector<std::shared_ptr<PresetMeta>> HCCategoryCode::make_category_list(std::string text) const
+std::vector<std::shared_ptr<PresetMeta>> HCCategoryCode::make_category_list(const std::string& text) const
 {
     std::vector<std::shared_ptr<PresetMeta>> result;
     if (text.empty()) return result;
@@ -179,7 +179,36 @@ std::vector<std::shared_ptr<PresetMeta>> HCCategoryCode::make_category_list(std:
     return result;
 }
 
-std::string HCCategoryCode::make_category_json(std::string text) const
+std::string HCCategoryCode::make_category_mulitline_text(const std::string& text) const
+{
+    if (text.empty()) return "";
+    std::string result;
+    auto cats = make_category_list(text);
+    auto group = PresetGroup::Unknown;
+    bool first = true;
+    for (auto pm: cats) {
+        if (group != pm->group) {
+            if (group != PresetGroup::Unknown) {
+                result.push_back('\n');
+            }
+            first = true;
+            result.append(toString(pm->group));
+            result.append({':', ' ', ' '});
+            group = pm->group;
+        }
+        if (first) {
+            first = false;
+        } else {
+            result.append({',', ' '});
+        }
+        //result.push_back('"');
+        result.append(pm->name);
+        //result.push_back('"');
+    }
+    return result;
+}
+
+std::string HCCategoryCode::make_category_json(const std::string& text) const
 {
     if (text.empty()) return "";
     std::string result;
