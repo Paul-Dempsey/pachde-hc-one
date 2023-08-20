@@ -1,4 +1,4 @@
-#include "hc-2.hpp"
+#include "HC-2.hpp"
 #include "../colors.hpp"
 #include "../components.hpp"
 #include "../misc.hpp"
