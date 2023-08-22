@@ -6,6 +6,7 @@ SOURCES += src/colors.cpp
 SOURCES += src/components.cpp
 SOURCES += src/em_midi.cpp
 SOURCES += src/misc.cpp
+SOURCES += src/open_file.cpp
 SOURCES += src/plugin.cpp
 SOURCES += src/preset_meta.cpp
 SOURCES += src/preset_widget.cpp

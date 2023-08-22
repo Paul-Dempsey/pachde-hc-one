@@ -6,6 +6,8 @@
 #include "preset_meta.hpp"
 
 namespace pachde {
+#define VERBOSE_LOG
+#include "debug_log.hpp"
 
 inline const char * preset_type_name(uint8_t bank_hi) {
     if (127 == bank_hi) return "system";
@@ -154,10 +156,13 @@ public:
         }
     }
 
+    std::string describe_short() {
+        return format_string("%s %d.%d.%d", name(), bank_hi, bank_lo, number);
+    }
     std::string describe(bool multi_line = true) {
         auto line_break = multi_line ? '\n' : ' ';
         return format_string(PRESET_FORMAT, name(), 
-            line_break, preset_type_name(bank_hi), bank_lo, number + 1,
+            line_break, preset_type_name(bank_hi), bank_lo, number,
             line_break, text());
     }
 };
@@ -172,11 +177,18 @@ struct MinPreset {
     bool favorite;
     int favorite_order;
 
-    MinPreset() : bank_hi(0), bank_lo(0), number(0), favorite(false), favorite_order(-1) {}
+    MinPreset()
+    :   name(""), text(""), meta_text(""), 
+        bank_hi(0), bank_lo(0), number(0),
+        favorite(false), favorite_order(-1)
+    {}
+
+    MinPreset(const MinPreset & preset) = delete; // no copy constructor
 
     explicit MinPreset(const Preset& preset) 
     :   name(preset.name()),
         text(preset.text()),
+        meta_text(""),
         bank_hi(preset.bank_hi),
         bank_lo(preset.bank_lo),
         number(preset.number),
@@ -204,19 +216,66 @@ struct MinPreset {
         meta_text.clear();
     }
 
+    std::string describe_short() {
+        return format_string("%s %d.%d.%d", name.c_str(), bank_hi, bank_lo, number);
+    }
+
     std::string describe(bool multi_line = true)
     {
+        if (name.empty()) return "-";
         char line_break = multi_line ? '\n' : ' ';
+        auto m = meta();
         return format_string(PRESET_FORMAT, name.c_str(),
             line_break, preset_type_name(bank_hi), bank_lo, number + 1,
-            line_break, meta().c_str());
+            line_break, m.empty() ? "-" : m.c_str() );
     }
 
     bool isSamePreset(const Preset& other) {
-        return (bank_lo == other.bank_lo) && (0 == name.compare(other.name()));
+        if ((bank_hi == other.bank_hi) 
+            && (bank_lo == other.bank_lo)
+            && (number == other.number)
+            && (0 == name.compare(other.name()))
+        ) {
+            return true; 
+        }
+
+        if ((other.bank_hi == 126)
+            && (bank_lo == clamp(other.bank_lo - 1, 0, 127))
+            && (number == clamp(other.number - 1, 0, 127))
+            && (0 == name.compare(other.name()))
+        ) {
+            assert(0 == bank_hi || 127 == bank_hi);
+            return true;
+        }
+        if ((0 == bank_hi || 127 == bank_hi)
+            && (other.bank_hi == 126)
+            && (other.bank_lo == 0)
+            && (other.number == 0)
+            && (0 == name.compare(other.name()))
+        ) {
+            return true;
+        }
+
+        if (0 == name.compare(other.name())) {
+            nada();// missing case?
+        }
+        return false;
     }
+
     bool isSamePreset(const MinPreset& other) {
-        return (bank_lo == other.bank_lo) && (0 == name.compare(other.name));
+        if ((bank_hi == other.bank_hi) 
+            && (bank_lo == other.bank_lo)
+            && (number == other.number)
+        ) {
+            if (name.compare(other.name)) {
+                nada(); // assert
+            }
+            return true;
+        }
+        return false;
+    }
+    void nada() {
+        number = number;
     }
     bool isSysPreset() {
         return 127 == bank_hi;

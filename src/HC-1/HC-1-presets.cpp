@@ -20,7 +20,7 @@ void Hc1Module::savePresets()
 
 	DEFER({json_decref(root);});
 
-	std::string tmpPath = dir + "/6789.tmp";
+	std::string tmpPath = system::join(dir, TempName());
 	FILE* file = std::fopen(tmpPath.c_str(), "w");
 	if (!file) {
 		return;
@@ -115,14 +115,32 @@ std::string Hc1Module::favoritesPath()
     return asset::user(format_string("%s/fav-%s.json", pluginInstance->slug.c_str(), FilterDeviceName(deviceName()).c_str()));
 }
 
+void Hc1Module::clearFavorites()
+{
+    favorite_presets.clear();
+    for (auto p: user_presets) {
+        p->favorite = false;
+    }
+    for (auto p: system_presets) {
+        p->favorite = false;
+    }
+}
+
 json_t* Hc1Module::favoritesToJson()
 {
     json_t* root = json_object();
     auto device = FilterDeviceName(deviceName());
     json_object_set_new(root, "device", json_stringn(device.c_str(), device.size()));
     auto ar = json_array();
-    for (auto preset: favorite_presets) {
-        json_array_append_new(ar, preset->toJson());
+    for (auto preset: system_presets) {
+        if (preset->favorite) {
+            json_array_append_new(ar, preset->toJson());
+        }
+    }
+    for (auto preset: user_presets) {
+        if (preset->favorite) {
+            json_array_append_new(ar, preset->toJson());
+        }
     }
     json_object_set_new(root, "faves", ar);
     return root;
@@ -132,6 +150,11 @@ void Hc1Module::saveFavorites()
 {
     if (favorite_presets.empty()) return;
     auto path = favoritesPath();
+    writeFavoritesFile(path);
+}
+
+void Hc1Module::writeFavoritesFile(const std::string& path)
+{
     if (path.empty()) return;
     auto dir = system::getDirectory(path);
     system::createDirectories(dir);
@@ -140,8 +163,7 @@ void Hc1Module::saveFavorites()
     if (!root) return;
 
 	DEFER({json_decref(root);});
-
-	std::string tmpPath = dir + "/12345.tmp";
+	std::string tmpPath = system::join(dir, TempName());
 	FILE* file = std::fopen(tmpPath.c_str(), "w");
 	if (!file) {
 		return;
@@ -153,39 +175,39 @@ void Hc1Module::saveFavorites()
 	system::rename(tmpPath, path);
 }
 
-void Hc1Module::readFavorites()
+void Hc1Module::readFavoritesFile(const std::string& path)
 {
     if (system_presets.empty()) return;
-    if (!favorite_presets.empty()) return;
-    auto path = favoritesPath();
     if (path.empty()) return;
-
     FILE* file = std::fopen(path.c_str(), "r");
 	if (!file) {
 		return;
     }
 	DEFER({std::fclose(file);});
-
 	json_error_t error;
 	json_t* root = json_loadf(file, 0, &error);
 	if (!root) {
 		DebugLog("Invalid JSON at %d:%d %s in %s", error.line, error.column, error.text, path.c_str());
+        return;
     }
 	DEFER({json_decref(root);});
+    auto bulk = BulkFavoritingMode(this);
     auto jar = json_object_get(root, "faves");
     if (jar) {
-        favorite_presets.clear();
+        clearFavorites();
         json_t* jp;
         size_t index;
         MinPreset preset;
         json_array_foreach(jar, index, jp) {
             preset.fromJson(jp);
             if (!user_presets.empty()) {
-                auto it = std::find_if(user_presets.begin(), user_presets.end(), [preset](std::shared_ptr<MinPreset>& p) { return p->isSamePreset(preset); });
+                auto it = std::find_if(user_presets.begin(), user_presets.end(), [&preset](std::shared_ptr<MinPreset>& p) { return p->isSamePreset(preset); });
                 if (it != user_presets.end()) {
                     addFavorite(*it);
                 }
-                it = std::find_if(system_presets.begin(), system_presets.end(), [preset](std::shared_ptr<MinPreset>& p) { return p->isSamePreset(preset); });
+            }
+            if (!system_presets.empty()) {
+                auto it = std::find_if(system_presets.begin(), system_presets.end(), [&preset](std::shared_ptr<MinPreset>& p) { return p->isSamePreset(preset); });
                 if (it != system_presets.end()) {
                     addFavorite(*it);
                 }
@@ -193,6 +215,47 @@ void Hc1Module::readFavorites()
         }
     }
     orderFavorites(true);
+    saveFavorites();
+}
+
+std::shared_ptr<MinPreset> Hc1Module::findSysUserPreset(std::shared_ptr<MinPreset> preset)
+{
+    if (preset) {
+        if (!user_presets.empty()) {
+            auto it = std::find_if(user_presets.begin(), user_presets.end(), [preset](std::shared_ptr<MinPreset>& p) { return p->isSamePreset(*preset); });
+            if (it != user_presets.end()) {
+                return *it;
+            }
+        }
+        if (!system_presets.empty()) {
+            auto it = std::find_if(system_presets.begin(), system_presets.end(), [preset](std::shared_ptr<MinPreset>& p) { return p->isSamePreset(*preset); });
+            if (it != system_presets.end()) {
+                return *it;
+            }
+        }
+    } else {
+        if (!user_presets.empty()) {
+            auto it = std::find_if(user_presets.begin(), user_presets.end(), [this](std::shared_ptr<MinPreset>& p) { return p->isSamePreset(preset0); });
+            if (it != user_presets.end()) {
+                return *it;
+            }
+        }
+        if (!system_presets.empty()) {
+            auto it = std::find_if(system_presets.begin(), system_presets.end(), [this](std::shared_ptr<MinPreset>& p) { return p->isSamePreset(preset0); });
+            if (it != system_presets.end()) {
+                return *it;
+            }
+        }
+    }
+    return nullptr;
+}
+
+void Hc1Module::readFavorites()
+{
+    if (system_presets.empty()) return;
+    if (!favorite_presets.empty()) return;
+    auto path = favoritesPath();
+    readFavoritesFile(path);
 }
 
 void Hc1Module::orderFavorites(bool sort)
@@ -208,6 +271,11 @@ void Hc1Module::orderFavorites(bool sort)
 
 void Hc1Module::addFavorite(std::shared_ptr<MinPreset> preset)
 {
+#if defined VERBOSE_LOG
+    if (preset->bank_hi == 126) {
+        DebugLog("Favoriting an edit slot! %s", preset->describe_short().c_str());
+    }
+#endif
     preset->favorite = true;
     if (favorite_presets.empty()) {
         favorite_presets.push_back(preset);
@@ -219,10 +287,14 @@ void Hc1Module::addFavorite(std::shared_ptr<MinPreset> preset)
                     return preset->isSamePreset(*fp); 
                 })) {
             favorite_presets.push_back(preset);
-            orderFavorites(true);
+            if (!bulk_favoriting) {
+                orderFavorites(true);
+            }
         }
     }
-    saveFavorites();
+    if (!bulk_favoriting) {
+        saveFavorites();
+    }
 }
 
 void Hc1Module::unFavorite(std::shared_ptr<MinPreset> preset)
@@ -231,33 +303,6 @@ void Hc1Module::unFavorite(std::shared_ptr<MinPreset> preset)
     if (favorite_presets.empty()) return;
     favorite_presets.erase(std::remove(favorite_presets.begin(), favorite_presets.end(), preset), favorite_presets.end());
     saveFavorites();
-}
-
-void Hc1Module::setPreset(std::shared_ptr<MinPreset> preset)
-{
-    savedPreset = preset;
-    if (!preset) return;
-
-    DebugLog("Setting preset [%s]", preset ? preset->describe(false).c_str() : "(none)");
-    sendControlChange(15, MidiCC_BankSelect, preset->bank_hi);
-    sendControlChange(15, EMCC_Category, preset->bank_lo);
-    sendProgramChange(15, preset->number);
-    //transmitRequestConfiguration();
-    config_state = InitState::Pending;
-}
-
-void Hc1Module::sendSavedPreset() {
-    saved_preset_state = InitState::Complete;
-    if (!savedPreset) {
-        DebugLog("No saved preset: requesting current");
-        transmitRequestConfiguration();
-        return;
-    }
-    DebugLog("Sending saved preset [%s]", savedPreset->describe(false).c_str());
-    sendControlChange(15, MidiCC_BankSelect, savedPreset->bank_hi);
-    sendControlChange(15, EMCC_Category, savedPreset->bank_lo);
-    sendProgramChange(15, savedPreset->number);
-    config_state = InitState::Pending;
 }
 
 }

@@ -59,6 +59,7 @@ Hc1Module::Hc1Module()
 
     getLight(HEART_LIGHT).setBrightness(1.0f);
     findEM();
+    clearCCValues();
 }
 
 void Hc1Module::centerKnobs() {
@@ -92,15 +93,17 @@ json_t * Hc1Module::dataToJson()
     }
     json_object_set_new(root, "tab_page", ar);
 
-    if (savedPreset) {
-        json_object_set_new(root, "preset", savedPreset->toJson());
+    if (current_preset) {
+        json_object_set_new(root, "preset", current_preset->toJson());
     }
     json_object_set_new(root, "cache_presets", json_boolean(cache_presets));
+    json_object_set_new(root, "heartbeat",  json_boolean(heartbeat));
     return root;
 }
 
 void Hc1Module::dataFromJson(json_t *root)
 {
+    heartbeat = GetBool(root, "heartbeat", heartbeat);
     auto j = json_object_get(root, "preset-tab");
     if (j) {
         tab = static_cast<PresetTab>(clamp(json_integer_value(j), PresetTab::First, PresetTab::Last));
@@ -118,11 +121,8 @@ void Hc1Module::dataFromJson(json_t *root)
 
     j = json_object_get(root, "preset");
     if (j) {
-        savedPreset = std::make_shared<MinPreset>();
-        savedPreset->fromJson(j);
-        // if (is_eagan_matrix) {
-        //     sendSavedPreset();
-        // }
+        saved_preset = std::make_shared<MinPreset>();
+        saved_preset->fromJson(j);
     }
 
     j = json_object_get(root, "midi-in");
@@ -277,17 +277,16 @@ void Hc1Module::process(const ProcessArgs& args)
     //lights[BLINK_LIGHT].setBrightness(blinkPhase < 0.5f ? 1.f : 0.f);	
     if (broken) {
         broken_idle += args.sampleTime;
-        if (broken_idle > 2.f) {
+        if (broken_idle > 1.f) {
             reboot();
         }
+        return;
     }
 
     heart_phase += args.sampleTime;
     if (heart_phase >= heart_time) {
         heart_phase -= heart_time;
         heart_time = 2.5f;
-
-        if (broken) return;
 
         // TODO: fix this mess of conditionals and make a state machine
         if (inputDeviceId != midi::Input::deviceId) {
@@ -313,20 +312,22 @@ void Hc1Module::process(const ProcessArgs& args)
                 if (InitState::Uninitialized == preset_state || InitState::Broken == preset_state) {
                     transmitRequestPresets();
                 } else 
-                if (InitState::Uninitialized == requested_updates) {
-                    transmitRequestUpdates();
-                } else
+                // if (InitState::Uninitialized == requested_updates) {
+                //     transmitRequestUpdates();
+                // } else
                 if (InitState::Uninitialized == saved_preset_state) {
                     sendSavedPreset();
                 } else
-                // if (InitState::Uninitialized == config_state) {
-                //     transmitRequestConfiguration();
-                // } else
+                if (InitState::Uninitialized == config_state) {
+                    transmitRequestConfiguration();
+                } else
                 if (InitState::Complete == config_state) {
                     if (InitState::Uninitialized == requested_updates) {
                         transmitRequestUpdates();
                     } else {
-                        sendEditorPresent();
+                        if (heartbeat) {
+                            sendEditorPresent();
+                        }
                     }
                 }
             }

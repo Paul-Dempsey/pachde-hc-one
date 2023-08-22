@@ -2,6 +2,7 @@
 #include "cc_param.hpp"
 #include "../components.hpp"
 #include "../misc.hpp"
+#include "../open_file.hpp"
 #include "../port.hpp"
 #include "../small_push.hpp"
 
@@ -61,6 +62,8 @@ const NVGcolor& StatusColor(StatusItem led) {
 constexpr const float PRESET_TOP = 42.f;
 constexpr const float PRESET_LEFT = 12.5f;
 constexpr const float PRESET_WIDTH = 320.f;
+constexpr const float PRESET_RIGHT = PRESET_LEFT + PRESET_WIDTH;
+constexpr const float PRESET_BOTTOM = PRESET_TOP + 8.f * 27.f;
 
 constexpr const float KNOB_LEFT   = 45.f;
 constexpr const float KNOB_SPREAD = 54.f;
@@ -131,25 +134,6 @@ Hc1ModuleWidget::Hc1ModuleWidget(Hc1Module *module)
     addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<WhiteLight>>>(Vec(RKNOB_LEFT + 4.f * KNOB_SPREAD - RB_OFFSET, CV_ROW_2 - RB_VOFFSET), module, Hc1Module::R4_REL_PARAM, Hc1Module::R4_REL_LIGHT));
     addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<WhiteLight>>>(Vec(RKNOB_LEFT + 5.f * KNOB_SPREAD - RB_OFFSET, CV_ROW_2 - RB_VOFFSET), module, Hc1Module::RMIX_REL_PARAM, Hc1Module::RMIX_REL_LIGHT));
 
-    tab_bar = createWidget<TabBarWidget>(Vec(PRESET_LEFT, PRESET_TOP - 13.f));
-    tab_bar->setSize(Vec(PRESET_WIDTH, 13.f));
-    tab_bar->addTab("User", PresetTab::User);
-    tab_bar->addTab("Favorite", PresetTab::Favorite);
-    tab_bar->addTab("System", PresetTab::System);
-    tab_bar->layout();
-    tab_bar->selectTab(tab);
-    addChild(tab_bar);
-
-    page_up = createWidget<UpDown>(Vec(box.size.x -23.f, PRESET_TOP));
-    page_up->setUp(true);
-    page_up->onClick([this](){ pageUp(); });
-    addChild(page_up);
-
-    page_down = createWidget<UpDown>(Vec(box.size.x -23.f, PRESET_TOP + 17.5f));
-    page_down->setUp(false);
-    page_down->onClick([this](){ pageDown(); });
-    addChild(page_down);
-
     presets.reserve(24);
     int x = PRESET_LEFT;
     int y = PRESET_TOP;
@@ -164,6 +148,25 @@ Hc1ModuleWidget::Hc1ModuleWidget(Hc1Module *module)
             y += p->box.size.y;
         }
     }
+
+    page_up = createWidget<UpDown>(Vec(box.size.x -23.f, PRESET_TOP));
+    page_up->setUp(true);
+    page_up->onClick([this](){ pageUp(); });
+    addChild(page_up);
+
+    page_down = createWidget<UpDown>(Vec(box.size.x -23.f, PRESET_TOP + 17.5f));
+    page_down->setUp(false);
+    page_down->onClick([this](){ pageDown(); });
+    addChild(page_down);
+
+    tab_bar = createWidget<TabBarWidget>(Vec(PRESET_LEFT, PRESET_TOP - 13.f));
+    tab_bar->setSize(Vec(PRESET_WIDTH, 13.f));
+    tab_bar->addTab("User", PresetTab::User);
+    tab_bar->addTab("Favorite", PresetTab::Favorite);
+    tab_bar->addTab("System", PresetTab::System);
+    tab_bar->layout();
+    tab_bar->selectTab(tab);
+    addChild(tab_bar);
 
     auto pm = createWidget<PickMidi>(Vec(7.5f, box.size.y - 16.f));
     pm->describe("Choose Midi input");
@@ -303,8 +306,8 @@ void Hc1ModuleWidget::step()
     ModuleWidget::step();
     if (my_module)
     {
-        if (my_module->savedPreset) {
-            fave->setPreset(my_module->savedPreset);
+        if (my_module->current_preset) {
+            fave->setPreset(my_module->current_preset);
         }
 
         auto co = my_module->isEaganMatrix() ? my_module->ledColor : red_light;
@@ -339,30 +342,40 @@ void Hc1ModuleWidget::drawLayer(const DrawArgs& args, int layer)
             std::string text;
             if (my_module) {
                 if (my_module->broken) {
-                    text = "[MIDI error - Recovering...]";
+                    text = "[MIDI error - please wait]";
                 } else if (my_module->is_gathering_presets()) {
-                    text = format_string("[Gathering Presets... %d]", my_module->system_presets.size());
-                } else if (my_module->savedPreset) {
-                    text = my_module->savedPreset->name;
+                    text = format_string("[gathering %s preset %d]", my_module->in_user_names ? "User" : "System", my_module->in_user_names ? my_module->user_presets.size() : my_module->system_presets.size());
+                } else if (my_module->current_preset) {
+                    text = my_module->current_preset->name;
+                } else {
+                    text = "< current preset >";
                 }
             } 
-            CenterText(vg, box.size.x/2.f, 15.f, text.empty() ? "(Preset Name)": text.c_str(), nullptr);
+            CenterText(vg, box.size.x/2.f, 15.f, text.c_str(), nullptr);
         }
 
         // DSP status
-        const float h = 10.f;
-        const float w = 2.5f;
-        const float y = box.size.y - 20.f - h;
-        float x = box.size.x - 7.5f - 3.f * w - 2;
-        FillRect(vg, x - 1.25f, y - 1.25f, w * 3.f + 5.f, h + 5.f, RampGray(G_30));
-        const uint8_t tdsp[] = {65, 30, 75};
-        const uint8_t* pdsp = (my_module && my_module->hasPresets()) ? &my_module->dsp[0] : &tdsp[0];
-        for (auto n = 0; n < 3; n++) {
-            auto pct = pdsp[n];
-            auto co = pct < 85 ? green_light : red_light;
-            auto bh = h * (pct / 100.f);
-            FillRect(vg, x, y + h - bh, w, bh, co);
-            x += w + 1;
+        //if (!my_module || my_module->heartbeat)
+        {
+            const float h = 10.f;
+            const float w = 2.5f;
+            const float y = box.size.y - 20.f - h;
+            float x = box.size.x - 7.5f - 3.f * w - 2;
+            FillRect(vg, x - 1.25f, y - 1.25f, w * 3.f + 5.f, h + 5.f, RampGray(G_30));
+            const uint8_t tdsp[] = {65, 30, 75};
+            const uint8_t* pdsp = (my_module && my_module->hasPresets()) ? &my_module->dsp[0] : &tdsp[0];
+
+            if (pdsp == &tdsp[0]) {
+                Line(vg, x, y + h + 1, x + w*3 + 3, y + h + 1, green_light, 0.5f);
+            }
+
+            for (auto n = 0; n < 3; n++) {
+                auto pct = pdsp[n];
+                auto co = pct < 85 ? green_light : red_light;
+                auto bh = h * (pct / 100.f);
+                FillRect(vg, x, y + h - bh, w, bh, co);
+                x += w + 1;
+            }
         }
     }
 }
@@ -374,13 +387,21 @@ void Hc1ModuleWidget::draw(const DrawArgs& args)
     auto rt = my_module ? my_module->recirculatorType() : EM_Recirculator::Reverb;
 
 #ifdef MIDI_ANIMATION
-    if (my_module && my_module->anyPending()) {
+    if (my_module) {
+    //if (my_module && my_module->anyPending()) {
         // raw MIDI animation
-        Circle(vg, PRESET_LEFT + ((my_module->midi_receive_count / 50) % 320), 2.25f, 2.f, blue_green_light);
+        Circle(vg, PRESET_LEFT + ((my_module->midi_receive_count / 50) % 320), PRESET_BOTTOM + 1.75f, 1.25f, blue_green_light);
     }
 #endif
     auto font = GetPluginFontRegular();
     if (FontOk(font)) {
+        if (my_module)
+        {
+            SetTextStyle(vg, font, orange_light, 9.f);
+            auto text = my_module->preset0.describe_short();
+            RightAlignText(vg, PRESET_RIGHT -2.f, PRESET_TOP - 15.f, text.c_str(), nullptr);
+        }
+
         SetTextStyle(vg, font, RampGray(G_90), 12.f);
 
         { // page
@@ -399,14 +420,14 @@ void Hc1ModuleWidget::draw(const DrawArgs& args)
                 device_name = "(no Eagan Matrix available)";
             }
             nvgTextAlign(vg, NVGalign::NVG_ALIGN_LEFT);
-            nvgText(vg, box.size.x*.5f + 25.f, box.size.y - 3.f, device_name.c_str(), nullptr);
+            nvgText(vg, box.size.x*.5f + 25.f, box.size.y - 4.f, device_name.c_str(), nullptr);
         }
 
         // firmware
         if (my_module && my_module->is_eagan_matrix && (my_module->firmware_version > 0)) {
-            RightAlignText(vg, box.size.x - 7.5, box.size.y - 3.f, format_string("v %.2f", my_module->firmware_version/100.f).c_str(), nullptr);
+            RightAlignText(vg, box.size.x - 7.5, box.size.y - 4.f, format_string("v %.2f", my_module->firmware_version/100.f).c_str(), nullptr);
         } else {
-            RightAlignText(vg, box.size.x - 7.5, box.size.y - 3.f, "v 00.00", nullptr);
+            RightAlignText(vg, box.size.x - 7.5, box.size.y - 4.f, "v 00.00", nullptr);
         }
 
         { // recirculator
@@ -426,7 +447,9 @@ void Hc1ModuleWidget::draw(const DrawArgs& args)
     if (FontOk(font)) {
         SetTextStyle(vg, font, RampGray(G_90), 12.f);
         float y = KNOB_ROW_1 + 22.f;
-        if (my_module/* && my_module->hasConfig()*/) {
+        if (my_module
+            && InitState::Pending != my_module->preset_state
+            && InitState::Pending != my_module->config_state) {
             CenterText(vg, KNOB_LEFT,                     y, my_module->preset0.macro[0].c_str(), nullptr);
             CenterText(vg, KNOB_LEFT +       KNOB_SPREAD, y, my_module->preset0.macro[1].c_str(), nullptr);
             CenterText(vg, KNOB_LEFT + 2.f * KNOB_SPREAD, y, my_module->preset0.macro[2].c_str(), nullptr);
@@ -496,10 +519,44 @@ void Hc1ModuleWidget::appendContextMenu(Menu *menu)
 {
     if (my_module) {
         menu->addChild(new MenuSeparator);
+        bool ready = my_module->ready();
+        //menu->addChild(createMenuItem("", "", [this](){}));
         menu->addChild(createMenuItem("Reboot HC-1", "",     [this](){ my_module->reboot(); }));
-        menu->addChild(createMenuItem("Mute", "",            [this](){ my_module->silence(true); }));
-        menu->addChild(createMenuItem("Clear favorites", "", [this](){ my_module->favorite_presets.clear(); }));
-        menu->addChild(createMenuItem("Save presets", "",    [this](){ my_module->savePresets(); }));
+        menu->addChild(createCheckMenuItem("Suppress heartbeat handshake", "",
+            [this](){ return !my_module->heartbeat; },
+            [this](){ my_module->heartbeat = !my_module->heartbeat; }));
+        menu->addChild(createMenuItem("One handshake", "",   [this](){ my_module->sendEditorPresent(); }));
+        menu->addChild(createMenuItem("Request config", "",  [this](){ my_module->transmitRequestConfiguration(); }));
+        menu->addChild(createMenuItem("Mute", "",            [this](){ my_module->silence(true); }, !ready));
+        menu->addChild(createSubmenuItem("Favorites", "", [=](Menu* menu) {
+            menu->addChild(createMenuItem("Clear favorites", "", [this](){ my_module->clearFavorites();}, !ready));
+            menu->addChild(createMenuItem("Open favorites...", "", [this]() {
+                std::string path;
+                std::string folder = asset::user(pluginInstance->slug);
+                system::createDirectories(folder);
+                if (openFileDialog(
+                    folder,
+                    "Favorites (.fav):fav;Json (.json):json;Any (*):*))",
+                    "my_favorites.fav",
+                    path)) {
+                    my_module->readFavoritesFile(path);
+                }
+                }, !ready));
+            menu->addChild(createMenuItem("Save favorites as...", "", [this]() {
+                std::string path;
+                std::string folder = asset::user(pluginInstance->slug);
+                system::createDirectories(folder);
+                if (saveFileDialog(
+                    folder,
+                    "Favorites (.fav):fav;Json (.json):json;Any (*):*))",
+                    "my_favorites.fav",
+                    path)) {
+                    my_module->writeFavoritesFile(path);
+                }
+            }, !ready));
+        }, !ready));
+
+        menu->addChild(createMenuItem("Save presets", "", [this](){ my_module->savePresets(); }, !ready));
         menu->addChild(createCheckMenuItem("Use saved presets", "",
             [this](){ return my_module->cache_presets; },
             [this](){

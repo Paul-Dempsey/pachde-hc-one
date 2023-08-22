@@ -52,21 +52,27 @@ size_t common_prefix_length(std::string alpha, std::string beta) {
 //     return result;
 // }
 
+std::string TempName() {
+    return format_string("-%d-%d.tmp", random::get<uint16_t>(), random::get<uint32_t>());
+}
+
 std::string FilterDeviceName(std::string text)
 {
-    #ifdef ARCH_WIN
+    #if defined ARCH_WIN
     if (!text.empty()) {
         text.erase(text.find_last_not_of("0123456789"));
     }
     #endif
-    #ifdef ARCH_LIN
+
+    #if defined ARCH_LIN
     if (!text.empty()) {
         auto pos = text.find(':');
         if (std::string::npos != pos) {
-            return text.substr(pos);
+            return text.substr(0, pos);
         }
     }
     #endif
+
     return text;
 }
 

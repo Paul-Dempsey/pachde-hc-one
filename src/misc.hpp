@@ -10,6 +10,7 @@ size_t common_prefix_length(std::string alpha, std::string beta);
 bool is_EMDevice(const std::string name);
 std::string FilterDeviceName(std::string text);
 //std::string AbbreviatedName(std::string name);
+std::string TempName();
 
 inline bool GetBool(const json_t* root, const char* key, bool default_value) {
     auto j = json_object_get(root, key);

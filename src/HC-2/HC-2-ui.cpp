@@ -36,24 +36,31 @@ void Hc2ModuleWidget::drawExtenderConnector(const DrawArgs& args)
     //OpenCircle(vg, cx + 6.f, cy, 5.f, COLOR_BRAND, .75f);
 }
 
+void drawMap(NVGcontext* vg, uint8_t * map, float x, float y)
+{
+    // auto font = GetPluginFontRegular();
+    // if (FontOk(font)) {
+    //     SetTextStyle(vg, font, RampGray(G_95), 10.f);
+    //     auto text = format_string("%3d %3d", map[117], map[118]);
+    //     nvgText(vg, x + 135.f, y + 10.f, text.c_str(), nullptr);
+    // }
+    BoxRect(vg, x, y, 254, 18, RampGray(G_35), .5f);
+    ++x;
+    y += 17.f;
+    for (auto n = 0; n < 127; ++n, ++map, x += 2) {
+        if (auto v = *map) {
+            Line(vg, x, y, x, y - v/8.f, RampGray(G_85), 1.6f);
+        }
+    }
+}
+
 void Hc2ModuleWidget::drawCCMap(const DrawArgs& args)
 {
-    auto vg = args.vg;
-
-    float cc_top = 24.f;
-    float cc_left_0 = 8.5;
-    float cc_left_15 = cc_left_0 + 127.f + 2.f;
-    BoxRect(vg, 7.5f, cc_top, 260.f, 18.f, RampGray(G_35), .5f);
-    Line(vg, 7.5f + 130.f, cc_top, 7.5f + 131.f, cc_top + 18.f, RampGray(G_35), .5f);
     if (my_module && my_module->partner) {
-        auto cc0 = my_module->partner->ch0_cc_value;
-        auto cc15 = my_module->partner->ch15_cc_value;
-        for (auto n = 0; n < 127; ++n, ++cc0, ++cc15) {
-            auto v = *cc0;
-            if (v) { Line(vg, cc_left_0 + n, cc_top + 16.f, cc_left_0 + n, cc_top + 16.f - v/16.f, RampGray(G_85)); }
-            v = *cc15;
-            if (v) { Line(vg, cc_left_15 + n, cc_top + 16.f, cc_left_15 + n, cc_top + 16.f - v/16.f, RampGray(G_85)); }
-        }
+        auto x = box.size.x * .5f - 126.5f;
+        //Line(args.vg, x + 1 + 117, 10.f, x + 1 + 117, 48.f, blue_light);
+        drawMap(args.vg, my_module->partner->ch0_cc_value, x, 20.f);
+        drawMap(args.vg, my_module->partner->ch15_cc_value, x, 40.f);
     }
 }
 
@@ -74,44 +81,73 @@ void Hc2ModuleWidget::draw(const DrawArgs& args)
 
     if (my_module && my_module->partner && FontOk(font))
     {
-        auto ccs = my_module->partner->ch15_cc_value;
-        auto cc0 = my_module->partner->ch0_cc_value;
+        auto hc1 = my_module->partner;
+        auto cc15 = hc1->ch15_cc_value;
+        auto cc0 = hc1->ch0_cc_value;
         const char * const ped_indicator = "NSEDTVP";
         auto peds = format_string(
             "Pedals (1 %c %d %d %d-%d) (2 %c %d %d %d-%d) (Sus %d) (Sos %d) (Sos2 %d)",
-            ped_indicator[ccs[37] & 0x07], 
-            ccs[52], cc0[ccs[52]],
-            ccs[76], ccs[77],
-            ped_indicator[(ccs[37] >> 3) & 0x07],
-            ccs[53], cc0[ccs[53]],
-            ccs[78], ccs[79],
-            ccs[64], ccs[66], ccs[69]
+            ped_indicator[cc15[37] & 0x07], 
+            cc15[52], cc0[cc15[52]],
+            cc15[76], cc15[77],
+
+            ped_indicator[(cc15[37] >> 3) & 0x07],
+            cc15[53], cc0[cc15[53]],
+            cc15[78], cc15[79],
+
+            cc0[64], cc0[66], cc0[69]
         );
         nvgText(vg, 7.5, 80.f, peds.c_str(), nullptr);
 
         auto text = format_string("C4=%d | OCT %d | POLY %d%c T%d D%d V%d",
-            ccs[44],
+            cc15[44],
             cc0[8],
-            (ccs[39] & 0x1f), 
-            (ccs[39] & 0x40 ? '+': ' '),
-            ccs[71], ccs[72], ccs[73]
+            (cc15[39] & 0x1f), 
+            (cc15[39] & 0x40 ? '+': ' '),
+            cc15[71], cc15[72], cc15[73]
             );
         nvgText(vg, 7.5, 94.f, text.c_str(), nullptr);
 
         const char * const round_kind = "_RYy";
-        auto rk = round_kind[(ccs[61] & 0x6) >> 1];
-        auto req = ccs[65];
+        auto cc = cc0;
+        auto rk = round_kind[(cc[61] & 0x6) >> 1];
+        auto req = cc[65];
         auto reqs = 
             req == 0 ? "off":
             req == 64 ? "enabled" :
             req == 127 ? "equal" : "(unknown)";
-        text = format_string("Rounding %s RR %d RI %d Rk %c", reqs, ccs[25], ccs[28], rk);
+        text = format_string("Rounding %s RR %d RI %d Rk %c", reqs, cc[25], cc[28], rk);
         nvgText(vg, 7.5, 109.f, text.c_str(), nullptr);
+
+        text = format_string("device = %s", InitStateName(hc1->device_state));
+        nvgText(vg, 7.5, 124.f, text.c_str(), nullptr);
+        text = format_string("presets = %s", InitStateName(hc1->preset_state));
+        nvgText(vg, 7.5, 139.f, text.c_str(), nullptr);
+        text = format_string("config = %s", InitStateName(hc1->config_state));
+        nvgText(vg, 7.5, 154.f, text.c_str(), nullptr);
+        text = format_string("saved = %s", InitStateName(hc1->saved_preset_state));
+        nvgText(vg, 7.5, 170.f, text.c_str(), nullptr);
+        text = format_string("updates = %s", InitStateName(hc1->requested_updates));
+        nvgText(vg, 7.5, 185.f, text.c_str(), nullptr);
+        if (hc1->broken) {
+            nvgText(vg, 7.5, 200.f, "BROKE", nullptr);
+        }
 
     }
 
     drawExtenderConnector(args);
     DrawLogo(vg, box.size.x /2.f - 12.f, RACK_GRID_HEIGHT - ONE_HP, RampGray(G_90));
+}
+
+void Hc2ModuleWidget::appendContextMenu(Menu *menu)
+{
+    menu->addChild(new MenuSeparator);
+    if (my_module && my_module->partner) {
+        menu->addChild(createMenuItem("Clear CC Map", "",
+            [this](){ my_module->partner->clearCCValues(); }));
+    } else {
+        menu->addChild(createMenuItem("- Not Connected - ", "", [](){}, true));
+    }
 }
 
 }

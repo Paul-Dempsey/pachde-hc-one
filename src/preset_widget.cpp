@@ -40,7 +40,7 @@ void PresetWidget::draw(const DrawArgs& args)
         if (preset->favorite) {
             FillHeart(vg, 4.f, 16.5f, 6.f, PORT_PINK);
         }
-        if (!preset->isSysPreset()) {
+        if (0 == preset->bank_hi) {
             FillPerson(vg, preset->favorite ? 12.f : 4.f, 15.5f, 8.f, nvgHSL(210.f/360.f, .5f, .5f));
         }
     }

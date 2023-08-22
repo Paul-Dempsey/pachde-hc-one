@@ -138,8 +138,10 @@ std::shared_ptr<PresetMeta> HCCategoryCode::find(uint16_t key) const
 void HCCategoryCode::foreach_code(const std::string& text, std::function<bool(uint16_t)> callback) const
 {
     if (text.empty()) return;
+    auto token = std::make_pair(text.cbegin(), text.cend());
+    if (token.first == token.second) return;
     while (true) {
-        auto token = get_token(text.cbegin(), text.cend(), is_space);
+        token = get_token(token.first, text.cend(), is_space);
         if (token.first == token.second) break;
         if (CATEGORY_TAG == CategoryCode(token.first)) {
             auto it = token.first + 2;
@@ -152,6 +154,7 @@ void HCCategoryCode::foreach_code(const std::string& text, std::function<bool(ui
             }
             break;
         }
+        token.first = token.second;
     }
 }
 

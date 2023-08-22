@@ -36,7 +36,12 @@ void Hc1Module::transmitRequestConfiguration()
 {
     DebugLog("Request configuration");
     clearCCValues();
+    current_preset = nullptr;
     config_state = InitState::Pending;
+#ifdef VERBOSE_LOG
+    //log_midi = true;
+#endif
+    beginPreset(); // force preset
     sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::configToMidi);
 }
 
@@ -50,7 +55,36 @@ void Hc1Module::transmitRequestPresets()
     preset_state = InitState::Pending;
     //silence(false);
     // todo: save/restore EM MIDI routing to disable surface > midi/cvc to avoid interruption while loading
-    sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::userToMidi);
+    sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::midiTxTweenth);
+    sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::sysToMidi);
+}
+
+void Hc1Module::setPreset(std::shared_ptr<MinPreset> preset)
+{
+    current_preset = preset;
+    if (!preset) return;
+
+#if defined VERBOSE_LOG
+    DebugLog("Setting preset [%s]", preset ? preset->describe_short().c_str(): "(none)");
+#endif
+    sendControlChange(15, MidiCC_BankSelect, preset->bank_hi);
+    sendControlChange(15, EMCC_Category, preset->bank_lo);
+    sendProgramChange(15, preset->number);
+    config_state = InitState::Pending;
+}
+
+void Hc1Module::sendSavedPreset() {
+    if (!saved_preset) {
+        DebugLog("No saved preset");
+        saved_preset_state = InitState::Complete;
+        return;
+    }
+    DebugLog("Sending saved preset [%s]", saved_preset->name.c_str());
+    saved_preset_state = InitState::Pending;
+    heart_time = .25f;
+    sendControlChange(15, MidiCC_BankSelect, saved_preset->bank_hi);
+    sendControlChange(15, EMCC_Category, saved_preset->bank_lo);
+    sendProgramChange(15, saved_preset->number);
 }
 
 void Hc1Module::silence(bool reset)
@@ -71,7 +105,7 @@ void Hc1Module::transmitInitDevice()
     device_state = InitState::Pending;
     sendControlChange(EM_SettingsChannel, EMCC_EditorPresent, tick_tock ? 85 : 42);
     tick_tock = !tick_tock;
-    //heart_time = 0.25f;
+    heart_time = 0.25f;
 }
 
 void Hc1Module::sendEditorPresent()
@@ -82,7 +116,7 @@ void Hc1Module::sendEditorPresent()
     tick_tock = !tick_tock;
     //download_message_id = -1;
 }
-    
+
 void Hc1Module::sendNoteOn(uint8_t channel, uint8_t note, uint8_t velocity)
 {
     midi::Message msg;
@@ -150,6 +184,7 @@ void Hc1Module::handle_ch16_cc(uint8_t cc, uint8_t value)
                     if (data_stream != -1) {
                         DebugLog("!!!! BROKEN !!!!");
                         broken = true;
+                        sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::midiTxFull);
                     } else {
                         //DebugLog("Begin name");
                         data_stream = value;
@@ -164,6 +199,7 @@ void Hc1Module::handle_ch16_cc(uint8_t cc, uint8_t value)
                     if (data_stream != -1) {
                         DebugLog("!!!! BROKEN !!!!");
                         broken = true;
+                        sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::midiTxFull);
                     } else {
                         //DebugLog("Begin Text");
                         data_stream = value;
@@ -211,12 +247,13 @@ void Hc1Module::handle_ch16_cc(uint8_t cc, uint8_t value)
                     DebugLog("[---- endUserNames ----]");
                     if (!broken) {
                         std::sort(user_presets.begin(), user_presets.end(), preset_order);
+                        std::sort(system_presets.begin(), system_presets.end(), preset_order);
+                        readFavorites();
                     }
+                    sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::midiTxFull);
+                    preset_state = broken ? InitState::Broken : InitState::Complete;
+                    DebugLog("End Presets as %s", InitStateName(preset_state));
                     in_user_names = false;
-                    // chain to sys names
-                    if (!broken) {
-                        sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::sysToMidi);
-                    }
                     break;
 
                 case EM_DownloadItem::beginSysNames:
@@ -226,17 +263,11 @@ void Hc1Module::handle_ch16_cc(uint8_t cc, uint8_t value)
 
                 case EM_DownloadItem::endSysNames:
                     DebugLog("[---- endSysNames ----]");
-                    if (!broken) {
-                        std::sort(system_presets.begin(), system_presets.end(), preset_order);
-                        readFavorites();
-                    }
                     in_sys_names = false;
-                    preset_state = broken ? InitState::Broken : InitState::Complete;
-                    DebugLog("End Presets as %s", InitStateName(preset_state));
-
-                    //if (hasPresets()) {
-                    //    setSavedPreset();
-                    //}
+                    // chain to user names
+                    if (!broken) {
+                        sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::userToMidi);
+                    }
                     break;
             }
             break;
@@ -263,7 +294,7 @@ void Hc1Module::handle_ch16_cc(uint8_t cc, uint8_t value)
             } else if (InitState::Pending == handshake) {
                 handshake = InitState::Complete;
             } else {
-                DebugLog("Spurious Editor Reply");
+                DebugLog("Extra Editor Reply");
             }
         } break;
     }
@@ -292,39 +323,52 @@ void Hc1Module::handle_ch16_message(const midi::Message& msg)
                 in_preset = false;
                 preset0.number = msg.getNote();
                 //DebugLog("%s", preset0.describe(false).c_str());
-                if (!preset0.name_empty() && configPending()) {
+                if (savedPresetPending()) {
+                    assert(0 == saved_preset->name.compare(preset0.name()));
+                    current_preset = findSysUserPreset(saved_preset);
+                    saved_preset_state = config_state = InitState::Complete;
+                } else if (configPending()) {
+#ifdef VERBOSE_LOG
+                    log_midi = false;
+#endif
                     config_state = broken ? InitState::Broken : InitState::Complete;
-                    DebugLog("End config as %s", InitStateName(config_state));
-                }
-
-                if (!broken && is_gathering_presets()) {
+                    if (!broken) {
+                        if (!preset0.name_empty()) {
+                            if (nullptr == current_preset) {
+                                current_preset = findSysUserPreset(nullptr);
+                            } else {
+                                if (!current_preset->isSamePreset(preset0)) {
+                                    DebugLog("Expected %s == %s",
+                                        preset0.describe_short().c_str(),
+                                        current_preset->describe_short().c_str()
+                                        );
+                                    current_preset = findSysUserPreset(nullptr);
+                                }
+                            }
+                        }
+                    }
+                    DebugLog("End config as %s with %s", InitStateName(config_state), current_preset ? current_preset->describe_short().c_str() : "nuthin");
+                } else if (!broken && is_gathering_presets()) {
                     if (!preset0.name_empty()) {
                         std::string name = preset0.name();
-                        if (msg.getNote() != 126
+                        if ((126 != preset0.bank_hi)
                             && "-" != name
                             && "--" != name
                             && "Empty" != name)
                         {
                             std::shared_ptr<MinPreset> preset = std::make_shared<MinPreset>(preset0);
                             if (in_user_names) {
-                                 if (preset->isSysPreset()) {
-                                    DebugLog("Why a system preset scanning user names? (%s)", preset->describe(false).c_str());
-                                 }
+                                assert(!preset->isSysPreset());
                                 user_presets.push_back(preset);
                             } else {
-                                if (preset->isSysPreset()) {
-                                    system_presets.push_back(preset);
-                                } else {
-                                    DebugLog("Why a non-system preset scanning sys names? (%s)", preset->describe(false).c_str());
-                                }
+                                assert(in_sys_names);
+                                assert(preset->isSysPreset());
+                                system_presets.push_back(preset);
                             }
                         }
                     }
                 }
             }
-            // if (!is_gathering_presets()) {
-            //      sendEditorPresent();
-            // }
             break;
 
         case MidiStatus_ChannelPressure:
@@ -417,10 +461,24 @@ void Hc1Module::handle_ch0_message(const midi::Message& msg)
 
 }
 
+bool isLoopbackDetect(const midi::Message& msg) {
+    auto channel = msg.getChannel();
+    if (channel == 0 || channel == 15) {
+        return (msg.getNote() == 117) && (MidiStatus_CC == GetRawStatus(msg));
+    }
+    return false;
+}
+
 void Hc1Module::onMessage(const midi::Message& msg)
 {
-    //DebugLog("%lld %s", static_cast<long long int>(msg.frame), ToFormattedString(msg).c_str());
-    broken_idle = 0.f;
+#ifdef VERBOSE_LOG
+    if (log_midi) {
+        DebugLog("%lld %s", static_cast<long long int>(msg.frame), ToFormattedString(msg).c_str());
+    }
+#endif
+    if (broken && !isLoopbackDetect(msg)) {
+        broken_idle = 0.f;
+    }
     ++midi_receive_count;
     
     auto channel = msg.getChannel();

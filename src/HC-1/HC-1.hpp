@@ -62,12 +62,29 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     PresetTab tab = PresetTab::User;
     int page[3] = { 0, 0, 0 };
     bool cache_presets = false;
-    std::shared_ptr<MinPreset> savedPreset = nullptr;
+    std::shared_ptr<MinPreset> current_preset = nullptr;
+    std::shared_ptr<MinPreset> saved_preset = nullptr;
 
     std::string favoritesPath();
+    void clearFavorites();
     void saveFavorites();
     void readFavorites();
+    void readFavoritesFile(const std::string& path);
+    void writeFavoritesFile(const std::string& path);
     json_t* favoritesToJson();
+    bool bulk_favoriting = false;
+
+    class BulkFavoritingMode {
+        Hc1Module* hc1;
+    public:
+        BulkFavoritingMode(Hc1Module* hc1) : hc1(hc1) {
+            assert(hc1);
+            hc1->bulk_favoriting = true;
+        }
+        ~ BulkFavoritingMode() {
+            hc1->bulk_favoriting = false;
+        }
+    };
 
     std::string presetsPath();
     void savePresets();
@@ -103,6 +120,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     bool hasDevice() { return InitState::Complete == device_state; }
 
     InitState saved_preset_state = InitState::Uninitialized;
+    bool savedPresetPending() { return InitState::Pending == saved_preset_state; }
 
     InitState handshake = InitState::Uninitialized;
     bool handshakePending() { return InitState::Pending == handshake; }
@@ -135,7 +153,9 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     bool in_user_names = false;
     bool in_sys_names = false;
     bool broken = false;
-
+#ifdef VERBOSE_LOG
+    bool log_midi = false;
+#endif
     float broken_idle = 0.f;
     
     // heartbeat
@@ -143,6 +163,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     float heart_time = 1.0;
     bool tick_tock = true;
     NVGcolor ledColor = green_light;
+    bool heartbeat = true;
 	//float blinkPhase = 0.f;
 
     // device management
@@ -221,7 +242,9 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     bool isCurrentPreset(std::shared_ptr<MinPreset> preset) override
     {
         if (!preset) return false;
-        if (preset == savedPreset) return true;
+        if (preset == current_preset) {
+            return true;
+        }
         if (preset0.name_empty()) {
             return false;
         }
@@ -231,6 +254,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     void unFavorite(std::shared_ptr<MinPreset> preset) override;
 
     void sendSavedPreset();
+    std::shared_ptr<MinPreset> findSysUserPreset(std::shared_ptr<MinPreset> preset);
 
     void orderFavorites(bool sort);
 
