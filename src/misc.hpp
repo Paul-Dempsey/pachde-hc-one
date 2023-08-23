@@ -6,8 +6,8 @@ using namespace ::rack;
 namespace pachde {
 
 std::string format_string(const char *fmt, ...);
-size_t common_prefix_length(std::string alpha, std::string beta);
-bool is_EMDevice(const std::string name);
+size_t common_prefix_length(const std::string& alpha, const std::string& beta);
+bool is_EMDevice(const std::string& name);
 std::string FilterDeviceName(std::string text);
 //std::string AbbreviatedName(std::string name);
 std::string TempName();

@@ -81,6 +81,12 @@ void Hc2ModuleWidget::draw(const DrawArgs& args)
 
     if (my_module && my_module->partner && FontOk(font))
     {
+{
+        nvgSave(vg);
+        auto text = format_string("%d", my_module->partner->midi_receive_count);
+        RightAlignText(vg, box.size.x - 5.f, 30.f, text.c_str(), nullptr);
+        nvgRestore(vg);
+}
         auto hc1 = my_module->partner;
         auto cc15 = hc1->ch15_cc_value;
         auto cc0 = hc1->ch0_cc_value;

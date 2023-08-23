@@ -2,7 +2,7 @@
 
 namespace pachde {
 
-bool is_EMDevice(const std::string name)
+bool is_EMDevice(const std::string& name)
 {
     std::string text = name;
     std::transform(text.begin(), text.end(), text.begin(), [](unsigned char c){ return std::tolower(c); });
@@ -23,9 +23,9 @@ std::string format_string(const char *fmt, ...)
     return r < 0 ? "??" : s;
 }
 
-size_t common_prefix_length(std::string alpha, std::string beta) {
-    auto a = alpha.begin(), ae = alpha.end();
-    auto b = beta.begin(), be = beta.end();
+size_t common_prefix_length(const std::string& alpha, const std::string& beta) {
+    auto a = alpha.cbegin(), ae = alpha.cend();
+    auto b = beta.cbegin(), be = beta.cend();
     int common = 0;
     for (; (a < ae && b < be) && (*a == *b); ++a, ++b, ++common) { }
     return common;

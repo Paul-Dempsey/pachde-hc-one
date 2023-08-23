@@ -200,6 +200,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     bool is_gathering_presets() { return preset_state == InitState::Pending; }
 
     Hc1Module();
+    virtual ~Hc1Module() {}
 
     // midi::Input
     void onMessage(const midi::Message& msg) override;
