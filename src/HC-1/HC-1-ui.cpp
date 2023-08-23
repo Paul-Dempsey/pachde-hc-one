@@ -521,16 +521,18 @@ void Hc1ModuleWidget::appendContextMenu(Menu *menu)
         menu->addChild(new MenuSeparator);
         bool ready = my_module->ready();
         //menu->addChild(createMenuItem("", "", [this](){}));
-        menu->addChild(createMenuItem("Reboot HC-1", "",     [this](){ my_module->reboot(); }));
-        menu->addChild(createCheckMenuItem("Suppress heartbeat handshake", "",
-            [this](){ return !my_module->heartbeat; },
-            [this](){ my_module->heartbeat = !my_module->heartbeat; }));
-        menu->addChild(createMenuItem("One handshake", "",   [this](){ my_module->sendEditorPresent(); }));
-        menu->addChild(createMenuItem("Request config", "",  [this](){ my_module->transmitRequestConfiguration(); }));
-        menu->addChild(createMenuItem("Mute", "",            [this](){ my_module->silence(true); }, !ready));
+        menu->addChild(createSubmenuItem("Advanced", "", [=](Menu* menu) {
+            menu->addChild(createMenuItem("Reboot HC-1", "",     [=](){ my_module->reboot(); }));
+            menu->addChild(createCheckMenuItem("Suppress heartbeat handshake", "",
+                [=](){ return !my_module->heartbeat; },
+                [=](){ my_module->heartbeat = !my_module->heartbeat; }));
+            menu->addChild(createMenuItem("One handshake", "",   [=](){ my_module->sendEditorPresent(); }));
+            menu->addChild(createMenuItem("Request config", "",  [=](){ my_module->transmitRequestConfiguration(); }));
+        }));
+        menu->addChild(createMenuItem("Mute", "",            [=](){ my_module->silence(true); }, !ready));
         menu->addChild(createSubmenuItem("Favorites", "", [=](Menu* menu) {
-            menu->addChild(createMenuItem("Clear favorites", "", [this](){ my_module->clearFavorites();}, !ready));
-            menu->addChild(createMenuItem("Open favorites...", "", [this]() {
+            menu->addChild(createMenuItem("Clear favorites", "", [=](){ my_module->clearFavorites();}, !ready));
+            menu->addChild(createMenuItem("Open favorites...", "", [=]() {
                 std::string path;
                 std::string folder = asset::user(pluginInstance->slug);
                 system::createDirectories(folder);
@@ -542,7 +544,7 @@ void Hc1ModuleWidget::appendContextMenu(Menu *menu)
                     my_module->readFavoritesFile(path);
                 }
                 }, !ready));
-            menu->addChild(createMenuItem("Save favorites as...", "", [this]() {
+            menu->addChild(createMenuItem("Save favorites as...", "", [=]() {
                 std::string path;
                 std::string folder = asset::user(pluginInstance->slug);
                 system::createDirectories(folder);
@@ -556,10 +558,10 @@ void Hc1ModuleWidget::appendContextMenu(Menu *menu)
             }, !ready));
         }, !ready));
 
-        menu->addChild(createMenuItem("Save presets", "", [this](){ my_module->savePresets(); }, !ready));
+        menu->addChild(createMenuItem("Save presets", "", [=](){ my_module->savePresets(); }, !ready));
         menu->addChild(createCheckMenuItem("Use saved presets", "",
-            [this](){ return my_module->cache_presets; },
-            [this](){
+            [=](){ return my_module->cache_presets; },
+            [=](){
                 my_module->cache_presets = !my_module->cache_presets;
                 if (my_module->cache_presets) {
                     my_module->savePresets();
