@@ -52,8 +52,12 @@ size_t common_prefix_length(const std::string& alpha, const std::string& beta) {
 //     return result;
 // }
 
-std::string TempName() {
-    return format_string("-%d-%d.tmp", random::get<uint16_t>(), random::get<uint32_t>());
+std::string TempName(const std::string& suffix) {
+    return format_string("-%d-%d.%s",
+        random::get<uint16_t>(),
+        random::get<uint32_t>(),
+        suffix.empty() ? ".tmp" : suffix.c_str()
+        );
 }
 
 std::string FilterDeviceName(std::string text)

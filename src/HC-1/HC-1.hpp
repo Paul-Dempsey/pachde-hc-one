@@ -64,6 +64,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     bool cache_presets = false;
     std::shared_ptr<MinPreset> current_preset = nullptr;
     std::shared_ptr<MinPreset> saved_preset = nullptr;
+    bool restore_saved_preset = true;
 
     std::string favoritesPath();
     void clearFavorites();
@@ -109,32 +110,33 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     
     bool is_eagan_matrix = false;
 
-    InitState preset_state = InitState::Uninitialized;
-    bool hasPresets() { return InitState::Complete == preset_state; }
-
+    InitState device_state = InitState::Uninitialized;
+    InitState system_preset_state = InitState::Uninitialized;
+    InitState user_preset_state = InitState::Uninitialized;
     InitState config_state = InitState::Uninitialized;
-    bool configPending() { return InitState::Pending == config_state; }
+    InitState saved_preset_state = InitState::Uninitialized;
+    InitState request_updates_state = InitState::Uninitialized;
+    InitState handshake = InitState::Uninitialized;
+
+    bool hasDevice() { return InitState::Complete == device_state; }
+    bool hasSystemPresets() { return InitState::Complete == system_preset_state && !system_presets.empty(); }
+    bool hasUserPresets() { return InitState::Complete == user_preset_state && !user_presets.empty(); }
     bool hasConfig() { return InitState::Complete == config_state; }
 
-    InitState device_state = InitState::Uninitialized;
-    bool hasDevice() { return InitState::Complete == device_state; }
-
-    InitState saved_preset_state = InitState::Uninitialized;
+    bool configPending() { return InitState::Pending == config_state; }
     bool savedPresetPending() { return InitState::Pending == saved_preset_state; }
-
-    InitState handshake = InitState::Uninitialized;
     bool handshakePending() { return InitState::Pending == handshake; }
 
-    InitState requested_updates = InitState::Uninitialized;
-
     bool stateError() {
-        return InitState::Broken == preset_state
+        return InitState::Broken == system_preset_state
+            || InitState::Broken == user_preset_state
             || InitState::Broken == config_state
             || InitState::Broken == device_state
             || InitState::Broken == handshake;
     }
     bool anyPending() {
-        return InitState::Pending == preset_state
+        return InitState::Pending == system_preset_state
+            || InitState::Pending == user_preset_state
             || InitState::Pending == config_state
             || InitState::Pending == device_state
             || InitState::Pending == handshake;
@@ -142,10 +144,11 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     bool ready() {
         return !broken 
             && InitState::Complete == device_state
-            && InitState::Complete == preset_state
+            && InitState::Complete == system_preset_state
+            && InitState::Complete == user_preset_state
             && InitState::Complete == config_state
             && InitState::Complete == saved_preset_state
-            && InitState::Complete == requested_updates
+            && InitState::Complete == request_updates_state
             && is_eagan_matrix;
     }
 
@@ -157,7 +160,15 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     bool log_midi = false;
 #endif
     float broken_idle = 0.f;
-    
+
+    // float init_step_phase = 0.f;
+    // float init_step_time = 0.f;
+
+    // void begin_init_step(float timeout) {
+    //     init_step_phase = 0.f;
+    //     init_step_time = timeout;
+    // }
+
     // heartbeat
     float heart_phase = 0.f;
     float heart_time = 1.0;
@@ -176,6 +187,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     uint8_t recirculator = 0;
     int download_message_id = -1; // CC109
     uint64_t midi_receive_count = 0;
+    //uint64_t midi_receive_byte_count = 0;
     uint16_t firmware_version = 0;
     uint8_t dsp[3] {0};
     int data_stream = -1;
@@ -197,7 +209,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
 
     const std::string deviceName() { return device_name; }
     bool isEaganMatrix() { return is_eagan_matrix; }
-    bool is_gathering_presets() { return preset_state == InitState::Pending; }
+    bool is_gathering_presets() { return system_preset_state == InitState::Pending || user_preset_state == InitState::Pending; }
 
     Hc1Module();
     virtual ~Hc1Module() {}
@@ -235,7 +247,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     // ISendMidi
     void sendNoteOn(uint8_t channel, uint8_t note, uint8_t velocity) override;
     void sendNoteOff(uint8_t channel, uint8_t note, uint8_t velocity) override;
-    void sendControlChange(uint8_t channel, uint8_t cc, uint8_t value) override;
+    void sendControlChange(uint8_t channel, uint8_t cc, uint8_t value, bool force_send = false) override;
     void sendProgramChange(uint8_t channel, uint8_t program) override;
 
     // IPresetHolder
@@ -263,7 +275,8 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     void transmitInitDevice();
     void transmitRequestUpdates();
     void transmitRequestConfiguration();
-    void transmitRequestPresets();
+    void transmitRequestSystemPresets();
+    void transmitRequestUserPresets();
     void sendEditorPresent();
     void silence(bool reset);
     void beginPreset();

@@ -20,7 +20,7 @@ void Hc1Module::savePresets()
 
 	DEFER({json_decref(root);});
 
-	std::string tmpPath = system::join(dir, TempName());
+	std::string tmpPath = system::join(dir, TempName(".tmp.json"));
 	FILE* file = std::fopen(tmpPath.c_str(), "w");
 	if (!file) {
 		return;
@@ -37,15 +37,15 @@ void Hc1Module::loadPresets()
     auto path = presetsPath();
     if (path.empty()) return;
     
-    preset_state = InitState::Pending;
+    system_preset_state = user_preset_state = InitState::Pending;
 
-    favorite_presets.clear();
-    user_presets.clear();
     system_presets.clear();
+    user_presets.clear();
+    favorite_presets.clear();
 
     FILE* file = std::fopen(path.c_str(), "r");
 	if (!file) {
-        preset_state = InitState::Broken;
+        system_preset_state = user_preset_state = InitState::Broken;
 		return;
     }
 	DEFER({std::fclose(file);});
@@ -53,7 +53,7 @@ void Hc1Module::loadPresets()
 	json_error_t error;
 	json_t* root = json_loadf(file, 0, &error);
 	if (!root) {
-        preset_state = InitState::Broken;
+        system_preset_state = user_preset_state = InitState::Broken;
 		DebugLog("Invalid JSON at %d:%d %s in %s", error.line, error.column, error.text, path.c_str());
         return;
     }
@@ -86,7 +86,7 @@ void Hc1Module::loadPresets()
         }
     }
     orderFavorites(true);
-    preset_state = InitState::Complete;
+    system_preset_state = user_preset_state = InitState::Complete;
 }
 
 json_t* Hc1Module::presetsToJson()
@@ -119,10 +119,10 @@ void Hc1Module::clearFavorites()
 {
     favorite_presets.clear();
     for (auto p: user_presets) {
-        p->favorite = false;
+        if (p->favorite) p->favorite = false;
     }
     for (auto p: system_presets) {
-        p->favorite = false;
+        if (p->favorite) p->favorite = false;
     }
 }
 
@@ -163,7 +163,7 @@ void Hc1Module::writeFavoritesFile(const std::string& path)
     if (!root) return;
 
 	DEFER({json_decref(root);});
-	std::string tmpPath = system::join(dir, TempName());
+	std::string tmpPath = system::join(dir, TempName(".tmp.json"));
 	FILE* file = std::fopen(tmpPath.c_str(), "w");
 	if (!file) {
 		return;

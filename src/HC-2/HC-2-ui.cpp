@@ -38,12 +38,9 @@ void Hc2ModuleWidget::drawExtenderConnector(const DrawArgs& args)
 
 void drawMap(NVGcontext* vg, uint8_t * map, float x, float y)
 {
-    // auto font = GetPluginFontRegular();
-    // if (FontOk(font)) {
-    //     SetTextStyle(vg, font, RampGray(G_95), 10.f);
-    //     auto text = format_string("%3d %3d", map[117], map[118]);
-    //     nvgText(vg, x + 135.f, y + 10.f, text.c_str(), nullptr);
-    // }
+    auto ref_line_color = nvgHSLAf(210.f/360.f, .5f, .5f, .5f);
+    Line (vg, x + 1.25f + 32.f, y, x + 1.25f + 32.f, y + 17.f, ref_line_color, .5f);
+    Line (vg, x + 1.25f + 64.f, y, x + 1.25f + 64.f, y + 17.f, ref_line_color, .5f);
     BoxRect(vg, x, y, 254, 18, RampGray(G_35), .5f);
     ++x;
     y += 17.f;
@@ -59,8 +56,8 @@ void Hc2ModuleWidget::drawCCMap(const DrawArgs& args)
     if (my_module && my_module->partner) {
         auto x = box.size.x * .5f - 126.5f;
         //Line(args.vg, x + 1 + 117, 10.f, x + 1 + 117, 48.f, blue_light);
-        drawMap(args.vg, my_module->partner->ch0_cc_value, x, 20.f);
-        drawMap(args.vg, my_module->partner->ch15_cc_value, x, 40.f);
+        drawMap(args.vg, my_module->partner->ch0_cc_value, x, 24.f);
+        drawMap(args.vg, my_module->partner->ch15_cc_value, x, 44.f);
     }
 }
 
@@ -81,12 +78,16 @@ void Hc2ModuleWidget::draw(const DrawArgs& args)
 
     if (my_module && my_module->partner && FontOk(font))
     {
-{
-        nvgSave(vg);
-        auto text = format_string("%d", my_module->partner->midi_receive_count);
-        RightAlignText(vg, box.size.x - 5.f, 30.f, text.c_str(), nullptr);
-        nvgRestore(vg);
-}
+        {
+            nvgSave(vg);
+            auto text = format_string("%d", my_module->partner->midi_receive_count);
+            RightAlignText(vg, box.size.x - 5.f, 30.f, text.c_str(), nullptr);
+            //text = format_string("%d", my_module->partner->midi_receive_byte_count);
+            //RightAlignText(vg, box.size.x - 5.f, 45.f, text.c_str(), nullptr);
+            nvgRestore(vg);
+        }
+        auto y = 80.f;
+        const float row_interval = 14.f;
         auto hc1 = my_module->partner;
         auto cc15 = hc1->ch15_cc_value;
         auto cc0 = hc1->ch0_cc_value;
@@ -103,7 +104,8 @@ void Hc2ModuleWidget::draw(const DrawArgs& args)
 
             cc0[64], cc0[66], cc0[69]
         );
-        nvgText(vg, 7.5, 80.f, peds.c_str(), nullptr);
+        nvgText(vg, 7.5, y, peds.c_str(), nullptr);
+        y += row_interval;
 
         auto text = format_string("C4=%d | OCT %d | POLY %d%c T%d D%d V%d",
             cc15[44],
@@ -112,7 +114,8 @@ void Hc2ModuleWidget::draw(const DrawArgs& args)
             (cc15[39] & 0x40 ? '+': ' '),
             cc15[71], cc15[72], cc15[73]
             );
-        nvgText(vg, 7.5, 94.f, text.c_str(), nullptr);
+        nvgText(vg, 7.5, y, text.c_str(), nullptr);
+        y += row_interval;
 
         const char * const round_kind = "_RYy";
         auto cc = cc0;
@@ -122,21 +125,32 @@ void Hc2ModuleWidget::draw(const DrawArgs& args)
             req == 0 ? "off":
             req == 64 ? "enabled" :
             req == 127 ? "equal" : "(unknown)";
+        
         text = format_string("Rounding %s RR %d RI %d Rk %c", reqs, cc[25], cc[28], rk);
-        nvgText(vg, 7.5, 109.f, text.c_str(), nullptr);
+        nvgText(vg, 7.5, y, text.c_str(), nullptr);
+        y += row_interval;
 
-        text = format_string("device = %s", InitStateName(hc1->device_state));
-        nvgText(vg, 7.5, 124.f, text.c_str(), nullptr);
-        text = format_string("presets = %s", InitStateName(hc1->preset_state));
-        nvgText(vg, 7.5, 139.f, text.c_str(), nullptr);
-        text = format_string("config = %s", InitStateName(hc1->config_state));
-        nvgText(vg, 7.5, 154.f, text.c_str(), nullptr);
-        text = format_string("saved = %s", InitStateName(hc1->saved_preset_state));
-        nvgText(vg, 7.5, 170.f, text.c_str(), nullptr);
-        text = format_string("updates = %s", InitStateName(hc1->requested_updates));
-        nvgText(vg, 7.5, 185.f, text.c_str(), nullptr);
+        // text = format_string("device = %s", InitStateName(hc1->device_state));
+        // nvgText(vg, 7.5, y, text.c_str(), nullptr);
+        // y += row_interval;
+        // text = format_string("system presets = %s", InitStateName(hc1->system_preset_state));
+        // nvgText(vg, 7.5, y, text.c_str(), nullptr);
+        // y += row_interval;
+        // text = format_string("user presets = %s", InitStateName(hc1->user_preset_state));
+        // nvgText(vg, 7.5, y, text.c_str(), nullptr);
+        // y += row_interval;
+        // text = format_string("config = %s", InitStateName(hc1->config_state));
+        // nvgText(vg, 7.5, y, text.c_str(), nullptr);
+        // y += row_interval;
+        // text = format_string("saved = %s", InitStateName(hc1->saved_preset_state));
+        // nvgText(vg, 7.5, y, text.c_str(), nullptr);
+        // y += row_interval;
+        // text = format_string("updates = %s", InitStateName(hc1->request_updates_state));
+        // nvgText(vg, 7.5, y, text.c_str(), nullptr);
+        // y += row_interval;
         if (hc1->broken) {
-            nvgText(vg, 7.5, 200.f, "BROKE", nullptr);
+            nvgText(vg, 7.5, y, "BROKE", nullptr);
+            y += row_interval;
         }
 
     }

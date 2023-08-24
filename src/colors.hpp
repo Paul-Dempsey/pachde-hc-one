@@ -203,7 +203,7 @@ inline bool isColorTransparent(const NVGcolor& color) { return color.a < 0.001f;
 inline bool isColorVisible(const NVGcolor& color) { return color.a > 0.001f; }
 
 std::string ToString(Theme theme);
-Theme ParseTheme(std::string text);
+Theme ParseTheme(const std::string& text);
 Theme ThemeFromJson(json_t * root);
 
 void FillRect(NVGcontext *vg, float x, float y, float width, float height, NVGcolor color);

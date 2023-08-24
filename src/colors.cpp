@@ -208,9 +208,9 @@ NamedColor stock_colors[] = {
     { nullptr, 0 }
 };
 
-Theme ParseTheme(std::string text) {
+Theme ParseTheme(const std::string& text) {
     if (text.empty()) return DefaultTheme;
-    switch (text[0]) {
+    switch (*text.cbegin()) {
         case 'l': case 'L': return Theme::Light;
         case 'd': case 'D': return Theme::Dark;
         case 'h': case 'H': return Theme::HighContrast;
@@ -392,9 +392,9 @@ void OpenCircle(NVGcontext * vg, float cx, float cy, float r, NVGcolor stroke, f
 void Dot(NVGcontext*vg, float x, float y, const NVGcolor& co, bool filled)
 {
     if (filled) {
-        Circle(vg, x, y, 3.f, co);
+        Circle(vg, x, y, 2.5f, co);
     } else {
-        OpenCircle(vg, x, y, 2.75f, co, .5f);
+        OpenCircle(vg, x, y, 2.25f, co, .5f);
     }
 }
 

@@ -124,6 +124,11 @@ void Hc1Module::dataFromJson(json_t *root)
         saved_preset = std::make_shared<MinPreset>();
         saved_preset->fromJson(j);
     }
+    restore_saved_preset = GetBool(root, "restore-preset", restore_saved_preset);
+    if (!restore_saved_preset) {
+        // pretend it already happened so that it doesn't get scheduled
+        saved_preset_state = InitState::Complete;
+    }
 
     j = json_object_get(root, "midi-in");
     if (j) {
@@ -144,18 +149,23 @@ void Hc1Module::reboot() {
     midiOutput.reset();
     clearCCValues();
     midi_receive_count = 0;
-
+    //midi_receive_byte_count = 0;
     broken = false;
     broken_idle = 0.f;
     heart_phase = 0.f;
+
     preset0.clear();
     system_presets.clear();
     user_presets.clear();
-    config_state = InitState::Uninitialized;
-    preset_state = InitState::Uninitialized;
-    device_state = InitState::Uninitialized;
-    handshake = InitState::Uninitialized;
-    requested_updates = InitState::Uninitialized;
+
+    device_state = 
+    system_preset_state = 
+    user_preset_state = 
+    config_state = 
+    request_updates_state = 
+    handshake
+        = InitState::Uninitialized;
+
     in_preset = in_sys_names = in_user_names = false;
 
     pedal_fraction = 0;
@@ -277,18 +287,25 @@ void Hc1Module::process(const ProcessArgs& args)
     //lights[BLINK_LIGHT].setBrightness(blinkPhase < 0.5f ? 1.f : 0.f);	
     if (broken) {
         broken_idle += args.sampleTime;
-        if (broken_idle > 1.f) {
+        if (broken_idle > 1.75f) {
             reboot();
         }
         return;
     }
+
+    // if (init_step_time > 0.f) {
+    //     init_step_phase += args.sampleTime;
+    //     if (init_step_phase >= init_step_time) {
+    //         // restart step
+    //     }
+    // }
+
 
     heart_phase += args.sampleTime;
     if (heart_phase >= heart_time) {
         heart_phase -= heart_time;
         heart_time = 2.5f;
 
-        // TODO: fix this mess of conditionals and make a state machine
         if (inputDeviceId != midi::Input::deviceId) {
             device_name = midi::Input::getDeviceName(midi::Input::deviceId);
             is_eagan_matrix = is_EMDevice(device_name);
@@ -301,37 +318,31 @@ void Hc1Module::process(const ProcessArgs& args)
                 case InitState::Pending: return;
                 case InitState::Broken: transmitInitDevice(); return;
                 case InitState::Complete: break;
-                default:
-                    assert(false);
-                    break;
+                default: assert(false); break;
             }
             if (!anyPending()
                 && (notesOn <= 0)
                 && !in_preset
                 ) {
-                if (InitState::Uninitialized == preset_state || InitState::Broken == preset_state) {
-                    transmitRequestPresets();
+                if (InitState::Uninitialized == system_preset_state || InitState::Broken == system_preset_state) {
+                    transmitRequestSystemPresets();
                 } else 
-                // if (InitState::Uninitialized == requested_updates) {
-                //     transmitRequestUpdates();
-                // } else
+                if (InitState::Uninitialized == user_preset_state || InitState::Broken == user_preset_state) {
+                    transmitRequestUserPresets();
+                } else
                 if (InitState::Uninitialized == saved_preset_state) {
                     sendSavedPreset();
                 } else
                 if (InitState::Uninitialized == config_state) {
                     transmitRequestConfiguration();
                 } else
-                if (InitState::Complete == config_state) {
-                    if (InitState::Uninitialized == requested_updates) {
-                        transmitRequestUpdates();
-                    } else {
-                        if (heartbeat) {
-                            sendEditorPresent();
-                        }
-                    }
+                if (InitState::Uninitialized == request_updates_state) {
+                    transmitRequestUpdates();
+                } else if (heartbeat) {
+                    sendEditorPresent();
                 }
             }
-        } // matrix
+        }
     }// heartbeat
 } // process
 

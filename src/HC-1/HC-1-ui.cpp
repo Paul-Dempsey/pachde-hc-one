@@ -9,6 +9,17 @@
 namespace pachde {
 #define MIDI_ANIMATION
 
+const NVGcolor& InitStateColor(InitState state)
+{
+    switch (state) {
+    case InitState::Uninitialized: return gray_light;
+    case InitState::Pending: return orange_light;
+    case InitState::Complete: return blue_light;
+    case InitState::Broken: return red_light;
+    default: return no_light;
+    }
+}
+
 struct PDSmallButton : app::SvgSwitch {
     PDSmallButton() {
 		addFrame(Svg::load(asset::plugin(pluginInstance, "res/TinyPush_up.svg")));
@@ -318,15 +329,32 @@ void Hc1ModuleWidget::step()
             status_light->onDirty(e);
         }
 
-        if (!have_preset_widgets && my_module->hasPresets()) {
-            populatePresetWidgets();
-        } else if (have_preset_widgets && !my_module->hasPresets()) {
-            clearPresetWidgets();
-        } else {
-            auto selected = static_cast<PresetTab>(tab_bar->getSelectedTab());
-            if (selected != tab) {
-                setTab(selected);
-            }
+        auto selected = static_cast<PresetTab>(tab_bar->getSelectedTab());
+        if (selected != tab) {
+            setTab(selected);
+        }
+        switch (tab) {
+            case PresetTab::System:
+                if (!have_preset_widgets && my_module->hasSystemPresets()) {
+                    populatePresetWidgets();
+                } else if (have_preset_widgets && !my_module->hasSystemPresets()) {
+                    clearPresetWidgets();
+                }
+                break;
+            case PresetTab::User:
+                if (!have_preset_widgets && my_module->hasUserPresets()) {
+                    populatePresetWidgets();
+                } else if (have_preset_widgets && !my_module->hasUserPresets()) {
+                    clearPresetWidgets();
+                }
+                break;
+            case PresetTab::Favorite:
+                if (!have_preset_widgets && (my_module->hasSystemPresets() && my_module->hasUserPresets())) {
+                    populatePresetWidgets();
+                } else if (have_preset_widgets && !(my_module->hasSystemPresets() || my_module->hasUserPresets())) {
+                    clearPresetWidgets();
+                }
+                break;
         }
     }
 }
@@ -363,10 +391,11 @@ void Hc1ModuleWidget::drawLayer(const DrawArgs& args, int layer)
             float x = box.size.x - 7.5f - 3.f * w - 2;
             FillRect(vg, x - 1.25f, y - 1.25f, w * 3.f + 5.f, h + 5.f, RampGray(G_30));
             const uint8_t tdsp[] = {65, 30, 75};
-            const uint8_t* pdsp = (my_module && my_module->hasPresets()) ? &my_module->dsp[0] : &tdsp[0];
+            const uint8_t* pdsp = (my_module && my_module->ready()) ? &my_module->dsp[0] : &tdsp[0];
 
             if (pdsp == &tdsp[0]) {
-                Line(vg, x, y + h + 1, x + w*3 + 3, y + h + 1, green_light, 0.5f);
+                BoxRect(vg, x - 1.5f, y - 1.5f, w * 3.f + 4.f, h + 4.f, green_light, .5f);
+                //Line(vg, x, y + h + 1, x + w*3 + 3, y + h + 1, green_light, 0.5f);
             }
 
             for (auto n = 0; n < 3; n++) {
@@ -447,9 +476,7 @@ void Hc1ModuleWidget::draw(const DrawArgs& args)
     if (FontOk(font)) {
         SetTextStyle(vg, font, RampGray(G_90), 12.f);
         float y = KNOB_ROW_1 + 22.f;
-        if (my_module
-            && InitState::Pending != my_module->preset_state
-            && InitState::Pending != my_module->config_state) {
+        if (my_module && !my_module->anyPending()) {
             CenterText(vg, KNOB_LEFT,                     y, my_module->preset0.macro[0].c_str(), nullptr);
             CenterText(vg, KNOB_LEFT +       KNOB_SPREAD, y, my_module->preset0.macro[1].c_str(), nullptr);
             CenterText(vg, KNOB_LEFT + 2.f * KNOB_SPREAD, y, my_module->preset0.macro[2].c_str(), nullptr);
@@ -478,29 +505,37 @@ void Hc1ModuleWidget::draw(const DrawArgs& args)
         float left = 60.f;
         float spacing = 6.25f;
         float y = box.size.y - 7.5f;
-        bool on;
-        Dot(vg, left, y, my_module->is_eagan_matrix ? green_light : orange_light);
 
-        on = my_module->hasDevice();
-        Dot(vg, left + spacing, y, on ? blue_light : orange_light, on);
+        // note
+        Dot(vg, left, y, my_module->notesOn ? purple_light : gray_light, my_module->notesOn);
+        left += spacing;
 
-        on = my_module->handshakePending();
-        Dot(vg, left + 2.f * spacing, y, on ? orange_light : blue_light);
+        //device_state
+        Dot(vg, left, y, InitStateColor(my_module->device_state));
+        left += spacing;
 
-        on = my_module->in_user_names || my_module->in_sys_names || my_module->hasPresets();
-        Dot(vg, left + 3.f * spacing, y, 
-              my_module->broken        ? red_light
-            : my_module->hasPresets()  ? blue_light
-            : my_module->in_user_names ? yellow_light
-            : my_module->in_sys_names  ? orange_light
-            : gray_light
-            , on
-            );
+        //eagan matrix
+        Dot(vg, left, y, my_module->is_eagan_matrix ? blue_light : yellow_light);
+        left += spacing;
 
-        Dot(vg, left + 4.f * spacing, y, (my_module->broken || my_module->stateError()) ? red_light : my_module->anyPending() ? yellow_light : green_light);
-
-        on = my_module->notesOn > 0;
-        Dot(vg, left + 5.f * spacing, y, on ? purple_light : gray_light, on);
+        //system_preset_state
+        Dot(vg, left, y, InitStateColor(my_module->system_preset_state));
+        left += spacing;
+        //user_preset_state
+        Dot(vg, left, y, InitStateColor(my_module->user_preset_state));
+        left += spacing;
+        //config_state
+        Dot(vg, left, y, InitStateColor(my_module->config_state));
+        left += spacing;
+        //saved_preset_state
+        Dot(vg, left, y, InitStateColor(my_module->saved_preset_state));
+        left += spacing;
+        //request_updates_state
+        Dot(vg, left, y, InitStateColor(my_module->request_updates_state));
+        left += spacing;
+        //handshake
+        Dot(vg, left, y, InitStateColor(my_module->handshake));
+        left += spacing;
 
         // handshake tick/tock
         // if (my_module) {
@@ -558,6 +593,10 @@ void Hc1ModuleWidget::appendContextMenu(Menu *menu)
             }, !ready));
         }, !ready));
 
+        menu->addChild(createCheckMenuItem("Restore last preset on startup", "", 
+            [=](){ return my_module->restore_saved_preset; },
+            [=](){ my_module->restore_saved_preset = !my_module->restore_saved_preset; }
+            ));
         menu->addChild(createMenuItem("Save presets", "", [=](){ my_module->savePresets(); }, !ready));
         menu->addChild(createCheckMenuItem("Use saved presets", "",
             [=](){ return my_module->cache_presets; },

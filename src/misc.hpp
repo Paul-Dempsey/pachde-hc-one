@@ -10,7 +10,7 @@ size_t common_prefix_length(const std::string& alpha, const std::string& beta);
 bool is_EMDevice(const std::string& name);
 std::string FilterDeviceName(std::string text);
 //std::string AbbreviatedName(std::string name);
-std::string TempName();
+std::string TempName(const std::string& suffix);
 
 inline bool GetBool(const json_t* root, const char* key, bool default_value) {
     auto j = json_object_get(root, key);
@@ -31,11 +31,11 @@ enum class InitState {
 
 inline const char * InitStateName(InitState state) {
     switch (state) {
-        case InitState::Uninitialized: return "Uninitialized";
-        case InitState::Pending: return "Pending";
-        case InitState::Complete: return "Complete";
-        case InitState::Broken: return "Broken";
-        default: return "(unknown)";
+    case InitState::Uninitialized: return "Uninitialized";
+    case InitState::Pending: return "Pending";
+    case InitState::Complete: return "Complete";
+    case InitState::Broken: return "Broken";
+    default: return "(unknown)";
     }
 }
 

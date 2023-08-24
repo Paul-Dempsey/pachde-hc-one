@@ -12,7 +12,7 @@ struct ISendMidi
 {
     virtual void sendNoteOn(uint8_t channel, uint8_t note, uint8_t velocity) {}
     virtual void sendNoteOff(uint8_t channel, uint8_t note, uint8_t velocity) {}
-    virtual void sendControlChange(uint8_t channel, uint8_t cc, uint8_t value) {}
+    virtual void sendControlChange(uint8_t channel, uint8_t cc, uint8_t value, bool force_send = false) {}
     virtual void sendProgramChange(uint8_t channel, uint8_t program) {}
     virtual void sendKeyPressure(uint8_t channel, uint8_t note, uint8_t pressure) {}
     virtual void sendChannelPressure(uint8_t channel, uint8_t pressure) {}
@@ -364,28 +364,28 @@ enum InfoItem {
 
 // EMCC_Status cvalues
 enum StatusItem {
-        sLedBits        = 0x0f,	//    select led color bits
-        ledOff          = 0,	//	  led color
-        ledBlue         = 1,	//	  led color
-        ledRed          = 2,	//	  led color				 part of config
-        ledBrightGreen  = 3,	//	  led color				 part of config
-        ledGreen        = 4,	//	  led color				 part of config
-        ledWhite        = 5,	//	  led color 			 calib		
-        ledYellow       = 6,	//	  led color				 download, etc
-        ledPurple       = 7,	//	  led color				 no aes sync, or flashing if cvc power off
-        ledBlueGreen    = 8,	//	  led color  4.02		 [not used; retired from flawed sensor]
+    sLedBits        = 0x0f,	//    select led color bits
+    ledOff          = 0,	//	  led color
+    ledBlue         = 1,	//	  led color
+    ledRed          = 2,	//	  led color				 part of config
+    ledBrightGreen  = 3,	//	  led color				 part of config
+    ledGreen        = 4,	//	  led color				 part of config
+    ledWhite        = 5,	//	  led color 			 calib		
+    ledYellow       = 6,	//	  led color				 download, etc
+    ledPurple       = 7,	//	  led color				 no aes sync, or flashing if cvc power off
+    ledBlueGreen    = 8,	//	  led color  4.02		 [not used; retired from flawed sensor]
 
-        sAesBits        = 0x70,	//    aes detected rate bits
-        sAesShift		= 4,	//    shift for aes detected bits
-        aesInputNone    = 0,	//	  no aes input stream
-        aesInputNonStd  = 1,	//	  aes input nonstandard rate
-        aesInput44p1    = 2,	//	  aes input  44.1 kHz	4.15 [Ottawa]
-        aesInput48      = 3,	//	  aes input  48.0 kHz
-        aesInput88p2    = 4,	//	  aes input  88.2 kHz
-        aesInput96      = 5,	//	  aes input  96.0 kHz
-        aesInput176p4   = 6,	//	  aes input 176.4 kHz
-        aesInput192     = 7,	//	  aes input 192.0 kHz
-        // StdRate 44100,48000,88200,96000,176400,192000
+    sAesBits        = 0x70,	//    aes detected rate bits
+    sAesShift		= 4,	//    shift for aes detected bits
+    aesInputNone    = 0,	//	  no aes input stream
+    aesInputNonStd  = 1,	//	  aes input nonstandard rate
+    aesInput44p1    = 2,	//	  aes input  44.1 kHz	4.15 [Ottawa]
+    aesInput48      = 3,	//	  aes input  48.0 kHz
+    aesInput88p2    = 4,	//	  aes input  88.2 kHz
+    aesInput96      = 5,	//	  aes input  96.0 kHz
+    aesInput176p4   = 6,	//	  aes input 176.4 kHz
+    aesInput192     = 7,	//	  aes input 192.0 kHz
+    // StdRate 44100,48000,88200,96000,176400,192000
 };
 const std::string RecirculatorName(EM_Recirculator r);
 const std::string RecirculatorParameterName(EM_Recirculator r_type, int r);
@@ -394,34 +394,26 @@ inline bool Is14BitPedalCC(uint8_t cc) { return (EMCC_i <= cc) && (cc <= EMCC_vi
 
 inline void SetNoteOn(midi::Message& msg, uint8_t channel, uint8_t note, uint8_t velocity = 127)
 {
-    msg.bytes[0] = MidiStatus_NoteOn | channel;
-    msg.bytes[1] = note;
-    msg.bytes[2] = velocity;
+    msg.bytes = { static_cast<uint8_t>(MidiStatus_NoteOn | channel), note, velocity };
 }
 
 inline void SetNoteOff(midi::Message& msg, uint8_t channel, uint8_t note, uint8_t velocity = 0)
 {
-    msg.bytes[0] = MidiStatus_NoteOff | channel;
-    msg.bytes[1] = note;
-    msg.bytes[2] = velocity;
+    msg.bytes = { static_cast<uint8_t>(MidiStatus_NoteOff | channel), note, velocity };
 }
 
 inline void SetCC(midi::Message& msg, uint8_t channel, uint8_t cc, uint8_t value)
 {
-    msg.bytes[0] = MidiStatus_CC | channel;
-    msg.bytes[1] = cc;
-    msg.bytes[2] = value;
+    msg.bytes = { static_cast<uint8_t>(MidiStatus_CC | channel), cc, value };
 }
 
 inline void SetProgramChange(midi::Message& msg, uint8_t channel, uint8_t program)
 {
-    msg.bytes[0] = MidiStatus_ProgramChange | channel;
-    msg.bytes[1] = program;
-    msg.bytes.resize(2);
+    msg.bytes = { static_cast<uint8_t>(MidiStatus_ProgramChange | channel), program };
 }
 
-inline uint8_t GetCC(const midi::Message& msg) { return msg.bytes[1]; }
-inline uint8_t GetRawStatus(const midi::Message& msg) { return msg.bytes[0] & 0xf0; }
+inline uint8_t GetCC(const midi::Message& msg) { return *msg.bytes.cbegin(); }
+inline uint8_t GetRawStatus(const midi::Message& msg) { return *msg.bytes.cbegin() & 0xf0; }
 const char * StatusName(uint8_t status);
 std::string ToFormattedString(const midi::Message& msg);
 
