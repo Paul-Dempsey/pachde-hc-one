@@ -16,7 +16,7 @@
 using namespace em_midi;
 namespace pachde {
 
-#define VERBOSE_LOG
+//#define VERBOSE_LOG
 #include "../debug_log.hpp"
 
 int randomZeroTo(int size);
@@ -58,10 +58,18 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     std::vector<std::shared_ptr<MinPreset>> user_presets;
     std::vector<std::shared_ptr<MinPreset>> system_presets;
     std::vector<std::shared_ptr<MinPreset>> favorite_presets;
-    // persistence
+
+    // ui persistence
     PresetTab tab = PresetTab::User;
     int page[3] = { 0, 0, 0 };
-    bool cache_presets = false;
+
+    struct RestoreData {
+        PresetTab tab;
+        int page[3] = { 0, 0, 0 };
+    };
+    RestoreData * restore_ui_data = nullptr;
+
+    bool cache_presets = true;
     std::shared_ptr<MinPreset> current_preset = nullptr;
     std::shared_ptr<MinPreset> saved_preset = nullptr;
     bool restore_saved_preset = true;
@@ -73,8 +81,8 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     void readFavoritesFile(const std::string& path);
     void writeFavoritesFile(const std::string& path);
     json_t* favoritesToJson();
+    void favoritesFromPresets();
     bool bulk_favoriting = false;
-
     class BulkFavoritingMode {
         Hc1Module* hc1;
     public:
@@ -87,10 +95,16 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
         }
     };
 
-    std::string presetsPath();
+    std::string userPresetsPath();
+    std::string systemPresetsPath();
+    void saveUserPresets();
+    void saveSystemPresets();
     void savePresets();
     void loadPresets();
-    json_t* presetsToJson();
+    void loadUserPresets();
+    void loadSystemPresets();
+    void userPresetsToJson(json_t * root);
+    void systemPresetsToJson(json_t * root);
 
     void setTabPage(PresetTab tab, int tab_page) {
         page[tab]= tab_page;
@@ -110,7 +124,8 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     
     bool is_eagan_matrix = false;
 
-    InitState device_state = InitState::Uninitialized;
+    InitState device_output_state = InitState::Uninitialized;
+    InitState device_input_state = InitState::Uninitialized;
     InitState system_preset_state = InitState::Uninitialized;
     InitState user_preset_state = InitState::Uninitialized;
     InitState config_state = InitState::Uninitialized;
@@ -118,7 +133,6 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     InitState request_updates_state = InitState::Uninitialized;
     InitState handshake = InitState::Uninitialized;
 
-    bool hasDevice() { return InitState::Complete == device_state; }
     bool hasSystemPresets() { return InitState::Complete == system_preset_state && !system_presets.empty(); }
     bool hasUserPresets() { return InitState::Complete == user_preset_state && !user_presets.empty(); }
     bool hasConfig() { return InitState::Complete == config_state; }
@@ -127,23 +141,19 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     bool savedPresetPending() { return InitState::Pending == saved_preset_state; }
     bool handshakePending() { return InitState::Pending == handshake; }
 
-    bool stateError() {
-        return InitState::Broken == system_preset_state
-            || InitState::Broken == user_preset_state
-            || InitState::Broken == config_state
-            || InitState::Broken == device_state
-            || InitState::Broken == handshake;
-    }
     bool anyPending() {
-        return InitState::Pending == system_preset_state
+        return 
+               InitState::Pending == device_output_state
+            || InitState::Pending == device_input_state
+            || InitState::Pending == system_preset_state
             || InitState::Pending == user_preset_state
             || InitState::Pending == config_state
-            || InitState::Pending == device_state
             || InitState::Pending == handshake;
     }
     bool ready() {
         return !broken 
-            && InitState::Complete == device_state
+            && InitState::Complete == device_output_state
+            && InitState::Complete == device_input_state
             && InitState::Complete == system_preset_state
             && InitState::Complete == user_preset_state
             && InitState::Complete == config_state
@@ -178,7 +188,8 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
 	//float blinkPhase = 0.f;
 
     // device management
-    int inputDeviceId = -1;
+    int input_device_id = -1;
+    int output_device_id = -1;
     std::string device_name;
 
     // cc handling
@@ -199,7 +210,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
         memset(ch15_cc_value, 0, 127);
     }
 
-    midi::Output midiOutput;
+    midi::Output midi_output;
 
     // cv processing
     const int CV_INTERVAL = 64;
@@ -228,8 +239,8 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     void onRandomize(const RandomizeEvent& e) override;
     void reboot();
 
-    void findEMOut();
-    void findEM();
+    int findMatchingInputDevice(const std::string& name);
+    int findMatchingOutputDevice(const std::string& name);
 
     EM_Recirculator recirculatorType() {
         return static_cast<EM_Recirculator>(recirculator & EM_Recirculator::Mask);
@@ -247,7 +258,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     // ISendMidi
     void sendNoteOn(uint8_t channel, uint8_t note, uint8_t velocity) override;
     void sendNoteOff(uint8_t channel, uint8_t note, uint8_t velocity) override;
-    void sendControlChange(uint8_t channel, uint8_t cc, uint8_t value, bool force_send = false) override;
+    void sendControlChange(uint8_t channel, uint8_t cc, uint8_t value) override;
     void sendProgramChange(uint8_t channel, uint8_t program) override;
 
     // IPresetHolder
@@ -267,12 +278,11 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     void unFavorite(std::shared_ptr<MinPreset> preset) override;
 
     void sendSavedPreset();
-    std::shared_ptr<MinPreset> findSysUserPreset(std::shared_ptr<MinPreset> preset);
+    std::shared_ptr<MinPreset> findDefinedPreset(std::shared_ptr<MinPreset> preset);
 
     void orderFavorites(bool sort);
 
     void sendResetAllreceivers();
-    void transmitInitDevice();
     void transmitRequestUpdates();
     void transmitRequestConfiguration();
     void transmitRequestSystemPresets();
@@ -291,6 +301,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     void processCV(int inputId);
     void processAllCV();
     void onSave(const SaveEvent& e) override;
+    void onRemove(const RemoveEvent& e) override;
     void process(const ProcessArgs& args) override;
 };
 

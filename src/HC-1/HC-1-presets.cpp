@@ -1,24 +1,28 @@
 #include "HC-1.hpp"
 namespace pachde {
 
-std::string Hc1Module::presetsPath()
+std::string Hc1Module::userPresetsPath()
 {
-    if (broken || !is_eagan_matrix) return "";
-    return asset::user(format_string("%s/pre-%s.json", pluginInstance->slug.c_str(), FilterDeviceName(deviceName()).c_str()));
+    return asset::user(format_string("%s/user-%s.json", pluginInstance->slug.c_str(), deviceName().c_str()));
 }
 
-void Hc1Module::savePresets()
+std::string Hc1Module::systemPresetsPath()
 {
-    auto path = presetsPath();
-    DebugLog("Saving presets: %s ", path.c_str());
+    return asset::user(format_string("%s/sys-%s.json", pluginInstance->slug.c_str(), deviceName().c_str()));
+}
+
+void Hc1Module::saveUserPresets()
+{
+    auto path = userPresetsPath();
+    DebugLog("Saving user presets: %s ", path.c_str());
     if (path.empty()) return;
     auto dir = system::getDirectory(path);
     system::createDirectories(dir);
 
-    auto root = presetsToJson();
+    auto root = json_object();
     if (!root) return;
-
 	DEFER({json_decref(root);});
+    userPresetsToJson(root);
 
 	std::string tmpPath = system::join(dir, TempName(".tmp.json"));
 	FILE* file = std::fopen(tmpPath.c_str(), "w");
@@ -32,16 +36,80 @@ void Hc1Module::savePresets()
 	system::rename(tmpPath, path);
 }
 
-void Hc1Module::loadPresets()
+void Hc1Module::saveSystemPresets()
 {
-    auto path = presetsPath();
+    auto path = systemPresetsPath();
+    DebugLog("Saving system presets: %s ", path.c_str());
+    if (path.empty()) return;
+    auto dir = system::getDirectory(path);
+    system::createDirectories(dir);
+
+    auto root = json_object();
+    if (!root) { return; }
+	DEFER({json_decref(root);});
+    systemPresetsToJson(root);
+
+	std::string tmpPath = system::join(dir, TempName(".tmp.json"));
+	FILE* file = std::fopen(tmpPath.c_str(), "w");
+	if (!file) { return; }
+
+	json_dumpf(root, file, JSON_INDENT(2));
+	std::fclose(file);
+	system::remove(path);
+	system::rename(tmpPath, path);
+}
+
+void Hc1Module::savePresets()
+{
+    saveSystemPresets();
+    saveUserPresets();
+}
+
+void Hc1Module::loadUserPresets()
+{
+    auto path = userPresetsPath();
+    if (path.empty()) return;
+    user_preset_state = InitState::Pending;
+    user_presets.clear();
+
+    FILE* file = std::fopen(path.c_str(), "r");
+	if (!file) {
+        user_preset_state = InitState::Broken;
+		return;
+    }
+	DEFER({std::fclose(file);});
+	json_error_t error;
+	json_t* root = json_loadf(file, 0, &error);
+	if (!root) {
+        user_preset_state = InitState::Broken;
+		DebugLog("Invalid JSON at %d:%d %s in %s", error.line, error.column, error.text, path.c_str());
+        return;
+    }
+	DEFER({json_decref(root);});
+    auto jar = json_object_get(root, "user");
+    if (jar) {
+        json_t* jp;
+        size_t index;
+        json_array_foreach(jar, index, jp) {
+            auto preset = std::make_shared<MinPreset>();
+            preset->fromJson(jp);
+            user_presets.push_back(preset);
+            // if (preset->favorite) {
+            //     favorite_presets.push_back(preset);
+            // }
+        }
+    }
+    user_preset_state = InitState::Complete;
+}
+
+void Hc1Module::loadSystemPresets()
+{
+    auto path = systemPresetsPath();
     if (path.empty()) return;
     
-    system_preset_state = user_preset_state = InitState::Pending;
+    system_preset_state = InitState::Pending;
 
     system_presets.clear();
-    user_presets.clear();
-    favorite_presets.clear();
 
     FILE* file = std::fopen(path.c_str(), "r");
 	if (!file) {
@@ -58,41 +126,41 @@ void Hc1Module::loadPresets()
         return;
     }
 	DEFER({json_decref(root);});
-    auto jar = json_object_get(root, "user");
+    auto jar = json_object_get(root, "system");
     if (jar) {
-        json_t* jp;
-        size_t index;
-        json_array_foreach(jar, index, jp) {
-            auto preset = std::make_shared<MinPreset>();
-            preset->fromJson(jp);
-            user_presets.push_back(preset);
-            if (preset->favorite) {
-                favorite_presets.push_back(preset);
-            }
-        }
-    }
-    jar = json_object_get(root, "system");
-    if (jar) {
-
         json_t* jp;
         size_t index;
         json_array_foreach(jar, index, jp) {
             auto preset = std::make_shared<MinPreset>();
             preset->fromJson(jp);
             system_presets.push_back(preset);
-            if (preset->favorite) {
-                favorite_presets.push_back(preset);
-            }
+            // if (preset->favorite) {
+            //     favorite_presets.push_back(preset);
+            // }
+        }
+    }
+    system_preset_state = InitState::Complete;
+}
+
+void Hc1Module::favoritesFromPresets()
+{
+    favorite_presets.clear();
+    for (auto p: user_presets) {
+        if (p->favorite) {
+            favorite_presets.push_back(p);
+        }
+    }
+    for (auto p: system_presets) {
+        if (p->favorite) {
+            favorite_presets.push_back(p);
         }
     }
     orderFavorites(true);
-    system_preset_state = user_preset_state = InitState::Complete;
 }
 
-json_t* Hc1Module::presetsToJson()
+void Hc1Module::userPresetsToJson(json_t* root)
 {
-    json_t* root = json_object();
-    auto device = FilterDeviceName(deviceName());
+    auto device = deviceName();
     json_object_set_new(root, "device", json_stringn(device.c_str(), device.size()));
 
     auto jaru = json_array();
@@ -100,14 +168,20 @@ json_t* Hc1Module::presetsToJson()
         json_array_append_new(jaru, preset->toJson());
     }
     json_object_set_new(root, "user", jaru);
+}
+
+void Hc1Module::systemPresetsToJson(json_t* root)
+{
+    auto device = deviceName();
+    json_object_set_new(root, "device", json_stringn(device.c_str(), device.size()));
 
     auto jars = json_array();
     for (auto preset: system_presets) {
         json_array_append_new(jars, preset->toJson());
     }
     json_object_set_new(root, "system", jars);
-    return root;
 }
+
 
 std::string Hc1Module::favoritesPath()
 {
@@ -218,7 +292,7 @@ void Hc1Module::readFavoritesFile(const std::string& path)
     saveFavorites();
 }
 
-std::shared_ptr<MinPreset> Hc1Module::findSysUserPreset(std::shared_ptr<MinPreset> preset)
+std::shared_ptr<MinPreset> Hc1Module::findDefinedPreset(std::shared_ptr<MinPreset> preset)
 {
     if (preset) {
         if (!user_presets.empty()) {

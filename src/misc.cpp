@@ -23,7 +23,7 @@ std::string format_string(const char *fmt, ...)
     return r < 0 ? "??" : s;
 }
 
-size_t common_prefix_length(const std::string& alpha, const std::string& beta) {
+std::size_t common_prefix_length(const std::string& alpha, const std::string& beta) {
     auto a = alpha.cbegin(), ae = alpha.cend();
     auto b = beta.cbegin(), be = beta.cend();
     int common = 0;

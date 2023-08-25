@@ -33,7 +33,7 @@ struct CCParamQuantity : rack::engine::ParamQuantity
             last_value = to_send;
             if (enabled) {
                 auto my_module = dynamic_cast<Hc1Module*>(module);
-                if (my_module) {
+                if (my_module && my_module->ready()) {
                     if (high_resolution) {
                         uint8_t lo = to_send & 0x7f;
                         if (lo) {

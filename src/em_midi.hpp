@@ -12,7 +12,7 @@ struct ISendMidi
 {
     virtual void sendNoteOn(uint8_t channel, uint8_t note, uint8_t velocity) {}
     virtual void sendNoteOff(uint8_t channel, uint8_t note, uint8_t velocity) {}
-    virtual void sendControlChange(uint8_t channel, uint8_t cc, uint8_t value, bool force_send = false) {}
+    virtual void sendControlChange(uint8_t channel, uint8_t cc, uint8_t value) {}
     virtual void sendProgramChange(uint8_t channel, uint8_t program) {}
     virtual void sendKeyPressure(uint8_t channel, uint8_t note, uint8_t pressure) {}
     virtual void sendChannelPressure(uint8_t channel, uint8_t pressure) {}
@@ -412,8 +412,8 @@ inline void SetProgramChange(midi::Message& msg, uint8_t channel, uint8_t progra
     msg.bytes = { static_cast<uint8_t>(MidiStatus_ProgramChange | channel), program };
 }
 
-inline uint8_t GetCC(const midi::Message& msg) { return *msg.bytes.cbegin(); }
-inline uint8_t GetRawStatus(const midi::Message& msg) { return *msg.bytes.cbegin() & 0xf0; }
+inline uint8_t GetCC(const midi::Message& msg) { return msg.bytes[1]; }
+inline uint8_t GetRawStatus(const midi::Message& msg) { return msg.bytes[0] & 0xf0; }
 const char * StatusName(uint8_t status);
 std::string ToFormattedString(const midi::Message& msg);
 

@@ -58,7 +58,6 @@ Hc1Module::Hc1Module()
     configLight(Lights::HEART_LIGHT, "Device status");
 
     getLight(HEART_LIGHT).setBrightness(1.0f);
-    findEM();
     clearCCValues();
 }
 
@@ -80,11 +79,15 @@ void Hc1Module::onSave(const SaveEvent& e) {
     Module::onSave(e);
     savePresets();
 }
+void Hc1Module::onRemove(const RemoveEvent& e) {
+    Module::onRemove(e);
+    savePresets();
+}
 
 json_t * Hc1Module::dataToJson()
 {
     auto root = json_object();
-    json_object_set_new(root, "midi-in", midi::Input::toJson());
+    json_object_set_new(root, "midi-device", json_stringn(device_name.c_str(), device_name.size()));
     json_object_set_new(root, "preset-tab", json_integer(tab));
 
     auto ar = json_array();
@@ -96,6 +99,7 @@ json_t * Hc1Module::dataToJson()
     if (current_preset) {
         json_object_set_new(root, "preset", current_preset->toJson());
     }
+    json_object_set_new(root, "restore-preset", json_boolean(restore_saved_preset));
     json_object_set_new(root, "cache_presets", json_boolean(cache_presets));
     json_object_set_new(root, "heartbeat",  json_boolean(heartbeat));
     return root;
@@ -106,19 +110,18 @@ void Hc1Module::dataFromJson(json_t *root)
     heartbeat = GetBool(root, "heartbeat", heartbeat);
     auto j = json_object_get(root, "preset-tab");
     if (j) {
-        tab = static_cast<PresetTab>(clamp(json_integer_value(j), PresetTab::First, PresetTab::Last));
-    }
-
-    j = json_object_get(root, "tab_page");
-    if (j) {
-        for (int i = PresetTab::First; i < PresetTab::Last; ++i) {
-            auto el = json_array_get(j, i);
-            if (el) {
-                page[i] = json_integer_value(el);
+        restore_ui_data = new RestoreData();
+        restore_ui_data->tab = static_cast<PresetTab>(clamp(json_integer_value(j), PresetTab::First, PresetTab::Last));
+        j = json_object_get(root, "tab_page");
+        if (j) {
+            for (int i = PresetTab::First; i < PresetTab::Last; ++i) {
+                auto el = json_array_get(j, i);
+                if (el) {
+                    restore_ui_data->page[i] = json_integer_value(el);
+                }
             }
         }
     }
-
     j = json_object_get(root, "preset");
     if (j) {
         saved_preset = std::make_shared<MinPreset>();
@@ -130,23 +133,22 @@ void Hc1Module::dataFromJson(json_t *root)
         saved_preset_state = InitState::Complete;
     }
 
-    j = json_object_get(root, "midi-in");
+    j = json_object_get(root, "midi-device");
     if (j) {
-        midi::Input::fromJson(j);
-        midi::Input::setChannel(-1);
+        device_name = json_string_value(j);
     }
-    device_name = midi::Input::getDeviceName(midi::Input::deviceId);
-    is_eagan_matrix = is_EMDevice(device_name);
-    findEMOut();
     cache_presets = GetBool(root, "cache_presets", cache_presets);
     if (cache_presets) {
-        loadPresets();
+        loadSystemPresets();
+        loadUserPresets();
+        favoritesFromPresets();
     }
 }
 
-void Hc1Module::reboot() {
+void Hc1Module::reboot()
+{
     midi::Input::reset();
-    midiOutput.reset();
+    midi_output.reset();
     clearCCValues();
     midi_receive_count = 0;
     //midi_receive_byte_count = 0;
@@ -158,12 +160,14 @@ void Hc1Module::reboot() {
     system_presets.clear();
     user_presets.clear();
 
-    device_state = 
-    system_preset_state = 
-    user_preset_state = 
-    config_state = 
-    request_updates_state = 
-    handshake
+    device_output_state =
+        device_input_state =
+        system_preset_state = 
+        user_preset_state = 
+        config_state = 
+        request_updates_state = 
+        saved_preset_state =
+        handshake
         = InitState::Uninitialized;
 
     in_preset = in_sys_names = in_user_names = false;
@@ -173,7 +177,6 @@ void Hc1Module::reboot() {
     data_stream = -1;
     download_message_id = -1;
     recirculator = 0;
-    findEM();
     heart_time = 1.0f;
 }
 
@@ -196,42 +199,44 @@ void Hc1Module::onRandomize(const RandomizeEvent& e)
     setPreset(rp[randomZeroTo(rp.size())]);
 }
 
-void Hc1Module::findEMOut() {
-    if (is_eagan_matrix) {
-        int best_id = -1;
-        int common = 0;
-        for (auto id : midiOutput.getDeviceIds()) {
-            auto name = midiOutput.getDeviceName(id);
-            int c2 = common_prefix_length(device_name, name);
-            if (c2 > common) {
-                best_id = id;
-                common = c2;
-            }
-        }
-        if (best_id >= 0) {
-            midiOutput.setDeviceId(best_id);
-            midiOutput.setChannel(-1);
-        }
-    }
-}
-
-void Hc1Module::findEM() {
-    for (auto id : midi::Input::getDeviceIds()) {
-        auto dev_name = midi::Input::getDeviceName(id);
-        if (is_EMDevice(dev_name)) {
-            midi::Input::setDeviceId(id);
-            midi::Input::setChannel(-1);
-            inputDeviceId = id;
-            device_name = dev_name;
-            is_eagan_matrix = true;
-            //heart_time = 0.25f;
+int Hc1Module::findMatchingInputDevice(const std::string& name)
+{
+    int best_id = -1;
+    std::size_t common = 0;
+    for (auto id: midi::Input::getDeviceIds()) {
+        auto other_name = FilterDeviceName(midi::Input::getDeviceName(id));
+        std::size_t c2 = common_prefix_length(name, other_name);
+        if (c2 == name.size()){
+            best_id = id;
             break;
+        } else if (c2 > common) {
+            best_id = id;
+            common = c2;
         }
     }
-    findEMOut();
+    return best_id;
 }
 
-void Hc1Module::processCV(int inputId) {
+int Hc1Module::findMatchingOutputDevice(const std::string& name)
+{
+    int best_id = -1;
+    std::size_t common = 0;
+    for (auto id: midi_output.getDeviceIds()) {
+        auto other_name = FilterDeviceName(midi_output.getDeviceName(id));
+        std::size_t c2 = common_prefix_length(name, other_name);
+        if (c2 == name.size()){
+            best_id = id;
+            break;
+        } else if (c2 > common) {
+            best_id = id;
+            common = c2;
+        }
+    }
+    return best_id;
+}
+
+void Hc1Module::processCV(int inputId)
+{
     auto in = getInput(inputId);
 
     relative_param[inputId] = params[NUM_KNOBS + inputId].getValue() > .5f;
@@ -306,20 +311,108 @@ void Hc1Module::process(const ProcessArgs& args)
         heart_phase -= heart_time;
         heart_time = 2.5f;
 
-        if (inputDeviceId != midi::Input::deviceId) {
-            device_name = midi::Input::getDeviceName(midi::Input::deviceId);
-            is_eagan_matrix = is_EMDevice(device_name);
-            inputDeviceId = midi::Input::deviceId;
-        } else if (!is_eagan_matrix) {
-            findEM();
-        } else {
-            switch (device_state) {
-                case InitState::Uninitialized: transmitInitDevice(); return;
-                case InitState::Pending: return;
-                case InitState::Broken: transmitInitDevice(); return;
-                case InitState::Complete: break;
-                default: assert(false); break;
+        // handle device changes
+        if (InitState::Complete == device_output_state 
+            && InitState::Complete == device_input_state) {
+            if (input_device_id != midi::Input::getDeviceId()) {
+                auto name = FilterDeviceName(midi::Input::getDeviceName(deviceId));
+                if (is_EMDevice(name)) {
+                    // find matching output
+                    is_eagan_matrix = true;
+                    device_name = name;
+                    input_device_id = midi::Input::getDeviceId();
+                    auto id = findMatchingOutputDevice(name);
+                    if (id >= 0) {
+                        midi_output.setDeviceId(id);
+                        midi_output.setChannel(-1);
+                        output_device_id = id;
+                        return;
+                    }
+                } 
+                reboot();
+                return;
+            } else if (output_device_id != midi_output.getDeviceId()) {
+                auto name = FilterDeviceName(midi::Input::getDeviceName(midi_output.getDeviceId()));
+                if (is_EMDevice(name)) {
+                    // find matching input
+                    is_eagan_matrix = true;
+                    device_name = name;
+                    output_device_id = midi_output.getDeviceId();
+                    auto id = findMatchingInputDevice(name);
+                    if (id >= 0) {
+                        midi::Input::setDeviceId(id);
+                        midi::Input::setChannel(-1);
+                        input_device_id = id;
+                        return;
+                    }
+                }
+                reboot();
+                return;
             }
+        }
+
+        switch (device_output_state) {
+        case InitState::Uninitialized: {
+            // use peristed name, if any
+            if (!device_name.empty()) {
+                assert(is_EMDevice(device_name));
+                auto id = findMatchingOutputDevice(device_name);
+                if (id >= 0) {
+                    midi_output.setDeviceId(id);
+                    midi_output.setChannel(-1);
+                    device_output_state = InitState::Complete;
+                    heart_time = 5.f;
+                    return;
+                } else { 
+                    device_name.clear();
+                }
+            }
+            // scan for EM
+            for (auto id : midi_output.getDeviceIds()) {
+                auto name = FilterDeviceName(midi_output.getDeviceName(id));
+                if (is_EMDevice(name)) {
+                    device_name = name;
+                    midi_output.setDeviceId(id);
+                    midi_output.setChannel(-1);
+                    device_output_state = InitState::Complete;
+                    heart_time =5.f;
+                }
+            }
+            return;
+        } break;
+        case InitState::Complete: break;
+        case InitState::Pending:
+        case InitState::Broken:
+        default: assert(false); return;
+        }
+
+        switch (device_input_state) {
+        case InitState::Uninitialized: {
+            assert(!device_name.empty());
+            assert(is_EMDevice(device_name));
+            int best_id = findMatchingInputDevice(device_name);
+            if (best_id >= 0) {
+                midi::Input::setDeviceId(best_id);
+                midi::Input::setChannel(-1);
+                is_eagan_matrix = is_EMDevice(device_name);
+                device_input_state = InitState::Complete;
+                return;
+            }
+        } break;
+        case InitState::Complete: break;
+        case InitState::Pending:
+        case InitState::Broken:
+        default: assert(false); return;
+        }
+
+        if (is_eagan_matrix) {
+            // switch (device_hello_state) {
+            //     case InitState::Uninitialized: transmitInitDevice(); return;
+            //     case InitState::Pending: return;
+            //     case InitState::Broken: transmitInitDevice(); return;
+            //     case InitState::Complete: break;
+            //     default: assert(false); break;
+            // }
             if (!anyPending()
                 && (notesOn <= 0)
                 && !in_preset

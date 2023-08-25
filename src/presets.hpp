@@ -6,8 +6,8 @@
 #include "preset_meta.hpp"
 
 namespace pachde {
-#define VERBOSE_LOG
-#include "debug_log.hpp"
+// #define VERBOSE_LOG
+// #include "debug_log.hpp"
 
 inline const char * preset_type_name(uint8_t bank_hi) {
     if (127 == bank_hi) return "system";

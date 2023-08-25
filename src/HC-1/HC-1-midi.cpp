@@ -3,28 +3,18 @@
 
 namespace pachde {
 
-void Hc1Module::sendControlChange(uint8_t channel, uint8_t cc, uint8_t value, bool force_send)
+void Hc1Module::sendControlChange(uint8_t channel, uint8_t cc, uint8_t value)
 {
-    if (in_sys_names || in_user_names) {
-        DebugLog("Sending while receiving");
-        if (!force_send) {
-            return;
-        }
-    }
     midi::Message msg;
     SetCC(msg, channel, cc, value);
-    midiOutput.sendMessage(msg);
+    midi_output.sendMessage(msg);
 }
 
 void Hc1Module::sendProgramChange(uint8_t channel, uint8_t program)
 {
-    if (in_sys_names || in_user_names) {
-        DebugLog("Sending while receiving ignored");
-        return;
-    }
     midi::Message msg;
     SetProgramChange(msg, channel, program);
-    midiOutput.sendMessage(msg);
+    midi_output.sendMessage(msg);
 }
 
 void Hc1Module::sendResetAllreceivers()
@@ -32,7 +22,7 @@ void Hc1Module::sendResetAllreceivers()
     midi::Message msg;
     msg.bytes[0] = 0xff;
     msg.bytes.resize(1);
-    midiOutput.sendMessage(msg);
+    midi_output.sendMessage(msg);
 }
 
 void Hc1Module::transmitRequestUpdates()
@@ -63,7 +53,7 @@ void Hc1Module::transmitRequestSystemPresets()
     system_preset_state = InitState::Pending;
     //silence(false);
     // todo: save/restore EM MIDI routing to disable surface > midi/cvc to avoid interruption while loading
-    sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::midiTxTweenth);
+//    sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::midiTxTweenth);
     sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::sysToMidi);
 }
 
@@ -75,7 +65,7 @@ void Hc1Module::transmitRequestUserPresets()
     user_preset_state = InitState::Pending;
     //silence(false);
     // todo: save/restore EM MIDI routing to disable surface > midi/cvc to avoid interruption while loading
-    sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::midiTxTweenth);
+//    sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::midiTxTweenth);
     sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::userToMidi);
 }
 
@@ -115,45 +105,26 @@ void Hc1Module::silence(bool reset)
     }
 }
 
-void Hc1Module::transmitInitDevice()
-{
-    DebugLog("INIT DEVICE (Editor present)");
-    //sendResetAllreceivers();
-    //silence(true);
-    device_state = InitState::Pending;
-    sendControlChange(EM_SettingsChannel, EMCC_EditorPresent, tick_tock ? 85 : 42);
-    tick_tock = !tick_tock;
-}
-
 void Hc1Module::sendEditorPresent()
 {
     DebugLog("Editor present");
     handshake = InitState::Pending;
     sendControlChange(EM_SettingsChannel, EMCC_EditorPresent, tick_tock ? 85 : 42);
     tick_tock = !tick_tock;
-    //download_message_id = -1;
 }
 
 void Hc1Module::sendNoteOn(uint8_t channel, uint8_t note, uint8_t velocity)
 {
-    if (in_sys_names || in_user_names) {
-        DebugLog("Sending while receiving ignored");
-        return;
-    }
     midi::Message msg;
     SetNoteOn(msg, channel, note, velocity);
-    midiOutput.sendMessage(msg);
+    midi_output.sendMessage(msg);
 }
 
 void Hc1Module::sendNoteOff(uint8_t channel, uint8_t note, uint8_t velocity)
 {
-    if (in_sys_names || in_user_names) {
-        DebugLog("Sending while receiving ignored");
-        return;
-    }
     midi::Message msg;
     SetNoteOff(msg, channel, note, velocity);
-    midiOutput.sendMessage(msg);
+    midi_output.sendMessage(msg);
 }
 
 
@@ -189,7 +160,7 @@ void Hc1Module::handle_ch16_cc(uint8_t cc, uint8_t value)
     ch15_cc_value[cc] = value;
     switch (cc) {
         case MidiCC_BankSelect: 
-            // When sys preset is currently selected, this comes in as the edit slot,
+            // When a sys preset is currently selected, this comes in as the edit slot,
             // so use parsing context to set it to the correct value for selecting the preset.
             preset0.bank_hi = in_sys_names ? 127 : value;
             break;
@@ -209,7 +180,7 @@ void Hc1Module::handle_ch16_cc(uint8_t cc, uint8_t value)
                     if (data_stream != -1) {
                         DebugLog("!!!! BROKEN !!!!");
                         broken = true;
-                        sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::midiTxFull, true);
+                        //sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::midiTxFull);
                     } else {
                         //DebugLog("Begin name");
                         data_stream = value;
@@ -224,7 +195,7 @@ void Hc1Module::handle_ch16_cc(uint8_t cc, uint8_t value)
                     if (data_stream != -1) {
                         DebugLog("!!!! BROKEN !!!!");
                         broken = true;
-                        sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::midiTxFull, true);
+                        //sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::midiTxFull);
                     } else {
                         //DebugLog("Begin Text");
                         data_stream = value;
@@ -317,9 +288,10 @@ void Hc1Module::handle_ch16_cc(uint8_t cc, uint8_t value)
 
         case EMCC_EditorReply:{
             DebugLog("Editor Reply");
-            if (InitState::Pending == device_state) {
-                device_state = InitState::Complete;
-            } else if (InitState::Pending == handshake) {
+            // if (InitState::Pending == device_hello_state) {
+            //     device_hello_state = InitState::Complete;
+            // } else
+            if (InitState::Pending == handshake) {
                 handshake = InitState::Complete;
             } else {
                 DebugLog("Extra Editor Reply");
@@ -353,9 +325,10 @@ void Hc1Module::handle_ch16_message(const midi::Message& msg)
                 //DebugLog("%s", preset0.describe(false).c_str());
                 if (savedPresetPending()) {
                     assert(0 == saved_preset->name.compare(preset0.name()));
-                    current_preset = findSysUserPreset(saved_preset);
+                    current_preset = findDefinedPreset(saved_preset);
                     saved_preset_state = config_state = InitState::Complete;
-                } else if (configPending()) {
+                } else 
+                if (configPending()) {
 #ifdef VERBOSE_LOG
                     log_midi = false;
 #endif
@@ -363,20 +336,21 @@ void Hc1Module::handle_ch16_message(const midi::Message& msg)
                     if (!broken) {
                         if (!preset0.name_empty()) {
                             if (nullptr == current_preset) {
-                                current_preset = findSysUserPreset(nullptr);
+                                current_preset = findDefinedPreset(nullptr);
                             } else {
                                 if (!current_preset->isSamePreset(preset0)) {
                                     DebugLog("Expected %s == %s",
                                         preset0.describe_short().c_str(),
                                         current_preset->describe_short().c_str()
                                         );
-                                    current_preset = findSysUserPreset(nullptr);
+                                    current_preset = findDefinedPreset(nullptr);
                                 }
                             }
                         }
                     }
                     DebugLog("End config as %s with %s", InitStateName(config_state), current_preset ? current_preset->describe_short().c_str() : "nuthin");
-                } else if (!broken && is_gathering_presets()) {
+                } else
+                if (!broken && is_gathering_presets()) {
                     if (!preset0.name_empty()) {
                         std::string name = preset0.name();
                         if ((126 != preset0.bank_hi)

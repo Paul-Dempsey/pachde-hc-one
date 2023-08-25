@@ -7,8 +7,8 @@
 #include "../presets.hpp"
 #include "../HC-1/HC-1.hpp"
 
-#define VERBOSE_LOG
-#include "../debug_log.hpp"
+// #define VERBOSE_LOG
+// #include "../debug_log.hpp"
 
 using namespace em_midi;
 namespace pachde {

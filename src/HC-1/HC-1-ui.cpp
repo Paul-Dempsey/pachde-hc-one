@@ -189,7 +189,7 @@ Hc1ModuleWidget::Hc1ModuleWidget(Hc1Module *module)
     pm = createWidget<PickMidi>(Vec(20.f, box.size.y - 16.f));
     pm->describe("Choose Midi output");
     if (my_module) {
-        pm->setMidiPort(&my_module->midiOutput);
+        pm->setMidiPort(&my_module->midi_output);
     }
     addChild(pm);
 
@@ -209,30 +209,6 @@ Hc1ModuleWidget::Hc1ModuleWidget(Hc1Module *module)
         });
     }
     addChild(pb);
-
-    // pb = createWidget<SmallPush>(Vec(0,0));
-    // pb->box.size.x = 14.f;
-    // pb->box.size.y = 14.f;
-    // pb->center(Vec(box.size.x - 7.5f - 7.f, 120.f + 7.f));
-    // pb->describe("Previous preset");
-    // if (module) {
-    //     pb->onClick([module](bool, bool) {
-    //         DebugLog("[PREVIOUS]");
-    //     });
-    // }
-    // addChild(pb);
-
-    // pb = createWidget<SmallPush>(Vec(0,0));
-    // pb->box.size.x = 14.f;
-    // pb->box.size.y = 14.f;
-    // pb->center(Vec( box.size.x - 7.5f - 7.f, 140.f + 7.f));
-    // pb->describe("Next preset");
-    // if (module) {
-    //     pb->onClick([module](bool, bool) {
-    //         DebugLog("[NEXT]");
-    //     });
-    // }
-    // addChild(pb);
 }
 
 void Hc1ModuleWidget::pageUp()
@@ -329,10 +305,19 @@ void Hc1ModuleWidget::step()
             status_light->onDirty(e);
         }
 
-        auto selected = static_cast<PresetTab>(tab_bar->getSelectedTab());
-        if (selected != tab) {
-            setTab(selected);
+        if (my_module->restore_ui_data && my_module->ready()) {
+            auto restore = my_module->restore_ui_data;
+            my_module->restore_ui_data = nullptr;
+            setTab(restore->tab);
+            page = restore->page[tab];
+            delete restore;
+        } else {
+            auto selected = static_cast<PresetTab>(tab_bar->getSelectedTab());
+            if (selected != tab) {
+                setTab(selected);
+            }
         }
+
         switch (tab) {
             case PresetTab::System:
                 if (!have_preset_widgets && my_module->hasSystemPresets()) {
@@ -371,14 +356,30 @@ void Hc1ModuleWidget::drawLayer(const DrawArgs& args, int layer)
             if (my_module) {
                 if (my_module->broken) {
                     text = "[MIDI error - please wait]";
-                } else if (my_module->is_gathering_presets()) {
+                } else
+                if (InitState::Uninitialized == my_module->device_output_state) {
+                    text = "Looking for Eagan Matrix MIDI output";
+                } else
+                if (InitState::Uninitialized == my_module->device_input_state) {
+                    text = "Looking for Eagan Matrix MIDI input";
+                } else
+                if (my_module->is_gathering_presets()) {
                     text = format_string("[gathering %s preset %d]", my_module->in_user_names ? "User" : "System", my_module->in_user_names ? my_module->user_presets.size() : my_module->system_presets.size());
-                } else if (my_module->current_preset) {
+                } else
+                if (InitState::Uninitialized == my_module->system_preset_state) {
+                    text = "Preparing system presets";
+                } else
+                if (InitState::Uninitialized == my_module->user_preset_state) {
+                    text = "Preparing user presets";
+                } else
+                if (my_module->current_preset) {
                     text = my_module->current_preset->name;
                 } else {
                     text = "< current preset >";
                 }
-            } 
+            } else {
+                text = "< current preset >";
+            }
             CenterText(vg, box.size.x/2.f, 15.f, text.c_str(), nullptr);
         }
 
@@ -509,15 +510,18 @@ void Hc1ModuleWidget::draw(const DrawArgs& args)
         // note
         Dot(vg, left, y, my_module->notesOn ? purple_light : gray_light, my_module->notesOn);
         left += spacing;
-
-        //device_state
-        Dot(vg, left, y, InitStateColor(my_module->device_state));
+        //device_output_state
+        Dot(vg, left, y, InitStateColor(my_module->device_output_state));
         left += spacing;
-
+        // device_input_state
+        Dot(vg, left, y, InitStateColor(my_module->device_input_state));
+        left += spacing;
         //eagan matrix
         Dot(vg, left, y, my_module->is_eagan_matrix ? blue_light : yellow_light);
         left += spacing;
-
+        // //device_state
+        // Dot(vg, left, y, InitStateColor(my_module->device_hello_state));
+        // left += spacing;
         //system_preset_state
         Dot(vg, left, y, InitStateColor(my_module->system_preset_state));
         left += spacing;
@@ -536,12 +540,6 @@ void Hc1ModuleWidget::draw(const DrawArgs& args)
         //handshake
         Dot(vg, left, y, InitStateColor(my_module->handshake));
         left += spacing;
-
-        // handshake tick/tock
-        // if (my_module) {
-        //     Circle(vg, left + 7.f * spacing + (my_module->tick_tock ? 1.5f : -1.5f), y, 1.25f, COLOR_MAGENTA);
-        // }
-
     }
 
     if (!my_module) {
@@ -574,7 +572,7 @@ void Hc1ModuleWidget::appendContextMenu(Menu *menu)
                 if (openFileDialog(
                     folder,
                     "Favorites (.fav):fav;Json (.json):json;Any (*):*))",
-                    "my_favorites.fav",
+                    "",
                     path)) {
                     my_module->readFavoritesFile(path);
                 }

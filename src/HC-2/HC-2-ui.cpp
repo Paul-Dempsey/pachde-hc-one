@@ -130,7 +130,7 @@ void Hc2ModuleWidget::draw(const DrawArgs& args)
         nvgText(vg, 7.5, y, text.c_str(), nullptr);
         y += row_interval;
 
-        // text = format_string("device = %s", InitStateName(hc1->device_state));
+        // text = format_string("device = %s", InitStateName(hc1->device_hello_state));
         // nvgText(vg, 7.5, y, text.c_str(), nullptr);
         // y += row_interval;
         // text = format_string("system presets = %s", InitStateName(hc1->system_preset_state));
