@@ -12,10 +12,11 @@ struct CCParamQuantity : rack::engine::ParamQuantity
     uint16_t last_value = 0;
     bool high_resolution = true;
     bool enabled = true;
+    float offset = 0.f;
 
     void enable(bool enable) { enabled = enable; }
 
-    uint16_t convertValue(float value)  {
+    uint16_t clipValue(float value)  {
         return high_resolution
             ? static_cast<uint16_t>(clamp(value, 0.f, EM_Max14f))
             : static_cast<uint16_t>(clamp(value, 0.f, 127.f));
@@ -23,12 +24,18 @@ struct CCParamQuantity : rack::engine::ParamQuantity
 
     uint16_t valueToSend() {
         auto p = getParam();
-        return p ? convertValue(p->getValue()) : 0;
+        return p ? clipValue(p->getValue() + offset) : 0;
+    }
+
+    void setRelativeVoltage(float v)
+    {
+        offset = v * .2f * getMaxValue() * .5f;
     }
 
     void setKnobVoltage(float v)
     {
-        v = v / 10.f * getMaxValue();
+        // knob is unipolar 0-10v
+        v = v * .1f * getMaxValue();
         setValue(v);
     }
 
@@ -97,12 +104,48 @@ TCCPQ* configCCParam(uint8_t cc, bool hiRes, Module* module, int paramId, float 
 
 struct MidiKnob : RoundSmallBlackKnob
 {
-    void step() override {
+    void step() override
+    {
         RoundSmallBlackKnob::step();
         if (auto pq = dynamic_cast<CCParamQuantity*>(getParamQuantity())) {
             pq->syncValue();
         }
     }
+    void drawLayer(const DrawArgs& args, int layer) override
+    {
+        RoundSmallBlackKnob::drawLayer(args, layer);
+        if (0 == layer) return;
+        bool relative = module && module->params[11 + this->paramId].getValue() > .5f;
+        if (relative) {
+            auto pq = dynamic_cast<CCParamQuantity*>(getParamQuantity());
+            if (!pq) return;
+            float value = pq->clipValue(pq->offset + pq->getValue()) / pq->getMaxValue();
+            float angle = math::rescale(value, 0.f, 1.f, minAngle, maxAngle);
+            angle = std::fmod(angle, 2 * M_PI);
+
+        	float transform[6];
+            nvgTransformIdentity(transform);
+            float t[6];
+            math::Vec center = sw->box.getCenter();
+            nvgTransformTranslate(t, VEC_ARGS(center));
+            nvgTransformPremultiply(transform, t);
+            nvgTransformRotate(t, angle);
+            nvgTransformPremultiply(transform, t);
+            nvgTransformTranslate(t, VEC_ARGS(center.neg()));
+    		nvgTransformPremultiply(transform, t);
+
+            auto vg = args.vg;
+            nvgSave(vg);
+    		nvgTransform(vg, transform[0], transform[1], transform[2], transform[3], transform[4], transform[5]);
+            //Line(vg, center.x, center.y, center.x, center.y - 14.f, preset_name_color, .75f);
+            CircularHalo(vg, center.x, center.y - 12.25f, 2.75f, 9.5f, preset_name_color);
+            Circle(vg, center.x, center.y - 12.25f, 1.75f, preset_name_color);
+            nvgRestore(vg);
+        }
+    }
+    // void draw(const DrawArgs& args) override {
+    //     RoundSmallBlackKnob::draw(args);
+    // }
 };
 
 }

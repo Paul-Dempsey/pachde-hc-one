@@ -240,15 +240,22 @@ int Hc1Module::findMatchingOutputDevice(const std::string& name)
 
 void Hc1Module::processCV(int inputId)
 {
+    CCParamQuantity* pq = static_cast<CCParamQuantity*>(getParamQuantity(inputId));
+    if (!pq) return;
     auto in = getInput(inputId);
-
-    relative_param[inputId] = params[NUM_KNOBS + inputId].getValue() > .5f;
-    lights[inputId].setBrightness((relative_param[inputId] *.25f) + ((in.isConnected() && relative_param[inputId]) *.75f));
+    bool relative = params[NUM_KNOBS + inputId].getValue() > .5f;
+    lights[inputId].setBrightness((relative *.25f) + ((in.isConnected() && relative) *.75f));
 
     if (in.isConnected()) {
         auto v = in.getVoltage();
-        CCParamQuantity* pq = static_cast<CCParamQuantity*>(getParamQuantity(inputId));
-        pq->setKnobVoltage(v);
+        if (relative) {
+            pq->setRelativeVoltage(v);
+        } else {
+            pq->offset = 0.f;
+            pq->setKnobVoltage(v);
+        }
+    } else {
+        pq->offset = 0.f;
     }
 }
 

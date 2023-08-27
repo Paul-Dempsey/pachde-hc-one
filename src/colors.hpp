@@ -216,6 +216,7 @@ void CircleGradient(NVGcontext * vg, float cx, float cy, float r, NVGcolor top, 
 void Circle(NVGcontext * vg, float cx, float cy, float r, NVGcolor fill);
 void OpenCircle(NVGcontext * vg, float cx, float cy, float r, NVGcolor stroke, float stroke_width = 1.f);
 void Dot(NVGcontext*vg, float x, float y, const NVGcolor& co, bool filled = true);
+void CircularHalo(NVGcontext* vg, float cx, float cy, float inner_radius, float halo_radius, const NVGcolor & haloColor);
 
 template <class TMenuItem = rack::ui::MenuEntry>
 rack::ui::MenuEntry* createColorMenuItem(PackedColor previewColor, std::string text, std::string rightText, std::function<bool()> checked, std::function<void()> action, bool disabled = false, bool alwaysConsume = false)

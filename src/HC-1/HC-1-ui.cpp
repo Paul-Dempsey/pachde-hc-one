@@ -82,7 +82,7 @@ constexpr const float KNOB_ROW_1  = 280.f;
 constexpr const float KNOB_ROW_2  = 334.f;
 constexpr const float RKNOB_LEFT  = KNOB_LEFT - KNOB_SPREAD *.5f;
 
-constexpr const float CV_COLUMN_OFFSET = 21.f;
+constexpr const float CV_COLUMN_OFFSET = 22.25f;
 constexpr const float RB_OFFSET = 17.75f;
 constexpr const float RB_VOFFSET = 14.5f;
 constexpr const float CV_ROW_1 = KNOB_ROW_1 + 6.f;
@@ -352,71 +352,84 @@ void Hc1ModuleWidget::step()
 void Hc1ModuleWidget::drawLayer(const DrawArgs& args, int layer)
 {
     ModuleWidget::drawLayer(args, layer);
-    if (1 == layer) {
-        auto vg = args.vg;
-        auto font = GetPluginFontSemiBold();
-        if (FontOk(font)) {
-            SetTextStyle(vg, font, preset_name_color, 16.f);
-            std::string text;
-            if (my_module) {
-                if (my_module->broken) {
-                    text = "[MIDI error - please wait]";
-                } else
-                if (InitState::Uninitialized == my_module->device_output_state) {
-                    text = "[looking for EM out]";
-                } else
-                if (InitState::Uninitialized == my_module->device_input_state) {
-                    text = "[looking for EM in]";
-                } else
-                if (my_module->is_gathering_presets()) {
-                    text = format_string("[gathering %s preset %d]", my_module->in_user_names ? "User" : "System", my_module->in_user_names ? my_module->user_presets.size() : my_module->system_presets.size());
-                } else
-                if (InitState::Uninitialized == my_module->system_preset_state) {
-                    text = "[preparing system presets]";
-                } else
-                if (InitState::Uninitialized == my_module->user_preset_state) {
-                    text = "[preparing user presets]";
-                } else
-                if (InitState::Uninitialized == my_module->config_state) {
-                    text = "[preparing for current configuration]";
-                } else
-                if (InitState::Pending == my_module->config_state) {
-                    text = "[processing current configuration]";
-                } else
-                if (my_module->current_preset) {
-                    text = my_module->current_preset->name;
-                } else {
-                    text = "";
-                }
+    if (1 != layer) return;
+
+    auto vg = args.vg;
+    auto font = GetPluginFontSemiBold();
+    if (FontOk(font)) {
+        SetTextStyle(vg, font, preset_name_color, 16.f);
+        std::string text;
+        if (my_module) {
+            if (my_module->broken) {
+                text = "[MIDI error - please wait]";
+            } else
+            if (InitState::Uninitialized == my_module->device_output_state) {
+                text = "[looking for EM out]";
+            } else
+            if (InitState::Uninitialized == my_module->device_input_state) {
+                text = "[looking for EM in]";
+            } else
+            if (my_module->is_gathering_presets()) {
+                text = format_string("[gathering %s preset %d]", my_module->in_user_names ? "User" : "System", my_module->in_user_names ? my_module->user_presets.size() : my_module->system_presets.size());
+            } else
+            if (InitState::Uninitialized == my_module->system_preset_state) {
+                text = "[preparing system presets]";
+            } else
+            if (InitState::Uninitialized == my_module->user_preset_state) {
+                text = "[preparing user presets]";
+            } else
+            if (InitState::Uninitialized == my_module->config_state) {
+                text = "[preparing for current configuration]";
+            } else
+            if (InitState::Pending == my_module->config_state) {
+                text = "[processing current configuration]";
+            } else
+            if (my_module->current_preset) {
+                text = my_module->current_preset->name;
             } else {
-                text = "< current preset >";
+                text = "";
             }
-            CenterText(vg, box.size.x/2.f, 15.f, text.c_str(), nullptr);
+        } else {
+            text = "< current preset >";
+        }
+        CenterText(vg, box.size.x/2.f, 15.f, text.c_str(), nullptr);
+    }
+
+#ifdef MIDI_ANIMATION
+    if (my_module) {
+        const float y = PRESET_BOTTOM + 1.75f;
+        auto cx = PRESET_LEFT + fmodf(my_module->midi_send_count / 20.f, 320.f);
+        CircularHalo(vg, cx, y, 2.f, 8.5f, purple_light);
+        Circle(vg, cx, y, 1.25f, purple_light);
+
+        cx = PRESET_LEFT + fmodf(my_module->midi_receive_count / 20.f, 320.f);
+        CircularHalo(vg, cx, y, 2.f, 8.5f, green_light);
+        Circle(vg, cx, y, 1.25f, green_light);
+    }
+#endif
+
+    // DSP status
+    //if (!my_module || my_module->heartbeat)
+    {
+        const float h = 10.f;
+        const float w = 2.5f;
+        const float y = box.size.y - 20.f - h;
+        float x = box.size.x - 7.5f - 3.f * w - 2;
+        FillRect(vg, x - 1.25f, y - 1.25f, w * 3.f + 5.f, h + 5.f, RampGray(G_30));
+        const uint8_t tdsp[] = {65, 30, 75};
+        const uint8_t* pdsp = (my_module && my_module->ready()) ? &my_module->dsp[0] : &tdsp[0];
+
+        if (pdsp == &tdsp[0]) {
+            BoxRect(vg, x - 1.5f, y - 1.5f, w * 3.f + 4.f, h + 4.f, green_light, .5f);
+            //Line(vg, x, y + h + 1, x + w*3 + 3, y + h + 1, green_light, 0.5f);
         }
 
-        // DSP status
-        //if (!my_module || my_module->heartbeat)
-        {
-            const float h = 10.f;
-            const float w = 2.5f;
-            const float y = box.size.y - 20.f - h;
-            float x = box.size.x - 7.5f - 3.f * w - 2;
-            FillRect(vg, x - 1.25f, y - 1.25f, w * 3.f + 5.f, h + 5.f, RampGray(G_30));
-            const uint8_t tdsp[] = {65, 30, 75};
-            const uint8_t* pdsp = (my_module && my_module->ready()) ? &my_module->dsp[0] : &tdsp[0];
-
-            if (pdsp == &tdsp[0]) {
-                BoxRect(vg, x - 1.5f, y - 1.5f, w * 3.f + 4.f, h + 4.f, green_light, .5f);
-                //Line(vg, x, y + h + 1, x + w*3 + 3, y + h + 1, green_light, 0.5f);
-            }
-
-            for (auto n = 0; n < 3; n++) {
-                auto pct = pdsp[n];
-                auto co = pct < 85 ? green_light : red_light;
-                auto bh = h * (pct / 100.f);
-                FillRect(vg, x, y + h - bh, w, bh, co);
-                x += w + 1;
-            }
+        for (auto n = 0; n < 3; n++) {
+            auto pct = pdsp[n];
+            auto co = pct < 85 ? green_light : red_light;
+            auto bh = h * (pct / 100.f);
+            FillRect(vg, x, y + h - bh, w, bh, co);
+            x += w + 1;
         }
     }
 }
@@ -427,15 +440,6 @@ void Hc1ModuleWidget::draw(const DrawArgs& args)
     auto vg = args.vg;
     auto rt = my_module ? my_module->recirculatorType() : EM_Recirculator::Reverb;
 
-#ifdef MIDI_ANIMATION
-    if (my_module) {
-    //if (my_module && my_module->anyPending()) {
-        // raw MIDI animation
-        const float y = PRESET_BOTTOM + 1.75f;
-        Circle(vg, PRESET_LEFT + fmodf(my_module->midi_send_count / 20.f, 320.f), y, 1.25f, purple_light);
-        Circle(vg, PRESET_LEFT + fmodf(my_module->midi_receive_count / 20.f, 320.f), y, 1.25f, green_light);
-    }
-#endif
     // extender connector
     if (my_module && my_module->expanders.any()) {
         bool right = my_module->expanders.right();

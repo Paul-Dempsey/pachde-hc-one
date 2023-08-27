@@ -52,7 +52,6 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
         HEART_LIGHT,
         NUM_LIGHTS
     };
-    bool relative_param[NUM_KNOBS] {false};
 
     Preset preset0;
     std::vector<std::shared_ptr<MinPreset>> user_presets;
