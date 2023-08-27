@@ -9,40 +9,41 @@ Hc2Module::Hc2Module()
 {
 }
 
-std::string Hc2Module::getDeviceName()
+const char * Hc2Module::getDeviceName()
 {
-    return partner ? FilterDeviceName(partner->device_name) : "<Eagan Matrix Device>";
+    return partner ? partner->device_name.c_str() : "<Eagan Matrix Device>";
 }
 
 void Hc2Module::onExpanderChange(const ExpanderChangeEvent& e)
 {
-    auto ex = e.side ? getRightExpander() : getLeftExpander();
+    ExpanderPresence where = ExpanderPresence::fromRackSide(e.side);
+    auto expander = where.right() ? getRightExpander() : getLeftExpander();
+    bool new_partner = false;
+
     if (!partner) {
-        if (ex.module) {
-            partner = dynamic_cast<Hc1Module*>(ex.module);
-            partner_side = e.side;
-            refreshPartner();
-        }
+        partner = dynamic_cast<Hc1Module*>(expander.module);
+        new_partner = true;
     } else {
-        if (e.side == partner_side) {
-            partner = dynamic_cast<Hc1Module*>(ex.module);
+        if (where == partner_side) {
+            partner = dynamic_cast<Hc1Module*>(expander.module);
             if (!partner) {
                 // get partner from opposite side (if any)
-                ex = (!e.side) ? getRightExpander() : getLeftExpander();
-                partner = dynamic_cast<Hc1Module*>(ex.module);
-                partner_side = !e.side;
+                where = where.right() ? Expansion::Left : Expansion::Right;
+                expander = expander = where.right() ? getRightExpander() : getLeftExpander();
+                partner = dynamic_cast<Hc1Module*>(expander.module);
             }
-            refreshPartner();
+            new_partner = true;
+        } else {
+            //ignore: already have a partner
         }
     }
-}
-
-void Hc2Module::refreshPartner()
-{
-    if (partner) {
-
-    } else {
-
+    if (new_partner) {
+        if (partner) {
+            partner_side = where;
+            partner->expanderAdded(where.right() ? Expansion::Left : Expansion::Right);
+        } else {
+            partner_side = Expansion::None;
+        }
     }
 }
 

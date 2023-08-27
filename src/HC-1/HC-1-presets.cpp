@@ -3,12 +3,12 @@ namespace pachde {
 
 std::string Hc1Module::userPresetsPath()
 {
-    return asset::user(format_string("%s/user-%s.json", pluginInstance->slug.c_str(), deviceName().c_str()));
+    return asset::user(format_string("%s/%s-user.json", pluginInstance->slug.c_str(), deviceName().c_str()));
 }
 
 std::string Hc1Module::systemPresetsPath()
 {
-    return asset::user(format_string("%s/sys-%s.json", pluginInstance->slug.c_str(), deviceName().c_str()));
+    return asset::user(format_string("%s/%s-system.json", pluginInstance->slug.c_str(), deviceName().c_str()));
 }
 
 void Hc1Module::saveUserPresets()

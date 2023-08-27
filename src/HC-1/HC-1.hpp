@@ -223,7 +223,13 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     bool is_gathering_presets() { return system_preset_state == InitState::Pending || user_preset_state == InitState::Pending; }
 
     Hc1Module();
-    virtual ~Hc1Module() {}
+
+    virtual ~Hc1Module()
+    {
+        if (restore_ui_data) {
+            delete restore_ui_data;
+        }
+    }
 
     // midi::Input
     void onMessage(const midi::Message& msg) override;
@@ -282,6 +288,26 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
 
     void orderFavorites(bool sort);
 
+    // expanders
+    ExpanderPresence expanders = Expansion::None;
+    // Only handles removal. We depend on adjacent modules to tell us 
+    // that they are an expander via expanderAdded().
+    void onExpanderChange(const ExpanderChangeEvent& e) override
+    {
+        if (e.side) {
+            if (!getRightExpander().module) {
+                expanders.removeRight();
+            }
+        } else {
+            if (!getLeftExpander().module) {
+                expanders.removeLeft();
+            }
+        }
+    }
+    void expanderAdded(Expansion side) {
+        expanders.add(side);
+    }
+
     void sendResetAllreceivers();
     void transmitRequestUpdates();
     void transmitRequestConfiguration();
@@ -320,8 +346,8 @@ struct Hc1ModuleWidget : IPresetHolder, ModuleWidget
     UpDown* page_down;
 
     explicit Hc1ModuleWidget(Hc1Module *module);
-    void setTab(PresetTab tab);
-    void setPage(PresetTab tab, int page);
+    void setTab(PresetTab tab, bool force = false);
+
     void pageUp();
     void pageDown();
     void clearPresetWidgets();

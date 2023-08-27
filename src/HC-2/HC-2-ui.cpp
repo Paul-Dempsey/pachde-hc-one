@@ -26,14 +26,12 @@ void Hc2ModuleWidget::drawExtenderConnector(const DrawArgs& args)
     if (!my_module || !my_module->partner) return;
     auto vg = args.vg;
 
-    float cx = my_module->partner_side ? box.size.x : 0;
+    float cx = my_module->partner_side.right() ? box.size.x : 0;
     float cy = box.size.y * .5f;
 
     Line(vg, cx - 6.f, cy, cx + 6.f, cy, COLOR_BRAND, 1.75f);
     Circle(vg, cx - 6.f, cy, 3.f, COLOR_BRAND);
-    //OpenCircle(vg, cx - 6.f, cy, 5.f, COLOR_BRAND, .75f);
     Circle(vg, cx + 6.f, cy, 3.f, COLOR_BRAND);
-    //OpenCircle(vg, cx + 6.f, cy, 5.f, COLOR_BRAND, .75f);
 }
 
 void drawMap(NVGcontext* vg, uint8_t * map, float x, float y)
@@ -69,10 +67,11 @@ void Hc2ModuleWidget::draw(const DrawArgs& args)
     auto font = GetPluginFontRegular();
     if (FontOk(font)) {
         SetTextStyle(vg, font, RampGray(G_90), 12.f);
-    }
-    auto device =  my_module ? my_module->getDeviceName() : "";
-    if (!device.empty() && FontOk(font)) {
-        nvgText(vg, box.size.x/2.f + 25.f, box.size.y - 7.5f, device.c_str(), nullptr);
+
+        auto device =  my_module ? my_module->getDeviceName() : nullptr;
+        if (device) {
+            nvgText(vg, box.size.x/2.f + 25.f, box.size.y - 7.5f, device, nullptr);
+        }
     }
     drawCCMap(args);
 

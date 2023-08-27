@@ -17,16 +17,14 @@ struct Hc2Module : Module
 {
 
     Hc1Module* partner = nullptr;
-    bool partner_side = false;
+    ExpanderPresence partner_side = Expansion::None;
 
     Hc2Module();
     void onExpanderChange(const ExpanderChangeEvent& e) override;
 
-    void refreshPartner();
-
+    const char * getDeviceName();
     // json_t * dataToJson() override;
     // void dataFromJson(json_t *root) override;
-    std::string getDeviceName();
     //void process(const ProcessArgs& args) override;
 };
 

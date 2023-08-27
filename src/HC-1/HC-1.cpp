@@ -88,8 +88,8 @@ json_t * Hc1Module::dataToJson()
 {
     auto root = json_object();
     json_object_set_new(root, "midi-device", json_stringn(device_name.c_str(), device_name.size()));
-    json_object_set_new(root, "preset-tab", json_integer(tab));
 
+    json_object_set_new(root, "preset-tab", json_integer(tab));
     auto ar = json_array();
     for (int pg: page) {
         json_array_append_new(ar, json_integer(pg));
@@ -112,12 +112,15 @@ void Hc1Module::dataFromJson(json_t *root)
     if (j) {
         restore_ui_data = new RestoreData();
         restore_ui_data->tab = static_cast<PresetTab>(clamp(json_integer_value(j), PresetTab::First, PresetTab::Last));
+        tab = restore_ui_data->tab;
         j = json_object_get(root, "tab_page");
         if (j) {
             for (int i = PresetTab::First; i < PresetTab::Last; ++i) {
                 auto el = json_array_get(j, i);
                 if (el) {
-                    restore_ui_data->page[i] = json_integer_value(el);
+                    auto pg = json_integer_value(el);
+                    restore_ui_data->page[i] = pg;
+                    page[i] = pg;
                 }
             }
         }

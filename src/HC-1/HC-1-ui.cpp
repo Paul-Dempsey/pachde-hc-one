@@ -246,7 +246,7 @@ void Hc1ModuleWidget::updatePresetWidgets() {
 
     auto p = presets.begin();
     auto mp = my_module->getPresets(tab);
-    auto start = mp.cbegin() + 24*page;
+    auto start = mp.cbegin() + 24 * page;
     // sanity check page
     if (start >= mp.cend()) {
         page = 0;
@@ -267,7 +267,7 @@ void Hc1ModuleWidget::updatePresetWidgets() {
         page_down->enable(false);
     } else {
         page_up->enable(page > 0);
-        page_down->enable(start <  mp.cend()-(24*page));
+        page_down->enable(start <  mp.cend()-(24 * page));
     }
 
 }
@@ -279,8 +279,8 @@ void Hc1ModuleWidget::populatePresetWidgets()
     updatePresetWidgets();
 }
 
-void  Hc1ModuleWidget::setTab(PresetTab new_tab) {
-    if (new_tab == this->tab) return;
+void  Hc1ModuleWidget::setTab(PresetTab new_tab, bool force) {
+    if (!force && (new_tab == this->tab)) return;
     if (my_module) my_module->tab = new_tab;
     tab = new_tab;
     tab_bar->selectTab(tab);
@@ -305,19 +305,24 @@ void Hc1ModuleWidget::step()
             status_light->onDirty(e);
         }
 
-        if (my_module->restore_ui_data && my_module->ready()) {
-            auto restore = my_module->restore_ui_data;
+        Hc1Module::RestoreData * restore = nullptr;
+        if (my_module->restore_ui_data && my_module->hasSystemPresets() && my_module->hasUserPresets()) {
+            restore = my_module->restore_ui_data;
             my_module->restore_ui_data = nullptr;
-            setTab(restore->tab);
+
+            tab = restore->tab;
             page = restore->page[tab];
+            my_module->tab = tab;
+            my_module->setTabPage(tab, page);
             delete restore;
-        } else {
-            auto selected = static_cast<PresetTab>(tab_bar->getSelectedTab());
-            if (selected != tab) {
-                setTab(selected);
-            }
+            updatePresetWidgets();
+            return;
         }
 
+        auto selected = static_cast<PresetTab>(tab_bar->getSelectedTab());
+        if (selected != tab) {
+            setTab(selected);
+        }
         switch (tab) {
             case PresetTab::System:
                 if (!have_preset_widgets && my_module->hasSystemPresets()) {
@@ -423,6 +428,17 @@ void Hc1ModuleWidget::draw(const DrawArgs& args)
         Circle(vg, PRESET_LEFT + ((my_module->midi_receive_count / 50) % 320), PRESET_BOTTOM + 1.75f, 1.25f, blue_green_light);
     }
 #endif
+    // extender connector
+    if (my_module && my_module->expanders.any()) {
+
+        float cx = my_module->expanders.right() ? box.size.x : 0;
+        float cy = box.size.y * .5f;
+
+        Line(vg, cx - 6.f, cy, cx + 6.f, cy, COLOR_BRAND, 1.75f);
+        Circle(vg, cx - 6.f, cy, 3.f, COLOR_BRAND);
+        Circle(vg, cx + 6.f, cy, 3.f, COLOR_BRAND);
+    }
+
     auto font = GetPluginFontRegular();
     if (FontOk(font)) {
         if (my_module)
@@ -562,7 +578,7 @@ void Hc1ModuleWidget::appendContextMenu(Menu *menu)
             menu->addChild(createMenuItem("One handshake", "",   [=](){ my_module->sendEditorPresent(); }));
             menu->addChild(createMenuItem("Request config", "",  [=](){ my_module->transmitRequestConfiguration(); }));
         }));
-        menu->addChild(createMenuItem("Mute", "",            [=](){ my_module->silence(true); }, !ready));
+        //menu->addChild(createMenuItem("Mute", "",            [=](){ my_module->silence(true); }, !ready));
         menu->addChild(createSubmenuItem("Favorites", "", [=](Menu* menu) {
             menu->addChild(createMenuItem("Clear favorites", "", [=](){ my_module->clearFavorites();}, !ready));
             menu->addChild(createMenuItem("Open favorites...", "", [=]() {
