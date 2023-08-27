@@ -9,41 +9,38 @@ Hc2Module::Hc2Module()
 {
 }
 
+
+Hc1Module* Hc2Module::getPartner()
+{
+    if (partner_side.left()) {
+        return dynamic_cast<Hc1Module*>(getLeftExpander().module);
+    }
+    if (partner_side.right()) {
+        return dynamic_cast<Hc1Module*>(getRightExpander().module);
+    }
+    return nullptr;
+}
+
 const char * Hc2Module::getDeviceName()
 {
-    return partner ? partner->device_name.c_str() : "<Eagan Matrix Device>";
+    if (auto partner = getPartner()) {
+        return partner->device_name.c_str();
+    }
+    return "<Eagan Matrix Device>";
 }
 
 void Hc2Module::onExpanderChange(const ExpanderChangeEvent& e)
 {
-    ExpanderPresence where = ExpanderPresence::fromRackSide(e.side);
-    auto expander = where.right() ? getRightExpander() : getLeftExpander();
-    bool new_partner = false;
-
-    if (!partner) {
-        partner = dynamic_cast<Hc1Module*>(expander.module);
-        new_partner = true;
-    } else {
-        if (where == partner_side) {
-            partner = dynamic_cast<Hc1Module*>(expander.module);
-            if (!partner) {
-                // get partner from opposite side (if any)
-                where = where.right() ? Expansion::Left : Expansion::Right;
-                expander = expander = where.right() ? getRightExpander() : getLeftExpander();
-                partner = dynamic_cast<Hc1Module*>(expander.module);
-            }
-            new_partner = true;
-        } else {
-            //ignore: already have a partner
-        }
+    partner_side.clear();
+    auto left = dynamic_cast<Hc1Module*>(getLeftExpander().module);
+    auto right = dynamic_cast<Hc1Module*>(getRightExpander().module);
+    if (left) {
+        partner_side.addLeft();
+        left->expanderAdded(Expansion::Right);
     }
-    if (new_partner) {
-        if (partner) {
-            partner_side = where;
-            partner->expanderAdded(where.right() ? Expansion::Left : Expansion::Right);
-        } else {
-            partner_side = Expansion::None;
-        }
+    if (right) {
+        partner_side.addRight();
+        right->expanderAdded(Expansion::Left);
     }
 }
 

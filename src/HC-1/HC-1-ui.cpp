@@ -363,24 +363,30 @@ void Hc1ModuleWidget::drawLayer(const DrawArgs& args, int layer)
                     text = "[MIDI error - please wait]";
                 } else
                 if (InitState::Uninitialized == my_module->device_output_state) {
-                    text = "Looking for Eagan Matrix MIDI output";
+                    text = "[looking for EM out]";
                 } else
                 if (InitState::Uninitialized == my_module->device_input_state) {
-                    text = "Looking for Eagan Matrix MIDI input";
+                    text = "[looking for EM in]";
                 } else
                 if (my_module->is_gathering_presets()) {
                     text = format_string("[gathering %s preset %d]", my_module->in_user_names ? "User" : "System", my_module->in_user_names ? my_module->user_presets.size() : my_module->system_presets.size());
                 } else
                 if (InitState::Uninitialized == my_module->system_preset_state) {
-                    text = "Preparing system presets";
+                    text = "[preparing system presets]";
                 } else
                 if (InitState::Uninitialized == my_module->user_preset_state) {
-                    text = "Preparing user presets";
+                    text = "[preparing user presets]";
+                } else
+                if (InitState::Uninitialized == my_module->config_state) {
+                    text = "[preparing for current configuration]";
+                } else
+                if (InitState::Pending == my_module->config_state) {
+                    text = "[processing current configuration]";
                 } else
                 if (my_module->current_preset) {
                     text = my_module->current_preset->name;
                 } else {
-                    text = "< current preset >";
+                    text = "";
                 }
             } else {
                 text = "< current preset >";
@@ -425,18 +431,22 @@ void Hc1ModuleWidget::draw(const DrawArgs& args)
     if (my_module) {
     //if (my_module && my_module->anyPending()) {
         // raw MIDI animation
-        Circle(vg, PRESET_LEFT + ((my_module->midi_receive_count / 50) % 320), PRESET_BOTTOM + 1.75f, 1.25f, blue_green_light);
+        const float y = PRESET_BOTTOM + 1.75f;
+        Circle(vg, PRESET_LEFT + fmodf(my_module->midi_send_count / 20.f, 320.f), y, 1.25f, purple_light);
+        Circle(vg, PRESET_LEFT + fmodf(my_module->midi_receive_count / 20.f, 320.f), y, 1.25f, green_light);
     }
 #endif
     // extender connector
     if (my_module && my_module->expanders.any()) {
-
-        float cx = my_module->expanders.right() ? box.size.x : 0;
+        bool right = my_module->expanders.right();
         float cy = box.size.y * .5f;
-
-        Line(vg, cx - 6.f, cy, cx + 6.f, cy, COLOR_BRAND, 1.75f);
-        Circle(vg, cx - 6.f, cy, 3.f, COLOR_BRAND);
-        Circle(vg, cx + 6.f, cy, 3.f, COLOR_BRAND);
+        if (right) {
+            Line(vg, box.size.x - 5.5f, cy, box.size.x , cy, COLOR_BRAND, 1.75f);
+            Circle(vg, box.size.x - 5.5f, cy, 2.5f, COLOR_BRAND);
+        } else {
+            Line(vg, 0.f, cy, 5.5f, cy, COLOR_BRAND, 1.75f);
+            Circle(vg, 5.5f, cy, 2.5f, COLOR_BRAND);
+        }
     }
 
     auto font = GetPluginFontRegular();
@@ -458,9 +468,10 @@ void Hc1ModuleWidget::draw(const DrawArgs& args)
         { // device
             std::string device_name;
             if (my_module) {
-                device_name = FilterDeviceName(my_module->deviceName());
+                device_name = my_module->deviceName();
             } else {
                 device_name = "<Eagan Matrix Device>";
+
             }
             if (device_name.empty()) {
                 device_name = "(no Eagan Matrix available)";
@@ -548,13 +559,17 @@ void Hc1ModuleWidget::draw(const DrawArgs& args)
         Dot(vg, left, y, InitStateColor(my_module->config_state));
         left += spacing;
         //saved_preset_state
-        Dot(vg, left, y, InitStateColor(my_module->saved_preset_state));
+        if (my_module->restore_saved_preset){
+            Dot(vg, left, y, InitStateColor(my_module->saved_preset_state));
+        }
         left += spacing;
         //request_updates_state
         Dot(vg, left, y, InitStateColor(my_module->request_updates_state));
         left += spacing;
         //handshake
-        Dot(vg, left, y, InitStateColor(my_module->handshake));
+        if (my_module->heartbeat) {
+            Dot(vg, left, y, InitStateColor(my_module->handshake));
+        }
         left += spacing;
     }
 

@@ -190,7 +190,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     // device management
     int input_device_id = -1;
     int output_device_id = -1;
-    std::string device_name;
+    std::string device_name = "";
 
     // cc handling
     uint8_t pedal_fraction = 0;
@@ -198,7 +198,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     uint8_t recirculator = 0;
     int download_message_id = -1; // CC109
     uint64_t midi_receive_count = 0;
-    //uint64_t midi_receive_byte_count = 0;
+    uint64_t midi_send_count = 0;
     uint16_t firmware_version = 0;
     uint8_t dsp[3] {0};
     int data_stream = -1;

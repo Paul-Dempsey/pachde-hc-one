@@ -23,15 +23,18 @@ Hc2ModuleWidget::Hc2ModuleWidget(Hc2Module * module)
 
 void Hc2ModuleWidget::drawExtenderConnector(const DrawArgs& args)
 {
-    if (!my_module || !my_module->partner) return;
+    if (!my_module || my_module->partner_side.empty()) return;
     auto vg = args.vg;
 
-    float cx = my_module->partner_side.right() ? box.size.x : 0;
+    auto right = my_module->partner_side.right();
     float cy = box.size.y * .5f;
-
-    Line(vg, cx - 6.f, cy, cx + 6.f, cy, COLOR_BRAND, 1.75f);
-    Circle(vg, cx - 6.f, cy, 3.f, COLOR_BRAND);
-    Circle(vg, cx + 6.f, cy, 3.f, COLOR_BRAND);
+    if (right) {
+        Line(vg, box.size.x - 5.5f, cy, box.size.x , cy, COLOR_BRAND, 1.75f);
+        Circle(vg, box.size.x - 5.5f, cy, 2.5f, COLOR_BRAND);
+    } else {
+        Line(vg, 0.f, cy, 5.5f, cy, COLOR_BRAND, 1.75f);
+        Circle(vg, 5.5f, cy, 2.5f, COLOR_BRAND);
+    }
 }
 
 void drawMap(NVGcontext* vg, uint8_t * map, float x, float y)
@@ -49,47 +52,47 @@ void drawMap(NVGcontext* vg, uint8_t * map, float x, float y)
     }
 }
 
-void Hc2ModuleWidget::drawCCMap(const DrawArgs& args)
+void Hc2ModuleWidget::drawCCMap(const DrawArgs& args, Hc1Module * partner)
 {
-    if (my_module && my_module->partner) {
-        auto x = box.size.x * .5f - 126.5f;
-        //Line(args.vg, x + 1 + 117, 10.f, x + 1 + 117, 48.f, blue_light);
-        drawMap(args.vg, my_module->partner->ch0_cc_value, x, 24.f);
-        drawMap(args.vg, my_module->partner->ch15_cc_value, x, 44.f);
-    }
+    assert(partner);
+    auto x = box.size.x * .5f - 126.5f;
+    //Line(args.vg, x + 1 + 117, 10.f, x + 1 + 117, 48.f, blue_light);
+    drawMap(args.vg, partner->ch0_cc_value, x, 24.f);
+    drawMap(args.vg, partner->ch15_cc_value, x, 44.f);
 }
 
 void Hc2ModuleWidget::draw(const DrawArgs& args)
 {
     ModuleWidget::draw(args);
     auto vg = args.vg;
-
+    auto partner = my_module ? my_module->getPartner() : nullptr;
     auto font = GetPluginFontRegular();
     if (FontOk(font)) {
         SetTextStyle(vg, font, RampGray(G_90), 12.f);
 
-        auto device =  my_module ? my_module->getDeviceName() : nullptr;
+        auto device =  partner ? my_module->getDeviceName() : nullptr;
         if (device) {
             nvgText(vg, box.size.x/2.f + 25.f, box.size.y - 7.5f, device, nullptr);
         }
     }
-    drawCCMap(args);
-
-    if (my_module && my_module->partner && FontOk(font))
+    if (partner) {
+        drawCCMap(args, partner);
+    }
+    if (partner && FontOk(font))
     {
-        {
-            nvgSave(vg);
-            auto text = format_string("%d", my_module->partner->midi_receive_count);
-            RightAlignText(vg, box.size.x - 5.f, 30.f, text.c_str(), nullptr);
-            //text = format_string("%d", my_module->partner->midi_receive_byte_count);
-            //RightAlignText(vg, box.size.x - 5.f, 45.f, text.c_str(), nullptr);
-            nvgRestore(vg);
-        }
+        // Midi send/receive counts
+        // {
+        //     nvgSave(vg);
+        //     auto text = format_string("%d", partner->midi_receive_count);
+        //     RightAlignText(vg, box.size.x - 5.f, 30.f, text.c_str(), nullptr);
+        //     text = format_string("%d", partner->midi_send_count);
+        //     RightAlignText(vg, box.size.x - 5.f, 45.f, text.c_str(), nullptr);
+        //     nvgRestore(vg);
+        // }
         auto y = 80.f;
         const float row_interval = 14.f;
-        auto hc1 = my_module->partner;
-        auto cc15 = hc1->ch15_cc_value;
-        auto cc0 = hc1->ch0_cc_value;
+        auto cc15 = partner->ch15_cc_value;
+        auto cc0 = partner->ch0_cc_value;
         const char * const ped_indicator = "NSEDTVP";
         auto peds = format_string(
             "Pedals (1 %c %d %d %d-%d) (2 %c %d %d %d-%d) (Sus %d) (Sos %d) (Sos2 %d)",
@@ -147,7 +150,7 @@ void Hc2ModuleWidget::draw(const DrawArgs& args)
         // text = format_string("updates = %s", InitStateName(hc1->request_updates_state));
         // nvgText(vg, 7.5, y, text.c_str(), nullptr);
         // y += row_interval;
-        if (hc1->broken) {
+        if (partner->broken) {
             nvgText(vg, 7.5, y, "BROKE", nullptr);
             y += row_interval;
         }
@@ -160,10 +163,11 @@ void Hc2ModuleWidget::draw(const DrawArgs& args)
 
 void Hc2ModuleWidget::appendContextMenu(Menu *menu)
 {
+    auto partner = my_module ? my_module->getPartner() : nullptr;
     menu->addChild(new MenuSeparator);
-    if (my_module && my_module->partner) {
+    if (partner) {
         menu->addChild(createMenuItem("Clear CC Map", "",
-            [this](){ my_module->partner->clearCCValues(); }));
+            [partner](){ partner->clearCCValues(); }));
     } else {
         menu->addChild(createMenuItem("- Not Connected - ", "", [](){}, true));
     }

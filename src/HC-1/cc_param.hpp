@@ -26,6 +26,12 @@ struct CCParamQuantity : rack::engine::ParamQuantity
         return p ? convertValue(p->getValue()) : 0;
     }
 
+    void setKnobVoltage(float v)
+    {
+        v = v / 10.f * getMaxValue();
+        setValue(v);
+    }
+
     void syncValue() {
         assert(cc);
         auto to_send = valueToSend();

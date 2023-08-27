@@ -15,10 +15,9 @@ namespace pachde {
 
 struct Hc2Module : Module
 {
-
-    Hc1Module* partner = nullptr;
     ExpanderPresence partner_side = Expansion::None;
-
+    Hc1Module* getPartner();
+    
     Hc2Module();
     void onExpanderChange(const ExpanderChangeEvent& e) override;
 
@@ -34,10 +33,9 @@ struct Hc2ModuleWidget : ModuleWidget
 
     explicit Hc2ModuleWidget(Hc2Module * module);
     void drawExtenderConnector(const DrawArgs& args);
-    void drawCCMap(const DrawArgs& args);
+    void drawCCMap(const DrawArgs& args, Hc1Module * partner);
     void draw(const DrawArgs& args) override;
     void appendContextMenu(Menu *menu) override;
-
 };
 
 }

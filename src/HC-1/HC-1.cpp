@@ -154,7 +154,7 @@ void Hc1Module::reboot()
     midi_output.reset();
     clearCCValues();
     midi_receive_count = 0;
-    //midi_receive_byte_count = 0;
+    midi_send_count = 0;
     broken = false;
     broken_idle = 0.f;
     heart_phase = 0.f;
@@ -247,9 +247,8 @@ void Hc1Module::processCV(int inputId)
 
     if (in.isConnected()) {
         auto v = in.getVoltage();
-        ParamQuantity* pq = getParamQuantity(inputId);
-        v = v / 10.f * pq->getMaxValue();
-        pq->setValue(v);
+        CCParamQuantity* pq = static_cast<CCParamQuantity*>(getParamQuantity(inputId));
+        pq->setKnobVoltage(v);
     }
 }
 

@@ -5,6 +5,7 @@ namespace pachde {
 
 void Hc1Module::sendControlChange(uint8_t channel, uint8_t cc, uint8_t value)
 {
+    ++midi_send_count;
     midi::Message msg;
     SetCC(msg, channel, cc, value);
     midi_output.sendMessage(msg);
@@ -12,6 +13,7 @@ void Hc1Module::sendControlChange(uint8_t channel, uint8_t cc, uint8_t value)
 
 void Hc1Module::sendProgramChange(uint8_t channel, uint8_t program)
 {
+    ++midi_send_count;
     midi::Message msg;
     SetProgramChange(msg, channel, program);
     midi_output.sendMessage(msg);
@@ -19,6 +21,7 @@ void Hc1Module::sendProgramChange(uint8_t channel, uint8_t program)
 
 void Hc1Module::sendResetAllreceivers()
 {
+    ++midi_send_count;
     midi::Message msg;
     msg.bytes[0] = 0xff;
     msg.bytes.resize(1);
@@ -115,6 +118,7 @@ void Hc1Module::sendEditorPresent()
 
 void Hc1Module::sendNoteOn(uint8_t channel, uint8_t note, uint8_t velocity)
 {
+    ++midi_send_count;
     midi::Message msg;
     SetNoteOn(msg, channel, note, velocity);
     midi_output.sendMessage(msg);
@@ -122,6 +126,7 @@ void Hc1Module::sendNoteOn(uint8_t channel, uint8_t note, uint8_t velocity)
 
 void Hc1Module::sendNoteOff(uint8_t channel, uint8_t note, uint8_t velocity)
 {
+    ++midi_send_count;
     midi::Message msg;
     SetNoteOff(msg, channel, note, velocity);
     midi_output.sendMessage(msg);
