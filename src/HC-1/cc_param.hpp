@@ -16,13 +16,15 @@ struct CCParamQuantity : rack::engine::ParamQuantity
 
     void enable(bool enable) { enabled = enable; }
 
-    uint16_t clipValue(float value)  {
+    uint16_t clipValue(float value)
+    {
         return high_resolution
             ? static_cast<uint16_t>(clamp(value, 0.f, EM_Max14f))
             : static_cast<uint16_t>(clamp(value, 0.f, 127.f));
     }
 
-    uint16_t valueToSend() {
+    uint16_t valueToSend()
+    {
         auto p = getParam();
         return p ? clipValue(p->getValue() + offset) : 0;
     }
@@ -39,26 +41,33 @@ struct CCParamQuantity : rack::engine::ParamQuantity
         setValue(v);
     }
 
-    void syncValue() {
+    void sendValue()
+    {
+        auto to_send = valueToSend();
+        last_value = to_send;
+        if (enabled) {
+            auto my_module = dynamic_cast<Hc1Module*>(module);
+            if (my_module && my_module->ready()) {
+                if (high_resolution) {
+                    uint8_t lo = to_send & 0x7f;
+                    if (lo) {
+                        my_module->sendControlChange(EM_SettingsChannel, EMCC_PedalFraction, lo);
+                    }
+                    uint8_t hi = to_send >> 7;
+                    my_module->sendControlChange(EM_SettingsChannel, cc, hi);
+                } else {
+                    my_module->sendControlChange(EM_SettingsChannel, cc, to_send & 0x7f);
+                }
+            }
+        }
+    }
+
+    void syncValue()
+    {
         assert(cc);
         auto to_send = valueToSend();
         if (last_value != to_send) {
-            last_value = to_send;
-            if (enabled) {
-                auto my_module = dynamic_cast<Hc1Module*>(module);
-                if (my_module && my_module->ready()) {
-                    if (high_resolution) {
-                        uint8_t lo = to_send & 0x7f;
-                        if (lo) {
-                            my_module->sendControlChange(EM_SettingsChannel, EMCC_PedalFraction, lo);
-                        }
-                        uint8_t hi = to_send >> 7;
-                        my_module->sendControlChange(EM_SettingsChannel, cc, hi);
-                    } else {
-                        my_module->sendControlChange(EM_SettingsChannel, cc, to_send & 0x7f);
-                    }
-                }
-            }
+            sendValue();
         }
     }
 
@@ -66,7 +75,8 @@ struct CCParamQuantity : rack::engine::ParamQuantity
         last_value = valueToSend();
     }
 
-    void setValueSilent(float newValue) {
+    void setValueSilent(float newValue)
+    {
         auto p = getParam();
         if (!p) return;
         p->setValue(newValue);
@@ -104,19 +114,22 @@ TCCPQ* configCCParam(uint8_t cc, bool hiRes, Module* module, int paramId, float 
 
 struct MidiKnob : RoundSmallBlackKnob
 {
-    void step() override
-    {
-        RoundSmallBlackKnob::step();
-        if (auto pq = dynamic_cast<CCParamQuantity*>(getParamQuantity())) {
-            pq->syncValue();
-        }
-    }
+    // void step() override
+    // {
+    //     RoundSmallBlackKnob::step();
+    //     if (auto pq = dynamic_cast<CCParamQuantity*>(getParamQuantity())) {
+    //         pq->syncValue();
+    //     }
+    // }
+
     void drawLayer(const DrawArgs& args, int layer) override
     {
         RoundSmallBlackKnob::drawLayer(args, layer);
-        if (0 == layer) return;
-        bool relative = module && module->params[11 + this->paramId].getValue() > .5f;
-        if (relative) {
+        if (1 != layer) return;
+        if (module
+            && module->getInput(paramId).isConnected()
+            && module->getParam(13 + paramId).getValue() > .5f
+            ) {
             auto pq = dynamic_cast<CCParamQuantity*>(getParamQuantity());
             if (!pq) return;
             float value = pq->clipValue(pq->offset + pq->getValue()) / pq->getMaxValue();

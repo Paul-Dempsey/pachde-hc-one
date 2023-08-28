@@ -30,15 +30,18 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     {
         M1_PARAM, M2_PARAM, M3_PARAM, M4_PARAM, M5_PARAM, M6_PARAM,
         R1_PARAM, R2_PARAM, R3_PARAM, R4_PARAM, RMIX_PARAM,
+        VOLUME_PARAM, MUTE_PARAM,
         M1_REL_PARAM, M2_REL_PARAM, M3_REL_PARAM, M4_REL_PARAM, M5_REL_PARAM, M6_REL_PARAM,
         R1_REL_PARAM, R2_REL_PARAM, R3_REL_PARAM, R4_REL_PARAM, RMIX_REL_PARAM,
+        VOLUME_REL_PARAM,
         NUM_PARAMS,
-        NUM_KNOBS = M1_REL_PARAM,
+        FIRST_REL_PARAM = M1_REL_PARAM,
     };
     enum Inputs
     {
         M1_INPUT, M2_INPUT, M3_INPUT, M4_INPUT, M5_INPUT, M6_INPUT,
         R1_INPUT, R2_INPUT, R3_INPUT, R4_INPUT, RMIX_INPUT,
+        VOLUME_INPUT,
         NUM_INPUTS
     };
     enum Outputs
@@ -49,7 +52,9 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     {
         M1_REL_LIGHT, M2_REL_LIGHT, M3_REL_LIGHT, M4_REL_LIGHT, M5_REL_LIGHT, M6_REL_LIGHT,
         R1_REL_LIGHT, R2_REL_LIGHT, R3_REL_LIGHT, R4_REL_LIGHT, RMIX_REL_LIGHT,
+        VOLUME_REL_LIGHT,
         HEART_LIGHT,
+        MUTE_LIGHT,
         NUM_LIGHTS
     };
 
@@ -192,13 +197,14 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     std::string device_name = "";
 
     // cc handling
+    uint16_t firmware_version = 0;
     uint8_t pedal_fraction = 0;
+    bool muted = false;
     int64_t notesOn = 0;
     uint8_t recirculator = 0;
     int download_message_id = -1; // CC109
     uint64_t midi_receive_count = 0;
     uint64_t midi_send_count = 0;
-    uint16_t firmware_version = 0;
     uint8_t dsp[3] {0};
     int data_stream = -1;
 
@@ -214,7 +220,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     // cv processing
     const int CV_INTERVAL = 64;
     int check_cv = 0;
-    const float MIDI_RATE = 0.01f;
+    const float MIDI_RATE = 0.1f;
     rack::dsp::Timer midi_timer;
 
     const std::string deviceName() { return device_name; }

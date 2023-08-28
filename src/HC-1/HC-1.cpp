@@ -19,6 +19,8 @@ Hc1Module::Hc1Module()
     configCCParam(em_midi::EMCC_R3,   false, this, R3_PARAM, 0.f, 127.f, 64.f, "R3"); //->snapEnabled = true;
     configCCParam(em_midi::EMCC_R4,   false, this, R4_PARAM, 0.f, 127.f, 64.f, "R4"); //->snapEnabled = true;
     configCCParam(em_midi::EMCC_RMIX, false, this, RMIX_PARAM, 0.f, 127.f, 64.f, "Recirculator Mix"); //->snapEnabled = true;
+    configCCParam(em_midi::EMCC_PostLevel, true, this, VOLUME_PARAM, 0.f, EM_Max14f, EM_Max14f/2.f, "Master volume");
+
     configSwitch(M1_REL_PARAM, 0.f, 1.f, 0.f, "i CV relative");
     configSwitch(M2_REL_PARAM, 0.f, 1.f, 0.f, "ii CV relative");
     configSwitch(M3_REL_PARAM, 0.f, 1.f, 0.f, "iii CV relative");
@@ -30,6 +32,8 @@ Hc1Module::Hc1Module()
     configSwitch(R3_REL_PARAM, 0.f, 1.f, 0.f, "R3 CV relative");
     configSwitch(R4_REL_PARAM, 0.f, 1.f, 0.f, "R4 CV relative");
     configSwitch(RMIX_REL_PARAM, 0.f, 1.f, 0.f, "RMix CV relative");
+    configSwitch(VOLUME_REL_PARAM, 0.f, 1.f, 0.f, "Volume CV relative");
+    configSwitch(MUTE_PARAM, 0.f, 1.f, 0.f, "Mute");
 
     configInput(M1_INPUT, "Macro i");
     configInput(M2_INPUT, "Macro ii");
@@ -42,6 +46,7 @@ Hc1Module::Hc1Module()
     configInput(R3_INPUT, "R3");
     configInput(R4_INPUT, "R4");
     configInput(RMIX_INPUT, "Recirculator mix");
+    configInput(VOLUME_INPUT, "Master volume");
 
     configLight(Lights::M1_REL_LIGHT, "i CV relative");
     configLight(Lights::M2_REL_LIGHT, "ii CV relative");
@@ -54,9 +59,9 @@ Hc1Module::Hc1Module()
     configLight(Lights::R3_REL_LIGHT, "R3 CV relative");
     configLight(Lights::R4_REL_LIGHT, "R4 CV relative");
     configLight(Lights::RMIX_REL_LIGHT, "RMix CV relative");
-
+    configLight(Lights::VOLUME_REL_LIGHT, "Volume CV relative");
     configLight(Lights::HEART_LIGHT, "Device status");
-
+    configLight(Lights::MUTE_LIGHT, "Mute");
     getLight(HEART_LIGHT).setBrightness(1.0f);
     clearCCValues();
 }
@@ -73,6 +78,7 @@ void Hc1Module::centerKnobs() {
     paramToDefault(R3_PARAM);
     paramToDefault(R4_PARAM);
     paramToDefault(RMIX_PARAM);
+    paramToDefault(VOLUME_PARAM);
 }
 
 void Hc1Module::onSave(const SaveEvent& e) {
@@ -243,8 +249,8 @@ void Hc1Module::processCV(int inputId)
     CCParamQuantity* pq = static_cast<CCParamQuantity*>(getParamQuantity(inputId));
     if (!pq) return;
     auto in = getInput(inputId);
-    bool relative = params[NUM_KNOBS + inputId].getValue() > .5f;
-    lights[inputId].setBrightness((relative *.25f) + ((in.isConnected() && relative) *.75f));
+    bool relative = params[FIRST_REL_PARAM + inputId].getValue() > .5f;
+    lights[inputId].setBrightness((relative *.20f) + ((in.isConnected() && relative) *.80f));
 
     if (in.isConnected()) {
         auto v = in.getVoltage();
@@ -261,6 +267,7 @@ void Hc1Module::processCV(int inputId)
 
 void Hc1Module::processAllCV()
 {
+    processCV(VOLUME_INPUT);
     for (int n = M1_INPUT; n <= M6_INPUT; ++n) {
         processCV(n);
     }
@@ -280,11 +287,34 @@ void Hc1Module::process(const ProcessArgs& args)
         }
     }
 
-    if (settings::headless && is_ready) {
+    if (is_ready) {
+        // MUTE
+        {
+            auto pq = getParamQuantity(MUTE_PARAM);
+            bool new_mute = pq->getValue() > 0.5f;
+            if (new_mute != muted) {
+                muted = new_mute;
+                if (muted) {
+                    lights[MUTE_LIGHT].setBrightness(1.f);
+                    sendControlChange(EM_SettingsChannel, EMCC_PostLevel, 0);
+                } else {
+                    lights[MUTE_LIGHT].setBrightness(0.f);
+                    auto vpq = dynamic_cast<CCParamQuantity*>(getParamQuantity(VOLUME_PARAM));
+                    vpq->sendValue();
+                }
+            }
+        }
+
         float midi_time = midi_timer.process(args.sampleTime);
         if (midi_time > MIDI_RATE) {
             midi_timer.reset();
-            for (int n = M1_PARAM; n < NUM_PARAMS; ++n) {
+            for (int n = Params::M1_PARAM; n < Params::NUM_PARAMS; ++n) {
+                switch (n) {
+                case Params::MUTE_PARAM: continue;
+                case Params::VOLUME_PARAM:
+                    if (muted) continue;
+                    break;
+                }
                 auto pq = dynamic_cast<CCParamQuantity*>(getParamQuantity(n));
                 if (pq) {
                     pq->syncValue();
@@ -293,12 +323,6 @@ void Hc1Module::process(const ProcessArgs& args)
         }
     }
 
-    // Blink light at 1Hz
-    // blinkPhase += args.sampleTime;
-    // if (blinkPhase >= 1.f) {
-    //     blinkPhase -= 1.f;
-    // }
-    //lights[BLINK_LIGHT].setBrightness(blinkPhase < 0.5f ? 1.f : 0.f);	
     if (broken) {
         broken_idle += args.sampleTime;
         if (broken_idle > 1.75f) {
@@ -307,6 +331,7 @@ void Hc1Module::process(const ProcessArgs& args)
         return;
     }
 
+    // beginning of init phase timeout impl, if we need it
     // if (init_step_time > 0.f) {
     //     init_step_phase += args.sampleTime;
     //     if (init_step_phase >= init_step_time) {

@@ -434,7 +434,7 @@ void Hc1Module::onChannel0CC(uint8_t cc, uint8_t value)
     ch0_cc_value[cc] = value;
     switch (cc) {
         case EMCC_PedalFraction: 
-            pedal_fraction =  value;
+            pedal_fraction =  value; // setMacroCCValue uses pedal_fraction
             break;
 
         case EMCC_i:   setMacroCCValue(M1_PARAM, value); break;
@@ -450,6 +450,7 @@ void Hc1Module::onChannel0CC(uint8_t cc, uint8_t value)
         case EMCC_R4:   setRecirculatorCCValue(R4_PARAM, value); break;
         case EMCC_RMIX: setRecirculatorCCValue(RMIX_PARAM, value); break;
 
+        case EMCC_PostLevel: setMacroCCValue(VOLUME_PARAM, value); break;
         case MidiCC_AllSoundOff: onSoundOff(); break;
     }
 }

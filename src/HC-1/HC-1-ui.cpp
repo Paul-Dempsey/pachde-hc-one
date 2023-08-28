@@ -7,7 +7,8 @@
 #include "../small_push.hpp"
 
 namespace pachde {
-#define MIDI_ANIMATION
+
+//#define SHOW_PRESET0
 
 const NVGcolor& InitStateColor(InitState state)
 {
@@ -80,11 +81,11 @@ constexpr const float KNOB_LEFT   = 45.f;
 constexpr const float KNOB_SPREAD = 54.f;
 constexpr const float KNOB_ROW_1  = 280.f;
 constexpr const float KNOB_ROW_2  = 334.f;
-constexpr const float RKNOB_LEFT  = KNOB_LEFT - KNOB_SPREAD *.5f;
+constexpr const float RKNOB_LEFT  = KNOB_LEFT; //- KNOB_SPREAD *.5f;
 
 constexpr const float CV_COLUMN_OFFSET = 22.25f;
-constexpr const float RB_OFFSET = 17.75f;
-constexpr const float RB_VOFFSET = 14.5f;
+constexpr const float RB_OFFSET = 20.f;
+constexpr const float RB_VOFFSET = 15.f;
 constexpr const float CV_ROW_1 = KNOB_ROW_1 + 6.f;
 constexpr const float CV_ROW_2 = KNOB_ROW_2 + 6.f;
 
@@ -113,11 +114,12 @@ Hc1ModuleWidget::Hc1ModuleWidget(Hc1Module *module)
     addChild(createInputCentered<ColorPort>(Vec(KNOB_LEFT + 4.f * KNOB_SPREAD - CV_COLUMN_OFFSET, CV_ROW_1), module, Hc1Module::M5_INPUT));
     addChild(createInputCentered<ColorPort>(Vec(KNOB_LEFT + 5.f * KNOB_SPREAD - CV_COLUMN_OFFSET, CV_ROW_1), module, Hc1Module::M6_INPUT));
 
-    addChild(createInputCentered<ColorPort>(Vec(RKNOB_LEFT +       KNOB_SPREAD - CV_COLUMN_OFFSET, CV_ROW_2), module, Hc1Module::R1_INPUT));
-    addChild(createInputCentered<ColorPort>(Vec(RKNOB_LEFT + 2.f * KNOB_SPREAD - CV_COLUMN_OFFSET, CV_ROW_2), module, Hc1Module::R2_INPUT));
-    addChild(createInputCentered<ColorPort>(Vec(RKNOB_LEFT + 3.f * KNOB_SPREAD - CV_COLUMN_OFFSET, CV_ROW_2), module, Hc1Module::R3_INPUT));
-    addChild(createInputCentered<ColorPort>(Vec(RKNOB_LEFT + 4.f * KNOB_SPREAD - CV_COLUMN_OFFSET, CV_ROW_2), module, Hc1Module::R4_INPUT));
-    addChild(createInputCentered<ColorPort>(Vec(RKNOB_LEFT + 5.f * KNOB_SPREAD - CV_COLUMN_OFFSET, CV_ROW_2), module, Hc1Module::RMIX_INPUT));
+    addChild(createInputCentered<ColorPort>(Vec(RKNOB_LEFT                     - CV_COLUMN_OFFSET, CV_ROW_2), module, Hc1Module::R1_INPUT));
+    addChild(createInputCentered<ColorPort>(Vec(RKNOB_LEFT +       KNOB_SPREAD - CV_COLUMN_OFFSET, CV_ROW_2), module, Hc1Module::R2_INPUT));
+    addChild(createInputCentered<ColorPort>(Vec(RKNOB_LEFT + 2.f * KNOB_SPREAD - CV_COLUMN_OFFSET, CV_ROW_2), module, Hc1Module::R3_INPUT));
+    addChild(createInputCentered<ColorPort>(Vec(RKNOB_LEFT + 3.f * KNOB_SPREAD - CV_COLUMN_OFFSET, CV_ROW_2), module, Hc1Module::R4_INPUT));
+    addChild(createInputCentered<ColorPort>(Vec(RKNOB_LEFT + 4.f * KNOB_SPREAD - CV_COLUMN_OFFSET, CV_ROW_2), module, Hc1Module::RMIX_INPUT));
+    addChild(createInputCentered<ColorPort>(Vec(RKNOB_LEFT + 5.f * KNOB_SPREAD - CV_COLUMN_OFFSET, CV_ROW_2), module, Hc1Module::VOLUME_INPUT));
 
     addChild(createParamCentered<MidiKnob>(Vec(KNOB_LEFT                    , KNOB_ROW_1), module, Hc1Module::M1_PARAM));
     addChild(createParamCentered<MidiKnob>(Vec(KNOB_LEFT +       KNOB_SPREAD, KNOB_ROW_1), module, Hc1Module::M2_PARAM));
@@ -133,17 +135,21 @@ Hc1ModuleWidget::Hc1ModuleWidget(Hc1Module *module)
     addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<WhiteLight>>>(Vec(KNOB_LEFT + 4.f * KNOB_SPREAD - RB_OFFSET, CV_ROW_1 - RB_VOFFSET), module, Hc1Module::M5_REL_PARAM, Hc1Module::M5_REL_LIGHT));
     addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<WhiteLight>>>(Vec(KNOB_LEFT + 5.f * KNOB_SPREAD - RB_OFFSET, CV_ROW_1 - RB_VOFFSET), module, Hc1Module::M6_REL_PARAM, Hc1Module::M6_REL_LIGHT));
 
-    addChild(createParamCentered<MidiKnob>(Vec(RKNOB_LEFT +       KNOB_SPREAD, KNOB_ROW_2), module, Hc1Module::R1_PARAM));
-    addChild(createParamCentered<MidiKnob>(Vec(RKNOB_LEFT + 2.f * KNOB_SPREAD, KNOB_ROW_2), module, Hc1Module::R2_PARAM));
-    addChild(createParamCentered<MidiKnob>(Vec(RKNOB_LEFT + 3.f * KNOB_SPREAD, KNOB_ROW_2), module, Hc1Module::R3_PARAM));
-    addChild(createParamCentered<MidiKnob>(Vec(RKNOB_LEFT + 4.f * KNOB_SPREAD, KNOB_ROW_2), module, Hc1Module::R4_PARAM));
-    addChild(createParamCentered<MidiKnob>(Vec(RKNOB_LEFT + 5.f * KNOB_SPREAD, KNOB_ROW_2), module, Hc1Module::RMIX_PARAM));
+    addChild(createParamCentered<MidiKnob>(Vec(RKNOB_LEFT                    , KNOB_ROW_2), module, Hc1Module::R1_PARAM));
+    addChild(createParamCentered<MidiKnob>(Vec(RKNOB_LEFT +       KNOB_SPREAD, KNOB_ROW_2), module, Hc1Module::R2_PARAM));
+    addChild(createParamCentered<MidiKnob>(Vec(RKNOB_LEFT + 2.f * KNOB_SPREAD, KNOB_ROW_2), module, Hc1Module::R3_PARAM));
+    addChild(createParamCentered<MidiKnob>(Vec(RKNOB_LEFT + 3.f * KNOB_SPREAD, KNOB_ROW_2), module, Hc1Module::R4_PARAM));
+    addChild(createParamCentered<MidiKnob>(Vec(RKNOB_LEFT + 4.f * KNOB_SPREAD, KNOB_ROW_2), module, Hc1Module::RMIX_PARAM));
+    addChild(createParamCentered<MidiKnob>(Vec(RKNOB_LEFT + 5.f * KNOB_SPREAD, KNOB_ROW_2), module, Hc1Module::VOLUME_PARAM));
 
-    addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<WhiteLight>>>(Vec(RKNOB_LEFT +       KNOB_SPREAD - RB_OFFSET, CV_ROW_2 - RB_VOFFSET), module, Hc1Module::R1_REL_PARAM, Hc1Module::R1_REL_LIGHT));
-    addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<WhiteLight>>>(Vec(RKNOB_LEFT + 2.f * KNOB_SPREAD - RB_OFFSET, CV_ROW_2 - RB_VOFFSET), module, Hc1Module::R2_REL_PARAM, Hc1Module::R2_REL_LIGHT));
-    addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<WhiteLight>>>(Vec(RKNOB_LEFT + 3.f * KNOB_SPREAD - RB_OFFSET, CV_ROW_2 - RB_VOFFSET), module, Hc1Module::R3_REL_PARAM, Hc1Module::R3_REL_LIGHT));
-    addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<WhiteLight>>>(Vec(RKNOB_LEFT + 4.f * KNOB_SPREAD - RB_OFFSET, CV_ROW_2 - RB_VOFFSET), module, Hc1Module::R4_REL_PARAM, Hc1Module::R4_REL_LIGHT));
-    addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<WhiteLight>>>(Vec(RKNOB_LEFT + 5.f * KNOB_SPREAD - RB_OFFSET, CV_ROW_2 - RB_VOFFSET), module, Hc1Module::RMIX_REL_PARAM, Hc1Module::RMIX_REL_LIGHT));
+    addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<WhiteLight>>>(Vec(RKNOB_LEFT                     - RB_OFFSET, CV_ROW_2 - RB_VOFFSET), module, Hc1Module::R1_REL_PARAM, Hc1Module::R1_REL_LIGHT));
+    addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<WhiteLight>>>(Vec(RKNOB_LEFT +       KNOB_SPREAD - RB_OFFSET, CV_ROW_2 - RB_VOFFSET), module, Hc1Module::R2_REL_PARAM, Hc1Module::R2_REL_LIGHT));
+    addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<WhiteLight>>>(Vec(RKNOB_LEFT + 2.f * KNOB_SPREAD - RB_OFFSET, CV_ROW_2 - RB_VOFFSET), module, Hc1Module::R3_REL_PARAM, Hc1Module::R3_REL_LIGHT));
+    addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<WhiteLight>>>(Vec(RKNOB_LEFT + 3.f * KNOB_SPREAD - RB_OFFSET, CV_ROW_2 - RB_VOFFSET), module, Hc1Module::R4_REL_PARAM, Hc1Module::R4_REL_LIGHT));
+    addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<WhiteLight>>>(Vec(RKNOB_LEFT + 4.f * KNOB_SPREAD - RB_OFFSET, CV_ROW_2 - RB_VOFFSET), module, Hc1Module::RMIX_REL_PARAM, Hc1Module::RMIX_REL_LIGHT));
+    addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<WhiteLight>>>(Vec(RKNOB_LEFT + 5.f * KNOB_SPREAD - RB_OFFSET, CV_ROW_2 - RB_VOFFSET), module, Hc1Module::VOLUME_REL_PARAM, Hc1Module::VOLUME_REL_LIGHT));
+
+    addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<RedLight>>>(Vec(RKNOB_LEFT + 5.f * KNOB_SPREAD + RB_OFFSET, CV_ROW_2 - RB_VOFFSET), module, Hc1Module::MUTE_PARAM, Hc1Module::MUTE_LIGHT));
 
     presets.reserve(24);
     int x = PRESET_LEFT;
@@ -395,7 +401,6 @@ void Hc1ModuleWidget::drawLayer(const DrawArgs& args, int layer)
         CenterText(vg, box.size.x/2.f, 15.f, text.c_str(), nullptr);
     }
 
-#ifdef MIDI_ANIMATION
     if (my_module) {
         const float y = PRESET_BOTTOM + 1.75f;
         auto cx = PRESET_LEFT + fmodf(my_module->midi_send_count / 20.f, 320.f);
@@ -406,7 +411,6 @@ void Hc1ModuleWidget::drawLayer(const DrawArgs& args, int layer)
         CircularHalo(vg, cx, y, 2.f, 8.5f, green_light);
         Circle(vg, cx, y, 1.25f, green_light);
     }
-#endif
 
     // DSP status
     //if (!my_module || my_module->heartbeat)
@@ -455,12 +459,15 @@ void Hc1ModuleWidget::draw(const DrawArgs& args)
 
     auto font = GetPluginFontRegular();
     if (FontOk(font)) {
+
+#if defined SHOW_PRESET0
         if (my_module)
         {
             SetTextStyle(vg, font, orange_light, 9.f);
             auto text = my_module->preset0.describe_short();
             RightAlignText(vg, PRESET_RIGHT -2.f, PRESET_TOP - 15.f, text.c_str(), nullptr);
         }
+#endif
 
         SetTextStyle(vg, font, RampGray(G_90), 12.f);
 
@@ -484,7 +491,7 @@ void Hc1ModuleWidget::draw(const DrawArgs& args)
             nvgText(vg, box.size.x*.5f + 25.f, box.size.y - 4.f, device_name.c_str(), nullptr);
         }
 
-        // firmware
+        // firmware version
         if (my_module && my_module->is_eagan_matrix && (my_module->firmware_version > 0)) {
             RightAlignText(vg, box.size.x - 7.5, box.size.y - 4.f, format_string("v %.2f", my_module->firmware_version/100.f).c_str(), nullptr);
         } else {
@@ -493,13 +500,19 @@ void Hc1ModuleWidget::draw(const DrawArgs& args)
 
         { // recirculator
             auto y = KNOB_ROW_2 - 18.5f;
-            Line(vg, 7.5f, y-2.f, box.size.x - 7.5f, y-2.f, RampGray(G_35), .5f);
+            auto left = RKNOB_LEFT - 34.f;
+            auto w = 52.f + KNOB_SPREAD * 4.f;
+            BoxRect(vg, left, y-2.f, w, 48.f, RampGray(G_35), .5f);
+            // Line(vg, 7.5f, y-2.f, right, y-2.f, RampGray(G_35), .5f);
+            // Line(vg, 7.5f, y-2.f, 7.5f, y + 42.f, RampGray(G_35), .5f);
+            // Line(vg, right, y-2.f, right, y + 42.f, RampGray(G_35), .5f);
+            auto right = left + w;
             float bounds[4] = { 0, 0, 0, 0 };
             nvgTextBounds(vg, 0, 0, RecirculatorName(rt).c_str(), nullptr, bounds);
             bounds[2] += 15.f; // pad
-            FillRect(vg, (box.size.x * .5f) - (bounds[2] * .5f), y - 10.f, bounds[2], 14.f, RampGray(G_08));
+            FillRect(vg, right - (w * .5f) - (bounds[2] * .5f), y - 10.f, bounds[2], 14.f, RampGray(G_08));
             SetTextStyle(vg, font, RampGray(G_90), 12.f);
-            CenterText(vg, box.size.x * .5f, y, RecirculatorName(rt).c_str(), nullptr);
+            CenterText(vg, right - (w * .5f), y, RecirculatorName(rt).c_str(), nullptr);
         }
     }
 
@@ -525,11 +538,12 @@ void Hc1ModuleWidget::draw(const DrawArgs& args)
         }
 
         y = KNOB_ROW_2 + 22.f;
-        CenterText(vg, RKNOB_LEFT + KNOB_SPREAD,       y, RecirculatorParameterName(rt, 1).c_str(), nullptr);
-        CenterText(vg, RKNOB_LEFT + KNOB_SPREAD * 2.f, y, RecirculatorParameterName(rt, 2).c_str(), nullptr);
-        CenterText(vg, RKNOB_LEFT + KNOB_SPREAD * 3.f, y, RecirculatorParameterName(rt, 3).c_str(), nullptr);
-        CenterText(vg, RKNOB_LEFT + KNOB_SPREAD * 4.f, y, RecirculatorParameterName(rt, 4).c_str(), nullptr);
-        CenterText(vg, RKNOB_LEFT + KNOB_SPREAD * 5.f, y, "Mix", nullptr);
+        CenterText(vg, RKNOB_LEFT,                     y, RecirculatorParameterName(rt, 1).c_str(), nullptr);
+        CenterText(vg, RKNOB_LEFT + KNOB_SPREAD,       y, RecirculatorParameterName(rt, 2).c_str(), nullptr);
+        CenterText(vg, RKNOB_LEFT + KNOB_SPREAD * 2.f, y, RecirculatorParameterName(rt, 3).c_str(), nullptr);
+        CenterText(vg, RKNOB_LEFT + KNOB_SPREAD * 3.f, y, RecirculatorParameterName(rt, 4).c_str(), nullptr);
+        CenterText(vg, RKNOB_LEFT + KNOB_SPREAD * 4.f, y, "Mix", nullptr);
+        CenterText(vg, RKNOB_LEFT + KNOB_SPREAD * 5.f, y, "Vol", nullptr);
     }
 
     // status
