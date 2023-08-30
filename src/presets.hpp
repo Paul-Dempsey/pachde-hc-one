@@ -43,7 +43,7 @@ public:
 
 static const char * const PRESET_FORMAT = "%s%c(%s %d.%d)%c%s";
 
-class Preset {
+class LivePreset {
     FixedStringBuffer<32> _name;
     FixedStringBuffer<256> _text;
     std::string id;
@@ -86,7 +86,7 @@ public:
     const char * name() const { return _name.str(); }
     const char * text() const { return _text.str(); }
 
-    Preset() : bank_hi(0), bank_lo(126), number(0)
+    LivePreset() : bank_hi(0), bank_lo(126), number(0)
     {
         id.reserve(16);
         macro[0].reserve(56); // max according to the EaganMatrix Programming cookbook
@@ -167,7 +167,7 @@ public:
     }
 };
 
-struct MinPreset {
+struct Preset {
     std::string name;
     std::string text;
     std::string meta_text;
@@ -177,15 +177,15 @@ struct MinPreset {
     bool favorite;
     int favorite_order;
 
-    MinPreset()
+    Preset()
     :   name(""), text(""), meta_text(""), 
         bank_hi(0), bank_lo(0), number(0),
         favorite(false), favorite_order(-1)
     {}
 
-    MinPreset(const MinPreset & preset) = delete; // no copy constructor
+    Preset(const Preset & preset) = delete; // no copy constructor
 
-    explicit MinPreset(const Preset& preset) 
+    explicit Preset(const LivePreset& preset) 
     :   name(preset.name()),
         text(preset.text()),
         meta_text(""),
@@ -230,7 +230,7 @@ struct MinPreset {
             line_break, m.empty() ? "-" : m.c_str() );
     }
 
-    bool isSamePreset(const Preset& other) {
+    bool isSamePreset(const LivePreset& other) {
         if ((bank_hi == other.bank_hi) 
             && (bank_lo == other.bank_lo)
             && (number == other.number)
@@ -262,7 +262,7 @@ struct MinPreset {
         return false;
     }
 
-    bool isSamePreset(const MinPreset& other) {
+    bool isSamePreset(const Preset& other) {
         if ((bank_hi == other.bank_hi) 
             && (bank_lo == other.bank_lo)
             && (number == other.number)
@@ -328,10 +328,10 @@ struct MinPreset {
 
 struct IPresetHolder
 {
-    virtual bool isCurrentPreset(std::shared_ptr<MinPreset> preset) { return false; }
-    virtual void setPreset(std::shared_ptr<MinPreset> preset) {}
-    virtual void addFavorite(std::shared_ptr<MinPreset> preset) {}
-    virtual void unFavorite(std::shared_ptr<MinPreset> preset) {}
+    virtual bool isCurrentPreset(std::shared_ptr<Preset> preset) { return false; }
+    virtual void setPreset(std::shared_ptr<Preset> preset) {}
+    virtual void addFavorite(std::shared_ptr<Preset> preset) {}
+    virtual void unFavorite(std::shared_ptr<Preset> preset) {}
 };
 
 }

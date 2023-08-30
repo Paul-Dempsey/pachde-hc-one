@@ -62,7 +62,9 @@ Hc1Module::Hc1Module()
     configLight(Lights::VOLUME_REL_LIGHT, "Volume CV relative");
     configLight(Lights::HEART_LIGHT, "Device status");
     configLight(Lights::MUTE_LIGHT, "Mute");
-    getLight(HEART_LIGHT).setBrightness(1.0f);
+    configLight(Lights::FILTER_LIGHT, "Filter presets");
+
+    getLight(HEART_LIGHT).setBrightness(.8f);
     clearCCValues();
 }
 
@@ -100,14 +102,15 @@ json_t * Hc1Module::dataToJson()
     for (int pg: page) {
         json_array_append_new(ar, json_integer(pg));
     }
-    json_object_set_new(root, "tab_page", ar);
+    json_object_set_new(root, "tab-page", ar);
 
     if (current_preset) {
         json_object_set_new(root, "preset", current_preset->toJson());
     }
     json_object_set_new(root, "restore-preset", json_boolean(restore_saved_preset));
-    json_object_set_new(root, "cache_presets", json_boolean(cache_presets));
+    json_object_set_new(root, "cache-presets", json_boolean(cache_presets));
     json_object_set_new(root, "heartbeat",  json_boolean(heartbeat));
+    json_object_set_new(root, "filter-presets", json_boolean(filter_presets));
     return root;
 }
 
@@ -119,7 +122,7 @@ void Hc1Module::dataFromJson(json_t *root)
         restore_ui_data = new RestoreData();
         restore_ui_data->tab = static_cast<PresetTab>(clamp(json_integer_value(j), PresetTab::First, PresetTab::Last));
         tab = restore_ui_data->tab;
-        j = json_object_get(root, "tab_page");
+        j = json_object_get(root, "tab-page");
         if (j) {
             for (int i = PresetTab::First; i < PresetTab::Last; ++i) {
                 auto el = json_array_get(j, i);
@@ -133,7 +136,7 @@ void Hc1Module::dataFromJson(json_t *root)
     }
     j = json_object_get(root, "preset");
     if (j) {
-        saved_preset = std::make_shared<MinPreset>();
+        saved_preset = std::make_shared<Preset>();
         saved_preset->fromJson(j);
     }
     restore_saved_preset = GetBool(root, "restore-preset", restore_saved_preset);
@@ -146,12 +149,13 @@ void Hc1Module::dataFromJson(json_t *root)
     if (j) {
         device_name = json_string_value(j);
     }
-    cache_presets = GetBool(root, "cache_presets", cache_presets);
+    cache_presets = GetBool(root, "cache-presets", cache_presets);
     if (cache_presets) {
         loadSystemPresets();
         loadUserPresets();
         favoritesFromPresets();
     }
+    filter_presets = GetBool(root, "filter-presets", filter_presets);
 }
 
 void Hc1Module::reboot()
@@ -194,7 +198,7 @@ void Hc1Module::onRandomize(const RandomizeEvent& e)
     Module::onRandomize();
     if (!ready()) return;
 
-    std::vector<std::shared_ptr<MinPreset>> rp;
+    std::vector<std::shared_ptr<Preset>> rp;
     if (!user_presets.empty()) {
         rp.push_back(user_presets[randomZeroTo(user_presets.size())]);
     }
@@ -250,7 +254,7 @@ void Hc1Module::processCV(int inputId)
     if (!pq) return;
     auto in = getInput(inputId);
     bool relative = params[FIRST_REL_PARAM + inputId].getValue() > .5f;
-    lights[inputId].setBrightness((relative *.20f) + ((in.isConnected() && relative) *.80f));
+    getLight(inputId).setBrightness((relative *.20f) + ((in.isConnected() && relative) *.80f));
 
     if (in.isConnected()) {
         auto v = in.getVoltage();
@@ -274,6 +278,7 @@ void Hc1Module::processAllCV()
     for (int n = R1_INPUT; n <= RMIX_INPUT; ++n) {
         processCV(n);
     }
+    getLight(Lights::FILTER_LIGHT).setBrightness(filter_presets * 1.0f);
 }
 
 void Hc1Module::process(const ProcessArgs& args)

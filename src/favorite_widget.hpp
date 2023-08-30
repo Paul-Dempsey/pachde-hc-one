@@ -11,7 +11,7 @@ namespace pachde {
 struct FavoriteWidget : TipWidget
 {
     bool pressed = false;
-    std::shared_ptr<MinPreset> preset = nullptr;
+    std::shared_ptr<Preset> preset = nullptr;
     IPresetHolder* holder = nullptr;
 
     FavoriteWidget()
@@ -24,7 +24,7 @@ struct FavoriteWidget : TipWidget
         holder = h;
     }
 
-    void setPreset(std::shared_ptr<MinPreset> patch) {
+    void setPreset(std::shared_ptr<Preset> patch) {
         if (patch == preset) { return; }
         preset = patch;
         if (!preset) {

@@ -11,14 +11,14 @@ int randomZeroTo(int size)
     } while(true);
 }
 
-bool preset_order(const std::shared_ptr<MinPreset>& p1, const std::shared_ptr<MinPreset>& p2)
+bool preset_order(const std::shared_ptr<Preset>& p1, const std::shared_ptr<Preset>& p2)
 {
     uint32_t c1 = (p1->bank_hi << 16) | (p1->bank_lo << 8) | p1->number;
     uint32_t c2 = (p2->bank_hi << 16) | (p2->bank_lo << 8) | p2->number;
     return c1 < c2;
 }
 
-bool favorite_order(const std::shared_ptr<MinPreset>& p1, const std::shared_ptr<MinPreset>& p2)
+bool favorite_order(const std::shared_ptr<Preset>& p1, const std::shared_ptr<Preset>& p2)
 {
     if (p1->favorite_order >= 0 && p2->favorite_order >= 0) return p1->favorite_order < p2->favorite_order;
     if (p1->favorite_order < 0  && p2->favorite_order >= 0) return false;

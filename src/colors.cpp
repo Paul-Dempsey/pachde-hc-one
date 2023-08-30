@@ -400,7 +400,7 @@ void Dot(NVGcontext*vg, float x, float y, const NVGcolor& co, bool filled)
 
 void CircularHalo(NVGcontext* vg, float cx, float cy, float inner_radius, float halo_radius, const NVGcolor & haloColor)
 {
-    if (rack::settings::rackBrightness < 0.98f && rack::settings::haloBrightness > 0.f) {
+    if (rack::settings::rackBrightness < 0.968f && rack::settings::haloBrightness > 0.f) {
         nvgBeginPath(vg);
         nvgRect(vg, cx - halo_radius, cy - halo_radius, halo_radius * 2.f, halo_radius * 2.f);
         NVGcolor icol = nvgTransRGBAf(haloColor, rack::settings::haloBrightness);

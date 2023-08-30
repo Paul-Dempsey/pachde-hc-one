@@ -20,6 +20,14 @@ xmlns:svg="http://www.w3.org/2000/svg">
    <stop offset="0" style="stop-color:#333333" />
    <stop offset="1" style="stop-color:#595959" />
    </linearGradient>
+
+   <linearGradient id="c"
+      x1="0" y1="4" x2="0" y2="11"
+      gradientUnits="userSpaceOnUse"
+      >
+   <stop offset="0" style="stop-color:#606060" />
+   <stop offset="1" style="stop-color:#a0a0a0" />
+   </linearGradient>
 </defs>
 <g>
    <rect id="hole"
@@ -47,12 +55,12 @@ xmlns:svg="http://www.w3.org/2000/svg">
       x="0.85" y="1.125" width="13.25" height="13.5"
       />
 
-   <circle cx="7.5" cy="8" r="3" style="fill:none;stroke:#606060;stroke-width:.5"/>
-   <line id="nil" x1="7" y1="8" x2="8" y2="8" style="fill:none;stroke:#606060;stroke-width:.5"/>
+   <!-- <circle cx="7.5" cy="8" r="3" style="fill:none;stroke:#606060;stroke-width:.5"/>
+   <line id="nil" x1="7" y1="8" x2="8" y2="8" style="fill:none;stroke:#606060;stroke-width:.5"/> -->
 
    <!-- <path id="down" style="fill:#d0d0d0;stroke:none" d="M 5,8 L 10,8 7.5,12 z" /> -->
+   <!-- <path id="up" style="fill:#d0d0d0;stroke:none" d="M 7.5,4 L 5,8 10,8 z" /> -->
 
-   <path id="up" style="fill:#d0d0d0;stroke:none" d="M 7.5,4 L 5,8 10,8 z" />
-
+   <path id="filter" style="fill:url(#c);stroke:none" d="M 4,4 L 11,4 8.2,8 7.9,11 7.1,11 6.8,8 z" />
 </g>
 </svg>

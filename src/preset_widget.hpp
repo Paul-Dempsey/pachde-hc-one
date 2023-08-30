@@ -12,7 +12,7 @@ struct PresetWidget : TipWidget
 {
     bool pressed = false;
     bool hovered = false;
-    std::shared_ptr<MinPreset> preset;
+    std::shared_ptr<Preset> preset;
     IPresetHolder* holder = nullptr;
 
     PresetWidget() {
@@ -28,7 +28,7 @@ struct PresetWidget : TipWidget
         box.pos = pos.minus(box.size.div(2));
     }
 
-    void setPreset(std::shared_ptr<MinPreset> patch) {
+    void setPreset(std::shared_ptr<Preset> patch) {
         preset = patch;
         tip_text = preset ? preset->describe() : "(no preset)";
     }

@@ -10,7 +10,7 @@
 #include "../preset_widget.hpp"
 #include "../tab_bar.hpp"
 #include "../text.hpp"
-#include "../up_down_widget.hpp"
+#include "../square_button.hpp"
 #include "../preset_meta.hpp"
 
 using namespace em_midi;
@@ -21,8 +21,8 @@ namespace pachde {
 
 int randomZeroTo(int size);
 const NVGcolor& StatusColor(StatusItem status);
-bool preset_order(const std::shared_ptr<MinPreset>& p1, const std::shared_ptr<MinPreset>& p2);
-bool favorite_order(const std::shared_ptr<MinPreset>& p1, const std::shared_ptr<MinPreset>& p2);
+bool preset_order(const std::shared_ptr<Preset>& p1, const std::shared_ptr<Preset>& p2);
+bool favorite_order(const std::shared_ptr<Preset>& p1, const std::shared_ptr<Preset>& p2);
 
 struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
 {
@@ -55,13 +55,14 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
         VOLUME_REL_LIGHT,
         HEART_LIGHT,
         MUTE_LIGHT,
+        FILTER_LIGHT,
         NUM_LIGHTS
     };
 
-    Preset preset0;
-    std::vector<std::shared_ptr<MinPreset>> user_presets;
-    std::vector<std::shared_ptr<MinPreset>> system_presets;
-    std::vector<std::shared_ptr<MinPreset>> favorite_presets;
+    LivePreset preset0;
+    std::vector<std::shared_ptr<Preset>> user_presets;
+    std::vector<std::shared_ptr<Preset>> system_presets;
+    std::vector<std::shared_ptr<Preset>> favorite_presets;
 
     // ui persistence
     PresetTab tab = PresetTab::User;
@@ -74,9 +75,11 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     RestoreData * restore_ui_data = nullptr;
 
     bool cache_presets = true;
-    std::shared_ptr<MinPreset> current_preset = nullptr;
-    std::shared_ptr<MinPreset> saved_preset = nullptr;
+    std::shared_ptr<Preset> current_preset = nullptr;
+    std::shared_ptr<Preset> saved_preset = nullptr;
     bool restore_saved_preset = true;
+
+    bool filter_presets = false;
 
     std::string favoritesPath();
     void clearFavorites();
@@ -117,7 +120,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
         return page[tab];
     }
 
-    const std::vector< std::shared_ptr<MinPreset> >& getPresets(PresetTab tab) {
+    const std::vector< std::shared_ptr<Preset> >& getPresets(PresetTab tab) {
         switch (tab) {
             case PresetTab::User: return user_presets;
             case PresetTab::System: return system_presets;
@@ -273,8 +276,8 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     void sendProgramChange(uint8_t channel, uint8_t program) override;
 
     // IPresetHolder
-    void setPreset(std::shared_ptr<MinPreset> preset) override;
-    bool isCurrentPreset(std::shared_ptr<MinPreset> preset) override
+    void setPreset(std::shared_ptr<Preset> preset) override;
+    bool isCurrentPreset(std::shared_ptr<Preset> preset) override
     {
         if (!preset) return false;
         if (preset == current_preset) {
@@ -285,11 +288,11 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
         }
         return preset->isSamePreset(preset0);
     }
-    void addFavorite(std::shared_ptr<MinPreset> preset) override;
-    void unFavorite(std::shared_ptr<MinPreset> preset) override;
+    void addFavorite(std::shared_ptr<Preset> preset) override;
+    void unFavorite(std::shared_ptr<Preset> preset) override;
 
     void sendSavedPreset();
-    std::shared_ptr<MinPreset> findDefinedPreset(std::shared_ptr<MinPreset> preset);
+    std::shared_ptr<Preset> findDefinedPreset(std::shared_ptr<Preset> preset);
 
     void orderFavorites(bool sort);
 
@@ -346,9 +349,9 @@ struct Hc1ModuleWidget : IPresetHolder, ModuleWidget
     TabBarWidget* tab_bar;
     PresetTab tab = PresetTab::Favorite;
     int page = 0;
-    FavoriteWidget* fave;
-    UpDown* page_up;
-    UpDown* page_down;
+    FavoriteWidget* favorite;
+    SquareButton* page_up;
+    SquareButton* page_down;
 
     explicit Hc1ModuleWidget(Hc1Module *module);
     void setTab(PresetTab tab, bool force = false);
@@ -360,23 +363,23 @@ struct Hc1ModuleWidget : IPresetHolder, ModuleWidget
     void updatePresetWidgets();
 
     // IPresetHolder
-    void setPreset(std::shared_ptr<MinPreset> preset) override
+    void setPreset(std::shared_ptr<Preset> preset) override
     {
         if (my_module) my_module->setPreset(preset);
     }
-    bool isCurrentPreset(std::shared_ptr<MinPreset> preset) override
+    bool isCurrentPreset(std::shared_ptr<Preset> preset) override
     {
         if (my_module) return my_module->isCurrentPreset(preset);
         return false;
     }
-    void addFavorite(std::shared_ptr<MinPreset> preset) override
+    void addFavorite(std::shared_ptr<Preset> preset) override
     {
         if (my_module) {
             my_module->addFavorite(preset);
             populatePresetWidgets();
         }
     }
-    void unFavorite(std::shared_ptr<MinPreset> preset) override
+    void unFavorite(std::shared_ptr<Preset> preset) override
     {
         if (my_module) {
             my_module->unFavorite(preset);

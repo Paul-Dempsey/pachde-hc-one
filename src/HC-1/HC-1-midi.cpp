@@ -72,7 +72,7 @@ void Hc1Module::transmitRequestUserPresets()
     sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::userToMidi);
 }
 
-void Hc1Module::setPreset(std::shared_ptr<MinPreset> preset)
+void Hc1Module::setPreset(std::shared_ptr<Preset> preset)
 {
     current_preset = preset;
     if (!preset) return;
@@ -363,7 +363,7 @@ void Hc1Module::handle_ch16_message(const midi::Message& msg)
                             && "--" != name
                             && "Empty" != name)
                         {
-                            std::shared_ptr<MinPreset> preset = std::make_shared<MinPreset>(preset0);
+                            std::shared_ptr<Preset> preset = std::make_shared<Preset>(preset0);
                             if (in_user_names) {
                                 assert(!preset->isSysPreset());
                                 user_presets.push_back(preset);

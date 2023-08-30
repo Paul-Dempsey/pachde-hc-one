@@ -114,14 +114,6 @@ TCCPQ* configCCParam(uint8_t cc, bool hiRes, Module* module, int paramId, float 
 
 struct MidiKnob : RoundSmallBlackKnob
 {
-    // void step() override
-    // {
-    //     RoundSmallBlackKnob::step();
-    //     if (auto pq = dynamic_cast<CCParamQuantity*>(getParamQuantity())) {
-    //         pq->syncValue();
-    //     }
-    // }
-
     void drawLayer(const DrawArgs& args, int layer) override
     {
         RoundSmallBlackKnob::drawLayer(args, layer);
@@ -151,14 +143,22 @@ struct MidiKnob : RoundSmallBlackKnob
             nvgSave(vg);
     		nvgTransform(vg, transform[0], transform[1], transform[2], transform[3], transform[4], transform[5]);
             //Line(vg, center.x, center.y, center.x, center.y - 14.f, preset_name_color, .75f);
-            CircularHalo(vg, center.x, center.y - 12.25f, 2.75f, 9.5f, preset_name_color);
-            Circle(vg, center.x, center.y - 12.25f, 1.75f, preset_name_color);
+            CircularHalo(vg, center.x, center.y - 13.f, 2.75f, 9.5f, preset_name_color);
+            Circle(vg, center.x, center.y - 13.f, 1.75f, preset_name_color);
             nvgRestore(vg);
         }
     }
-    // void draw(const DrawArgs& args) override {
-    //     RoundSmallBlackKnob::draw(args);
-    // }
+    void draw(const DrawArgs& args) override {
+        RoundSmallBlackKnob::draw(args);
+
+        auto vg = args.vg;
+        nvgBeginPath(vg);
+        nvgArc(vg, box.size.x *.5f, box.size.y *.5f, 13.25f, minAngle - M_PI/2.f, maxAngle - M_PI/2.f, NVG_CW);
+        nvgStrokeColor(vg, RampGray(G_40));
+        nvgStrokeWidth(vg, 1.2f);
+        nvgLineCap(vg, NVG_ROUND);
+        nvgStroke(vg);
+    }
 };
 
 }

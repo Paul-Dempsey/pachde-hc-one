@@ -91,7 +91,7 @@ void Hc1Module::loadUserPresets()
         json_t* jp;
         size_t index;
         json_array_foreach(jar, index, jp) {
-            auto preset = std::make_shared<MinPreset>();
+            auto preset = std::make_shared<Preset>();
             preset->fromJson(jp);
             user_presets.push_back(preset);
             // if (preset->favorite) {
@@ -131,7 +131,7 @@ void Hc1Module::loadSystemPresets()
         json_t* jp;
         size_t index;
         json_array_foreach(jar, index, jp) {
-            auto preset = std::make_shared<MinPreset>();
+            auto preset = std::make_shared<Preset>();
             preset->fromJson(jp);
             system_presets.push_back(preset);
             // if (preset->favorite) {
@@ -271,17 +271,17 @@ void Hc1Module::readFavoritesFile(const std::string& path)
         clearFavorites();
         json_t* jp;
         size_t index;
-        MinPreset preset;
+        Preset preset;
         json_array_foreach(jar, index, jp) {
             preset.fromJson(jp);
             if (!user_presets.empty()) {
-                auto it = std::find_if(user_presets.begin(), user_presets.end(), [&preset](std::shared_ptr<MinPreset>& p) { return p->isSamePreset(preset); });
+                auto it = std::find_if(user_presets.begin(), user_presets.end(), [&preset](std::shared_ptr<Preset>& p) { return p->isSamePreset(preset); });
                 if (it != user_presets.end()) {
                     addFavorite(*it);
                 }
             }
             if (!system_presets.empty()) {
-                auto it = std::find_if(system_presets.begin(), system_presets.end(), [&preset](std::shared_ptr<MinPreset>& p) { return p->isSamePreset(preset); });
+                auto it = std::find_if(system_presets.begin(), system_presets.end(), [&preset](std::shared_ptr<Preset>& p) { return p->isSamePreset(preset); });
                 if (it != system_presets.end()) {
                     addFavorite(*it);
                 }
@@ -292,30 +292,30 @@ void Hc1Module::readFavoritesFile(const std::string& path)
     saveFavorites();
 }
 
-std::shared_ptr<MinPreset> Hc1Module::findDefinedPreset(std::shared_ptr<MinPreset> preset)
+std::shared_ptr<Preset> Hc1Module::findDefinedPreset(std::shared_ptr<Preset> preset)
 {
     if (preset) {
         if (!user_presets.empty()) {
-            auto it = std::find_if(user_presets.begin(), user_presets.end(), [preset](std::shared_ptr<MinPreset>& p) { return p->isSamePreset(*preset); });
+            auto it = std::find_if(user_presets.begin(), user_presets.end(), [preset](std::shared_ptr<Preset>& p) { return p->isSamePreset(*preset); });
             if (it != user_presets.end()) {
                 return *it;
             }
         }
         if (!system_presets.empty()) {
-            auto it = std::find_if(system_presets.begin(), system_presets.end(), [preset](std::shared_ptr<MinPreset>& p) { return p->isSamePreset(*preset); });
+            auto it = std::find_if(system_presets.begin(), system_presets.end(), [preset](std::shared_ptr<Preset>& p) { return p->isSamePreset(*preset); });
             if (it != system_presets.end()) {
                 return *it;
             }
         }
     } else {
         if (!user_presets.empty()) {
-            auto it = std::find_if(user_presets.begin(), user_presets.end(), [this](std::shared_ptr<MinPreset>& p) { return p->isSamePreset(preset0); });
+            auto it = std::find_if(user_presets.begin(), user_presets.end(), [this](std::shared_ptr<Preset>& p) { return p->isSamePreset(preset0); });
             if (it != user_presets.end()) {
                 return *it;
             }
         }
         if (!system_presets.empty()) {
-            auto it = std::find_if(system_presets.begin(), system_presets.end(), [this](std::shared_ptr<MinPreset>& p) { return p->isSamePreset(preset0); });
+            auto it = std::find_if(system_presets.begin(), system_presets.end(), [this](std::shared_ptr<Preset>& p) { return p->isSamePreset(preset0); });
             if (it != system_presets.end()) {
                 return *it;
             }
@@ -343,7 +343,7 @@ void Hc1Module::orderFavorites(bool sort)
     }
 }
 
-void Hc1Module::addFavorite(std::shared_ptr<MinPreset> preset)
+void Hc1Module::addFavorite(std::shared_ptr<Preset> preset)
 {
 #if defined VERBOSE_LOG
     if (preset->bank_hi == 126) {
@@ -357,7 +357,7 @@ void Hc1Module::addFavorite(std::shared_ptr<MinPreset> preset)
         if (favorite_presets.cend() == std::find_if(
                 favorite_presets.cbegin(), 
                 favorite_presets.cend(), 
-                [preset](const std::shared_ptr<MinPreset>& fp){ 
+                [preset](const std::shared_ptr<Preset>& fp){ 
                     return preset->isSamePreset(*fp); 
                 })) {
             favorite_presets.push_back(preset);
@@ -371,7 +371,7 @@ void Hc1Module::addFavorite(std::shared_ptr<MinPreset> preset)
     }
 }
 
-void Hc1Module::unFavorite(std::shared_ptr<MinPreset> preset)
+void Hc1Module::unFavorite(std::shared_ptr<Preset> preset)
 {
     preset->favorite = false;
     if (favorite_presets.empty()) return;
