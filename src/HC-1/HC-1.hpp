@@ -21,7 +21,26 @@ namespace pachde {
 
 int randomZeroTo(int size);
 const NVGcolor& StatusColor(StatusItem status);
-bool preset_order(const std::shared_ptr<Preset>& p1, const std::shared_ptr<Preset>& p2);
+
+enum class PresetOrder {
+    Alpha,
+    System,
+    Category
+};
+bool preset_system_order(const std::shared_ptr<Preset>& p1, const std::shared_ptr<Preset>& p2);
+bool preset_alpha_order(const std::shared_ptr<Preset>& preset1, const std::shared_ptr<Preset>& preset2);
+bool preset_category_order(const std::shared_ptr<Preset>& p1, const std::shared_ptr<Preset>& p2);
+
+inline std::function<bool (const std::shared_ptr<Preset>&, const std::shared_ptr<Preset>&)> getPresetSort(PresetOrder order)
+{
+    switch (order) {
+    case PresetOrder::Alpha: return preset_alpha_order;
+    case PresetOrder::System: return preset_system_order;
+    case PresetOrder::Category: return preset_category_order;
+    default: assert(false); break;
+    }
+}
+
 bool favorite_order(const std::shared_ptr<Preset>& p1, const std::shared_ptr<Preset>& p2);
 
 struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
@@ -34,6 +53,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
         M1_REL_PARAM, M2_REL_PARAM, M3_REL_PARAM, M4_REL_PARAM, M5_REL_PARAM, M6_REL_PARAM,
         R1_REL_PARAM, R2_REL_PARAM, R3_REL_PARAM, R4_REL_PARAM, RMIX_REL_PARAM,
         VOLUME_REL_PARAM,
+        RECIRC_EXTEND_PARAM,
         NUM_PARAMS,
         FIRST_REL_PARAM = M1_REL_PARAM,
     };
@@ -55,7 +75,8 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
         VOLUME_REL_LIGHT,
         HEART_LIGHT,
         MUTE_LIGHT,
-        FILTER_LIGHT,
+        RECIRC_EXTEND_LIGHT,
+//        FILTER_LIGHT,
         NUM_LIGHTS
     };
 
@@ -79,7 +100,10 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     std::shared_ptr<Preset> saved_preset = nullptr;
     bool restore_saved_preset = true;
 
-    bool filter_presets = false;
+#if defined PRESET_FILTERING
+    PresetFilter preset_filter;
+#endif
+    PresetOrder preset_order = PresetOrder::Alpha;
 
     std::string favoritesPath();
     void clearFavorites();
@@ -120,7 +144,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
         return page[tab];
     }
 
-    const std::vector< std::shared_ptr<Preset> >& getPresets(PresetTab tab) {
+    const std::vector<std::shared_ptr<Preset>>& getPresets(PresetTab tab) {
         switch (tab) {
             case PresetTab::User: return user_presets;
             case PresetTab::System: return system_presets;
@@ -246,7 +270,21 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
         auto pq = getParamQuantity(id);
         getParam(id).setValue(pq->getDefaultValue());
     }
+    void paramToMin(int id) {
+        auto pq = getParamQuantity(id);
+        getParam(id).setValue(pq->getMinValue());
+    }
+    // For the moment, all knobs default to center, so we don't
+    // need separate center/default, and "center" is more intuitive for users
+    // void paramToCenter(int id) {
+    //     auto pq = getParamQuantity(id);
+    //     getParam(id).setValue(pq->getMinValue() + (pq->getMaxValue() - pq->getMinValue()) / 2.f);
+    // }
     void centerKnobs();
+    //void defaultKnobs();
+    void zeroKnobs();
+    void absoluteCV();
+    void relativeCV();
 
     json_t *dataToJson() override;
     void dataFromJson(json_t *root) override;
@@ -286,7 +324,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
         if (preset0.name_empty()) {
             return false;
         }
-        return preset->isSamePreset(preset0);
+        return preset->is_same_preset(preset0);
     }
     void addFavorite(std::shared_ptr<Preset> preset) override;
     void unFavorite(std::shared_ptr<Preset> preset) override;
@@ -361,6 +399,7 @@ struct Hc1ModuleWidget : IPresetHolder, ModuleWidget
     void clearPresetWidgets();
     void populatePresetWidgets();
     void updatePresetWidgets();
+    bool showCurrentPreset();
 
     // IPresetHolder
     void setPreset(std::shared_ptr<Preset> preset) override
@@ -372,6 +411,7 @@ struct Hc1ModuleWidget : IPresetHolder, ModuleWidget
         if (my_module) return my_module->isCurrentPreset(preset);
         return false;
     }
+
     void addFavorite(std::shared_ptr<Preset> preset) override
     {
         if (my_module) {
@@ -386,7 +426,9 @@ struct Hc1ModuleWidget : IPresetHolder, ModuleWidget
             populatePresetWidgets();
         }
     }
-
+    void addSortBy(Menu *menu, std::string name, PresetOrder order);
+    void addRecirculator(Menu *menu, EM_Recirculator kind);
+    void onHoverScroll(const HoverScrollEvent& e) override;
     void step() override;
     void drawLayer(const DrawArgs& args, int layer) override;
     void draw(const DrawArgs& args) override;

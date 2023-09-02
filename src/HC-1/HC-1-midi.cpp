@@ -176,6 +176,7 @@ void Hc1Module::handle_ch16_cc(uint8_t cc, uint8_t value)
 
         case EMCC_RecirculatorType:
             recirculator = value;
+            getParamQuantity(RECIRC_EXTEND_PARAM)->setValue(isExtendRecirculator() * 1.f);
             break;
 
         case EMCC_DataStream: {
@@ -185,7 +186,6 @@ void Hc1Module::handle_ch16_cc(uint8_t cc, uint8_t value)
                     if (data_stream != -1) {
                         DebugLog("!!!! BROKEN !!!!");
                         broken = true;
-                        //sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::midiTxFull);
                     } else {
                         //DebugLog("Begin name");
                         data_stream = value;
@@ -200,7 +200,6 @@ void Hc1Module::handle_ch16_cc(uint8_t cc, uint8_t value)
                     if (data_stream != -1) {
                         DebugLog("!!!! BROKEN !!!!");
                         broken = true;
-                        //sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::midiTxFull);
                     } else {
                         //DebugLog("Begin Text");
                         data_stream = value;
@@ -249,7 +248,7 @@ void Hc1Module::handle_ch16_cc(uint8_t cc, uint8_t value)
                     in_user_names = false;
                     user_preset_state = broken ? InitState::Broken : InitState::Complete;
                     if (!broken) {
-                        std::sort(user_presets.begin(), user_presets.end(), preset_order);
+                        std::sort(user_presets.begin(), user_presets.end(), preset_system_order);
                     }
                     DebugLog("End User presets as %s", InitStateName(user_preset_state));
                     sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::midiTxFull);
@@ -265,7 +264,7 @@ void Hc1Module::handle_ch16_cc(uint8_t cc, uint8_t value)
                     in_sys_names = false;
                     system_preset_state = broken ? InitState::Broken : InitState::Complete;
                     if (!broken) {
-                        std::sort(system_presets.begin(), system_presets.end(), preset_order);
+                        std::sort(system_presets.begin(), system_presets.end(), getPresetSort(preset_order));
                         readFavorites();
                     }
                     DebugLog("End System presets as %s", InitStateName(system_preset_state));
@@ -343,7 +342,7 @@ void Hc1Module::handle_ch16_message(const midi::Message& msg)
                             if (nullptr == current_preset) {
                                 current_preset = findDefinedPreset(nullptr);
                             } else {
-                                if (!current_preset->isSamePreset(preset0)) {
+                                if (!current_preset->is_same_preset(preset0)) {
                                     DebugLog("Expected %s == %s",
                                         preset0.describe_short().c_str(),
                                         current_preset->describe_short().c_str()
@@ -364,6 +363,7 @@ void Hc1Module::handle_ch16_message(const midi::Message& msg)
                             && "Empty" != name)
                         {
                             std::shared_ptr<Preset> preset = std::make_shared<Preset>(preset0);
+                            //preset->ensure_category_list();
                             if (in_user_names) {
                                 assert(!preset->isSysPreset());
                                 user_presets.push_back(preset);

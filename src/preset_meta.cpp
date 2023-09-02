@@ -12,26 +12,25 @@ get_token(std::string::const_iterator start, std::string::const_iterator end, st
     return std::make_pair(token_start, it);
 }
 
-const uint16_t CATEGORY_TAG = CategoryCode('C', '=');
-
 const char * toString(PresetGroup group)
 {
     switch (group) {
-        default:
-        case PresetGroup::Unknown: return "(Unknown)";
         case PresetGroup::Category: return "Category";
         case PresetGroup::Type: return "Type";
         case PresetGroup::Character: return "Character";
         case PresetGroup::Matrix: return "Matrix";
         case PresetGroup::Setting: return "Setting";
+        default:
+        case PresetGroup::Unknown: return "(Unknown)";
     }
 }
 
+const uint16_t CATEGORY_TAG = CategoryCode('C', '=');
 const HCCategoryCode hcCategoryCode = {};
 
 HCCategoryCode::HCCategoryCode()
 {
-    data.reserve(92); 
+    data.reserve(92);
     data.push_back(std::make_shared<PresetMeta>("ST", PresetGroup::Category, 1, "Strings"));
     data.push_back(std::make_shared<PresetMeta>("WI", PresetGroup::Category, 2, "Winds"));
     data.push_back(std::make_shared<PresetMeta>("VO", PresetGroup::Category, 3, "Vocal"));
@@ -135,7 +134,7 @@ std::shared_ptr<PresetMeta> HCCategoryCode::find(uint16_t key) const
     return data.cend() != item ? *item : nullptr;
 }
 
-void HCCategoryCode::foreach_code(const std::string& text, std::function<bool(uint16_t)> callback) const
+void foreach_code(const std::string& text, std::function<bool(uint16_t)> callback)
 {
     if (text.empty()) return;
     auto token = std::make_pair(text.cbegin(), text.cend());
@@ -158,20 +157,44 @@ void HCCategoryCode::foreach_code(const std::string& text, std::function<bool(ui
     }
 }
 
-std::vector<uint16_t> HCCategoryCode::make_category_code_list(const std::string& text) const
+bool order_codes(const uint16_t &a, const uint16_t &b)
 {
-    std::vector<uint16_t> result;
-    if (text.empty()) return result;
+    auto p1 = hcCategoryCode.find(a);
+    auto p2 = hcCategoryCode.find(b);
+    if (!p1 && !p2) return a < b;
+    if (p1 && !p2) return true;
+    if (p2 && !p1) return false;
+    if (p1->group < p2->group) return true;
+    if (p1->group == p2->group) return p1->index < p2->index;
+    return false;
+}
 
-    foreach_code(text, [result](uint16_t code) mutable { result.push_back(code); return true; });
-    return result;
+void FillCategoryCodeList(const std::string& text, std::vector<uint16_t>& vec)
+{
+    if (text.empty()) return;
+    foreach_code(text, [&vec](uint16_t code) mutable {
+        vec.push_back(code);
+        return true;
+        });
+    std::sort(vec.begin(), vec.end(), order_codes);
+    auto default_code = CategoryCode("OT").code; // default to Other if category missing
+    if (vec.empty()) {
+        vec.push_back(default_code);
+    } else {
+        auto first_code = hcCategoryCode.find(*vec.cbegin());
+        if (!first_code || first_code->group != PresetGroup::Category) {
+            vec.insert(vec.begin(), default_code);
+        }
+    }
 }
 
 std::vector<std::shared_ptr<PresetMeta>> HCCategoryCode::make_category_list(const std::string& text) const
 {
     std::vector<std::shared_ptr<PresetMeta>> result;
     if (text.empty()) return result;
-
+    // BUGBUG: relies on category codes in text to be in PresetGroup + index order.
+    // If this bug shows up (e.g. with Osmose), we can fix it by sorting the codes 
+    // as in FillCategoryCodeList.
     foreach_code(text, [this, &result](uint16_t code) mutable { 
         auto item = find(code);
         if (item) {

@@ -1,10 +1,25 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg width="16" height="16" viewBox="0 0 16 16" version="1.1" xml:space="preserve"
    xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+<defs>
+    <linearGradient id="a"
+      x1="0" y1="0" x2="0" y2="15"
+      gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#808080" />
+      <stop offset="1" stop-color="#303030" />
+    </linearGradient>
+    <linearGradient id="b"
+      x1="0" y1="2" x2="0" y2="14"
+      gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#303030" />
+      <stop offset="1" stop-color="#606060" />
+    </linearGradient>
+</defs>
 <g>
-   <circle cx="8" cy="8" r="4" style="fill:none;stroke:#505050;stroke-width:.75;"/>
-   <circle cx="8" cy="8" r="2" style="fill:none;stroke:#303030;stroke-width:.75;"/>
-   <circle cx="8" cy="8" r="1" style="fill:none;stroke:#101010;stroke-width:1;"/>
-   <circle cx="8" cy="8" r=".75" style="fill:#f2f2f2;stroke-width:0;"/>
+   <circle cx="8" cy="8" r="6" style="fill:url(#a)"/>
+   <circle cx="8" cy="8" r="5" style="fill:url(#b)"/>
+   <!-- <circle cx="8" cy="8" r="2.2" style="fill:#a0a0a0;"/> -->
+   <circle cx="8" cy="8" r="1.75" style="fill:#202020"/>
+   <line x1="4.5" y1="8" x2="11.5" y2="8" style="stroke:#202020"/>
 </g>
 </svg>

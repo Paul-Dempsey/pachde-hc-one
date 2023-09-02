@@ -10,6 +10,7 @@ SOURCES += src/open_file.cpp
 SOURCES += src/plugin.cpp
 SOURCES += src/preset_meta.cpp
 SOURCES += src/preset_widget.cpp
+SOURCES += src/presets.cpp
 SOURCES += src/port.cpp
 SOURCES += src/small_push.cpp
 SOURCES += src/text.cpp

@@ -19,7 +19,7 @@ struct ISendMidi
     virtual void sendPitchBend(uint8_t channel, uint8_t bend_lo, uint8_t bend_hi) {}
 };
 
-constexpr const uint8_t MaxPresetName = 31; // editor truncates to here on loading a preset.
+constexpr const uint8_t MaxPresetName = 31; // Haken editor truncates to here on loading a preset.
 constexpr const uint8_t MaxPresetNameSize = MaxPresetName + 1; // including zero termination
 
 constexpr const uint8_t MidiStatus_NoteOff              = 0x80;
@@ -387,8 +387,8 @@ enum StatusItem {
     aesInput192     = 7,	//	  aes input 192.0 kHz
     // StdRate 44100,48000,88200,96000,176400,192000
 };
-const std::string RecirculatorName(EM_Recirculator r);
-const std::string RecirculatorParameterName(EM_Recirculator r_type, int r);
+const char * RecirculatorName(EM_Recirculator r);
+const char * RecirculatorParameterName(EM_Recirculator r_type, int r);
 const char * DownloadMessage(int id);
 inline bool Is14BitPedalCC(uint8_t cc) { return (EMCC_i <= cc) && (cc <= EMCC_vi); }
 

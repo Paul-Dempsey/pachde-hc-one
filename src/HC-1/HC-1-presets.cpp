@@ -94,9 +94,6 @@ void Hc1Module::loadUserPresets()
             auto preset = std::make_shared<Preset>();
             preset->fromJson(jp);
             user_presets.push_back(preset);
-            // if (preset->favorite) {
-            //     favorite_presets.push_back(preset);
-            // }
         }
     }
     user_preset_state = InitState::Complete;
@@ -134,11 +131,9 @@ void Hc1Module::loadSystemPresets()
             auto preset = std::make_shared<Preset>();
             preset->fromJson(jp);
             system_presets.push_back(preset);
-            // if (preset->favorite) {
-            //     favorite_presets.push_back(preset);
-            // }
         }
     }
+    std::sort(system_presets.begin(), system_presets.end(), getPresetSort(preset_order));
     system_preset_state = InitState::Complete;
 }
 
@@ -275,13 +270,13 @@ void Hc1Module::readFavoritesFile(const std::string& path)
         json_array_foreach(jar, index, jp) {
             preset.fromJson(jp);
             if (!user_presets.empty()) {
-                auto it = std::find_if(user_presets.begin(), user_presets.end(), [&preset](std::shared_ptr<Preset>& p) { return p->isSamePreset(preset); });
+                auto it = std::find_if(user_presets.begin(), user_presets.end(), [&preset](std::shared_ptr<Preset>& p) { return p->is_same_preset(preset); });
                 if (it != user_presets.end()) {
                     addFavorite(*it);
                 }
             }
             if (!system_presets.empty()) {
-                auto it = std::find_if(system_presets.begin(), system_presets.end(), [&preset](std::shared_ptr<Preset>& p) { return p->isSamePreset(preset); });
+                auto it = std::find_if(system_presets.begin(), system_presets.end(), [&preset](std::shared_ptr<Preset>& p) { return p->is_same_preset(preset); });
                 if (it != system_presets.end()) {
                     addFavorite(*it);
                 }
@@ -296,26 +291,26 @@ std::shared_ptr<Preset> Hc1Module::findDefinedPreset(std::shared_ptr<Preset> pre
 {
     if (preset) {
         if (!user_presets.empty()) {
-            auto it = std::find_if(user_presets.begin(), user_presets.end(), [preset](std::shared_ptr<Preset>& p) { return p->isSamePreset(*preset); });
+            auto it = std::find_if(user_presets.begin(), user_presets.end(), [preset](std::shared_ptr<Preset>& p) { return p->is_same_preset(*preset); });
             if (it != user_presets.end()) {
                 return *it;
             }
         }
         if (!system_presets.empty()) {
-            auto it = std::find_if(system_presets.begin(), system_presets.end(), [preset](std::shared_ptr<Preset>& p) { return p->isSamePreset(*preset); });
+            auto it = std::find_if(system_presets.begin(), system_presets.end(), [preset](std::shared_ptr<Preset>& p) { return p->is_same_preset(*preset); });
             if (it != system_presets.end()) {
                 return *it;
             }
         }
     } else {
         if (!user_presets.empty()) {
-            auto it = std::find_if(user_presets.begin(), user_presets.end(), [this](std::shared_ptr<Preset>& p) { return p->isSamePreset(preset0); });
+            auto it = std::find_if(user_presets.begin(), user_presets.end(), [this](std::shared_ptr<Preset>& p) { return p->is_same_preset(preset0); });
             if (it != user_presets.end()) {
                 return *it;
             }
         }
         if (!system_presets.empty()) {
-            auto it = std::find_if(system_presets.begin(), system_presets.end(), [this](std::shared_ptr<Preset>& p) { return p->isSamePreset(preset0); });
+            auto it = std::find_if(system_presets.begin(), system_presets.end(), [this](std::shared_ptr<Preset>& p) { return p->is_same_preset(preset0); });
             if (it != system_presets.end()) {
                 return *it;
             }
@@ -358,7 +353,7 @@ void Hc1Module::addFavorite(std::shared_ptr<Preset> preset)
                 favorite_presets.cbegin(), 
                 favorite_presets.cend(), 
                 [preset](const std::shared_ptr<Preset>& fp){ 
-                    return preset->isSamePreset(*fp); 
+                    return preset->is_same_preset(*fp); 
                 })) {
             favorite_presets.push_back(preset);
             if (!bulk_favoriting) {

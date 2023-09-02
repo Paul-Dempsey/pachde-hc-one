@@ -312,22 +312,22 @@ std::string ToFormattedString(const midi::Message& msg) {
 }
 
 
-const std::string RecirculatorName(EM_Recirculator r)
+const char * RecirculatorName(EM_Recirculator r)
 {
     switch (r) {
-        case EM_Recirculator::Reverb: return "Reverb";
-        case EM_Recirculator::ModDelay: return "Mod Delay";
-        case EM_Recirculator::SweptEcho: return "Swept Echo";
-        case EM_Recirculator::AnalogEcho: return "Analog Echo";
+        case EM_Recirculator::Reverb:         return "Reverb";
+        case EM_Recirculator::ModDelay:       return "Mod Delay";
+        case EM_Recirculator::SweptEcho:      return "Swept Echo";
+        case EM_Recirculator::AnalogEcho:     return "Analog Echo";
         case EM_Recirculator::DigitalEchoLPF: return "Delay LPF";
         case EM_Recirculator::DigitalEchoHPF: return "Delay HPF";
         default: return "";
     }
 }
 
-const std::string RecirculatorParameterName(EM_Recirculator r_type, int r)
+const char * RecirculatorParameterName(EM_Recirculator r_type, int r)
 {
-    if (r < 1 || r > 5) return "????";
+    if (r < 1 || r > 5) return "";
     if (r == 5) return "Mix";
     switch (r_type) {
         case EM_Recirculator::Reverb:

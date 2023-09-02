@@ -11,7 +11,6 @@ namespace pachde {
 
 void PresetWidget::draw(const DrawArgs& args)
 {
-    TipWidget::draw(args);
 
     auto vg = args.vg;
 
@@ -28,6 +27,9 @@ void PresetWidget::draw(const DrawArgs& args)
         //BoxRect(vg, 0, 0, box.size.x, box.size.y, RampGray(G_40), .5f);
         FillRect(vg, 1, 1, box.size.x-2, box.size.y-2, RampGray(G_20));
     }
+
+    TipWidget::draw(args);
+
     if (preset) {
         auto font = GetPluginFontRegular();
         if (FontOk(font)) {
@@ -36,6 +38,10 @@ void PresetWidget::draw(const DrawArgs& args)
             SetTextStyle(vg, font, pressed ? RampGray(G_15) : RampGray(G_90), 12.f);
             nvgText(vg, 2.5f, 11.5f, preset->name.c_str(), nullptr);
             nvgRestore(vg);
+
+            auto code = *preset->get_category_list().cbegin();
+            SetTextStyle(vg, font, pressed ? GetStockColor(StockColor::pachde_blue_dark) : GetStockColor(StockColor::pachde_blue_light), 9.f);
+            RightAlignText(vg, box.size.x-4.f, box.size.y-4.f, (const char *)&code, ((const char *)&code) + 2);
         }
         if (preset->favorite) {
             FillHeart(vg, 4.f, 16.5f, 6.f, PORT_PINK);

@@ -5,8 +5,8 @@ namespace pachde {
 
 Hc1Module::Hc1Module()
 {
-    system_presets.reserve(700);
-    user_presets.reserve(128);
+    //system_presets.reserve(700);
+    //user_presets.reserve(128);
     config(Params::NUM_PARAMS, Inputs::NUM_INPUTS, Outputs::NUM_OUTPUTS, Lights::NUM_LIGHTS);
     configCCParam(em_midi::EMCC_i,   true, this, M1_PARAM, 0.f, EM_Max14f, EM_Max14f/2.f, "i");
     configCCParam(em_midi::EMCC_ii,  true, this, M2_PARAM, 0.f, EM_Max14f, EM_Max14f/2.f, "ii");
@@ -21,19 +21,20 @@ Hc1Module::Hc1Module()
     configCCParam(em_midi::EMCC_RMIX, false, this, RMIX_PARAM, 0.f, 127.f, 64.f, "Recirculator Mix"); //->snapEnabled = true;
     configCCParam(em_midi::EMCC_PostLevel, true, this, VOLUME_PARAM, 0.f, EM_Max14f, EM_Max14f/2.f, "Master volume");
 
-    configSwitch(M1_REL_PARAM, 0.f, 1.f, 0.f, "i CV relative");
-    configSwitch(M2_REL_PARAM, 0.f, 1.f, 0.f, "ii CV relative");
-    configSwitch(M3_REL_PARAM, 0.f, 1.f, 0.f, "iii CV relative");
-    configSwitch(M4_REL_PARAM, 0.f, 1.f, 0.f, "iv CV relative");
-    configSwitch(M5_REL_PARAM, 0.f, 1.f, 0.f, "v CV relative");
-    configSwitch(M6_REL_PARAM, 0.f, 1.f, 0.f, "vi CV relative");
-    configSwitch(R1_REL_PARAM, 0.f, 1.f, 0.f, "R1 CV relative");
-    configSwitch(R2_REL_PARAM, 0.f, 1.f, 0.f, "R2 CV relative");
-    configSwitch(R3_REL_PARAM, 0.f, 1.f, 0.f, "R3 CV relative");
-    configSwitch(R4_REL_PARAM, 0.f, 1.f, 0.f, "R4 CV relative");
-    configSwitch(RMIX_REL_PARAM, 0.f, 1.f, 0.f, "RMix CV relative");
-    configSwitch(VOLUME_REL_PARAM, 0.f, 1.f, 0.f, "Volume CV relative");
-    configSwitch(MUTE_PARAM, 0.f, 1.f, 0.f, "Mute");
+    configSwitch(M1_REL_PARAM, 0.f, 1.f, 0.f, "i CV relative", {"off", "on"});
+    configSwitch(M2_REL_PARAM, 0.f, 1.f, 0.f, "ii CV relative", {"off", "on"});
+    configSwitch(M3_REL_PARAM, 0.f, 1.f, 0.f, "iii CV relative", {"off", "on"});
+    configSwitch(M4_REL_PARAM, 0.f, 1.f, 0.f, "iv CV relative", {"off", "on"});
+    configSwitch(M5_REL_PARAM, 0.f, 1.f, 0.f, "v CV relative", {"off", "on"});
+    configSwitch(M6_REL_PARAM, 0.f, 1.f, 0.f, "vi CV relative", {"off", "on"});
+    configSwitch(R1_REL_PARAM, 0.f, 1.f, 0.f, "R1 CV relative", {"off", "on"});
+    configSwitch(R2_REL_PARAM, 0.f, 1.f, 0.f, "R2 CV relative", {"off", "on"});
+    configSwitch(R3_REL_PARAM, 0.f, 1.f, 0.f, "R3 CV relative", {"off", "on"});
+    configSwitch(R4_REL_PARAM, 0.f, 1.f, 0.f, "R4 CV relative", {"off", "on"});
+    configSwitch(RMIX_REL_PARAM, 0.f, 1.f, 0.f, "RMix CV relative", {"off", "on"});
+    configSwitch(VOLUME_REL_PARAM, 0.f, 1.f, 0.f, "Volume CV relative", {"off", "on"});
+    configSwitch(MUTE_PARAM, 0.f, 1.f, 0.f, "Mute", {"off", "on"});
+    configSwitch(RECIRC_EXTEND_PARAM, 0.f, 1.f, 0.f, "R Extend", {"off", "on"});
 
     configInput(M1_INPUT, "Macro i");
     configInput(M2_INPUT, "Macro ii");
@@ -62,7 +63,8 @@ Hc1Module::Hc1Module()
     configLight(Lights::VOLUME_REL_LIGHT, "Volume CV relative");
     configLight(Lights::HEART_LIGHT, "Device status");
     configLight(Lights::MUTE_LIGHT, "Mute");
-    configLight(Lights::FILTER_LIGHT, "Filter presets");
+    configLight(Lights::RECIRC_EXTEND_LIGHT, "R Extend");
+    //configLight(Lights::FILTER_LIGHT, "Filter presets");
 
     getLight(HEART_LIGHT).setBrightness(.8f);
     clearCCValues();
@@ -82,14 +84,76 @@ void Hc1Module::centerKnobs() {
     paramToDefault(RMIX_PARAM);
     paramToDefault(VOLUME_PARAM);
 }
+// void Hc1Module::defaultKnobs() {
+//     paramToDefault(M1_PARAM);
+//     paramToDefault(M2_PARAM);
+//     paramToDefault(M3_PARAM);
+//     paramToDefault(M4_PARAM);
+//     paramToDefault(M5_PARAM);
+//     paramToDefault(M6_PARAM);
+//     paramToDefault(R1_PARAM);
+//     paramToDefault(R2_PARAM);
+//     paramToDefault(R3_PARAM);
+//     paramToDefault(R4_PARAM);
+//     paramToDefault(RMIX_PARAM);
+//     paramToDefault(VOLUME_PARAM);
+// }
+void Hc1Module::zeroKnobs() {
+    paramToMin(M1_PARAM);
+    paramToMin(M2_PARAM);
+    paramToMin(M3_PARAM);
+    paramToMin(M4_PARAM);
+    paramToMin(M5_PARAM);
+    paramToMin(M6_PARAM);
+    paramToMin(R1_PARAM);
+    paramToMin(R2_PARAM);
+    paramToMin(R3_PARAM);
+    paramToMin(R4_PARAM);
+    paramToMin(RMIX_PARAM);
+    //paramToDefault(VOLUME_PARAM); // Leave volume alone
+}
+
+void Hc1Module::absoluteCV()
+{
+    getParam(M1_REL_PARAM).setValue(0.f);
+    getParam(M2_REL_PARAM).setValue(0.f);
+    getParam(M3_REL_PARAM).setValue(0.f);
+    getParam(M4_REL_PARAM).setValue(0.f);
+    getParam(M5_REL_PARAM).setValue(0.f);
+    getParam(M6_REL_PARAM).setValue(0.f);
+    getParam(R1_REL_PARAM).setValue(0.f);
+    getParam(R2_REL_PARAM).setValue(0.f);
+    getParam(R3_REL_PARAM).setValue(0.f);
+    getParam(R4_REL_PARAM).setValue(0.f);
+    getParam(RMIX_REL_PARAM).setValue(0.f);
+    getParam(VOLUME_REL_PARAM).setValue(0.f);
+}
+
+void Hc1Module::relativeCV()
+{
+    getParam(M1_REL_PARAM).setValue(1.f);
+    getParam(M2_REL_PARAM).setValue(1.f);
+    getParam(M3_REL_PARAM).setValue(1.f);
+    getParam(M4_REL_PARAM).setValue(1.f);
+    getParam(M5_REL_PARAM).setValue(1.f);
+    getParam(M6_REL_PARAM).setValue(1.f);
+    getParam(R1_REL_PARAM).setValue(1.f);
+    getParam(R2_REL_PARAM).setValue(1.f);
+    getParam(R3_REL_PARAM).setValue(1.f);
+    getParam(R4_REL_PARAM).setValue(1.f);
+    getParam(RMIX_REL_PARAM).setValue(1.f);
+    getParam(VOLUME_REL_PARAM).setValue(1.f);
+}
+
+
 
 void Hc1Module::onSave(const SaveEvent& e) {
-    Module::onSave(e);
     savePresets();
+    Module::onSave(e);
 }
 void Hc1Module::onRemove(const RemoveEvent& e) {
-    Module::onRemove(e);
     savePresets();
+    Module::onRemove(e);
 }
 
 json_t * Hc1Module::dataToJson()
@@ -97,6 +161,7 @@ json_t * Hc1Module::dataToJson()
     auto root = json_object();
     json_object_set_new(root, "midi-device", json_stringn(device_name.c_str(), device_name.size()));
 
+    json_object_set_new(root, "preset-order", json_integer(static_cast<int>(preset_order)));
     json_object_set_new(root, "preset-tab", json_integer(tab));
     auto ar = json_array();
     for (int pg: page) {
@@ -110,7 +175,6 @@ json_t * Hc1Module::dataToJson()
     json_object_set_new(root, "restore-preset", json_boolean(restore_saved_preset));
     json_object_set_new(root, "cache-presets", json_boolean(cache_presets));
     json_object_set_new(root, "heartbeat",  json_boolean(heartbeat));
-    json_object_set_new(root, "filter-presets", json_boolean(filter_presets));
     return root;
 }
 
@@ -134,6 +198,10 @@ void Hc1Module::dataFromJson(json_t *root)
             }
         }
     }
+    j = json_object_get(root, "preset-order");
+    if (j) {
+        preset_order = static_cast<PresetOrder>(clamp(static_cast<int>(json_integer_value(j)), static_cast<int>(PresetOrder::Alpha), static_cast<int>(PresetOrder::System)));
+    }
     j = json_object_get(root, "preset");
     if (j) {
         saved_preset = std::make_shared<Preset>();
@@ -155,7 +223,6 @@ void Hc1Module::dataFromJson(json_t *root)
         loadUserPresets();
         favoritesFromPresets();
     }
-    filter_presets = GetBool(root, "filter-presets", filter_presets);
 }
 
 void Hc1Module::reboot()
@@ -278,7 +345,22 @@ void Hc1Module::processAllCV()
     for (int n = R1_INPUT; n <= RMIX_INPUT; ++n) {
         processCV(n);
     }
-    getLight(Lights::FILTER_LIGHT).setBrightness(filter_presets * 1.0f);
+    //getLight(Lights::FILTER_LIGHT).setBrightness(preset_filter.isFiltered() * 1.0f);
+
+    // recirculator extended
+    {
+        auto pq = getParamQuantity(RECIRC_EXTEND_PARAM);
+        bool extended = pq->getValue() > 0.5f;
+        if (extended != isExtendRecirculator()) {
+            if (extended) {
+                recirculator |= EM_Recirculator::Extend;
+            } else {
+                recirculator &= ~EM_Recirculator::Extend;
+            }
+            sendControlChange(EM_SettingsChannel, EMCC_RecirculatorType, recirculator);
+        }
+        getLight(Lights::RECIRC_EXTEND_LIGHT).setBrightness(isExtendRecirculator() * 1.0f);
+    }
 }
 
 void Hc1Module::process(const ProcessArgs& args)
@@ -313,14 +395,14 @@ void Hc1Module::process(const ProcessArgs& args)
         float midi_time = midi_timer.process(args.sampleTime);
         if (midi_time > MIDI_RATE) {
             midi_timer.reset();
-            for (int n = Params::M1_PARAM; n < Params::NUM_PARAMS; ++n) {
-                switch (n) {
-                case Params::MUTE_PARAM: continue;
-                case Params::VOLUME_PARAM:
-                    if (muted) continue;
-                    break;
-                }
+            for (int n = Params::M1_PARAM; n < Params::VOLUME_PARAM; ++n) {
                 auto pq = dynamic_cast<CCParamQuantity*>(getParamQuantity(n));
+                if (pq) {
+                    pq->syncValue();
+                }
+            }
+            if (!muted) {
+                auto pq = dynamic_cast<CCParamQuantity*>(getParamQuantity(VOLUME_PARAM));
                 if (pq) {
                     pq->syncValue();
                 }
