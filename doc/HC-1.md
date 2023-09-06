@@ -129,31 +129,31 @@ From right to left, top to bottom:
 
 | Menu | Option | Description |
 | -- | -- | -- |
-| **Knob control** | Center knobs | Set all knobs to center position. |
-|  | Zero knobs | Set all knobs (except Volume) to zero position. |
-|  | Absolute CV | Set all controls to Absolute CV mode |
-|  | Relative CV | Set all controls to Relative CV mode |
-| **Recirculator** | Reverb | Use Reverb |
-|  | Mod delay | Use the Mod delay |
-|  | Swept Echo | Use Swept echo |
-|  | Analog Echo | Use Analog Echo. Be careful switching to this one. If Feedback or R Mix is high, damaging high volumes can result. |
-|  | Delay LPF | Use delay LPF (low-pass filter) |
-|  | Delay HPF | Use Delay HPF (high-pass filter) |
-| **Module** | Reboot HC-1 | Re-initialize HC1. May be needed if MIDI communication isn't working. This always re-scans all User and System presets from the device. |
-|  | Suppress heartbeat handshake | Do not periodically poll the device. You may want to do this because the heartbeat can sometimes cause glitches in the audio output. Without the heartbeat, the DSP usage indicator doesn't work. |
-|  | One handshake | Send one heartbeat handshake. When heartbeat is suppressed, use this to take a snapshot of the DSP usage. |
-|  | Request config | Request the current preset (edit slot) configuration from the device. |
-|  | Reset MIDI I/O | Re-initialize MIDI I/O. |
-| **Favorites** | Clear favorites | Empty the Favorites list. |
-| | Open favorites.. | Load favorites from a file (`.fav` or `.json`) |
-| | Save favorites as...| Save current favorites list to a `.fav` or `.json` file. |
-| **Presets** | Restore last preset at startup | Enable to select the last preset used in HC1 at startup. Disable to use whatever preset is current on the device. |
-|  | Use saved presets | Turn on to use a cached list of user and system presets instead of (slowly) re-querying the device at startup. |
-|  | Save presets | Force-save the preset lists. |
-|  | Refresh User presets | Refresh the list of User presets from the device. Do this after adding or removing new user presets using the Haken Editor, and you have **Use saved presets** turned on. |
-| **Sort System presets** | Alphabetically | (default) Show system presets alphabetically by name. |
-|  | by Category | Sort first by Category, then alphabetically within the category. |
-|  | in System order | Show system presets in internal System order. This is the numerical order in the Haken Editor "File 2" list, which is mostly but not entirely alphabetical. |
+| **Knob control** | **Center knobs** | Set all knobs to center position. |
+|  | **Zero knobs** | Set all knobs (except Volume) to zero position. |
+|  | **Absolute CV** | Set all controls to Absolute CV mode |
+|  | **Relative CV** | Set all controls to Relative CV mode |
+| **Recirculator** | **Reverb** | Use Reverb |
+|  | **Mod delay** | Use the Mod delay |
+|  | **Swept Echo** | Use Swept echo |
+|  | **Analog Echo** | Use Analog Echo. Be careful switching to this one. If Feedback or R Mix is high, damaging high volumes can result. |
+|  | **Delay LPF** | Use delay LPF (low-pass filter) |
+|  | **Delay HPF** | Use Delay HPF (high-pass filter) |
+| **Module** | **Reboot HC-1** | Re-initialize HC1. May be needed if MIDI communication isn't working. This always re-scans all User and System presets from the device. |
+|  | **Suppress heartbeat handshake** | Do not periodically poll the device. You may want to do this because the heartbeat can sometimes cause glitches in the audio output. Without the heartbeat, the DSP usage indicator doesn't work. |
+|  | **One handshake** | Send one heartbeat handshake. When heartbeat is suppressed, use this to take a snapshot of the DSP usage. |
+|  | **Request config** | Request the current preset (edit slot) configuration from the device. |
+|  | **Reset MIDI I/O** | Re-initialize MIDI I/O. |
+| **Favorites** | **Clear favorites** | Empty the Favorites list. |
+| | **Open favorites...** | Load favorites from a file (`.fav` or `.json`) |
+| | **Save favorites as...** | Save current favorites list to a `.fav` or `.json` file. |
+| **Presets** | **Restore last preset at startup** | Enable to select the last preset used in HC1 at startup. Disable to use whatever preset is current on the device. |
+|  | **Use saved presets** | Turn on to use a cached list of user and system presets instead of (slowly) re-querying the device at startup. |
+|  | **Save presets** | Force-save the preset lists. |
+|  | **Refresh User presets** | Refresh the list of User presets from the device. Do this after adding or removing new user presets using the Haken Editor, and you have **Use saved presets** turned on. |
+| **Sort System presets** | **Alphabetically** | (default) Show system presets alphabetically by name. |
+|  | **by Category** | Sort first by Category, then alphabetically within the category. |
+|  | **in System order** | Show system presets in internal System order. This is the numerical order in the Haken Editor "File 2" list, which is mostly but not entirely alphabetical. |
 
 ## Notes
 
@@ -166,26 +166,27 @@ You can, of course, save favorites anywhere you like, but this is the default, p
 I do have plans to build such functionality, but it may not be in the Rack plugin format.
 
 - **Multiple EM Devices:** The USB plug on my ContinuuMini is broken, so I haven't been able to test the multiple-EM device scenario.
-  That's where *you* come in!
-  If you own multiple EM-based devices, you should be able to use an instance of HC-1 for each device in the same Rack patch to control multiple devices.
-  The automatic discovery will always choose the first EM device it finds, but you can choose another from the MIDI controls in the bottom left (pick the _output_ device from the right-hand midi selector and HC-1 will automatically find the corresponding input).
+That's where *you* come in!
+If you own multiple EM-based devices, you should be able to use an instance of HC-1 for each device in the same Rack patch to control multiple devices.
+The automatic discovery will always choose the first EM device it finds, but you can choose another from the MIDI controls in the bottom left:
+Pick the _output_ device from the right-hand MIDI selector and HC-1 will automatically find the corresponding input.
 
 - **Factory presets:** For beta, there are no Rack module factory presets.
-  Please let me know if you have something useful that comes from using Rack module presets.
+Please let me know if you have something useful that comes from using Rack module presets.
 
 - **HC-2:** The HC-2 module is present in the plugin.
-  It is currently used for module prototyping, diagnostics and debugging.
-  It's possible we may turn to it for support purposes, but HC-1 has most of what we need.
-  HC-2 is really not useful to users at this time and may occasionally cause VCV Rack to deadlock.
-  The CV map display on HC-2 can be somewhat interesting if you are familiar with the EM usage of Channel 1 and Channel 16 CCs.
+It is currently used for module prototyping, diagnostics and debugging.
+It's possible we may turn to it for support purposes, but HC-1 has most of what we need.
+HC-2 is really not useful to users at this time and may occasionally cause VCV Rack to deadlock.
+The CV map display on HC-2 can be somewhat interesting if you are familiar with the EM usage of Channel 1 and Channel 16 CCs.
 
 - **More functionality:** I plan to add extender modules for controlling most other things on the device.
-  I am *not* planninG to create a complete preset editor.
-  That's not really suitable for a VCV rack module, plus it would require additional proprietary internal information from Haken Audio.
+I am *not* planning to create a complete preset editor.
+That's not really suitable for a VCV rack module and it would require additional proprietary internal information from Haken Audio.
 
-  I am very interesting to hear from you what will be most important controls to include in future HC mdoules.
+  I am very interesting to hear from you what will be most important controls to include in future HC modules.
 
-  - I have ideas for other potential useful features, such as:
+  - I have some ideas for other potential useful features, such as:
 
     - Save and load profiles. These would contain a profile of settings including pedal assignments, rounding, MIDI routing, and so on.
     These could be independent and also optionally associated with a specific preset (or presets), so that when you load a preset of any kind (user favorite, or system), the associated profile is applied.
