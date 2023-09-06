@@ -426,8 +426,10 @@ struct Hc1ModuleWidget : IPresetHolder, ModuleWidget
             populatePresetWidgets();
         }
     }
+
     void addSortBy(Menu *menu, std::string name, PresetOrder order);
     void addRecirculator(Menu *menu, EM_Recirculator kind);
+
     void onHoverScroll(const HoverScrollEvent& e) override;
     void step() override;
     void drawLayer(const DrawArgs& args, int layer) override;

@@ -27,14 +27,14 @@ Hc1Module::Hc1Module()
     configSwitch(M4_REL_PARAM, 0.f, 1.f, 0.f, "iv CV relative", {"off", "on"});
     configSwitch(M5_REL_PARAM, 0.f, 1.f, 0.f, "v CV relative", {"off", "on"});
     configSwitch(M6_REL_PARAM, 0.f, 1.f, 0.f, "vi CV relative", {"off", "on"});
-    configSwitch(R1_REL_PARAM, 0.f, 1.f, 0.f, "R1 CV relative", {"off", "on"});
-    configSwitch(R2_REL_PARAM, 0.f, 1.f, 0.f, "R2 CV relative", {"off", "on"});
-    configSwitch(R3_REL_PARAM, 0.f, 1.f, 0.f, "R3 CV relative", {"off", "on"});
-    configSwitch(R4_REL_PARAM, 0.f, 1.f, 0.f, "R4 CV relative", {"off", "on"});
-    configSwitch(RMIX_REL_PARAM, 0.f, 1.f, 0.f, "RMix CV relative", {"off", "on"});
+    configSwitch(R1_REL_PARAM, 0.f, 1.f, 0.f, "R-1 CV relative", {"off", "on"});
+    configSwitch(R2_REL_PARAM, 0.f, 1.f, 0.f, "R-2 CV relative", {"off", "on"});
+    configSwitch(R3_REL_PARAM, 0.f, 1.f, 0.f, "R-3 CV relative", {"off", "on"});
+    configSwitch(R4_REL_PARAM, 0.f, 1.f, 0.f, "R-4 CV relative", {"off", "on"});
+    configSwitch(RMIX_REL_PARAM, 0.f, 1.f, 0.f, "R Mix CV relative", {"off", "on"});
     configSwitch(VOLUME_REL_PARAM, 0.f, 1.f, 0.f, "Volume CV relative", {"off", "on"});
     configSwitch(MUTE_PARAM, 0.f, 1.f, 0.f, "Mute", {"off", "on"});
-    configSwitch(RECIRC_EXTEND_PARAM, 0.f, 1.f, 0.f, "R Extend", {"off", "on"});
+    configSwitch(RECIRC_EXTEND_PARAM, 0.f, 1.f, 0.f, "Extended recirculator", {"off", "on"});
 
     configInput(M1_INPUT, "Macro i");
     configInput(M2_INPUT, "Macro ii");

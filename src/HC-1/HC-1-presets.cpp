@@ -156,7 +156,7 @@ void Hc1Module::favoritesFromPresets()
 void Hc1Module::userPresetsToJson(json_t* root)
 {
     auto device = deviceName();
-    json_object_set_new(root, "device", json_stringn(device.c_str(), device.size()));
+    json_object_set_new(root, "device", json_stringn(deviceName().c_str(), deviceName().size()));
 
     auto jaru = json_array();
     for (auto preset: user_presets) {
@@ -168,7 +168,7 @@ void Hc1Module::userPresetsToJson(json_t* root)
 void Hc1Module::systemPresetsToJson(json_t* root)
 {
     auto device = deviceName();
-    json_object_set_new(root, "device", json_stringn(device.c_str(), device.size()));
+    json_object_set_new(root, "device", json_stringn(deviceName().c_str(), deviceName().size()));
 
     auto jars = json_array();
     for (auto preset: system_presets) {
@@ -181,7 +181,7 @@ void Hc1Module::systemPresetsToJson(json_t* root)
 std::string Hc1Module::favoritesPath()
 {
     if (broken || !is_eagan_matrix) return "";
-    return asset::user(format_string("%s/fav-%s.json", pluginInstance->slug.c_str(), FilterDeviceName(deviceName()).c_str()));
+    return asset::user(format_string("%s/fav-%s.json", pluginInstance->slug.c_str(), deviceName().c_str()));
 }
 
 void Hc1Module::clearFavorites()
@@ -199,7 +199,7 @@ json_t* Hc1Module::favoritesToJson()
 {
     json_t* root = json_object();
     auto device = FilterDeviceName(deviceName());
-    json_object_set_new(root, "device", json_stringn(device.c_str(), device.size()));
+    json_object_set_new(root, "device", json_stringn(deviceName().c_str(), deviceName().size()));
     auto ar = json_array();
     for (auto preset: system_presets) {
         if (preset->favorite) {
@@ -211,7 +211,7 @@ json_t* Hc1Module::favoritesToJson()
             json_array_append_new(ar, preset->toJson());
         }
     }
-    json_object_set_new(root, "faves", ar);
+    json_object_set_new(root, "favorites", ar);
     return root;
 }
 
@@ -261,7 +261,7 @@ void Hc1Module::readFavoritesFile(const std::string& path)
     }
 	DEFER({json_decref(root);});
     auto bulk = BulkFavoritingMode(this);
-    auto jar = json_object_get(root, "faves");
+    auto jar = json_object_get(root, "favorites");
     if (jar) {
         clearFavorites();
         json_t* jp;

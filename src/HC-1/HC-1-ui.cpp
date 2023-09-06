@@ -217,14 +217,14 @@ Hc1ModuleWidget::Hc1ModuleWidget(Hc1Module *module)
     addChild(tab_bar);
 
     auto pm = createWidget<PickMidi>(Vec(7.5f, box.size.y - 16.f));
-    pm->describe("Choose Midi input");
+    pm->describe("Midi input");
     if (my_module) {
         pm->setMidiPort(my_module);
     }
     addChild(pm);
 
     pm = createWidget<PickMidi>(Vec(20.f, box.size.y - 16.f));
-    pm->describe("Choose Midi output");
+    pm->describe("Midi output");
     if (my_module) {
         pm->setMidiPort(&my_module->midi_output);
     }
@@ -438,45 +438,49 @@ void Hc1ModuleWidget::drawLayer(const DrawArgs& args, int layer)
     if (1 != layer) return;
 
     auto vg = args.vg;
-    auto font = GetPluginFontSemiBold();
-    if (FontOk(font)) {
-        SetTextStyle(vg, font, preset_name_color, 16.f);
-        std::string text;
-        if (my_module) {
-            if (my_module->broken) {
-                text = "[MIDI error - please wait]";
-            } else
-            if (InitState::Uninitialized == my_module->device_output_state) {
-                text = "[looking for EM out]";
-            } else
-            if (InitState::Uninitialized == my_module->device_input_state) {
-                text = "[looking for EM in]";
-            } else
-            if (my_module->is_gathering_presets()) {
-                text = format_string("[gathering %s preset %d]", my_module->in_user_names ? "User" : "System", my_module->in_user_names ? my_module->user_presets.size() : my_module->system_presets.size());
-            } else
-            if (InitState::Uninitialized == my_module->system_preset_state) {
-                text = "[preparing system presets]";
-            } else
-            if (InitState::Uninitialized == my_module->user_preset_state) {
-                text = "[preparing user presets]";
-            } else
-            if (InitState::Uninitialized == my_module->config_state) {
-                text = "[preparing for current configuration]";
-            } else
-            if (InitState::Pending == my_module->config_state) {
-                text = "[processing current configuration]";
-            } else
-            if (my_module->current_preset) {
-                text = my_module->current_preset->name;
-            } else {
-                text = "";
-            }
+    auto bold_font = GetPluginFontSemiBold();
+    auto font_normal = GetPluginFontRegular();
+    assert(FontOk(bold_font));
+    assert(FontOk(font_normal));
+    std::string text;
+    SetTextStyle(vg, font_normal, RampGray(G_85), 12.f);
+    if (my_module) {
+        if (my_module->broken) {
+            SetTextStyle(vg, bold_font, GetStockColor(StockColor::Fuchsia), 16.f);
+            text = "[MIDI error - please wait]";
+        } else
+        if (InitState::Uninitialized == my_module->device_output_state) {
+            text = "... looking for EM output ...";
+        } else
+        if (InitState::Uninitialized == my_module->device_input_state) {
+            text = ".. looking for EM input ...";
+        } else
+        if (my_module->is_gathering_presets()) {
+            text = format_string("... gathering %s preset %d ...", my_module->in_user_names ? "User" : "System", my_module->in_user_names ? my_module->user_presets.size() : my_module->system_presets.size());
+        } else
+        if (InitState::Uninitialized == my_module->system_preset_state) {
+            text = "... preparing system presets ...";
+        } else
+        if (InitState::Uninitialized == my_module->user_preset_state) {
+            text = "... preparing user presets ...";
+        } else
+        if (InitState::Uninitialized == my_module->config_state) {
+            text = "... preparing preset details ...";
+        } else
+        if (InitState::Pending == my_module->config_state) {
+            text = "... processing preset details ...";
+        } else
+        if (my_module->current_preset) {
+            SetTextStyle(vg, bold_font, preset_name_color, 16.f);
+            text = my_module->current_preset->name;
         } else {
-            text = "< current preset >";
+            text = "";
         }
-        CenterText(vg, box.size.x/2.f, 15.f, text.c_str(), nullptr);
+    } else {
+        SetTextStyle(vg, bold_font, preset_name_color, 16.f);
+        text = "My Amazing Preset";
     }
+    CenterText(vg, box.size.x/2.f, 15.f, text.c_str(), nullptr);
 
     if (my_module) {
         const float y = PRESET_BOTTOM + 1.75f;
@@ -747,7 +751,12 @@ void Hc1ModuleWidget::appendContextMenu(Menu *menu)
     }));
 
     menu->addChild(createSubmenuItem("Favorites", "", [=](Menu* menu) {
-        menu->addChild(createMenuItem("Clear favorites", "", [=](){ my_module->clearFavorites();}, !ready));
+        menu->addChild(createMenuItem("Clear favorites", "", [=](){ 
+            my_module->clearFavorites();
+            if (tab == PresetTab::Favorite) {
+                updatePresetWidgets();
+            }
+        }, !ready));
         menu->addChild(createMenuItem("Open favorites...", "", [=]() {
             std::string path;
             std::string folder = asset::user(pluginInstance->slug);
@@ -779,7 +788,6 @@ void Hc1ModuleWidget::appendContextMenu(Menu *menu)
             [=](){ return my_module->restore_saved_preset; },
             [=](){ my_module->restore_saved_preset = !my_module->restore_saved_preset; }
             ));
-        menu->addChild(createMenuItem("Save presets", "", [=](){ my_module->savePresets(); }, !ready));
         menu->addChild(createCheckMenuItem("Use saved presets", "",
             [=](){ return my_module->cache_presets; },
             [=](){
@@ -788,6 +796,9 @@ void Hc1ModuleWidget::appendContextMenu(Menu *menu)
                     my_module->savePresets();
                 }
             }));
+        menu->addChild(new MenuSeparator);
+        menu->addChild(createMenuItem("Save presets", "", [=](){ my_module->savePresets(); }, !ready));
+        menu->addChild(createMenuItem("Refresh User presets", "", [=](){ my_module->transmitRequestUserPresets(); }));
     }));
 
     menu->addChild(createSubmenuItem("Sort System presets", "", [=](Menu* menu) {
