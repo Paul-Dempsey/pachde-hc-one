@@ -12,6 +12,12 @@ std::string FilterDeviceName(std::string text);
 //std::string AbbreviatedName(std::string name);
 std::string TempName(const std::string& suffix);
 
+template <typename T>
+inline bool in_range(T value, T minimum, T maximum) { return minimum <= value && value <= maximum; }
+
+template <typename T>
+inline bool in_range_limit(T value, T minimum, T limit) { return minimum <= value && value < limit; }
+
 inline bool GetBool(const json_t* root, const char* key, bool default_value) {
     auto j = json_object_get(root, key);
     return j ? json_is_true(j) : default_value;

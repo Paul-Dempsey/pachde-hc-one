@@ -92,7 +92,7 @@ From right to left, top to bottom:
   Changes in recirculator type and extended mode are not saved.
   When you refresh or return to the preset they will reflect the preset definition.
 
-- The Volume knob and Mute button controls the Eagan Matrix Master Level.
+- The Volume knob and Mute button controls the Eagan Matrix Post Level.
 
 - The bottom row shows the following, from left to right:
 
@@ -180,7 +180,7 @@ It's possible we may turn to it for support purposes, but HC-1 has most of what 
 HC-2 is really not useful to users at this time and may occasionally cause VCV Rack to deadlock.
 The CV map display on HC-2 can be somewhat interesting if you are familiar with the EM usage of Channel 1 and Channel 16 CCs.
 
-- **More functionality:** I plan to add extender modules for controlling most other things on the device.
+- **More functionality:** I plan to add expander modules for controlling most other things on the device.
 I am *not* planning to create a complete preset editor.
 That's not really suitable for a VCV rack module and it would require additional proprietary internal information from Haken Audio.
 

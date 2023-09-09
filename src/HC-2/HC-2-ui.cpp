@@ -21,7 +21,7 @@ Hc2ModuleWidget::Hc2ModuleWidget(Hc2Module * module)
     box.size.y = 380.f;
 }
 
-void Hc2ModuleWidget::drawExtenderConnector(const DrawArgs& args)
+void Hc2ModuleWidget::drawExpanderConnector(const DrawArgs& args)
 {
     if (!my_module || my_module->partner_side.empty()) return;
     auto vg = args.vg;
@@ -61,6 +61,25 @@ void Hc2ModuleWidget::drawCCMap(const DrawArgs& args, Hc1Module * partner)
     drawMap(args.vg, partner->ch15_cc_value, x, 44.f);
 }
 
+std::string PedalAssign(uint8_t a) {
+    switch (a) {
+    case 12: return "i";
+    case 13: return "ii";
+    case 14: return "iii";
+    case 15: return "iv";
+    case 16: return "v";
+    case 17: return "vi";
+    case 20: return "R1";
+    case 21: return "R2";
+    case 22: return "R3";
+    case 23: return "R4";
+    case 24: return "RMix";
+    case 64: return "Sustain";
+    case 66: return "Sostenuto";
+    }
+    return format_string("%3d", a);
+}
+
 void Hc2ModuleWidget::draw(const DrawArgs& args)
 {
     ModuleWidget::draw(args);
@@ -72,7 +91,7 @@ void Hc2ModuleWidget::draw(const DrawArgs& args)
 
         auto device =  partner ? my_module->getDeviceName() : nullptr;
         if (device) {
-            nvgText(vg, box.size.x/2.f + 25.f, box.size.y - 7.5f, device, nullptr);
+            nvgText(vg, box.size.x/2.f + 25.f, box.size.y - 4.f, device, nullptr);
         }
     }
     if (partner) {
@@ -80,34 +99,37 @@ void Hc2ModuleWidget::draw(const DrawArgs& args)
     }
     if (partner && FontOk(font))
     {
-        // Midi send/receive counts
-        // {
-        //     nvgSave(vg);
-        //     auto text = format_string("%d", partner->midi_receive_count);
-        //     RightAlignText(vg, box.size.x - 5.f, 30.f, text.c_str(), nullptr);
-        //     text = format_string("%d", partner->midi_send_count);
-        //     RightAlignText(vg, box.size.x - 5.f, 45.f, text.c_str(), nullptr);
-        //     nvgRestore(vg);
-        // }
         auto y = 80.f;
         const float row_interval = 14.f;
         auto cc15 = partner->ch15_cc_value;
         auto cc0 = partner->ch0_cc_value;
         const char * const ped_indicator = "NSEDTVP";
+        auto ped = cc15[52];
         auto peds = format_string(
-            "Pedals (1 %c %d %d %d-%d) (2 %c %d %d %d-%d) (Sus %d) (Sos %d) (Sos2 %d)",
+            "Pedal 1 %c %s(%3d) %3d..%3d",
             ped_indicator[cc15[37] & 0x07], 
-            cc15[52], cc0[cc15[52]],
-            cc15[76], cc15[77],
-
-            ped_indicator[(cc15[37] >> 3) & 0x07],
-            cc15[53], cc0[cc15[53]],
-            cc15[78], cc15[79],
-
-            cc0[64], cc0[66], cc0[69]
-        );
+            PedalAssign(ped).c_str(), cc0[ped],
+            cc15[76], cc15[77]);
         nvgText(vg, 7.5, y, peds.c_str(), nullptr);
         y += row_interval;
+
+        ped = cc15[53];
+        peds = format_string(
+            "Pedal 2 %c %s(%3d) %3d..%3d)",
+            ped_indicator[(cc15[37] >> 3) & 0x07],
+            PedalAssign(ped).c_str(), cc0[ped],
+            cc15[78], cc15[79]);
+        nvgText(vg, 7.5, y, peds.c_str(), nullptr);
+        y += row_interval;
+
+        peds = format_string("Sus %d Sos %d Sos2 %d", cc15[64], cc15[66], cc15[69]);
+        nvgText(vg, 7.5, y, peds.c_str(), nullptr);
+        y += row_interval;
+
+        // Apparently just Kenton
+        // peds = format_string("Jack1 %3d Jack2 %3d", cc15[29], cc15[30]);
+        // nvgText(vg, 7.5, y, peds.c_str(), nullptr);
+        // y += row_interval;
 
         auto text = format_string("C4=%d | OCT %d | POLY %d%c T%d D%d V%d",
             cc15[44],
@@ -157,7 +179,7 @@ void Hc2ModuleWidget::draw(const DrawArgs& args)
 
     }
 
-    drawExtenderConnector(args);
+    drawExpanderConnector(args);
     DrawLogo(vg, box.size.x /2.f - 12.f, RACK_GRID_HEIGHT - ONE_HP, RampGray(G_90));
 }
 

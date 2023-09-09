@@ -87,9 +87,10 @@ struct CCParamQuantity : rack::engine::ParamQuantity
 template <class TCCPQ = CCParamQuantity>
 TCCPQ* configCCParam(uint8_t cc, bool hiRes, Module* module, int paramId, float minValue, float maxValue, float defaultValue, std::string name = "", std::string unit = "", float displayBase = 0.f, float displayMultiplier = 1.f, float displayOffset = 0.f)
 {
-    assert(paramId < (int) module->params.size() && paramId < (int) module->paramQuantities.size());
-    if (module->paramQuantities[paramId])
+    assert(paramId >= 0 && static_cast<size_t>(paramId) < module->params.size() && static_cast<size_t>(paramId) < module->paramQuantities.size());
+    if (module->paramQuantities[paramId]) {
         delete module->paramQuantities[paramId];
+    }
 
     TCCPQ* q = new TCCPQ;
     q->module = module;

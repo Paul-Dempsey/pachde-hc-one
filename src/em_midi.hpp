@@ -417,5 +417,86 @@ inline uint8_t GetRawStatus(const midi::Message& msg) { return msg.bytes[0] & 0x
 const char * StatusName(uint8_t status);
 std::string ToFormattedString(const midi::Message& msg);
 
+inline int MessageBytes(uint8_t status_byte)
+{
+	switch (status_byte & 0xf0) {
+	case MidiStatus_NoteOff:
+	case MidiStatus_NoteOn:
+	case MidiStatus_PolyKeyPressure:
+	case MidiStatus_CC:
+		return 2;
+
+	case MidiStatus_ProgramChange:
+	case MidiStatus_ChannelPressure:
+		return 1;
+
+	case MidiStatus_PitchBend:
+		return 2;
+
+	default:
+		return 0;
+	}
+}
+
+union uMidiMessage {
+	uint64_t dwData;
+	uint8_t bytes[4];
+	uMidiMessage() : dwData(0) {}
+	uMidiMessage(uint64_t dw) : dwData(dw) {}
+	uMidiMessage(uint8_t b1, uint8_t b2) : dwData(0) {
+		bytes[0] = b1;
+		bytes[1] = b2;
+	}
+	uMidiMessage(uint8_t b0, uint8_t b1, uint8_t b2) : dwData(0) {
+		bytes[0] = b0;
+		bytes[1] = b1;
+		bytes[2] = b2;
+	}
+    uMidiMessage(midi::Message& msg) : dwData(0) {
+        size_t i = 0;
+        for (auto b: msg.bytes) {
+            bytes[i++] = b;
+        }
+    }
+    void toMidiMessage(midi::Message& msg)
+    {
+        msg.bytes[0] = bytes[0];
+        switch (MessageBytes(bytes[0])) {
+            default:
+            case 0:
+                msg.setSize(1);
+                break;
+            case 1:
+                msg.bytes[1] = bytes[1];
+                msg.setSize(2);
+                break;
+            case 2:
+                msg.bytes[1] = bytes[1];
+                msg.bytes[2] = bytes[2];
+                msg.setSize(3);
+                break;
+        }
+    }
+    midi::Message toMidiMessage() {
+        midi::Message msg;
+        toMidiMessage(msg);
+        return msg;
+    }
+    void setStatus(uint8_t status) { bytes[0] = channel() | (status & 0xf0); }
+    void setChannel(uint8_t channel) { bytes[0] = status() | (channel & 0x0f); }
+    void setFirstByte(uint8_t b) { bytes[1] = b; }
+    void setSecondByte(uint8_t b) { bytes[2] = b; }
+	inline uint8_t status() { return bytes[0] & 0xf0; }
+	inline uint8_t channel() { return bytes[0] & 0x0f; }
+	inline uint8_t b1() { return bytes[1]; }
+	inline uint8_t b2() { return bytes[2]; }
+    inline uint64_t raw() { return dwData; }
+};
+
+inline uint8_t Status(uint64_t msg) { return uMidiMessage(msg).status(); }
+inline uint8_t Channel(uint64_t msg) { return uMidiMessage(msg).channel(); }
+inline uint8_t B1(uint64_t msg) { return uMidiMessage(msg).bytes[1]; }
+inline uint8_t B2(uint64_t msg) { return uMidiMessage(msg).bytes[2]; }
+
 }
 #endif

@@ -32,7 +32,7 @@ struct Hc2ModuleWidget : ModuleWidget
     Hc2Module * my_module;
 
     explicit Hc2ModuleWidget(Hc2Module * module);
-    void drawExtenderConnector(const DrawArgs& args);
+    void drawExpanderConnector(const DrawArgs& args);
     void drawCCMap(const DrawArgs& args, Hc1Module * partner);
     void draw(const DrawArgs& args) override;
     void appendContextMenu(Menu *menu) override;

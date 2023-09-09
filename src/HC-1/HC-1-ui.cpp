@@ -10,6 +10,25 @@ namespace pachde {
 
 //#define SHOW_PRESET0
 
+std::string PedalAssignment(uint8_t ped) {
+    switch (ped) {
+    case 12: return "i";
+    case 13: return "ii";
+    case 14: return "iii";
+    case 15: return "iv";
+    case 16: return "v";
+    case 17: return "vi";
+    case 20: return "R1";
+    case 21: return "R2";
+    case 22: return "R3";
+    case 23: return "R4";
+    case 24: return "RMix";
+    case 64: return "Sus";
+    case 66: return "Sos";
+    }
+    return format_string("%d", ped);
+}
+
 const NVGcolor& InitStateColor(InitState state)
 {
     switch (state) {
@@ -72,13 +91,14 @@ const NVGcolor& StatusColor(StatusItem led) {
 }
 
 constexpr const float PRESET_TOP = 38.f;
-constexpr const float PRESET_LEFT = 12.5f;
+constexpr const float PRESET_LEFT = 7.5f;
 constexpr const float PRESET_WIDTH = 320.f;
 constexpr const float PRESET_RIGHT = PRESET_LEFT + PRESET_WIDTH;
 constexpr const float PRESET_BOTTOM = PRESET_TOP + 8.f * 27.f;
 
+constexpr const float RIGHT_COLUMN_BUTTONS = PRESET_RIGHT + (360.f - PRESET_RIGHT)*.5f;
 constexpr const float KNOB_LEFT   = 45.f;
-constexpr const float KNOB_SPREAD = 54.f;
+constexpr const float KNOB_SPREAD = 54.25f;
 constexpr const float KNOB_ROW_1  = 288.f;
 constexpr const float KNOB_ROW_2  = 346.f;
 constexpr const float RKNOB_LEFT  = KNOB_LEFT; //- KNOB_SPREAD *.5f;
@@ -179,15 +199,59 @@ Hc1ModuleWidget::Hc1ModuleWidget(Hc1Module *module)
         }
     }
 
-    page_up = createWidget<SquareButton>(Vec(box.size.x -23.f, PRESET_TOP));
+    page_up = createWidgetCentered<SquareButton>(Vec(RIGHT_COLUMN_BUTTONS, PRESET_TOP + 12.f));
     page_up->setSymbol(SquareButtonSymbol::Up);
     page_up->onClick([this](){ pageUp(); });
     addChild(page_up);
 
-    page_down = createWidget<SquareButton>(Vec(box.size.x -23.f, PRESET_TOP + 17.5f));
+    page_down = createWidgetCentered<SquareButton>(Vec(RIGHT_COLUMN_BUTTONS, PRESET_TOP + 29.f));
     page_up->setSymbol(SquareButtonSymbol::Down);
     page_down->onClick([this](){ pageDown(); });
     addChild(page_down);
+
+    { // Transpose buttons
+        auto y = PRESET_TOP + 65.f;
+        auto x = RIGHT_COLUMN_BUTTONS;
+        auto pb = createWidgetCentered<SmallPush>(Vec(x, y));
+        if (module) {
+#ifdef ARCH_MAC
+            pb->describe("Octave up\nCmd+Click for one semitone");
+#else
+            pb->describe("Octave up\nCtrl+Click for one semitone");
+#endif
+            pb->onClick([module](bool ctrl, bool shift) {
+                module->middle_c += ctrl ? 1 : 12;
+                module->sendControlChange(EM_SettingsChannel, EMCC_MiddleC, module->middle_c);
+            });
+        }
+        addChild(pb);
+        y += 12.5f;
+ 
+        pb = createWidgetCentered<SmallPush>(Vec(x, y));
+        if (module) {
+            pb->describe("Transpose none");
+            pb->onClick([module](bool ctrl, bool shift) {
+                module->middle_c = 60;
+                module->sendControlChange(EM_SettingsChannel, EMCC_MiddleC, module->middle_c);
+            });
+        }
+        addChild(pb);
+        y += 12.5f;
+
+        pb = createWidgetCentered<SmallPush>(Vec(x, y));
+        if (module) {
+#ifdef ARCH_MAC
+            pb->describe("Octave down\nCmd+Click for one semitone");
+#else
+            pb->describe("Octave down\nCtrl+Click for one semitone");
+#endif
+            pb->onClick([module](bool ctrl, bool shift) {
+                module->middle_c -= ctrl ? 1 : 12;
+                module->sendControlChange(EM_SettingsChannel, EMCC_MiddleC, module->middle_c);
+            });
+        }
+        addChild(pb);
+    }
 
     // Filter
     // {
@@ -494,7 +558,7 @@ void Hc1ModuleWidget::drawLayer(const DrawArgs& args, int layer)
     }
 
     // DSP status
-    //if (!my_module || my_module->heartbeat)
+    //if (!my_module || my_module->heart_beating)
     {
         const float h = 10.f;
         const float w = 2.5f;
@@ -505,7 +569,7 @@ void Hc1ModuleWidget::drawLayer(const DrawArgs& args, int layer)
         const uint8_t* pdsp = (my_module && my_module->ready()) ? &my_module->dsp[0] : &tdsp[0];
 
         if (pdsp == &tdsp[0]) {
-            BoxRect(vg, x - 1.5f, y - 1.5f, w * 3.f + 4.f, h + 4.f, green_light, .5f);
+            BoxRect(vg, x - 1.5f, y - 1.5f, w * 3.f + 5.f, h + 4.f, green_light, .5f);
         }
 
         for (auto n = 0; n < 3; n++) {
@@ -518,13 +582,37 @@ void Hc1ModuleWidget::drawLayer(const DrawArgs& args, int layer)
     }
 }
 
+void drawPedalKnobAssignment(NVGcontext * vg, uint8_t ped, const char * text)
+{
+    float x = 0.f, y = KNOB_ROW_1;
+    if (in_range<uint8_t>(ped, 12, 17)) {
+        x = KNOB_LEFT + (ped-12) * KNOB_SPREAD;
+    } else if (in_range<uint8_t>(ped, 20, 24)) {
+        y = KNOB_ROW_2;
+        x = RKNOB_LEFT + (ped-20) * KNOB_SPREAD;
+    }
+    if (x > 0.f) {
+        nvgText(vg, x + RB_OFFSET - 7.5f, y - RB_VOFFSET + 4.f, text, nullptr);
+    }
+}
+
+void drawPedalAssignment(NVGcontext* vg, float x, float y, char ped_char, uint8_t ped, uint8_t ped_value)
+{
+    auto text =  format_string("p%c %s", ped_char, PedalAssignment(ped).c_str());
+    nvgTextAlign(vg, NVGalign::NVG_ALIGN_LEFT);
+    nvgText(vg, PRESET_RIGHT + 1.f, y, text.c_str(), nullptr);
+    Line(vg, x, y+1, x, y+1 - ped_value/16.f, GetStockColor(StockColor::Sea_green_Dark), 1.5f);
+}
+
 void Hc1ModuleWidget::draw(const DrawArgs& args)
 {
     ModuleWidget::draw(args);
     auto vg = args.vg;
+
+    bool stock = !my_module || !my_module->ready();
     auto rt = my_module ? my_module->recirculatorType() : EM_Recirculator::Reverb;
 
-    // extender connector
+    // expander connector
     if (my_module && my_module->expanders.any()) {
         bool right = my_module->expanders.right();
         float cy = box.size.y * .5f;
@@ -552,8 +640,13 @@ void Hc1ModuleWidget::draw(const DrawArgs& args)
         SetTextStyle(vg, font, RampGray(G_90), 12.f);
 
         { // page
-            auto pg = format_string("%d", 1 + page);
-            CenterText(vg, box.size.x - 15.25f, PRESET_TOP -2.5f, pg.c_str(), nullptr);
+            auto pg = format_string("%d of %d", 1 + page, my_module ? my_module->getPresets(tab).size()/24 : 1);
+            CenterText(vg, RIGHT_COLUMN_BUTTONS, PRESET_TOP, pg.c_str(), nullptr);
+        }
+
+        { // middle C
+            auto c_note = format_string("%d",my_module ? my_module->middle_c : 60);
+            CenterText(vg, RIGHT_COLUMN_BUTTONS, PRESET_TOP + 55.f, c_note.c_str(), nullptr);
         }
         
         { // device
@@ -588,6 +681,24 @@ void Hc1ModuleWidget::draw(const DrawArgs& args)
             SetTextStyle(vg, font, RampGray(G_90), 12.f);
             CenterText(vg, RECIRC_BOX_CENTER, RECIRC_BOX_TOP + 2.f, RecirculatorName(rt), nullptr);
         }
+
+        // pedals
+        SetTextStyle(vg, font, RampGray(G_65), 12.f);
+        if (stock) {
+            drawPedalAssignment(vg, box.size.x - 3.f, PRESET_BOTTOM - 16.f, '1', 64, 0);
+            drawPedalAssignment(vg, box.size.x - 3.f, PRESET_BOTTOM - 2.5f, '2', 66, 0);
+        } else {
+            auto ped1 = my_module->ch15_cc_value[52];
+            auto ped2 = my_module->ch15_cc_value[53];
+            if (ped1 == ped2) {
+                drawPedalKnobAssignment(vg, ped1, "1,2");
+            } else {
+                drawPedalKnobAssignment(vg, ped1, "1");
+                drawPedalKnobAssignment(vg, ped2, "2");
+            }
+            drawPedalAssignment(vg, box.size.x - 3.f, PRESET_BOTTOM - 16.f, '1', ped1, my_module->ch0_cc_value[ped1]);
+            drawPedalAssignment(vg, box.size.x - 3.f, PRESET_BOTTOM - 2.5f, '2', ped2, my_module->ch0_cc_value[ped2]);
+        }
     }
 
     // labels
@@ -595,22 +706,12 @@ void Hc1ModuleWidget::draw(const DrawArgs& args)
     if (FontOk(font)) {
         SetTextStyle(vg, font, RampGray(G_90), 12.f);
         float y = KNOB_ROW_1 - LABEL_OFFSET;
-        if (my_module && !my_module->anyPending()) {
-            CenterText(vg, KNOB_LEFT,                     y, my_module->preset0.macro[0].c_str(), nullptr);
-            CenterText(vg, KNOB_LEFT +       KNOB_SPREAD, y, my_module->preset0.macro[1].c_str(), nullptr);
-            CenterText(vg, KNOB_LEFT + 2.f * KNOB_SPREAD, y, my_module->preset0.macro[2].c_str(), nullptr);
-            CenterText(vg, KNOB_LEFT + 3.f * KNOB_SPREAD, y, my_module->preset0.macro[3].c_str(), nullptr);
-            CenterText(vg, KNOB_LEFT + 4.f * KNOB_SPREAD, y, my_module->preset0.macro[4].c_str(), nullptr);
-            CenterText(vg, KNOB_LEFT + 5.f * KNOB_SPREAD, y, my_module->preset0.macro[5].c_str(), nullptr);
-        } else {
-            CenterText(vg, KNOB_LEFT,                     y, "i", nullptr);
-            CenterText(vg, KNOB_LEFT +       KNOB_SPREAD, y, "ii", nullptr);
-            CenterText(vg, KNOB_LEFT + 2.f * KNOB_SPREAD, y, "iii", nullptr);
-            CenterText(vg, KNOB_LEFT + 3.f * KNOB_SPREAD, y, "iv", nullptr);
-            CenterText(vg, KNOB_LEFT + 4.f * KNOB_SPREAD, y, "v", nullptr);
-            CenterText(vg, KNOB_LEFT + 5.f * KNOB_SPREAD, y, "vi", nullptr);
-        }
-
+        CenterText(vg, KNOB_LEFT,                     y, stock ? "i"   : my_module->preset0.macro[0].c_str(), nullptr);
+        CenterText(vg, KNOB_LEFT +       KNOB_SPREAD, y, stock ? "ii"  : my_module->preset0.macro[1].c_str(), nullptr);
+        CenterText(vg, KNOB_LEFT + 2.f * KNOB_SPREAD, y, stock ? "iii" : my_module->preset0.macro[2].c_str(), nullptr);
+        CenterText(vg, KNOB_LEFT + 3.f * KNOB_SPREAD, y, stock ? "iv"  : my_module->preset0.macro[3].c_str(), nullptr);
+        CenterText(vg, KNOB_LEFT + 4.f * KNOB_SPREAD, y, stock ? "v"   : my_module->preset0.macro[4].c_str(), nullptr);
+        CenterText(vg, KNOB_LEFT + 5.f * KNOB_SPREAD, y, stock ? "vi"  : my_module->preset0.macro[5].c_str(), nullptr);
         y = KNOB_ROW_2 - LABEL_OFFSET;
         CenterText(vg, RKNOB_LEFT,                     y, RecirculatorParameterName(rt, 1), nullptr);
         CenterText(vg, RKNOB_LEFT + KNOB_SPREAD,       y, RecirculatorParameterName(rt, 2), nullptr);
@@ -662,14 +763,14 @@ void Hc1ModuleWidget::draw(const DrawArgs& args)
         Dot(vg, left, y, InitStateColor(my_module->request_updates_state));
         left += spacing;
         //handshake
-        if (my_module->heartbeat) {
+        if (my_module->heart_beating) {
             Dot(vg, left, y, InitStateColor(my_module->handshake));
         }
         left += spacing;
     }
 
     if (!my_module) {
-        DrawLogo(args.vg, box.size.x*.5f - 80, box.size.y *.3f, Overlay(COLOR_BRAND), 8.0);
+        DrawLogo(args.vg, box.size.x*.5f - 120, 30.f, Overlay(COLOR_BRAND), 14.0);
     }
     DrawLogo(vg, box.size.x /2.f - 12.f, RACK_GRID_HEIGHT - ONE_HP, RampGray(G_90));
 }
@@ -734,20 +835,11 @@ void Hc1ModuleWidget::appendContextMenu(Menu *menu)
     menu->addChild(createSubmenuItem("Module", "", [=](Menu* menu) {
         menu->addChild(createMenuItem("Reboot HC-1", "",     [=](){ my_module->reboot(); }));
         menu->addChild(createCheckMenuItem("Suppress heartbeat handshake", "",
-            [=](){ return !my_module->heartbeat; },
-            [=](){ my_module->heartbeat = !my_module->heartbeat; }));
+            [=](){ return !my_module->heart_beating; },
+            [=](){ my_module->heart_beating = !my_module->heart_beating; }));
         menu->addChild(createMenuItem("One handshake", "",   [=](){ my_module->sendEditorPresent(); }));
         menu->addChild(createMenuItem("Request config", "",  [=](){ my_module->transmitRequestConfiguration(); }));
-        menu->addChild(createMenuItem("Reset Midi I/O", "",
-            [=]() { 
-                // TODO: module method
-                my_module->device_input_state = InitState::Uninitialized;
-                my_module->input_device_id = -1;
-                my_module->midi::Input::reset();
-                my_module->device_output_state = InitState::Uninitialized;
-                my_module->output_device_id = -1;
-                my_module->midi_output.reset();
-            }));
+        menu->addChild(createMenuItem("Reset Midi I/O", "",  [=]() { my_module->resetMidiIO(); }));
     }));
 
     menu->addChild(createSubmenuItem("Favorites", "", [=](Menu* menu) {

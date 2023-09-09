@@ -3,29 +3,41 @@
 
 namespace pachde {
 
+
+void Hc1Module::resetMidiIO()
+{
+    midi_dispatch.clear();
+    midi::Input::reset();
+    input_device_id = -1;
+    device_input_state = InitState::Uninitialized;
+    midi_output.reset();
+    output_device_id = -1;
+    device_output_state = InitState::Uninitialized;
+}
+
+void Hc1Module::queueMidiMessage(uMidiMessage msg)
+{
+    if (midi_dispatch.full()) {
+        DebugLog("MIDI Output queue full: resetting MIDI IO");
+        resetMidiIO();
+    } else {
+        midi_dispatch.push(msg);
+    }
+}
+
 void Hc1Module::sendControlChange(uint8_t channel, uint8_t cc, uint8_t value)
 {
-    ++midi_send_count;
-    midi::Message msg;
-    SetCC(msg, channel, cc, value);
-    midi_output.sendMessage(msg);
+    queueMidiMessage(uMidiMessage(MidiStatus_CC|channel, cc, value));
 }
 
 void Hc1Module::sendProgramChange(uint8_t channel, uint8_t program)
 {
-    ++midi_send_count;
-    midi::Message msg;
-    SetProgramChange(msg, channel, program);
-    midi_output.sendMessage(msg);
+    queueMidiMessage(uMidiMessage(MidiStatus_ProgramChange|channel, program));
 }
 
 void Hc1Module::sendResetAllreceivers()
 {
-    ++midi_send_count;
-    midi::Message msg;
-    msg.bytes[0] = 0xff;
-    msg.bytes.resize(1);
-    midi_output.sendMessage(msg);
+    queueMidiMessage(uMidiMessage(0xff));
 }
 
 void Hc1Module::transmitRequestUpdates()
@@ -78,10 +90,10 @@ void Hc1Module::setPreset(std::shared_ptr<Preset> preset)
     if (!preset) return;
 
     DebugLog("Setting preset [%s]", preset ? preset->describe_short().c_str(): "(none)");
+    config_state = InitState::Pending;
     sendControlChange(15, MidiCC_BankSelect, preset->bank_hi);
     sendControlChange(15, EMCC_Category, preset->bank_lo);
     sendProgramChange(15, preset->number);
-    config_state = InitState::Pending;
 }
 
 void Hc1Module::sendSavedPreset() {
@@ -118,18 +130,12 @@ void Hc1Module::sendEditorPresent()
 
 void Hc1Module::sendNoteOn(uint8_t channel, uint8_t note, uint8_t velocity)
 {
-    ++midi_send_count;
-    midi::Message msg;
-    SetNoteOn(msg, channel, note, velocity);
-    midi_output.sendMessage(msg);
+    queueMidiMessage(uMidiMessage(MidiStatus_NoteOn|channel, note, velocity));
 }
 
 void Hc1Module::sendNoteOff(uint8_t channel, uint8_t note, uint8_t velocity)
 {
-    ++midi_send_count;
-    midi::Message msg;
-    SetNoteOff(msg, channel, note, velocity);
-    midi_output.sendMessage(msg);
+    queueMidiMessage(uMidiMessage(MidiStatus_NoteOff|channel, note, velocity));
 }
 
 
@@ -172,6 +178,10 @@ void Hc1Module::handle_ch16_cc(uint8_t cc, uint8_t value)
 
         case EMCC_Category:
             preset0.bank_lo = value;
+            break;
+
+        case EMCC_MiddleC:
+            middle_c = value;
             break;
 
         case EMCC_RecirculatorType:
@@ -236,7 +246,7 @@ void Hc1Module::handle_ch16_cc(uint8_t cc, uint8_t value)
             break;
 
         case EMCC_Download:
-            download_message_id = value;
+            //download_message_id = value;
             switch (value) {
                 case EM_DownloadItem::beginUserNames:
                     DebugLog("[---- beginUserNames ----]");
@@ -328,7 +338,11 @@ void Hc1Module::handle_ch16_message(const midi::Message& msg)
                 preset0.number = msg.getNote();
                 //DebugLog("%s", preset0.describe(false).c_str());
                 if (savedPresetPending()) {
-                    assert(0 == saved_preset->name.compare(preset0.name()));
+#ifdef VERBOSE_LOG
+                    if (0 != saved_preset->name.compare(preset0.name())) {
+                        DEBUG("Unexpected: saved %s != set: %s", saved_preset->name.c_str(), preset0.name());
+                    }
+#endif
                     current_preset = findDefinedPreset(saved_preset);
                     saved_preset_state = config_state = InitState::Complete;
                 } else 

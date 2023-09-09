@@ -14,25 +14,25 @@ Hc1Module::Hc1Module()
     configCCParam(em_midi::EMCC_iv,  true, this, M4_PARAM, 0.f, EM_Max14f, EM_Max14f/2.f, "iv");
     configCCParam(em_midi::EMCC_v,   true, this, M5_PARAM, 0.f, EM_Max14f, EM_Max14f/2.f, "v");
     configCCParam(em_midi::EMCC_vi,  true, this, M6_PARAM, 0.f, EM_Max14f, EM_Max14f/2.f, "vi");
-    configCCParam(em_midi::EMCC_R1,   false, this, R1_PARAM, 0.f, 127.f, 64.f, "R1"); //->snapEnabled = true;
-    configCCParam(em_midi::EMCC_R2,   false, this, R2_PARAM, 0.f, 127.f, 64.f, "R2"); //->snapEnabled = true;
-    configCCParam(em_midi::EMCC_R3,   false, this, R3_PARAM, 0.f, 127.f, 64.f, "R3"); //->snapEnabled = true;
-    configCCParam(em_midi::EMCC_R4,   false, this, R4_PARAM, 0.f, 127.f, 64.f, "R4"); //->snapEnabled = true;
-    configCCParam(em_midi::EMCC_RMIX, false, this, RMIX_PARAM, 0.f, 127.f, 64.f, "Recirculator Mix"); //->snapEnabled = true;
-    configCCParam(em_midi::EMCC_PostLevel, true, this, VOLUME_PARAM, 0.f, EM_Max14f, EM_Max14f/2.f, "Master volume");
+    configCCParam(em_midi::EMCC_R1,   false, this, R1_PARAM, 0.f, 127.f, 64.f, "R1");
+    configCCParam(em_midi::EMCC_R2,   false, this, R2_PARAM, 0.f, 127.f, 64.f, "R2");
+    configCCParam(em_midi::EMCC_R3,   false, this, R3_PARAM, 0.f, 127.f, 64.f, "R3");
+    configCCParam(em_midi::EMCC_R4,   false, this, R4_PARAM, 0.f, 127.f, 64.f, "R4");
+    configCCParam(em_midi::EMCC_RMIX, false, this, RMIX_PARAM, 0.f, 127.f, 64.f, "Recirculator Mix");
+    configCCParam(em_midi::EMCC_PostLevel, true, this, VOLUME_PARAM, 0.f, EM_Max14f, EM_Max14f/2.f, "Post level");
 
-    configSwitch(M1_REL_PARAM, 0.f, 1.f, 0.f, "i CV relative", {"off", "on"});
-    configSwitch(M2_REL_PARAM, 0.f, 1.f, 0.f, "ii CV relative", {"off", "on"});
-    configSwitch(M3_REL_PARAM, 0.f, 1.f, 0.f, "iii CV relative", {"off", "on"});
-    configSwitch(M4_REL_PARAM, 0.f, 1.f, 0.f, "iv CV relative", {"off", "on"});
-    configSwitch(M5_REL_PARAM, 0.f, 1.f, 0.f, "v CV relative", {"off", "on"});
-    configSwitch(M6_REL_PARAM, 0.f, 1.f, 0.f, "vi CV relative", {"off", "on"});
-    configSwitch(R1_REL_PARAM, 0.f, 1.f, 0.f, "R-1 CV relative", {"off", "on"});
-    configSwitch(R2_REL_PARAM, 0.f, 1.f, 0.f, "R-2 CV relative", {"off", "on"});
-    configSwitch(R3_REL_PARAM, 0.f, 1.f, 0.f, "R-3 CV relative", {"off", "on"});
-    configSwitch(R4_REL_PARAM, 0.f, 1.f, 0.f, "R-4 CV relative", {"off", "on"});
-    configSwitch(RMIX_REL_PARAM, 0.f, 1.f, 0.f, "R Mix CV relative", {"off", "on"});
-    configSwitch(VOLUME_REL_PARAM, 0.f, 1.f, 0.f, "Volume CV relative", {"off", "on"});
+    configSwitch(M1_REL_PARAM, 0.f, 1.f, 0.f, "i relative-CV", {"off", "on"});
+    configSwitch(M2_REL_PARAM, 0.f, 1.f, 0.f, "ii relative-CV", {"off", "on"});
+    configSwitch(M3_REL_PARAM, 0.f, 1.f, 0.f, "iii relative-CV", {"off", "on"});
+    configSwitch(M4_REL_PARAM, 0.f, 1.f, 0.f, "iv relative-CV", {"off", "on"});
+    configSwitch(M5_REL_PARAM, 0.f, 1.f, 0.f, "v relative-CV", {"off", "on"});
+    configSwitch(M6_REL_PARAM, 0.f, 1.f, 0.f, "vi relative-CV", {"off", "on"});
+    configSwitch(R1_REL_PARAM, 0.f, 1.f, 0.f, "R-1 relative-CV", {"off", "on"});
+    configSwitch(R2_REL_PARAM, 0.f, 1.f, 0.f, "R-2 relative-CV", {"off", "on"});
+    configSwitch(R3_REL_PARAM, 0.f, 1.f, 0.f, "R-3 relative-CV", {"off", "on"});
+    configSwitch(R4_REL_PARAM, 0.f, 1.f, 0.f, "R-4 relative-CV", {"off", "on"});
+    configSwitch(RMIX_REL_PARAM, 0.f, 1.f, 0.f, "R Mix relative-CV", {"off", "on"});
+    configSwitch(VOLUME_REL_PARAM, 0.f, 1.f, 0.f, "Post level relative-CV", {"off", "on"});
     configSwitch(MUTE_PARAM, 0.f, 1.f, 0.f, "Mute", {"off", "on"});
     configSwitch(RECIRC_EXTEND_PARAM, 0.f, 1.f, 0.f, "Extended recirculator", {"off", "on"});
 
@@ -47,7 +47,7 @@ Hc1Module::Hc1Module()
     configInput(R3_INPUT, "R3");
     configInput(R4_INPUT, "R4");
     configInput(RMIX_INPUT, "Recirculator mix");
-    configInput(VOLUME_INPUT, "Master volume");
+    configInput(VOLUME_INPUT, "Post level");
 
     configLight(Lights::M1_REL_LIGHT, "i CV relative");
     configLight(Lights::M2_REL_LIGHT, "ii CV relative");
@@ -84,20 +84,7 @@ void Hc1Module::centerKnobs() {
     paramToDefault(RMIX_PARAM);
     paramToDefault(VOLUME_PARAM);
 }
-// void Hc1Module::defaultKnobs() {
-//     paramToDefault(M1_PARAM);
-//     paramToDefault(M2_PARAM);
-//     paramToDefault(M3_PARAM);
-//     paramToDefault(M4_PARAM);
-//     paramToDefault(M5_PARAM);
-//     paramToDefault(M6_PARAM);
-//     paramToDefault(R1_PARAM);
-//     paramToDefault(R2_PARAM);
-//     paramToDefault(R3_PARAM);
-//     paramToDefault(R4_PARAM);
-//     paramToDefault(RMIX_PARAM);
-//     paramToDefault(VOLUME_PARAM);
-// }
+
 void Hc1Module::zeroKnobs() {
     paramToMin(M1_PARAM);
     paramToMin(M2_PARAM);
@@ -174,13 +161,13 @@ json_t * Hc1Module::dataToJson()
     }
     json_object_set_new(root, "restore-preset", json_boolean(restore_saved_preset));
     json_object_set_new(root, "cache-presets", json_boolean(cache_presets));
-    json_object_set_new(root, "heartbeat",  json_boolean(heartbeat));
+    json_object_set_new(root, "heartbeat",  json_boolean(heart_beating));
     return root;
 }
 
 void Hc1Module::dataFromJson(json_t *root)
 {
-    heartbeat = GetBool(root, "heartbeat", heartbeat);
+    heart_beating = GetBool(root, "heartbeat", heart_beating);
     auto j = json_object_get(root, "preset-tab");
     if (j) {
         restore_ui_data = new RestoreData();
@@ -255,7 +242,7 @@ void Hc1Module::reboot()
     pedal_fraction = 0;
     notesOn = 0;
     data_stream = -1;
-    download_message_id = -1;
+    //download_message_id = -1;
     recirculator = 0;
     heart_time = 1.0f;
 }
@@ -374,6 +361,37 @@ void Hc1Module::process(const ProcessArgs& args)
         }
     }
 
+    float midi_time = midi_timer.process(args.sampleTime);
+    if (midi_time > MIDI_RATE) {
+        midi_timer.reset();
+        if (is_ready) {
+            for (int n = Params::M1_PARAM; n < Params::VOLUME_PARAM; ++n) {
+                auto pq = dynamic_cast<CCParamQuantity*>(getParamQuantity(n));
+                if (pq) {
+                    pq->syncValue();
+                }
+            }
+            if (!muted) {
+                auto pq = dynamic_cast<CCParamQuantity*>(getParamQuantity(VOLUME_PARAM));
+                if (pq) {
+                    pq->syncValue();
+                }
+            }
+        }
+#ifdef VERBOSE_LOG
+        if (midi_dispatch.size() > 50) {
+            DEBUG("Large queue: %lld", midi_dispatch.size());
+        }
+#endif
+        while (!midi_dispatch.empty()) {
+            midi::Message msg;
+            auto um = midi_dispatch.shift();
+            um.toMidiMessage(msg);
+            midi_output.sendMessage(msg);
+            ++midi_send_count;
+        }
+    }
+
     if (is_ready) {
         // MUTE
         {
@@ -388,23 +406,6 @@ void Hc1Module::process(const ProcessArgs& args)
                     lights[MUTE_LIGHT].setBrightness(0.f);
                     auto vpq = dynamic_cast<CCParamQuantity*>(getParamQuantity(VOLUME_PARAM));
                     vpq->sendValue();
-                }
-            }
-        }
-
-        float midi_time = midi_timer.process(args.sampleTime);
-        if (midi_time > MIDI_RATE) {
-            midi_timer.reset();
-            for (int n = Params::M1_PARAM; n < Params::VOLUME_PARAM; ++n) {
-                auto pq = dynamic_cast<CCParamQuantity*>(getParamQuantity(n));
-                if (pq) {
-                    pq->syncValue();
-                }
-            }
-            if (!muted) {
-                auto pq = dynamic_cast<CCParamQuantity*>(getParamQuantity(VOLUME_PARAM));
-                if (pq) {
-                    pq->syncValue();
                 }
             }
         }
@@ -552,12 +553,12 @@ void Hc1Module::process(const ProcessArgs& args)
                 } else
                 if (InitState::Uninitialized == request_updates_state) {
                     transmitRequestUpdates();
-                } else if (heartbeat) {
+                } else if (heart_beating) {
                     sendEditorPresent();
                 }
             }
         }
-    }// heartbeat
+    }// heart_beating
 } // process
 
 } //pachde

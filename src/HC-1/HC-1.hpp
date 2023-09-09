@@ -210,13 +210,12 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     //     init_step_time = timeout;
     // }
 
-    // heartbeat
+    // heart_beating
     float heart_phase = 0.f;
     float heart_time = 1.0;
     bool tick_tock = true;
     NVGcolor ledColor = green_light;
-    bool heartbeat = true;
-	//float blinkPhase = 0.f;
+    bool heart_beating = true;
 
     // device management
     int input_device_id = -1;
@@ -229,12 +228,11 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     bool muted = false;
     int64_t notesOn = 0;
     uint8_t recirculator = 0;
-    int download_message_id = -1; // CC109
     uint64_t midi_receive_count = 0;
     uint64_t midi_send_count = 0;
     uint8_t dsp[3] {0};
     int data_stream = -1;
-
+    uint8_t middle_c = 60;
     uint8_t ch0_cc_value[127];
     uint8_t ch15_cc_value[127];
     void clearCCValues() { 
@@ -243,6 +241,8 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     }
 
     midi::Output midi_output;
+    rack::dsp::RingBuffer<uMidiMessage, 128> midi_dispatch;
+    void queueMidiMessage(uMidiMessage msg);
 
     // cv processing
     const int CV_INTERVAL = 64;
@@ -354,6 +354,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
         expanders.add(side);
     }
 
+    void resetMidiIO();
     void sendResetAllreceivers();
     void transmitRequestUpdates();
     void transmitRequestConfiguration();
