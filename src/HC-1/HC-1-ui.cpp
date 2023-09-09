@@ -90,13 +90,14 @@ const NVGcolor& StatusColor(StatusItem led) {
     }
 }
 
+constexpr const float PANEL_WIDTH = 360.f;
 constexpr const float PRESET_TOP = 38.f;
 constexpr const float PRESET_LEFT = 7.5f;
 constexpr const float PRESET_WIDTH = 320.f;
 constexpr const float PRESET_RIGHT = PRESET_LEFT + PRESET_WIDTH;
 constexpr const float PRESET_BOTTOM = PRESET_TOP + 8.f * 27.f;
 
-constexpr const float RIGHT_COLUMN_BUTTONS = PRESET_RIGHT + (360.f - PRESET_RIGHT)*.5f;
+constexpr const float RIGHT_COLUMN_BUTTONS = PRESET_RIGHT + (PANEL_WIDTH - PRESET_RIGHT)*.5f;
 constexpr const float KNOB_LEFT   = 45.f;
 constexpr const float KNOB_SPREAD = 54.25f;
 constexpr const float KNOB_ROW_1  = 288.f;
@@ -104,6 +105,7 @@ constexpr const float KNOB_ROW_2  = 346.f;
 constexpr const float RKNOB_LEFT  = KNOB_LEFT; //- KNOB_SPREAD *.5f;
 
 constexpr const float LABEL_OFFSET = 20.f;
+constexpr const float STATIC_LABEL_OFFSET = 29.5f;
 
 constexpr const float CV_COLUMN_OFFSET = 24.f;
 constexpr const float RB_OFFSET = 20.f;
@@ -159,6 +161,13 @@ Hc1ModuleWidget::Hc1ModuleWidget(Hc1Module *module)
     addChild(createParamCentered<MidiKnob>(Vec(KNOB_LEFT + 3.f * KNOB_SPREAD, KNOB_ROW_1), module, Hc1Module::M4_PARAM));
     addChild(createParamCentered<MidiKnob>(Vec(KNOB_LEFT + 4.f * KNOB_SPREAD, KNOB_ROW_1), module, Hc1Module::M5_PARAM));
     addChild(createParamCentered<MidiKnob>(Vec(KNOB_LEFT + 5.f * KNOB_SPREAD, KNOB_ROW_1), module, Hc1Module::M6_PARAM));
+    float y = KNOB_ROW_1 - STATIC_LABEL_OFFSET;
+    addChild(createTextLabel<TextLabel>(Vec(KNOB_LEFT,                     y), 100.f, TextAlignment::Center, 12.f, [=](){ return macroName(0); }));
+    addChild(createTextLabel<TextLabel>(Vec(KNOB_LEFT +       KNOB_SPREAD, y), 100.f, TextAlignment::Center, 12.f, [=](){ return macroName(1); }));
+    addChild(createTextLabel<TextLabel>(Vec(KNOB_LEFT + 2.f * KNOB_SPREAD, y), 100.f, TextAlignment::Center, 12.f, [=](){ return macroName(2); }));
+    addChild(createTextLabel<TextLabel>(Vec(KNOB_LEFT + 3.f * KNOB_SPREAD, y), 100.f, TextAlignment::Center, 12.f, [=](){ return macroName(3); }));
+    addChild(createTextLabel<TextLabel>(Vec(KNOB_LEFT + 4.f * KNOB_SPREAD, y), 100.f, TextAlignment::Center, 12.f, [=](){ return macroName(4); }));
+    addChild(createTextLabel<TextLabel>(Vec(KNOB_LEFT + 5.f * KNOB_SPREAD, y), 100.f, TextAlignment::Center, 12.f, [=](){ return macroName(5); }));
 
     addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<BlueLight>>>(Vec(KNOB_LEFT                     - RB_OFFSET, CV_ROW_1 - RB_VOFFSET), module, Hc1Module::M1_REL_PARAM, Hc1Module::M1_REL_LIGHT));
     addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<BlueLight>>>(Vec(KNOB_LEFT +       KNOB_SPREAD - RB_OFFSET, CV_ROW_1 - RB_VOFFSET), module, Hc1Module::M2_REL_PARAM, Hc1Module::M2_REL_LIGHT));
@@ -174,6 +183,15 @@ Hc1ModuleWidget::Hc1ModuleWidget(Hc1Module *module)
     addChild(createParamCentered<MidiKnob>(Vec(RKNOB_LEFT + 4.f * KNOB_SPREAD, KNOB_ROW_2), module, Hc1Module::RMIX_PARAM));
     addChild(createParamCentered<MidiKnob>(Vec(RKNOB_LEFT + 5.f * KNOB_SPREAD, KNOB_ROW_2), module, Hc1Module::VOLUME_PARAM));
 
+    y = KNOB_ROW_2 - STATIC_LABEL_OFFSET;
+    addChild(createTextLabel<TextLabel>(Vec(RKNOB_LEFT,                     y), 80.f, TextAlignment::Center, 12.f, [=](){ return RecirculatorParameterName(my_module ? my_module->recirculatorType() : EM_Recirculator::Reverb, 1); }));
+    addChild(createTextLabel<TextLabel>(Vec(RKNOB_LEFT + KNOB_SPREAD,       y), 80.f, TextAlignment::Center, 12.f, [=](){ return RecirculatorParameterName(my_module ? my_module->recirculatorType() : EM_Recirculator::Reverb, 2); }));
+    addChild(createTextLabel<TextLabel>(Vec(RKNOB_LEFT + KNOB_SPREAD * 2.f, y), 80.f, TextAlignment::Center, 12.f, [=](){ return RecirculatorParameterName(my_module ? my_module->recirculatorType() : EM_Recirculator::Reverb, 3); }));
+    addChild(createTextLabel<TextLabel>(Vec(RKNOB_LEFT + KNOB_SPREAD * 3.f, y), 80.f, TextAlignment::Center, 12.f, [=](){ return RecirculatorParameterName(my_module ? my_module->recirculatorType() : EM_Recirculator::Reverb, 4); }));
+
+    addChild(createStaticTextLabel<TextLabel>(Vec(RKNOB_LEFT + 4.f * KNOB_SPREAD, KNOB_ROW_2 - STATIC_LABEL_OFFSET), 25.f, "Mix"));
+    addChild(createStaticTextLabel<TextLabel>(Vec(RKNOB_LEFT + 5.f * KNOB_SPREAD, KNOB_ROW_2 - STATIC_LABEL_OFFSET), 35.f, "Volume"));
+
     addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<BlueLight>>>(Vec(RKNOB_LEFT                     - RB_OFFSET, CV_ROW_2 - RB_VOFFSET), module, Hc1Module::R1_REL_PARAM, Hc1Module::R1_REL_LIGHT));
     addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<BlueLight>>>(Vec(RKNOB_LEFT +       KNOB_SPREAD - RB_OFFSET, CV_ROW_2 - RB_VOFFSET), module, Hc1Module::R2_REL_PARAM, Hc1Module::R2_REL_LIGHT));
     addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<BlueLight>>>(Vec(RKNOB_LEFT + 2.f * KNOB_SPREAD - RB_OFFSET, CV_ROW_2 - RB_VOFFSET), module, Hc1Module::R3_REL_PARAM, Hc1Module::R3_REL_LIGHT));
@@ -182,22 +200,34 @@ Hc1ModuleWidget::Hc1ModuleWidget(Hc1Module *module)
     addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<BlueLight>>>(Vec(RKNOB_LEFT + 5.f * KNOB_SPREAD - RB_OFFSET, CV_ROW_2 - RB_VOFFSET), module, Hc1Module::VOLUME_REL_PARAM, Hc1Module::VOLUME_REL_LIGHT));
 
     addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<RedLight>>>(Vec(RKNOB_LEFT + 5.f * KNOB_SPREAD + RB_OFFSET, CV_ROW_2 - RB_VOFFSET), module, Hc1Module::MUTE_PARAM, Hc1Module::MUTE_LIGHT));
+    addChild(createStaticTextLabel<TextLabel>(Vec(RKNOB_LEFT + KNOB_SPREAD * 5.f + 17.f, KNOB_ROW_2), 25.f, "Mute", TextAlignment::Left));
+
     addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<BlueLight>>>(Vec(RECIRC_LIGHT_CENTER, RECIRC_BOX_TOP), module, Hc1Module::RECIRC_EXTEND_PARAM, Hc1Module::RECIRC_EXTEND_LIGHT));
 
-    presets.reserve(24);
-    int x = PRESET_LEFT;
-    int y = PRESET_TOP;
-    for (int n = 0; n < 24; ++n) {
-        auto p = createWidget<PresetWidget>(Vec(x, y));
-        p->setPresetHolder(module);
-        addChild(p);
-        presets.push_back(p);
-        x += p->box.size.x;
-        if (0 == ((n + 1) % 3)) {
-            x = PRESET_LEFT;
-            y += p->box.size.y;
+    {
+        presets.reserve(24);
+        float x = PRESET_LEFT;
+        float y = PRESET_TOP;
+        for (int n = 0; n < 24; ++n) {
+            auto p = createWidget<PresetWidget>(Vec(x, y));
+            p->setPresetHolder(module);
+            addChild(p);
+            presets.push_back(p);
+            x += p->box.size.x;
+            if (0 == ((n + 1) % 3)) {
+                x = PRESET_LEFT;
+                y += p->box.size.y;
+            }
         }
     }
+
+    // todo: set text only when page changes
+    addChild(createTextLabel<pachde::TextLabel>(
+        Vec(RIGHT_COLUMN_BUTTONS, PRESET_TOP - 14.f), 80.f,
+        TextAlignment::Center, 12.f,
+        [=]() { return format_string("%d of %d", 1 + page, my_module ? 1 + my_module->getPresets(tab).size()/24 : 1);  },
+        false
+        ));
 
     page_up = createWidgetCentered<SquareButton>(Vec(RIGHT_COLUMN_BUTTONS, PRESET_TOP + 12.f));
     page_up->setSymbol(SquareButtonSymbol::Up);
@@ -208,6 +238,14 @@ Hc1ModuleWidget::Hc1ModuleWidget(Hc1Module *module)
     page_up->setSymbol(SquareButtonSymbol::Down);
     page_down->onClick([this](){ pageDown(); });
     addChild(page_down);
+
+    // middle C
+    addChild(createTextLabel<pachde::TextLabel>(
+        Vec(RIGHT_COLUMN_BUTTONS, PRESET_TOP + 43.f), PANEL_WIDTH - PRESET_RIGHT,
+        TextAlignment::Center, 12.f,
+        [=](){ return format_string("%d",my_module ? my_module->middle_c : 60); },
+        false
+        ));
 
     { // Transpose buttons
         auto y = PRESET_TOP + 65.f;
@@ -310,6 +348,51 @@ Hc1ModuleWidget::Hc1ModuleWidget(Hc1Module *module)
         });
     }
     addChild(pb);
+
+    // device name
+    // todo: set text only when device name changes
+    addChild(createTextLabel<pachde::TextLabel>(
+        Vec(box.size.x*.5f + 25.f, box.size.y - 14.f), 100.f,
+        TextAlignment::Left, 12.f,
+        [=]() {
+            std::string device_name;
+            device_name = my_module ? my_module->deviceName() : "<Eagan Matrix Device>";
+            if (device_name.empty()) {
+                device_name = "(no Eagan Matrix available)";
+            }
+            return device_name; 
+        },
+        false
+        ));
+
+    // firmare version
+    // todo: set text only when firmware version changes
+    addChild(createTextLabel<pachde::TextLabel>(
+        Vec(box.size.x - 60.f,  box.size.y - 14.f), 60.f - 7.5f,
+        TextAlignment::Right, 12.f,
+        [=](){
+            auto ver = my_module && my_module->is_eagan_matrix ? my_module->firmware_version : 0;
+            return format_string("v%03.2f", ver/100.f);
+        },
+        false
+        ));
+
+}
+const std::string Hc1ModuleWidget::macroName(int m)
+{
+    bool dyn = my_module && my_module->ready();
+    if (dyn) {
+        return my_module->preset0.macro[m];
+    }
+    switch (m) {
+    case 0: return "i";
+    case 1: return "ii";
+    case 2: return "iii";
+    case 3: return "iv";
+    case 4: return "v";
+    case 5: return "vi";
+    default: return "???";
+    }
 }
 
 void Hc1ModuleWidget::pageUp()
@@ -546,6 +629,7 @@ void Hc1ModuleWidget::drawLayer(const DrawArgs& args, int layer)
     }
     CenterText(vg, box.size.x/2.f, 15.f, text.c_str(), nullptr);
 
+    // MIDI animation
     if (my_module) {
         const float y = PRESET_BOTTOM + 1.75f;
         auto cx = PRESET_LEFT + fmodf(my_module->midi_send_count / 20.f, 320.f);
@@ -636,43 +720,9 @@ void Hc1ModuleWidget::draw(const DrawArgs& args)
             RightAlignText(vg, PRESET_RIGHT -2.f, PRESET_TOP - 15.f, text.c_str(), nullptr);
         }
 #endif
-
-        SetTextStyle(vg, font, RampGray(G_90), 12.f);
-
-        { // page
-            auto pg = format_string("%d of %d", 1 + page, my_module ? my_module->getPresets(tab).size()/24 : 1);
-            CenterText(vg, RIGHT_COLUMN_BUTTONS, PRESET_TOP, pg.c_str(), nullptr);
-        }
-
-        { // middle C
-            auto c_note = format_string("%d",my_module ? my_module->middle_c : 60);
-            CenterText(vg, RIGHT_COLUMN_BUTTONS, PRESET_TOP + 55.f, c_note.c_str(), nullptr);
-        }
         
-        { // device
-            std::string device_name;
-            if (my_module) {
-                device_name = my_module->deviceName();
-            } else {
-                device_name = "<Eagan Matrix Device>";
-
-            }
-            if (device_name.empty()) {
-                device_name = "(no Eagan Matrix available)";
-            }
-            nvgTextAlign(vg, NVGalign::NVG_ALIGN_LEFT);
-            nvgText(vg, box.size.x*.5f + 25.f, box.size.y - 4.f, device_name.c_str(), nullptr);
-        }
-
-        // firmware version
-        if (my_module && my_module->is_eagan_matrix && (my_module->firmware_version > 0)) {
-            RightAlignText(vg, box.size.x - 7.5, box.size.y - 4.f, format_string("v %.2f", my_module->firmware_version/100.f).c_str(), nullptr);
-        } else {
-            RightAlignText(vg, box.size.x - 7.5, box.size.y - 4.f, "v 00.00", nullptr);
-        }
-
         // recirculator
-        {
+        { // todo: move lines to SVG
             Line(vg, RECIRC_BOX_LEFT, RECIRC_BOX_TOP, RECIRC_BOX_CENTER - (RECIRC_TITLE_WIDTH * .5f), RECIRC_BOX_TOP, RampGray(G_35), .5f);
             Line(vg, RECIRC_LIGHT_CENTER + 15.f, RECIRC_BOX_TOP, RECIRC_BOX_RIGHT, RECIRC_BOX_TOP, RampGray(G_35), .5f);
             Line(vg, RECIRC_BOX_LEFT,  RECIRC_BOX_TOP,    RECIRC_BOX_LEFT,  RECIRC_BOX_BOTTOM, RampGray(G_35), .5f);
@@ -699,29 +749,6 @@ void Hc1ModuleWidget::draw(const DrawArgs& args)
             drawPedalAssignment(vg, box.size.x - 3.f, PRESET_BOTTOM - 16.f, '1', ped1, my_module->ch0_cc_value[ped1]);
             drawPedalAssignment(vg, box.size.x - 3.f, PRESET_BOTTOM - 2.5f, '2', ped2, my_module->ch0_cc_value[ped2]);
         }
-    }
-
-    // labels
-    font = GetPluginFontSemiBold();
-    if (FontOk(font)) {
-        SetTextStyle(vg, font, RampGray(G_90), 12.f);
-        float y = KNOB_ROW_1 - LABEL_OFFSET;
-        CenterText(vg, KNOB_LEFT,                     y, stock ? "i"   : my_module->preset0.macro[0].c_str(), nullptr);
-        CenterText(vg, KNOB_LEFT +       KNOB_SPREAD, y, stock ? "ii"  : my_module->preset0.macro[1].c_str(), nullptr);
-        CenterText(vg, KNOB_LEFT + 2.f * KNOB_SPREAD, y, stock ? "iii" : my_module->preset0.macro[2].c_str(), nullptr);
-        CenterText(vg, KNOB_LEFT + 3.f * KNOB_SPREAD, y, stock ? "iv"  : my_module->preset0.macro[3].c_str(), nullptr);
-        CenterText(vg, KNOB_LEFT + 4.f * KNOB_SPREAD, y, stock ? "v"   : my_module->preset0.macro[4].c_str(), nullptr);
-        CenterText(vg, KNOB_LEFT + 5.f * KNOB_SPREAD, y, stock ? "vi"  : my_module->preset0.macro[5].c_str(), nullptr);
-        y = KNOB_ROW_2 - LABEL_OFFSET;
-        CenterText(vg, RKNOB_LEFT,                     y, RecirculatorParameterName(rt, 1), nullptr);
-        CenterText(vg, RKNOB_LEFT + KNOB_SPREAD,       y, RecirculatorParameterName(rt, 2), nullptr);
-        CenterText(vg, RKNOB_LEFT + KNOB_SPREAD * 2.f, y, RecirculatorParameterName(rt, 3), nullptr);
-        CenterText(vg, RKNOB_LEFT + KNOB_SPREAD * 3.f, y, RecirculatorParameterName(rt, 4), nullptr);
-        CenterText(vg, RKNOB_LEFT + KNOB_SPREAD * 4.f, y, "Mix", nullptr);
-        CenterText(vg, RKNOB_LEFT + KNOB_SPREAD * 5.f, y, "Volume", nullptr);
-
-        nvgTextAlign(vg, NVGalign::NVG_ALIGN_LEFT);
-        nvgText(vg, RKNOB_LEFT + KNOB_SPREAD * 5.f + 17.f, CV_ROW_2, "Mute", nullptr);
     }
 
     // status

@@ -3,11 +3,13 @@ namespace pachde {
 
 std::string Hc1Module::userPresetsPath()
 {
+    if (deviceName().empty()) return "";
     return asset::user(format_string("%s/%s-user.json", pluginInstance->slug.c_str(), deviceName().c_str()));
 }
 
 std::string Hc1Module::systemPresetsPath()
 {
+    if (deviceName().empty()) return "";
     return asset::user(format_string("%s/%s-system.json", pluginInstance->slug.c_str(), deviceName().c_str()));
 }
 

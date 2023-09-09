@@ -250,7 +250,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     const float MIDI_RATE = 0.1f;
     rack::dsp::Timer midi_timer;
 
-    const std::string deviceName() { return device_name; }
+    const std::string& deviceName() { return device_name; }
     bool isEaganMatrix() { return is_eagan_matrix; }
     bool is_gathering_presets() { return system_preset_state == InitState::Pending || user_preset_state == InitState::Pending; }
 
@@ -395,6 +395,7 @@ struct Hc1ModuleWidget : IPresetHolder, ModuleWidget
     explicit Hc1ModuleWidget(Hc1Module *module);
     void setTab(PresetTab tab, bool force = false);
 
+    const std::string macroName(int m);
     void pageUp();
     void pageDown();
     void clearPresetWidgets();

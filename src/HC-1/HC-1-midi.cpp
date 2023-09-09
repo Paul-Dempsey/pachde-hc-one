@@ -426,7 +426,7 @@ void Hc1Module::onNoteOn(uint8_t channel, uint8_t note, uint8_t velocity)
 
 void Hc1Module::onNoteOff(uint8_t channel, uint8_t note, uint8_t velocity)
 {
-    notesOn--;
+    if (notesOn) { notesOn--; }
     heart_phase = 0;
     heart_time = 5.f;
 }
