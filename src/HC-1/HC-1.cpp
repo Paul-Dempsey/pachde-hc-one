@@ -1,5 +1,5 @@
 #include "HC-1.hpp"
-#include "cc_param.hpp"
+#include "../cc_param.hpp"
 #include "../misc.hpp"
 namespace pachde {
 
@@ -8,18 +8,18 @@ Hc1Module::Hc1Module()
     //system_presets.reserve(700);
     //user_presets.reserve(128);
     config(Params::NUM_PARAMS, Inputs::NUM_INPUTS, Outputs::NUM_OUTPUTS, Lights::NUM_LIGHTS);
-    configCCParam(em_midi::EMCC_i,   true, this, M1_PARAM, 0.f, EM_Max14f, EM_Max14f/2.f, "i");
-    configCCParam(em_midi::EMCC_ii,  true, this, M2_PARAM, 0.f, EM_Max14f, EM_Max14f/2.f, "ii");
-    configCCParam(em_midi::EMCC_iii, true, this, M3_PARAM, 0.f, EM_Max14f, EM_Max14f/2.f, "iii");
-    configCCParam(em_midi::EMCC_iv,  true, this, M4_PARAM, 0.f, EM_Max14f, EM_Max14f/2.f, "iv");
-    configCCParam(em_midi::EMCC_v,   true, this, M5_PARAM, 0.f, EM_Max14f, EM_Max14f/2.f, "v");
-    configCCParam(em_midi::EMCC_vi,  true, this, M6_PARAM, 0.f, EM_Max14f, EM_Max14f/2.f, "vi");
-    configCCParam(em_midi::EMCC_R1,   false, this, R1_PARAM, 0.f, 127.f, 64.f, "R1");
-    configCCParam(em_midi::EMCC_R2,   false, this, R2_PARAM, 0.f, 127.f, 64.f, "R2");
-    configCCParam(em_midi::EMCC_R3,   false, this, R3_PARAM, 0.f, 127.f, 64.f, "R3");
-    configCCParam(em_midi::EMCC_R4,   false, this, R4_PARAM, 0.f, 127.f, 64.f, "R4");
-    configCCParam(em_midi::EMCC_RMIX, false, this, RMIX_PARAM, 0.f, 127.f, 64.f, "Recirculator Mix");
-    configCCParam(em_midi::EMCC_PostLevel, true, this, VOLUME_PARAM, 0.f, EM_Max14f, EM_Max14f/2.f, "Post level");
+    configCCParam(em_midi::EMCC_i,   true, this, M1_PARAM, M1_INPUT, M1_REL_PARAM, M1_REL_LIGHT, 0.f, EM_Max14f, EM_Max14f/2.f, "i");
+    configCCParam(em_midi::EMCC_ii,  true, this, M2_PARAM, M2_INPUT, M2_REL_PARAM, M2_REL_LIGHT, 0.f, EM_Max14f, EM_Max14f/2.f, "ii");
+    configCCParam(em_midi::EMCC_iii, true, this, M3_PARAM, M3_INPUT, M3_REL_PARAM, M3_REL_LIGHT, 0.f, EM_Max14f, EM_Max14f/2.f, "iii");
+    configCCParam(em_midi::EMCC_iv,  true, this, M4_PARAM, M4_INPUT, M4_REL_PARAM, M4_REL_LIGHT, 0.f, EM_Max14f, EM_Max14f/2.f, "iv");
+    configCCParam(em_midi::EMCC_v,   true, this, M5_PARAM, M5_INPUT, M5_REL_PARAM, M5_REL_LIGHT, 0.f, EM_Max14f, EM_Max14f/2.f, "v");
+    configCCParam(em_midi::EMCC_vi,  true, this, M6_PARAM, M6_INPUT, M6_REL_PARAM, M6_REL_LIGHT, 0.f, EM_Max14f, EM_Max14f/2.f, "vi");
+    configCCParam(em_midi::EMCC_R1,   false, this, R1_PARAM, R1_INPUT, R1_REL_PARAM, R1_REL_LIGHT, 0.f, 127.f, 64.f, "R1");
+    configCCParam(em_midi::EMCC_R2,   false, this, R2_PARAM, R2_INPUT, R2_REL_PARAM, R2_REL_LIGHT, 0.f, 127.f, 64.f, "R2");
+    configCCParam(em_midi::EMCC_R3,   false, this, R3_PARAM, R3_INPUT, R3_REL_PARAM, R3_REL_LIGHT, 0.f, 127.f, 64.f, "R3");
+    configCCParam(em_midi::EMCC_R4,   false, this, R4_PARAM, R4_INPUT, R4_REL_PARAM, R4_REL_LIGHT, 0.f, 127.f, 64.f, "R4");
+    configCCParam(em_midi::EMCC_RMIX, false, this, RMIX_PARAM, RMIX_INPUT, RMIX_REL_PARAM, RMIX_REL_LIGHT, 0.f, 127.f, 64.f, "Recirculator Mix");
+    configCCParam(em_midi::EMCC_PostLevel, true, this, VOLUME_PARAM, VOLUME_INPUT, VOLUME_REL_PARAM, VOLUME_REL_LIGHT, 0.f, EM_Max14f, EM_Max14f/2.f, "Post level");
 
     configSwitch(M1_REL_PARAM, 0.f, 1.f, 0.f, "i relative-CV", {"off", "on"});
     configSwitch(M2_REL_PARAM, 0.f, 1.f, 0.f, "ii relative-CV", {"off", "on"});
@@ -64,6 +64,14 @@ Hc1Module::Hc1Module()
     configLight(Lights::HEART_LIGHT, "Device status");
     configLight(Lights::MUTE_LIGHT, "Mute");
     configLight(Lights::RECIRC_EXTEND_LIGHT, "R Extend");
+    configLight(Lights::ROUND_Y_LIGHT, "Round on Y");
+    configLight(Lights::ROUND_INITIAL_LIGHT, "Round initial");
+    configLight(Lights::ROUND_LIGHT, "Rounding");
+    configLight(Lights::ROUND_RELEASE_LIGHT, "Round on release");
+    configLight(Lights::TRANSPOSE_UP_LIGHT, "Transpose up");
+    configLight(Lights::TRANSPOSE_NONE_LIGHT, "Transpose none");
+    configLight(Lights::TRANSPOSE_DOWN_LIGHT, "Transpose down");
+
     //configLight(Lights::FILTER_LIGHT, "Filter presets");
 
     getLight(HEART_LIGHT).setBrightness(.8f);
@@ -133,7 +141,6 @@ void Hc1Module::relativeCV()
 }
 
 
-
 void Hc1Module::onSave(const SaveEvent& e) {
     savePresets();
     Module::onSave(e);
@@ -149,7 +156,7 @@ json_t * Hc1Module::dataToJson()
     json_object_set_new(root, "midi-device", json_stringn(device_name.c_str(), device_name.size()));
 
     json_object_set_new(root, "preset-order", json_integer(static_cast<int>(preset_order)));
-    json_object_set_new(root, "preset-tab", json_integer(tab));
+    json_object_set_new(root, "preset-tab", json_integer(static_cast<int>(tab)));
     auto ar = json_array();
     for (int pg: page) {
         json_array_append_new(ar, json_integer(pg));
@@ -171,11 +178,11 @@ void Hc1Module::dataFromJson(json_t *root)
     auto j = json_object_get(root, "preset-tab");
     if (j) {
         restore_ui_data = new RestoreData();
-        restore_ui_data->tab = static_cast<PresetTab>(clamp(json_integer_value(j), PresetTab::First, PresetTab::Last));
+        restore_ui_data->tab = static_cast<PresetTab>(clamp(static_cast<int>(json_integer_value(j)), static_cast<int>(PresetTab::First), static_cast<int>(PresetTab::Last)));
         tab = restore_ui_data->tab;
         j = json_object_get(root, "tab-page");
         if (j) {
-            for (int i = PresetTab::First; i < PresetTab::Last; ++i) {
+            for (json_int_t i = static_cast<json_int_t>(PresetTab::First); i < static_cast<json_int_t>(PresetTab::Last); ++i) {
                 auto el = json_array_get(j, i);
                 if (el) {
                     auto pg = json_integer_value(el);
@@ -302,13 +309,17 @@ int Hc1Module::findMatchingOutputDevice(const std::string& name)
     return best_id;
 }
 
-void Hc1Module::processCV(int inputId)
+void Hc1Module::processCV(int paramId)
 {
-    CCParamQuantity* pq = static_cast<CCParamQuantity*>(getParamQuantity(inputId));
+    CCParamQuantity* pq = static_cast<CCParamQuantity*>(getParamQuantity(paramId));
     if (!pq) return;
-    auto in = getInput(inputId);
-    bool relative = params[FIRST_REL_PARAM + inputId].getValue() > .5f;
-    getLight(inputId).setBrightness((relative *.20f) + ((in.isConnected() && relative) *.80f));
+    if (pq->inputId < 0) return;
+
+    auto in = getInput(pq->inputId);
+    bool relative =  pq->relativeId >= 0 ? getParam(pq->relativeId).getValue() > .5f : false;
+    if (pq->lightId >= 0) {
+        getLight(pq->lightId).setBrightness((relative *.20f) + ((in.isConnected() && relative) *.80f));
+    }
 
     if (in.isConnected()) {
         auto v = in.getVoltage();
@@ -325,11 +336,11 @@ void Hc1Module::processCV(int inputId)
 
 void Hc1Module::processAllCV()
 {
-    processCV(VOLUME_INPUT);
-    for (int n = M1_INPUT; n <= M6_INPUT; ++n) {
+    processCV(VOLUME_PARAM);
+    for (int n = M1_PARAM; n <= M6_PARAM; ++n) {
         processCV(n);
     }
-    for (int n = R1_INPUT; n <= RMIX_INPUT; ++n) {
+    for (int n = R1_PARAM; n <= RMIX_PARAM; ++n) {
         processCV(n);
     }
     //getLight(Lights::FILTER_LIGHT).setBrightness(preset_filter.isFiltered() * 1.0f);
@@ -350,6 +361,56 @@ void Hc1Module::processAllCV()
     }
 }
 
+void Hc1Module::syncParam(int paramId)
+{
+    auto pq = dynamic_cast<CCParamQuantity*>(getParamQuantity(paramId));
+    if (pq) {
+        pq->syncValue();
+    }
+}
+
+void Hc1Module::syncParams(float sampleTime)
+{
+    float midi_time = midi_timer.process(sampleTime);
+    if (midi_time > MIDI_RATE) {
+        midi_timer.reset();
+        if (ready()) {
+            syncParam(M1_PARAM);
+            syncParam(M2_PARAM);
+            syncParam(M3_PARAM);
+            syncParam(M4_PARAM);
+            syncParam(M5_PARAM);
+            syncParam(M6_PARAM);
+            syncParam(R1_PARAM);
+            syncParam(R2_PARAM);
+            syncParam(R3_PARAM);
+            syncParam(R4_PARAM);
+            syncParam(RMIX_PARAM);
+            if (!muted) {
+                syncParam(VOLUME_PARAM);
+            }
+            syncParam(ROUND_RATE_PARAM);
+        }
+        dispatchMidi();
+    }
+}
+
+void Hc1Module::dispatchMidi()
+{
+#ifdef VERBOSE_LOG
+    if (midi_dispatch.size() > 50) {
+        DEBUG("Large queue: %lld", midi_dispatch.size());
+    }
+#endif
+    while (!midi_dispatch.empty()) {
+        midi::Message msg;
+        auto um = midi_dispatch.shift();
+        um.toMidiMessage(msg);
+        midi_output.sendMessage(msg);
+        ++midi_send_count;
+    }
+}
+
 void Hc1Module::process(const ProcessArgs& args)
 {
     bool is_ready = ready();
@@ -359,54 +420,32 @@ void Hc1Module::process(const ProcessArgs& args)
         if (is_ready) {
             processAllCV();
         }
+        bool round = rounding.rate > 0;
+        getLight(Lights::ROUND_Y_LIGHT).setBrightness(1.0f * (round && (rounding.kind >= RoundKind::Y)));
+        getLight(Lights::ROUND_INITIAL_LIGHT).setBrightness(1.0f * (round && rounding.initial));
+        getLight(Lights::ROUND_LIGHT).setBrightness(1.0f * round);
+        getLight(Lights::ROUND_RELEASE_LIGHT).setBrightness(1.0f * (round && (rounding.kind <= RoundKind::Release)));
+        getLight(Lights::TRANSPOSE_UP_LIGHT).setBrightness(1.0 * (middle_c > 60));
+        getLight(Lights::TRANSPOSE_NONE_LIGHT).setBrightness(1.0 * (middle_c == 60));
+        getLight(Lights::TRANSPOSE_DOWN_LIGHT).setBrightness(1.0 * (middle_c < 60));
+
     }
 
-    float midi_time = midi_timer.process(args.sampleTime);
-    if (midi_time > MIDI_RATE) {
-        midi_timer.reset();
-        if (is_ready) {
-            for (int n = Params::M1_PARAM; n < Params::VOLUME_PARAM; ++n) {
-                auto pq = dynamic_cast<CCParamQuantity*>(getParamQuantity(n));
-                if (pq) {
-                    pq->syncValue();
-                }
-            }
-            if (!muted) {
-                auto pq = dynamic_cast<CCParamQuantity*>(getParamQuantity(VOLUME_PARAM));
-                if (pq) {
-                    pq->syncValue();
-                }
-            }
-        }
-#ifdef VERBOSE_LOG
-        if (midi_dispatch.size() > 50) {
-            DEBUG("Large queue: %lld", midi_dispatch.size());
-        }
-#endif
-        while (!midi_dispatch.empty()) {
-            midi::Message msg;
-            auto um = midi_dispatch.shift();
-            um.toMidiMessage(msg);
-            midi_output.sendMessage(msg);
-            ++midi_send_count;
-        }
-    }
+    syncParams(args.sampleTime);
 
     if (is_ready) {
         // MUTE
-        {
-            auto pq = getParamQuantity(MUTE_PARAM);
-            bool new_mute = pq->getValue() > 0.5f;
-            if (new_mute != muted) {
-                muted = new_mute;
-                if (muted) {
-                    lights[MUTE_LIGHT].setBrightness(1.f);
-                    sendControlChange(EM_SettingsChannel, EMCC_PostLevel, 0);
-                } else {
-                    lights[MUTE_LIGHT].setBrightness(0.f);
-                    auto vpq = dynamic_cast<CCParamQuantity*>(getParamQuantity(VOLUME_PARAM));
-                    vpq->sendValue();
-                }
+        auto pq = getParamQuantity(MUTE_PARAM);
+        bool new_mute = pq->getValue() > 0.5f;
+        if (new_mute != muted) {
+            muted = new_mute;
+            if (muted) {
+                lights[MUTE_LIGHT].setBrightness(1.f);
+                sendControlChange(EM_SettingsChannel, EMCC_PostLevel, 0);
+            } else {
+                lights[MUTE_LIGHT].setBrightness(0.f);
+                auto vpq = dynamic_cast<CCParamQuantity*>(getParamQuantity(VOLUME_PARAM));
+                vpq->sendValue();
             }
         }
     }

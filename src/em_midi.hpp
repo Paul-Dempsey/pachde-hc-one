@@ -17,6 +17,7 @@ struct ISendMidi
     virtual void sendKeyPressure(uint8_t channel, uint8_t note, uint8_t pressure) {}
     virtual void sendChannelPressure(uint8_t channel, uint8_t pressure) {}
     virtual void sendPitchBend(uint8_t channel, uint8_t bend_lo, uint8_t bend_hi) {}
+    virtual bool readyToSend() { return true; }
 };
 
 constexpr const uint8_t MaxPresetName = 31; // Haken editor truncates to here on loading a preset.
@@ -33,7 +34,7 @@ constexpr const uint8_t MidiStatus_SysEx                = 0xf0;
 constexpr const uint8_t MidiStatus_SysExEnd             = 0xf7;
 
 constexpr const uint8_t MidiStatus_SysRT_TimingClock    = 0xf8;
-//constexpr const uint8_t MidiStatus_SysRT_Undefined    = 0xf8;
+//constexpr const uint8_t MidiStatus_SysRT_Undefined    = 0xf9;
 constexpr const uint8_t MidiStatus_SysRT_Start          = 0xfa;
 constexpr const uint8_t MidiStatus_SysRT_Continue       = 0xfb;
 constexpr const uint8_t MidiStatus_SysRT_Stop           = 0xfc;
@@ -222,24 +223,24 @@ constexpr const uint8_t EM_SystemSlot       = 127;
 // EMCC_Download values
 // cc109 and cc110 use Editor's Message Bar: C = Center Display, L = Left Display, M = Max Log
 enum EM_DownloadItem {
-    downloadOkBoot 	= 0,	// C  ask user to turn off and back on again				 9.31 [COVID19]
+    downloadOkBoot 	= 0,	// C  ask user to turn off and back on again
     downloadFail 	= 1,	// C  center display: "Operation Failed.  Try again."
-    downloadOkChained=2,	// C  center display: n/c (leave up "Download in Progress")  5.60
+    downloadOkChained=2,	// C  center display: n/c (leave up "Download in Progress")
     //				= 3,	// LC available
     downloadOkData	= 4,	// C  center display: "Data download completed."
     archiveOk		= 5,	// C  center display: erase message bar; sent at very end of Preset Group
     archiveFail		= 6,	// C  center display: "Operation Failed.  Try again." ****
     queryKenton		= 7,	//    Editor will respond with ctlKHello to say if a Kenton is present
-    curGloToFlash	= 8,	//    From Editor: write global/calib/sensorMap/current to flash	5.12
+    curGloToFlash	= 8,	//    From Editor: write global/calib/sensorMap/current to flash
                             //	  Special case if Archive Retrieve: end of Archive Retrieve
     reduceGain		= 9,	// C  center display: "Reduce Gain"
     reducePoly		= 10,	// C  center display: "Reduce Polyphony"
     inFactCalib		= 11,	// C  center display: "Factory Calibration In Progress" [modified 6.38]
     eraseMessage	= 12,	// LC erase message bar
-    aesSyncFail		= 13,	// C  center display: "AES3 Sync Failure"  					 5.40
-    cvcPower		= 14,	// C  center display: "Turn On or Disconnect CVC" 			 5.40
-    ceeMismatch		= 15,	// C  firmware version mismatch between CEEs				 5.60
-    configToMidi	= 16,	//    current config to Midi								 5.21 again
+    aesSyncFail		= 13,	// C  center display: "AES3 Sync Failure"
+    cvcPower		= 14,	// C  center display: "Turn On or Disconnect CVC"
+    ceeMismatch		= 15,	// C  firmware version mismatch between CEEs
+    configToMidi	= 16,	//    current config to Midi
     startFirmware 	= 17,	//    begin firmware download
     startData		= 18,	//    begin synthesis data download
     burnUser364 	= 19,	//    done with firmware 21364 download, burn user flash (if crc matched)
@@ -247,8 +248,8 @@ enum EM_DownloadItem {
     midiLoopback	= 21,	// C  Midi-loopback-detected error message
     //				= 22,	//
     //				= 23,	//
-    begTxDsp		= 24,	// 	  begin CEE config send txDsp (from daisy=1 to 2,3)  	 5.60
-    endTxDsp		= 25,	// 	  end CEE config send txDsp (from daisy=1 to 2,3)  		 5.60
+    begTxDsp		= 24,	// 	  begin CEE config send txDsp (from daisy=1 to 2,3)
+    endTxDsp		= 25,	// 	  end CEE config send txDsp (from daisy=1 to 2,3)
     doneTxDsp		= 26,	// 	  handshake back: end of txDsp preset-sending process
     txDspFail		= 27,	// ?  config send txDsp failure - could try again?  logged in Max window
     doUpdF2			= 28,	// C  after Update File 1 reboot, tell user to do Update File 2
@@ -256,79 +257,79 @@ enum EM_DownloadItem {
     createLed		= 29,	//	  turn on yellow LED for archive create
     testBegin		= 30,	//    Editor to Continuum: begin Midi stress test
     testErr			= 31,	// ?  Continuum to Editor: error in Midi rx sequence
-    userToMidi		= 32,	//    from Editor: preset names to Midi, then current config 6.19
-    manualUpdate	= 33,	//    old preset needs manually-implemented update 			 6.20
-    doResetCalib	= 34,	//	  set zero levels, like optCalib+0						 6.38
-    doRefineCalib	= 35,	//	  incorporate new zero levels, like optCalib+1 			 6.38
-    midiTxFull		= 36,	//	  full midi transmission rate							 6.41
-    midiTxThird		= 37,	//	  one-third midi transmission rate 						6.41,7.57,8.55
-    midiTxTweenth	= 38,	//	  one-twentieth midi transmission rate 					6.41,7.57,7.59
-    sysToMidi		= 39,	//	  from Editor: preset names to Midi, then current config 6.19
-    endSysNames		= 40,	//	  to Editor: end list of system presets				  	 9.70
+    userToMidi		= 32,	//    from Editor: preset names to Midi, then current config
+    manualUpdate	= 33,	//    old preset needs manually-implemented update
+    doResetCalib	= 34,	//	  set zero levels, like optCalib+0
+    doRefineCalib	= 35,	//	  incorporate new zero levels, like optCalib+1
+    midiTxFull		= 36,	//	  full midi transmission rate
+    midiTxThird		= 37,	//	  one-third midi transmission rate
+    midiTxTweenth	= 38,	//	  one-twentieth midi transmission rate
+    sysToMidi		= 39,	//	  from Editor: preset names to Midi, then current config
+    endSysNames		= 40,	//	  to Editor: end list of system presets
     doFactCalib		= 41,	//    do factory calibration
     doUpdate1		= 42,	// C  after recovery boot, let user know ready for update file 1
                             //	  This is used by Osmose to detect Recovery Mode.
     burnUser489 	= 43,	//    done with firmware 21489 download, burn user flash (if crc matched)
-    dspReboot		= 44,	//	  reboot after Firmware File 1							 7.56
-    surfAlign		= 45,	//	  toggle slim Continuum's Surface Alignment mode 		 9.08
-    addTrim			= 46,	//	  add currently-playing finger to Trim array  			 7.57
-    delTrim			= 47,	//    remove trim point closes to currently-playing finger   7.57
-    resetTrim		= 48,	//    remove all trim data  								 7.57
-    beginSysNames	= 49,	//	  to Editor: begin list of system presets 			 	 9.70
+    dspReboot		= 44,	//	  reboot after Firmware File 1
+    surfAlign		= 45,	//	  toggle slim Continuum's Surface Alignment mode
+    addTrim			= 46,	//	  add currently-playing finger to Trim array
+    delTrim			= 47,	//    remove trim point closes to currently-playing finger
+    resetTrim		= 48,	//    remove all trim data
+    beginSysNames	= 49,	//	  to Editor: begin list of system presets
     exitCombi		= 50,	//	  exit Combination Preset mode: edit all DSPs
     miniFactSetup	= 51,	//	  store calib/global/userPresets to continuuMini factory setup
-    decPreset		= 52,	//	  to prev sysPreset						  [tx7.78, rx8.59 SuperBooth]
-    incPreset		= 53,	//	  to next sysPreset						  [tx7.78. rx8.59 SuperBooth]
-    beginUserNames	= 54,	//	  to Editor: begin list of user presets 			 	 7.78
-    endUserNames	= 55,	//	  to Editor: end list of user presets				  	 7.78, 9.70
-    sameSlot		= 56,	// C  save Combi preset to same slot or to disk 			 8.11
-    preEraseUpdF1	= 57,	//    pre-erase flash Update File 1; echo when dsp1 done	 9.74
-    preEraseUpdF2	= 58,	//    pre-erase flash Update File 2; echo when dsp1 done	 9.74
-    preEraseUpdF3	= 59,	//    pre-erase flash Update File 3; echo when dsp1 done	 9.74
-    remakeSRMahl	= 60,	//	  remake synthesis-ready Mahling data					 9.83
-    doneFactProg	= 61,	//	  done copying to/from Factory Program Board 			 9.91
-    failFactProg	= 62,	//	  failed copying to/from from Factory Program Board 	 9.91
-    usbTxNoAck		= 63,	// M  Usb-Midi out from Mini did not get Ack				 8.70
-    rxOver 			= 64,	// M  Midi rx queue overflow								 8.50
-    txOver 			= 65,	// M  Midi tx queue overflow								 8.50
-    rxSynErr 		= 66,	// M  Midi rx syntax error									 8.50
-    rxBitErr 		= 67,	// M  Midi rx bad bit widths								 8.50
-    sensComm		= 68,	// M  serial sensors errors									 8.50
-    nanErr			= 69,	// M  output has nan										 8.50
-    ceeSeq			= 70,	// M  CEE comm glitch										 8.50
+    decPreset		= 52,	//	  to prev sysPreset
+    incPreset		= 53,	//	  to next sysPreset
+    beginUserNames	= 54,	//	  to Editor: begin list of user presets
+    endUserNames	= 55,	//	  to Editor: end list of user presets
+    sameSlot		= 56,	// C  save Combi preset to same slot or to disk
+    preEraseUpdF1	= 57,	//    pre-erase flash Update File 1; echo when dsp1 done
+    preEraseUpdF2	= 58,	//    pre-erase flash Update File 2; echo when dsp1 done
+    preEraseUpdF3	= 59,	//    pre-erase flash Update File 3; echo when dsp1 done
+    remakeSRMahl	= 60,	//	  remake synthesis-ready Mahling data
+    doneFactProg	= 61,	//	  done copying to/from Factory Program Board
+    failFactProg	= 62,	//	  failed copying to/from from Factory Program Board
+    usbTxNoAck		= 63,	// M  Usb-Midi out from Mini did not get Ack
+    rxOver 			= 64,	// M  Midi rx queue overflow
+    txOver 			= 65,	// M  Midi tx queue overflow
+    rxSynErr 		= 66,	// M  Midi rx syntax error
+    rxBitErr 		= 67,	// M  Midi rx bad bit widths
+    sensComm		= 68,	// M  serial sensors errors
+    nanErr			= 69,	// M  output has nan
+    ceeSeq			= 70,	// M  CEE comm glitch
     burnUserMini	= 71,	//	  ContinuuMini firmware has this at end
-    doMidiLog0		= 72,	//	  end scrolling ascii log via Midi						 7.40,8.81
-    doMidiLog1		= 73,	//	  daisy=0,1 scrolling ascii log via Midi				 7.40,8.81
-    doMidiLog2		= 74,	//	  daisy=2 scrolling ascii log via Midi 					 7.40,8.81
-    doMidiLog3		= 75,	//	  daisy=3 scrolling ascii log via Midi 					 7.40,8.81
+    doMidiLog0		= 72,	//	  end scrolling ascii log via Midi
+    doMidiLog1		= 73,	//	  daisy=0,1 scrolling ascii log via Midi
+    doMidiLog2		= 74,	//	  daisy=2 scrolling ascii log via Midi
+    doMidiLog3		= 75,	//	  daisy=3 scrolling ascii log via Midi
     burnRecovery489 = 76,	//    done firmware 21489 download, burn recovery (done at factory only!)
     burnRecovery364 = 77,	//    done firmware 21364 download, burn recovery (done at factory only!)
     burnRecoveryMini= 78,	//    done firmware ContinuuMini download, burn recovery
     //				= 79,	//
     defFirstTuning	= 80,	//    80..87 begin loading user tuning grid; data follows using ctlDataLow
-        // 80..87 are for downloading user tuning grids					   [removed 6.13, re-add 6.19]
+        // 80..87 are for downloading user tuning grids
     defLastTuning 	= 87,	//    80..87 begin loading user tuning grid; data follows using ctlDataLow
-    numDecMat		= 88,	//	  decrement numeric matrix point						 9.70
-    numIncMat		= 89,	//	  increment numeric matrix point						 9.70
-    mendDisco		= 90,	//	  mend discontinuity at note (outlier to Sensor Map)	 9.74
-    rebootRecov		= 91,	//    reboot in Recovery Mode								 9.81
-    stageUp			= 92,	//	  host to dsp: upload monolithic update					 9.82
-    stageDown		= 93,	//	  host to dsp: download monolithic update				 9.82
+    numDecMat		= 88,	//	  decrement numeric matrix point
+    numIncMat		= 89,	//	  increment numeric matrix point
+    mendDisco		= 90,	//	  mend discontinuity at note (outlier to Sensor Map)
+    rebootRecov		= 91,	//    reboot in Recovery Mode
+    stageUp			= 92,	//	  host to dsp: upload monolithic update
+    stageDown		= 93,	//	  host to dsp: download monolithic update
     stageDownOk1	= 94, stageDownOk2, stageDownOk3,		// dsp to host at end of StageDown
     stageDownFail1	= 97, stageDownFail2, stageDownFail3,	// dsp to host at end of StageDown
-    rebootUser		= 100,	//    reboot in User (normal) Mode							 9.82
+    rebootUser		= 100,	//    reboot in User (normal) Mode
     gridToFlash 	= 101,	//    save tuning grids to flash
-    mendDivided		= 102,	//	  mend divided note (add flawed sensor to Sensor Map)	 9.74
-    startUpdF2		= 103,	//    from Editor: beginning of Update File 2				 9.70 [COVID19]
-    notFirst		= 104,	//	  to Editor: not first preset in a combination			 9.70 [COVID19]
-    firstOfTwo		= 105,	//	  to Editor: first preset in a dual combination			 9.70 [COVID19]
-    firstofThree	= 106,	//	  to Editor: first preset in triple combination			 9.70 [COVID19]
-    Demo1			= 107,	//	  Demo Assortment to first set-of-16 user presets.		 9.70 [COVID19]
+    mendDivided		= 102,	//	  mend divided note (add flawed sensor to Sensor Map)
+    startUpdF2		= 103,	//    from Editor: beginning of Update File 2
+    notFirst		= 104,	//	  to Editor: not first preset in a combination
+    firstOfTwo		= 105,	//	  to Editor: first preset in a dual combination
+    firstofThree	= 106,	//	  to Editor: first preset in triple combination
+    Demo1			= 107,	//	  Demo Assortment to first set-of-16 user presets.
         // 107..114 are for loading demo assortment into user presets
-    Demo8			= 114,	//	  Demo Assortment to last set-of-16 user presets.		 9.70 [COVID19]
-    Empty1			= 115,	//	  Empty preset to first set-of-16 user presets.			 9.70 [COVID19]
+    Demo8			= 114,	//	  Demo Assortment to last set-of-16 user presets.
+    Empty1			= 115,	//	  Empty preset to first set-of-16 user presets.
         // 115..122 are for emptying set-of-16 user presets
-    Empty8			= 122,	//	  Empty preset to last set-of-16 user presets.			 9.70 [COVID19]
+    Empty8			= 122,	//	  Empty preset to last set-of-16 user presets.
     burnUser593 	= 123,	//    done with firmware 21593 download, burn user flash (if crc matched)
     burnRecovery593 = 124,	//    done firmware 21593 download, burn recovery (done at factory only!)
 };
@@ -338,11 +339,11 @@ enum InfoItem {
     profileEnd		= 0,	// LC erase message bar, Editor puts up Save dialog
     percentFirst	= 1,	// L  left display "1%"
     percentLast		= 99,	// L  left display "99%"
-    cfCreateArch0	= 100,	//    Save Preset: received from Editor, start *creation* archive  5.12
+    cfCreateArch0	= 100,	//    Save Preset: received from Editor, start *creation* archive
                             //	  value 100 is preset edit buffer (userPreset0)
-    cfCreateArch1	= 101,	//    Save Preset: received from Editor, start *creation* archive  5.12
+    cfCreateArch1	= 101,	//    Save Preset: received from Editor, start *creation* archive
                             //	  value 101..116 is within set-of-16 user preset slots
-    cfCreateArch16	= 116,	//    Save Preset: received from Editor, start *creation* archive  5.12
+    cfCreateArch16	= 116,	//    Save Preset: received from Editor, start *creation* archive
     inProgress		= 118,	// C  center display: "Download in progress. Please wait." 
     archiveNop		= 119,	// 	  no-op, used as padding
     edRecordArchive	= 120,	//	  sent to Editor when cfCreateArchive is received;

@@ -1,5 +1,5 @@
 #include "HC-1.hpp"
-#include "cc_param.hpp"
+#include "../cc_param.hpp"
 
 namespace pachde {
 
@@ -166,7 +166,7 @@ void Hc1Module::beginPreset()
     dsp[2] = dsp[1] = dsp[0] = 0;
 }
 
-void Hc1Module::handle_ch16_cc(uint8_t cc, uint8_t value)
+void Hc1Module::onChannel16CC(uint8_t cc, uint8_t value)
 {
     ch15_cc_value[cc] = value;
     switch (cc) {
@@ -184,9 +184,8 @@ void Hc1Module::handle_ch16_cc(uint8_t cc, uint8_t value)
             middle_c = value;
             break;
 
-        case EMCC_RecirculatorType:
-            recirculator = value;
-            getParamQuantity(RECIRC_EXTEND_PARAM)->setValue(isExtendRecirculator() * 1.f);
+        case EMCC_TuningGrid:
+            rounding.tuning = static_cast<Tuning>(value);
             break;
 
         case EMCC_DataStream: {
@@ -236,6 +235,24 @@ void Hc1Module::handle_ch16_cc(uint8_t cc, uint8_t value)
             }
 
         } break;
+
+        case EMCC_Reverse_Rounding: {
+            reverse_surface = static_cast<bool>(value & 1);
+            rounding.kind = static_cast<RoundKind>((value & 0x06) >>1);
+        } break;
+
+        case EMCC_RecirculatorType:
+            recirculator = value;
+            getParamQuantity(RECIRC_EXTEND_PARAM)->setValue(isExtendRecirculator() * 1.f);
+            break;
+
+        case EMCC_RoundEqual:
+            switch (value) {
+            case   0: rounding.equal = RoundEqual::Disabled; break;
+            case  64: rounding.equal = RoundEqual::Enabled; break;
+            case 127: rounding.equal = RoundEqual::Equal; break;
+            }
+            break;
 
         case EMCC_VersionHigh:
             firmware_version = value;
@@ -314,7 +331,7 @@ void Hc1Module::handle_ch16_cc(uint8_t cc, uint8_t value)
     }
 }
 
-void Hc1Module::handle_ch16_message(const midi::Message& msg)
+void Hc1Module::onChannel16Message(const midi::Message& msg)
 {
     auto status = GetRawStatus(msg);
     assert(status & 0x80);
@@ -328,7 +345,7 @@ void Hc1Module::handle_ch16_message(const midi::Message& msg)
             break;
 
         case MidiStatus_CC:
-            handle_ch16_cc(GetCC(msg), msg.getValue());
+            onChannel16CC(GetCC(msg), msg.getValue());
             break;
 
         case MidiStatus_ProgramChange:
@@ -465,11 +482,28 @@ void Hc1Module::onChannel0CC(uint8_t cc, uint8_t value)
         case EMCC_RMIX: setRecirculatorCCValue(RMIX_PARAM, value); break;
 
         case EMCC_PostLevel: setMacroCCValue(VOLUME_PARAM, value); break;
+
+        case EMCC_RoundRate:
+            rounding.rate = value;
+            break;
+
+        case EMCC_RountInitial:
+            rounding.initial = value >= 64; // VERIFY
+            break;
+
+        case EMCC_RoundEqual:
+            switch (value) {
+            case   0: rounding.equal = RoundEqual::Disabled; break;
+            case  64: rounding.equal = RoundEqual::Enabled; break;
+            case 127: rounding.equal = RoundEqual::Equal; break;
+            }
+            break;
+
         case MidiCC_AllSoundOff: onSoundOff(); break;
     }
 }
 
-void Hc1Module::handle_ch0_message(const midi::Message& msg)
+void Hc1Module::onChannel0Message(const midi::Message& msg)
 {
     switch (GetRawStatus(msg)) {
         case MidiStatus_NoteOff:
@@ -509,7 +543,7 @@ void Hc1Module::onMessage(const midi::Message& msg)
     auto channel = msg.getChannel();
     switch (channel) {
         case EM_MasterChannel:
-            handle_ch0_message(msg);
+            onChannel0Message(msg);
             break;
 
         case EM_KentonChannel:
@@ -519,7 +553,7 @@ void Hc1Module::onMessage(const midi::Message& msg)
             break;
 
         case EM_SettingsChannel:
-            handle_ch16_message(msg);
+            onChannel16Message(msg);
             break;
 
         default:

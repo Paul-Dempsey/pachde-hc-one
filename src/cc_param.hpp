@@ -1,7 +1,8 @@
 #pragma once
 #ifndef CC_PARAM_HPP_INCLUDED
 #define CC_PARAM_HPP_INCLUDED
-#include "HC-1.hpp"
+#include "rack.hpp"
+#include "em_midi.hpp"
 
 namespace pachde {
 using namespace em_midi;
@@ -13,6 +14,9 @@ struct CCParamQuantity : rack::engine::ParamQuantity
     bool high_resolution = true;
     bool enabled = true;
     float offset = 0.f;
+    int inputId = -1;
+    int relativeId = -1;
+    int lightId = -1;
 
     void enable(bool enable) { enabled = enable; }
 
@@ -46,17 +50,17 @@ struct CCParamQuantity : rack::engine::ParamQuantity
         auto to_send = valueToSend();
         last_value = to_send;
         if (enabled) {
-            auto my_module = dynamic_cast<Hc1Module*>(module);
-            if (my_module && my_module->ready()) {
+            auto iSend = dynamic_cast<ISendMidi*>(module);
+            if (iSend && iSend->readyToSend()) {
                 if (high_resolution) {
                     uint8_t lo = to_send & 0x7f;
                     if (lo) {
-                        my_module->sendControlChange(EM_SettingsChannel, EMCC_PedalFraction, lo);
+                        iSend->sendControlChange(EM_SettingsChannel, EMCC_PedalFraction, lo);
                     }
                     uint8_t hi = to_send >> 7;
-                    my_module->sendControlChange(EM_SettingsChannel, cc, hi);
+                    iSend->sendControlChange(EM_SettingsChannel, cc, hi);
                 } else {
-                    my_module->sendControlChange(EM_SettingsChannel, cc, to_send & 0x7f);
+                    iSend->sendControlChange(EM_SettingsChannel, cc, to_send & 0x7f);
                 }
             }
         }
@@ -85,7 +89,7 @@ struct CCParamQuantity : rack::engine::ParamQuantity
 };
 
 template <class TCCPQ = CCParamQuantity>
-TCCPQ* configCCParam(uint8_t cc, bool hiRes, Module* module, int paramId, float minValue, float maxValue, float defaultValue, std::string name = "", std::string unit = "", float displayBase = 0.f, float displayMultiplier = 1.f, float displayOffset = 0.f)
+TCCPQ* configCCParam(uint8_t cc, bool hiRes, Module* module, int paramId, int inputId, int relativeParamId, int lightId, float minValue, float maxValue, float defaultValue, std::string name = "", std::string unit = "", float displayBase = 0.f, float displayMultiplier = 1.f, float displayOffset = 0.f)
 {
     assert(paramId >= 0 && static_cast<size_t>(paramId) < module->params.size() && static_cast<size_t>(paramId) < module->paramQuantities.size());
     if (module->paramQuantities[paramId]) {
@@ -95,6 +99,9 @@ TCCPQ* configCCParam(uint8_t cc, bool hiRes, Module* module, int paramId, float 
     TCCPQ* q = new TCCPQ;
     q->module = module;
     q->paramId = paramId;
+    q->inputId = inputId;
+    q->relativeId = relativeParamId;
+    q->lightId = lightId;
     q->minValue = minValue;
     q->maxValue = maxValue;
     q->defaultValue = defaultValue;
@@ -115,13 +122,18 @@ TCCPQ* configCCParam(uint8_t cc, bool hiRes, Module* module, int paramId, float 
 
 struct MidiKnob : RoundSmallBlackKnob
 {
+    int inputId = -1;
+    int relativeParamId = -1;
+
     void drawLayer(const DrawArgs& args, int layer) override
     {
         RoundSmallBlackKnob::drawLayer(args, layer);
         if (1 != layer) return;
         if (module
-            && module->getInput(paramId).isConnected()
-            && module->getParam(13 + paramId).getValue() > .5f
+            && inputId >= 0
+            && relativeParamId >= 0
+            && module->getInput(inputId).isConnected()
+            && module->getParam(relativeParamId).getValue() > .5f
             ) {
             auto pq = dynamic_cast<CCParamQuantity*>(getParamQuantity());
             if (!pq) return;
@@ -151,6 +163,7 @@ struct MidiKnob : RoundSmallBlackKnob
     }
     void draw(const DrawArgs& args) override {
         RoundSmallBlackKnob::draw(args);
+        if (inputId < 0 || relativeParamId < 0) return;
 
         auto vg = args.vg;
         nvgBeginPath(vg);
@@ -161,6 +174,15 @@ struct MidiKnob : RoundSmallBlackKnob
         nvgStroke(vg);
     }
 };
+
+template <typename T = MidiKnob>
+T* createMidiKnob(Vec pos, Module * module, int paramId, int inputId, int relativeId)
+{
+    auto mk = createParamCentered<T>(pos, module, paramId);
+    mk->inputId = inputId;
+    mk->relativeParamId = relativeId;
+    return mk;
+}
 
 }
 #endif

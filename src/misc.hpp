@@ -9,6 +9,7 @@ std::string format_string(const char *fmt, ...);
 size_t common_prefix_length(const std::string& alpha, const std::string& beta);
 bool is_EMDevice(const std::string& name);
 std::string FilterDeviceName(std::string text);
+int randomZeroTo(int size);
 //std::string AbbreviatedName(std::string name);
 std::string TempName(const std::string& suffix);
 
@@ -18,15 +19,8 @@ inline bool in_range(T value, T minimum, T maximum) { return minimum <= value &&
 template <typename T>
 inline bool in_range_limit(T value, T minimum, T limit) { return minimum <= value && value < limit; }
 
-inline bool GetBool(const json_t* root, const char* key, bool default_value) {
-    auto j = json_object_get(root, key);
-    return j ? json_is_true(j) : default_value;
-}
-
-inline float GetFloat(const json_t* root, const char* key, float default_value) {
-    auto j = json_object_get(root, key);
-    return j ? json_real_value(j) : default_value;
-}
+bool GetBool(const json_t* root, const char* key, bool default_value);
+float GetFloat(const json_t* root, const char* key, float default_value);
 
 enum class InitState {
     Uninitialized,
@@ -35,15 +29,7 @@ enum class InitState {
     Broken
 };
 
-inline const char * InitStateName(InitState state) {
-    switch (state) {
-    case InitState::Uninitialized: return "Uninitialized";
-    case InitState::Pending: return "Pending";
-    case InitState::Complete: return "Complete";
-    case InitState::Broken: return "Broken";
-    default: return "(unknown)";
-    }
-}
+const char * InitStateName(InitState state);
 
 enum Expansion {
     None  = 0x00,

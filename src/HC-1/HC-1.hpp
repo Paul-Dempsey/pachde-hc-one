@@ -5,6 +5,7 @@
 #include "../plugin.hpp"
 #include "../colors.hpp"
 #include "../em_midi.hpp"
+#include "../em_types.hpp"
 #include "../favorite_widget.hpp"
 #include "../presets.hpp"
 #include "../preset_widget.hpp"
@@ -19,29 +20,7 @@ namespace pachde {
 //#define VERBOSE_LOG
 #include "../debug_log.hpp"
 
-int randomZeroTo(int size);
 const NVGcolor& StatusColor(StatusItem status);
-
-enum class PresetOrder {
-    Alpha,
-    System,
-    Category
-};
-bool preset_system_order(const std::shared_ptr<Preset>& p1, const std::shared_ptr<Preset>& p2);
-bool preset_alpha_order(const std::shared_ptr<Preset>& preset1, const std::shared_ptr<Preset>& preset2);
-bool preset_category_order(const std::shared_ptr<Preset>& p1, const std::shared_ptr<Preset>& p2);
-
-inline std::function<bool (const std::shared_ptr<Preset>&, const std::shared_ptr<Preset>&)> getPresetSort(PresetOrder order)
-{
-    switch (order) {
-    case PresetOrder::Alpha: return preset_alpha_order;
-    case PresetOrder::System: return preset_system_order;
-    case PresetOrder::Category: return preset_category_order;
-    default: assert(false); break;
-    }
-}
-
-bool favorite_order(const std::shared_ptr<Preset>& p1, const std::shared_ptr<Preset>& p2);
 
 struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
 {
@@ -50,6 +29,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
         M1_PARAM, M2_PARAM, M3_PARAM, M4_PARAM, M5_PARAM, M6_PARAM,
         R1_PARAM, R2_PARAM, R3_PARAM, R4_PARAM, RMIX_PARAM,
         VOLUME_PARAM, MUTE_PARAM,
+        ROUND_RATE_PARAM,
         M1_REL_PARAM, M2_REL_PARAM, M3_REL_PARAM, M4_REL_PARAM, M5_REL_PARAM, M6_REL_PARAM,
         R1_REL_PARAM, R2_REL_PARAM, R3_REL_PARAM, R4_REL_PARAM, RMIX_REL_PARAM,
         VOLUME_REL_PARAM,
@@ -76,6 +56,13 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
         HEART_LIGHT,
         MUTE_LIGHT,
         RECIRC_EXTEND_LIGHT,
+        ROUND_Y_LIGHT,
+        ROUND_INITIAL_LIGHT,
+        ROUND_LIGHT,
+        ROUND_RELEASE_LIGHT,
+        TRANSPOSE_UP_LIGHT,
+        TRANSPOSE_NONE_LIGHT,
+        TRANSPOSE_DOWN_LIGHT,
 //        FILTER_LIGHT,
         NUM_LIGHTS
     };
@@ -113,12 +100,12 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     void writeFavoritesFile(const std::string& path);
     json_t* favoritesToJson();
     void favoritesFromPresets();
+
     bool bulk_favoriting = false;
     class BulkFavoritingMode {
         Hc1Module* hc1;
     public:
         BulkFavoritingMode(Hc1Module* hc1) : hc1(hc1) {
-            assert(hc1);
             hc1->bulk_favoriting = true;
         }
         ~ BulkFavoritingMode() {
@@ -138,10 +125,10 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     void systemPresetsToJson(json_t * root);
 
     void setTabPage(PresetTab tab, int tab_page) {
-        page[tab]= tab_page;
+        page[static_cast<size_t>(tab)] = tab_page;
     }
     int getTabPage(PresetTab tab) {
-        return page[tab];
+        return page[static_cast<size_t>(tab)];
     }
 
     const std::vector<std::shared_ptr<Preset>>& getPresets(PresetTab tab) {
@@ -155,14 +142,14 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     
     bool is_eagan_matrix = false;
 
-    InitState device_output_state = InitState::Uninitialized;
-    InitState device_input_state = InitState::Uninitialized;
-    InitState system_preset_state = InitState::Uninitialized;
-    InitState user_preset_state = InitState::Uninitialized;
-    InitState config_state = InitState::Uninitialized;
-    InitState saved_preset_state = InitState::Uninitialized;
+    InitState device_output_state   = InitState::Uninitialized;
+    InitState device_input_state    = InitState::Uninitialized;
+    InitState system_preset_state   = InitState::Uninitialized;
+    InitState user_preset_state     = InitState::Uninitialized;
+    InitState config_state          = InitState::Uninitialized;
+    InitState saved_preset_state    = InitState::Uninitialized;
     InitState request_updates_state = InitState::Uninitialized;
-    InitState handshake = InitState::Uninitialized;
+    InitState handshake             = InitState::Uninitialized;
 
     bool hasSystemPresets() { return InitState::Complete == system_preset_state && !system_presets.empty(); }
     bool hasUserPresets() { return InitState::Complete == user_preset_state && !user_presets.empty(); }
@@ -223,7 +210,6 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     std::string device_name = "";
 
     // cc handling
-    uint16_t firmware_version = 0;
     uint8_t pedal_fraction = 0;
     bool muted = false;
     int64_t notesOn = 0;
@@ -232,17 +218,21 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     uint64_t midi_send_count = 0;
     uint8_t dsp[3] {0};
     int data_stream = -1;
-    uint8_t middle_c = 60;
     uint8_t ch0_cc_value[127];
     uint8_t ch15_cc_value[127];
     void clearCCValues() { 
         memset(ch0_cc_value, 0, 127); 
         memset(ch15_cc_value, 0, 127);
     }
+    uint16_t firmware_version = 0;
+    uint8_t middle_c = 60;
+    bool reverse_surface;
+    Rounding rounding;
 
     midi::Output midi_output;
     rack::dsp::RingBuffer<uMidiMessage, 128> midi_dispatch;
     void queueMidiMessage(uMidiMessage msg);
+    void dispatchMidi();
 
     // cv processing
     const int CV_INTERVAL = 64;
@@ -312,6 +302,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     void sendNoteOff(uint8_t channel, uint8_t note, uint8_t velocity) override;
     void sendControlChange(uint8_t channel, uint8_t cc, uint8_t value) override;
     void sendProgramChange(uint8_t channel, uint8_t program) override;
+    bool readyToSend() override { return ready(); }
 
     // IPresetHolder
     void setPreset(std::shared_ptr<Preset> preset) override;
@@ -353,7 +344,8 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     void expanderAdded(Expansion side) {
         expanders.add(side);
     }
-
+    void syncParam(int paramId);
+    void syncParams(float sampleTime);
     void resetMidiIO();
     void sendResetAllreceivers();
     void transmitRequestUpdates();
@@ -363,14 +355,14 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     void sendEditorPresent();
     void silence(bool reset);
     void beginPreset();
-    void handle_ch16_cc(uint8_t cc, uint8_t value);
-    void handle_ch16_message(const midi::Message& msg);
+    void onChannel16CC(uint8_t cc, uint8_t value);
+    void onChannel16Message(const midi::Message& msg);
     void onNoteOn(uint8_t channel, uint8_t note, uint8_t velocity);
     void onNoteOff(uint8_t channel, uint8_t note, uint8_t velocity);
     void setMacroCCValue(int id, uint8_t value);
     void onSoundOff();
     void onChannel0CC(uint8_t cc, uint8_t value);
-    void handle_ch0_message(const midi::Message& msg);
+    void onChannel0Message(const midi::Message& msg);
     void processCV(int inputId);
     void processAllCV();
     void onSave(const SaveEvent& e) override;

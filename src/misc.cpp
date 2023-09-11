@@ -31,6 +31,25 @@ std::size_t common_prefix_length(const std::string& alpha, const std::string& be
     return common;
 }
 
+int randomZeroTo(int size)
+{
+    if (size <= 1) return 0;
+    do {
+        float r = random::uniform();
+        if (r != 1.0f) return static_cast<int>(r * size);
+    } while(true);
+}
+
+bool GetBool(const json_t* root, const char* key, bool default_value) {
+    auto j = json_object_get(root, key);
+    return j ? json_is_true(j) : default_value;
+}
+
+float GetFloat(const json_t* root, const char* key, float default_value) {
+    auto j = json_object_get(root, key);
+    return j ? json_real_value(j) : default_value;
+}
+
 // std::string AbbreviatedName(std::string name)
 // {
 //     if (name.size() <= 9) return name.substr(0, 9);
@@ -78,6 +97,16 @@ std::string FilterDeviceName(std::string text)
     #endif
 
     return text;
+}
+
+const char * InitStateName(InitState state) {
+    switch (state) {
+    case InitState::Uninitialized: return "Uninitialized";
+    case InitState::Pending: return "Pending";
+    case InitState::Complete: return "Complete";
+    case InitState::Broken: return "Broken";
+    default: return "(unknown)";
+    }
 }
 
 }

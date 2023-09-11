@@ -136,5 +136,26 @@ struct IPresetHolder
     virtual void unFavorite(std::shared_ptr<Preset> preset) {}
 };
 
+enum class PresetOrder {
+    Alpha,
+    System,
+    Category
+};
+bool preset_system_order(const std::shared_ptr<Preset>& p1, const std::shared_ptr<Preset>& p2);
+bool preset_alpha_order(const std::shared_ptr<Preset>& preset1, const std::shared_ptr<Preset>& preset2);
+bool preset_category_order(const std::shared_ptr<Preset>& p1, const std::shared_ptr<Preset>& p2);
+
+inline std::function<bool (const std::shared_ptr<Preset>&, const std::shared_ptr<Preset>&)> getPresetSort(PresetOrder order)
+{
+    switch (order) {
+    case PresetOrder::Alpha: return preset_alpha_order;
+    case PresetOrder::System: return preset_system_order;
+    case PresetOrder::Category: return preset_category_order;
+    default: assert(false); break;
+    }
+}
+
+bool favorite_order(const std::shared_ptr<Preset>& p1, const std::shared_ptr<Preset>& p2);
+
 }
 #endif

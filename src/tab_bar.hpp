@@ -8,7 +8,7 @@
 
 namespace pachde {
 
-enum PresetTab {
+enum class PresetTab : uint8_t {
     User,
     Favorite,
     System,
@@ -84,8 +84,8 @@ struct TabBarWidget : OpaqueWidget
 
     std::vector<TabWidget*> tabs;
 
-    int getSelectedTab() {
-        return std::distance(tabs.begin(), std::find_if(tabs.begin(), tabs.end(), [](const TabWidget* p){ return p->selected; }));
+    PresetTab getSelectedTab() {
+        return static_cast<PresetTab>(std::distance(tabs.begin(), std::find_if(tabs.begin(), tabs.end(), [](const TabWidget* p){ return p->selected; })));
     }
 
     void addTab(const std::string& title, PresetTab kind) {
@@ -106,10 +106,10 @@ struct TabBarWidget : OpaqueWidget
         }
     }
 
-    void selectTab(int select) {
-        int n = 0;
+    void selectTab(PresetTab select) {
+        uint8_t n = 0;
         for (auto tab : tabs) {
-            tab->selected = (n == select);
+            tab->selected = (n == static_cast<uint8_t>(select));
             ++n;
         }
     }
@@ -120,11 +120,13 @@ struct TabBarWidget : OpaqueWidget
         if (e.isConsumed()) {
             unsigned n = 0;
             for (auto p: tabs) {
-                if (p->box.contains(e.pos)) break;
+                if (p->box.contains(e.pos)) {
+                    break;
+                }
                  ++n;
             }
             if (n < tabs.size()) {
-                selectTab(n);
+                selectTab(static_cast<PresetTab>(n));
             }
         }
     }

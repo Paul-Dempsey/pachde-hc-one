@@ -1,6 +1,7 @@
 #include "HC-1.hpp"
-#include "cc_param.hpp"
+#include "../cc_param.hpp"
 #include "../components.hpp"
+#include "../em_types_ui.hpp"
 #include "../misc.hpp"
 #include "../open_file.hpp"
 #include "../port.hpp"
@@ -40,41 +41,6 @@ const NVGcolor& InitStateColor(InitState state)
     }
 }
 
-struct PDSmallButton : app::SvgSwitch {
-    PDSmallButton() {
-		addFrame(Svg::load(asset::plugin(pluginInstance, "res/TinyPush_up.svg")));
-		addFrame(Svg::load(asset::plugin(pluginInstance, "res/TinyPush_down.svg")));
-    }
-};
-
-template <typename TLight>
-struct PDLightButton : app::SvgSwitch {
-	app::ModuleLightWidget* light;
-
-	PDLightButton() {
-		addFrame(Svg::load(asset::plugin(pluginInstance, "res/TinyPush_up.svg")));
-		addFrame(Svg::load(asset::plugin(pluginInstance, "res/TinyPush_down.svg")));
-		light = new TLight;
-		// Move center of light to center of box
-		light->box.pos = box.size.div(2).minus(light->box.size.div(2));
-		addChild(light);
-	}
-
-	app::ModuleLightWidget* getLight() {
-		return light;
-	}
-};
-template <typename TLight>
-using SmallLightButton = PDLightButton<TLight>;
-
-template <typename TLight>
-struct PDLightLatch : PDLightButton<TLight> {
-	PDLightLatch() {
-		this->momentary = false;
-		this->latch = true;
-	}
-};
-
 const NVGcolor& StatusColor(StatusItem led) {
     switch (led) {
         case StatusItem::ledOff: return no_light;
@@ -95,7 +61,9 @@ constexpr const float PRESET_TOP = 38.f;
 constexpr const float PRESET_LEFT = 7.5f;
 constexpr const float PRESET_WIDTH = 320.f;
 constexpr const float PRESET_RIGHT = PRESET_LEFT + PRESET_WIDTH;
-constexpr const float PRESET_BOTTOM = PRESET_TOP + 8.f * 27.f;
+constexpr const float PRESET_SLOT_HEIGHT = 27.f;
+constexpr const float PRESET_HEIGHT = 8.f * PRESET_SLOT_HEIGHT;
+constexpr const float PRESET_BOTTOM = PRESET_TOP + PRESET_HEIGHT;
 
 constexpr const float RIGHT_COLUMN_BUTTONS = PRESET_RIGHT + (PANEL_WIDTH - PRESET_RIGHT)*.5f;
 constexpr const float KNOB_LEFT   = 45.f;
@@ -104,6 +72,7 @@ constexpr const float KNOB_ROW_1  = 288.f;
 constexpr const float KNOB_ROW_2  = 346.f;
 constexpr const float RKNOB_LEFT  = KNOB_LEFT; //- KNOB_SPREAD *.5f;
 
+constexpr const float LIGHT_SPREAD = 4.f;
 constexpr const float LABEL_OFFSET = 20.f;
 constexpr const float STATIC_LABEL_OFFSET = 29.5f;
 
@@ -155,12 +124,12 @@ Hc1ModuleWidget::Hc1ModuleWidget(Hc1Module *module)
     addChild(createInputCentered<ColorPort>(Vec(RKNOB_LEFT + 4.f * KNOB_SPREAD - CV_COLUMN_OFFSET, CV_ROW_2), module, Hc1Module::RMIX_INPUT));
     addChild(createInputCentered<ColorPort>(Vec(RKNOB_LEFT + 5.f * KNOB_SPREAD - CV_COLUMN_OFFSET, CV_ROW_2), module, Hc1Module::VOLUME_INPUT));
 
-    addChild(createParamCentered<MidiKnob>(Vec(KNOB_LEFT                    , KNOB_ROW_1), module, Hc1Module::M1_PARAM));
-    addChild(createParamCentered<MidiKnob>(Vec(KNOB_LEFT +       KNOB_SPREAD, KNOB_ROW_1), module, Hc1Module::M2_PARAM));
-    addChild(createParamCentered<MidiKnob>(Vec(KNOB_LEFT + 2.f * KNOB_SPREAD, KNOB_ROW_1), module, Hc1Module::M3_PARAM));
-    addChild(createParamCentered<MidiKnob>(Vec(KNOB_LEFT + 3.f * KNOB_SPREAD, KNOB_ROW_1), module, Hc1Module::M4_PARAM));
-    addChild(createParamCentered<MidiKnob>(Vec(KNOB_LEFT + 4.f * KNOB_SPREAD, KNOB_ROW_1), module, Hc1Module::M5_PARAM));
-    addChild(createParamCentered<MidiKnob>(Vec(KNOB_LEFT + 5.f * KNOB_SPREAD, KNOB_ROW_1), module, Hc1Module::M6_PARAM));
+    addChild(createMidiKnob(Vec(KNOB_LEFT                    , KNOB_ROW_1), module, Hc1Module::M1_PARAM, Hc1Module::M1_INPUT, Hc1Module::M1_REL_PARAM));
+    addChild(createMidiKnob(Vec(KNOB_LEFT +       KNOB_SPREAD, KNOB_ROW_1), module, Hc1Module::M2_PARAM, Hc1Module::M2_INPUT, Hc1Module::M2_REL_PARAM));
+    addChild(createMidiKnob(Vec(KNOB_LEFT + 2.f * KNOB_SPREAD, KNOB_ROW_1), module, Hc1Module::M3_PARAM, Hc1Module::M3_INPUT, Hc1Module::M3_REL_PARAM));
+    addChild(createMidiKnob(Vec(KNOB_LEFT + 3.f * KNOB_SPREAD, KNOB_ROW_1), module, Hc1Module::M4_PARAM, Hc1Module::M4_INPUT, Hc1Module::M4_REL_PARAM));
+    addChild(createMidiKnob(Vec(KNOB_LEFT + 4.f * KNOB_SPREAD, KNOB_ROW_1), module, Hc1Module::M5_PARAM, Hc1Module::M5_INPUT, Hc1Module::M5_REL_PARAM));
+    addChild(createMidiKnob(Vec(KNOB_LEFT + 5.f * KNOB_SPREAD, KNOB_ROW_1), module, Hc1Module::M6_PARAM, Hc1Module::M6_INPUT, Hc1Module::M6_REL_PARAM));
     float y = KNOB_ROW_1 - STATIC_LABEL_OFFSET;
     addChild(createTextLabel<TextLabel>(Vec(KNOB_LEFT,                     y), 100.f, TextAlignment::Center, 12.f, [=](){ return macroName(0); }));
     addChild(createTextLabel<TextLabel>(Vec(KNOB_LEFT +       KNOB_SPREAD, y), 100.f, TextAlignment::Center, 12.f, [=](){ return macroName(1); }));
@@ -176,12 +145,12 @@ Hc1ModuleWidget::Hc1ModuleWidget(Hc1Module *module)
     addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<BlueLight>>>(Vec(KNOB_LEFT + 4.f * KNOB_SPREAD - RB_OFFSET, CV_ROW_1 - RB_VOFFSET), module, Hc1Module::M5_REL_PARAM, Hc1Module::M5_REL_LIGHT));
     addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<BlueLight>>>(Vec(KNOB_LEFT + 5.f * KNOB_SPREAD - RB_OFFSET, CV_ROW_1 - RB_VOFFSET), module, Hc1Module::M6_REL_PARAM, Hc1Module::M6_REL_LIGHT));
 
-    addChild(createParamCentered<MidiKnob>(Vec(RKNOB_LEFT                    , KNOB_ROW_2), module, Hc1Module::R1_PARAM));
-    addChild(createParamCentered<MidiKnob>(Vec(RKNOB_LEFT +       KNOB_SPREAD, KNOB_ROW_2), module, Hc1Module::R2_PARAM));
-    addChild(createParamCentered<MidiKnob>(Vec(RKNOB_LEFT + 2.f * KNOB_SPREAD, KNOB_ROW_2), module, Hc1Module::R3_PARAM));
-    addChild(createParamCentered<MidiKnob>(Vec(RKNOB_LEFT + 3.f * KNOB_SPREAD, KNOB_ROW_2), module, Hc1Module::R4_PARAM));
-    addChild(createParamCentered<MidiKnob>(Vec(RKNOB_LEFT + 4.f * KNOB_SPREAD, KNOB_ROW_2), module, Hc1Module::RMIX_PARAM));
-    addChild(createParamCentered<MidiKnob>(Vec(RKNOB_LEFT + 5.f * KNOB_SPREAD, KNOB_ROW_2), module, Hc1Module::VOLUME_PARAM));
+    addChild(createMidiKnob(Vec(RKNOB_LEFT                    , KNOB_ROW_2), module, Hc1Module::R1_PARAM, Hc1Module::R1_INPUT, Hc1Module::R1_REL_PARAM));
+    addChild(createMidiKnob(Vec(RKNOB_LEFT +       KNOB_SPREAD, KNOB_ROW_2), module, Hc1Module::R2_PARAM, Hc1Module::R2_INPUT, Hc1Module::R2_REL_PARAM));
+    addChild(createMidiKnob(Vec(RKNOB_LEFT + 2.f * KNOB_SPREAD, KNOB_ROW_2), module, Hc1Module::R3_PARAM, Hc1Module::R3_INPUT, Hc1Module::R3_REL_PARAM));
+    addChild(createMidiKnob(Vec(RKNOB_LEFT + 3.f * KNOB_SPREAD, KNOB_ROW_2), module, Hc1Module::R4_PARAM, Hc1Module::R4_INPUT, Hc1Module::R4_REL_PARAM));
+    addChild(createMidiKnob(Vec(RKNOB_LEFT + 4.f * KNOB_SPREAD, KNOB_ROW_2), module, Hc1Module::RMIX_PARAM, Hc1Module::RMIX_INPUT, Hc1Module::RMIX_REL_PARAM));
+    addChild(createMidiKnob(Vec(RKNOB_LEFT + 5.f * KNOB_SPREAD, KNOB_ROW_2), module, Hc1Module::VOLUME_PARAM, Hc1Module::VOLUME_INPUT, Hc1Module::VOLUME_REL_PARAM));
 
     y = KNOB_ROW_2 - STATIC_LABEL_OFFSET;
     addChild(createTextLabel<TextLabel>(Vec(RKNOB_LEFT,                     y), 80.f, TextAlignment::Center, 12.f, [=](){ return RecirculatorParameterName(my_module ? my_module->recirculatorType() : EM_Recirculator::Reverb, 1); }));
@@ -203,6 +172,13 @@ Hc1ModuleWidget::Hc1ModuleWidget(Hc1Module *module)
     addChild(createStaticTextLabel<TextLabel>(Vec(RKNOB_LEFT + KNOB_SPREAD * 5.f + 17.f, KNOB_ROW_2), 25.f, "Mute", TextAlignment::Left));
 
     addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<BlueLight>>>(Vec(RECIRC_LIGHT_CENTER, RECIRC_BOX_TOP), module, Hc1Module::RECIRC_EXTEND_PARAM, Hc1Module::RECIRC_EXTEND_LIGHT));
+
+    y = KNOB_ROW_1 + 10.f;
+    float x = RIGHT_COLUMN_BUTTONS - 2.f * LIGHT_SPREAD;
+    addChild(createLight<TinySimpleLight<RedLight>>(Vec(x, y), module, Hc1Module::Lights::ROUND_Y_LIGHT)); x += LIGHT_SPREAD;
+    addChild(createLight<TinySimpleLight<RedLight>>(Vec(x, y), module, Hc1Module::Lights::ROUND_INITIAL_LIGHT)); x += LIGHT_SPREAD;
+    addChild(createLight<TinySimpleLight<RedLight>>(Vec(x, y), module, Hc1Module::Lights::ROUND_LIGHT)); x += LIGHT_SPREAD;
+    addChild(createLight<TinySimpleLight<RedLight>>(Vec(x, y), module, Hc1Module::Lights::ROUND_RELEASE_LIGHT));
 
     {
         presets.reserve(24);
@@ -263,6 +239,8 @@ Hc1ModuleWidget::Hc1ModuleWidget(Hc1Module *module)
             });
         }
         addChild(pb);
+        addChild(createLightCentered<TinySimpleLight<GreenLight>>(Vec(x, y), module, Hc1Module::Lights::TRANSPOSE_UP_LIGHT));
+
         y += 12.5f;
  
         pb = createWidgetCentered<SmallPush>(Vec(x, y));
@@ -274,6 +252,7 @@ Hc1ModuleWidget::Hc1ModuleWidget(Hc1Module *module)
             });
         }
         addChild(pb);
+        addChild(createLightCentered<TinySimpleLight<GreenLight>>(Vec(x, y), module, Hc1Module::Lights::TRANSPOSE_NONE_LIGHT));
         y += 12.5f;
 
         pb = createWidgetCentered<SmallPush>(Vec(x, y));
@@ -289,6 +268,8 @@ Hc1ModuleWidget::Hc1ModuleWidget(Hc1Module *module)
             });
         }
         addChild(pb);
+        addChild(createLightCentered<TinySimpleLight<GreenLight>>(Vec(x, y), module, Hc1Module::Lights::TRANSPOSE_DOWN_LIGHT));
+
     }
 
     // Filter
@@ -378,6 +359,7 @@ Hc1ModuleWidget::Hc1ModuleWidget(Hc1Module *module)
         ));
 
 }
+
 const std::string Hc1ModuleWidget::macroName(int m)
 {
     bool dyn = my_module && my_module->ready();
@@ -541,7 +523,7 @@ void Hc1ModuleWidget::step()
             my_module->restore_ui_data = nullptr;
 
             tab = restore->tab;
-            page = restore->page[tab];
+            page = restore->page[static_cast<size_t>(tab)];
             my_module->tab = tab;
             my_module->setTabPage(tab, page);
             delete restore;
@@ -549,7 +531,7 @@ void Hc1ModuleWidget::step()
             return;
         }
 
-        auto selected = static_cast<PresetTab>(tab_bar->getSelectedTab());
+        auto selected = tab_bar->getSelectedTab();
         if (selected != tab) {
             setTab(selected);
         }
@@ -694,19 +676,22 @@ void Hc1ModuleWidget::draw(const DrawArgs& args)
     auto vg = args.vg;
 
     bool stock = !my_module || !my_module->ready();
-    auto rt = my_module ? my_module->recirculatorType() : EM_Recirculator::Reverb;
+    auto rt = stock ? EM_Recirculator::Reverb : my_module->recirculatorType();
 
     // expander connector
     if (my_module && my_module->expanders.any()) {
-        bool right = my_module->expanders.right();
-        float cy = box.size.y * .5f;
-        if (right) {
-            Line(vg, box.size.x - 5.5f, cy, box.size.x , cy, COLOR_BRAND, 1.75f);
-            Circle(vg, box.size.x - 5.5f, cy, 2.5f, COLOR_BRAND);
+        bool right_expander = my_module->expanders.right();
+        float left, right;
+        if (right_expander) {
+            left = box.size.x - 5.5f;
+            right = box.size.x;
         } else {
-            Line(vg, 0.f, cy, 5.5f, cy, COLOR_BRAND, 1.75f);
-            Circle(vg, 5.5f, cy, 2.5f, COLOR_BRAND);
+            left = 0.f;
+            right = 5.5f;
         }
+        float y = box.size.y * .5f;
+        Line(vg,   left, y, right, y, COLOR_BRAND, 1.75f);
+        Circle(vg, left, y, 2.5f, COLOR_BRAND);
     }
 
     auto font = GetPluginFontRegular();
@@ -735,8 +720,8 @@ void Hc1ModuleWidget::draw(const DrawArgs& args)
         // pedals
         SetTextStyle(vg, font, RampGray(G_65), 12.f);
         if (stock) {
-            drawPedalAssignment(vg, box.size.x - 3.f, PRESET_BOTTOM - 16.f, '1', 64, 0);
-            drawPedalAssignment(vg, box.size.x - 3.f, PRESET_BOTTOM - 2.5f, '2', 66, 0);
+            drawPedalAssignment(vg, box.size.x - 3.f, PRESET_BOTTOM - 18.f, '1', 64, 0);
+            drawPedalAssignment(vg, box.size.x - 3.f, PRESET_BOTTOM - 4.5f, '2', 66, 0);
         } else {
             auto ped1 = my_module->ch15_cc_value[52];
             auto ped2 = my_module->ch15_cc_value[53];
@@ -746,8 +731,8 @@ void Hc1ModuleWidget::draw(const DrawArgs& args)
                 drawPedalKnobAssignment(vg, ped1, "1");
                 drawPedalKnobAssignment(vg, ped2, "2");
             }
-            drawPedalAssignment(vg, box.size.x - 3.f, PRESET_BOTTOM - 16.f, '1', ped1, my_module->ch0_cc_value[ped1]);
-            drawPedalAssignment(vg, box.size.x - 3.f, PRESET_BOTTOM - 2.5f, '2', ped2, my_module->ch0_cc_value[ped2]);
+            drawPedalAssignment(vg, box.size.x - 3.f, PRESET_BOTTOM - 18.f, '1', ped1, my_module->ch0_cc_value[ped1]);
+            drawPedalAssignment(vg, box.size.x - 3.f, PRESET_BOTTOM - 4.5f, '2', ped2, my_module->ch0_cc_value[ped2]);
         }
     }
 
