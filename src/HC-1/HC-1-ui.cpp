@@ -199,8 +199,8 @@ Hc1ModuleWidget::Hc1ModuleWidget(Hc1Module *module)
 
     // todo: set text only when page changes
     addChild(createTextLabel<pachde::TextLabel>(
-        Vec(RIGHT_COLUMN_BUTTONS, PRESET_TOP - 14.f), 80.f,
-        TextAlignment::Center, 12.f,
+        Vec(RIGHT_COLUMN_BUTTONS, PRESET_TOP - 9.f), 80.f,
+        TextAlignment::Center, 10.f,
         [=]() { return format_string("%d of %d", 1 + page, my_module ? 1 + my_module->getPresets(tab).size()/24 : 1);  },
         false
         ));
@@ -217,8 +217,8 @@ Hc1ModuleWidget::Hc1ModuleWidget(Hc1Module *module)
 
     // middle C
     addChild(createTextLabel<pachde::TextLabel>(
-        Vec(RIGHT_COLUMN_BUTTONS, PRESET_TOP + 43.f), PANEL_WIDTH - PRESET_RIGHT,
-        TextAlignment::Center, 12.f,
+        Vec(RIGHT_COLUMN_BUTTONS, PRESET_TOP + 47.f), PANEL_WIDTH - PRESET_RIGHT,
+        TextAlignment::Center, 10.f,
         [=](){ return format_string("%d",my_module ? my_module->middle_c : 60); },
         false
         ));
@@ -718,7 +718,7 @@ void Hc1ModuleWidget::draw(const DrawArgs& args)
         }
 
         // pedals
-        SetTextStyle(vg, font, RampGray(G_65), 12.f);
+        SetTextStyle(vg, font, RampGray(G_85), 10.f);
         if (stock) {
             drawPedalAssignment(vg, box.size.x - 3.f, PRESET_BOTTOM - 18.f, '1', 64, 0);
             drawPedalAssignment(vg, box.size.x - 3.f, PRESET_BOTTOM - 4.5f, '2', 66, 0);

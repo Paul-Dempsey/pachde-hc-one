@@ -344,6 +344,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     void expanderAdded(Expansion side) {
         expanders.add(side);
     }
+    void syncStatusLights();
     void syncParam(int paramId);
     void syncParams(float sampleTime);
     void resetMidiIO();

@@ -3,6 +3,7 @@
 #include "../colors.hpp"
 #include "../components.hpp"
 #include "../em_types_ui.hpp"
+#include "../hamburger.hpp"
 #include "../misc.hpp"
 #include "../port.hpp"
 #include "../small_push.hpp"
@@ -10,6 +11,73 @@
 #include "../text.hpp"
 
 namespace pachde {
+
+struct TuningMenu : Hamburger
+{
+    Hc2Module * module;
+
+    TuningMenu()
+    {
+        describe("Tuning");
+    }
+
+    MenuItem * createTuningMenuItem(Tuning tuning)
+    {
+        return createCheckMenuItem(describeTuning(tuning), "", 
+            [=](){ return module->rounding.tuning == tuning; },
+            [=](){ module->rounding.tuning = tuning; 
+            });
+    }
+
+    void appendContextMenu(Menu * menu) override
+    {
+        menu->addChild(createTuningMenuItem(Tuning::EqualTuning));
+        menu->addChild(createSubmenuItem("n-Tone Equal", "", [=](Menu * menu) {
+            menu->addChild(createTuningMenuItem(Tuning::OneTone));
+            menu->addChild(createTuningMenuItem(static_cast<Tuning>(2)));
+            menu->addChild(createTuningMenuItem(static_cast<Tuning>(3)));
+            menu->addChild(createTuningMenuItem(static_cast<Tuning>(4)));
+            menu->addChild(createTuningMenuItem(static_cast<Tuning>(5)));
+            menu->addChild(createTuningMenuItem(static_cast<Tuning>(6)));
+            menu->addChild(createTuningMenuItem(static_cast<Tuning>(7)));
+            menu->addChild(createTuningMenuItem(static_cast<Tuning>(8)));
+            menu->addChild(createTuningMenuItem(static_cast<Tuning>(9)));
+            menu->addChild(createTuningMenuItem(static_cast<Tuning>(10)));
+            menu->addChild(createTuningMenuItem(static_cast<Tuning>(11)));
+            menu->addChild(createTuningMenuItem(static_cast<Tuning>(17)));
+            menu->addChild(createTuningMenuItem(static_cast<Tuning>(19)));
+            menu->addChild(createTuningMenuItem(static_cast<Tuning>(22)));
+            menu->addChild(createTuningMenuItem(static_cast<Tuning>(24)));
+            menu->addChild(createTuningMenuItem(static_cast<Tuning>(26)));
+            menu->addChild(createTuningMenuItem(static_cast<Tuning>(31)));
+            menu->addChild(createTuningMenuItem(static_cast<Tuning>(43)));
+            menu->addChild(createTuningMenuItem(Tuning::FiftyTone));
+        }));
+        menu->addChild(createSubmenuItem("Just", "", [=](Menu * menu) {
+            menu->addChild(createTuningMenuItem(Tuning::JustC));
+            menu->addChild(createTuningMenuItem(Tuning::JustCs));
+            menu->addChild(createTuningMenuItem(Tuning::JustD));
+            menu->addChild(createTuningMenuItem(Tuning::JustEb));
+            menu->addChild(createTuningMenuItem(Tuning::JustF));
+            menu->addChild(createTuningMenuItem(Tuning::JustFs));
+            menu->addChild(createTuningMenuItem(Tuning::JustG));
+            menu->addChild(createTuningMenuItem(Tuning::JustAb));
+            menu->addChild(createTuningMenuItem(Tuning::JustA));
+            menu->addChild(createTuningMenuItem(Tuning::JustBb));
+            menu->addChild(createTuningMenuItem(Tuning::JustB));
+        }));
+        menu->addChild(createSubmenuItem("User-defined", "", [=](Menu * menu) {
+            menu->addChild(createTuningMenuItem(Tuning::UserTuning));
+            menu->addChild(createTuningMenuItem(static_cast<Tuning>(Tuning::UserTuning + 1)));
+            menu->addChild(createTuningMenuItem(static_cast<Tuning>(Tuning::UserTuning + 2)));
+            menu->addChild(createTuningMenuItem(static_cast<Tuning>(Tuning::UserTuning + 3)));
+            menu->addChild(createTuningMenuItem(static_cast<Tuning>(Tuning::UserTuning + 4)));
+            menu->addChild(createTuningMenuItem(static_cast<Tuning>(Tuning::UserTuning + 5)));
+            menu->addChild(createTuningMenuItem(static_cast<Tuning>(Tuning::UserTuning + 6)));
+            menu->addChild(createTuningMenuItem(static_cast<Tuning>(Tuning::UserTuning + 7)));
+        }));
+    }
+};
 
 constexpr const float PRESET_TOP = 135.f;
 constexpr const float PRESET_LEFT = 15.f;
@@ -37,6 +105,9 @@ Hc2ModuleWidget::Hc2ModuleWidget(Hc2Module * module)
     addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<BlueLight>>>(Vec(KNOB_LEFT - RB_OFFSET, CV_ROW_1 - RB_VOFFSET), module, Hc2Module::Params::ROUND_RATE_REL_PARAM, Hc2Module::Lights::ROUND_RATE_REL_LIGHT));
     addChild(createInputCentered<ColorPort>(Vec(KNOB_LEFT - CV_COLUMN_OFFSET, CV_ROW_1), module, Hc2Module::Inputs::ROUND_RATE_INPUT));
     addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<BlueLight>>>(Vec(KNOB_LEFT + RB_OFFSET, CV_ROW_1 - RB_VOFFSET), module, Hc2Module::Params::ROUND_INITIAL_PARAM, Hc2Module::Lights::ROUND_INITIAL_LIGHT));
+    auto tune = createWidgetCentered<TuningMenu>(Vec(KNOB_LEFT + CV_COLUMN_OFFSET, CV_ROW_1));
+    tune->module = my_module;
+    addChild(tune);
 
     //addChild(createMidiKnob(Vec(KNOB_LEFT + KNOB_SPREAD, KNOB_ROW_1), module, Hc2Module::Params::ROUND_TUNING_PARAM, 
 

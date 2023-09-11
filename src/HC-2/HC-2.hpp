@@ -6,6 +6,7 @@
 #include "../em_midi.hpp"
 #include "../presets.hpp"
 #include "../HC-1/HC-1.hpp"
+#include "../em_types.hpp"
 
 // #define VERBOSE_LOG
 // #include "../debug_log.hpp"
@@ -20,7 +21,7 @@ struct Hc2Module : Module, ISendMidi
         ROUND_RATE_PARAM,    // 0..127 cc25
         ROUND_INITIAL_PARAM, // 0..1 cc 28
         ROUND_KIND_PARAM,    // 0..3
-        ROUND_TUNING_PARAM,  // PackedTuning
+//        ROUND_TUNING_PARAM,  // PackedTuning
 
         ROUND_RATE_REL_PARAM,
         NUM_PARAMS,
@@ -40,6 +41,7 @@ struct Hc2Module : Module, ISendMidi
         ROUND_INITIAL_LIGHT,
         NUM_LIGHTS
     };
+    Rounding rounding;
 
     ExpanderPresence partner_side = Expansion::None;
     Hc1Module* getPartner();

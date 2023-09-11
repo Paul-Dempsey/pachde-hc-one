@@ -23,7 +23,6 @@ Hc2Module::Hc2Module()
         "Y (Full to none)",
         "Inverse Y (None to full)"
         });
-    configTuningParam(ROUND_TUNING_PARAM, this, "Tuning");
 
     configLight(ROUND_RATE_REL_LIGHT, "Rate CV-relative");
     configLight(ROUND_INITIAL_LIGHT, "Round initial");

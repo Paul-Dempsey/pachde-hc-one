@@ -334,6 +334,19 @@ void Hc1Module::processCV(int paramId)
     }
 }
 
+void Hc1Module::syncStatusLights()
+{
+    bool round = rounding.rate > 0;
+    getLight(Lights::ROUND_Y_LIGHT).setBrightness(1.0f * (round && (rounding.kind >= RoundKind::Y)));
+    getLight(Lights::ROUND_INITIAL_LIGHT).setBrightness(1.0f * (rounding.initial));
+    getLight(Lights::ROUND_LIGHT).setBrightness(1.0f * round);
+    getLight(Lights::ROUND_RELEASE_LIGHT).setBrightness(1.0f * (round && (rounding.kind <= RoundKind::Release)));
+
+    getLight(Lights::TRANSPOSE_UP_LIGHT).setBrightness(1.0 * (middle_c > 60));
+    getLight(Lights::TRANSPOSE_NONE_LIGHT).setBrightness(1.0 * (middle_c == 60));
+    getLight(Lights::TRANSPOSE_DOWN_LIGHT).setBrightness(1.0 * (middle_c < 60));
+}
+
 void Hc1Module::processAllCV()
 {
     processCV(VOLUME_PARAM);
@@ -419,16 +432,8 @@ void Hc1Module::process(const ProcessArgs& args)
         check_cv = 0;
         if (is_ready) {
             processAllCV();
+            syncStatusLights();
         }
-        bool round = rounding.rate > 0;
-        getLight(Lights::ROUND_Y_LIGHT).setBrightness(1.0f * (round && (rounding.kind >= RoundKind::Y)));
-        getLight(Lights::ROUND_INITIAL_LIGHT).setBrightness(1.0f * (round && rounding.initial));
-        getLight(Lights::ROUND_LIGHT).setBrightness(1.0f * round);
-        getLight(Lights::ROUND_RELEASE_LIGHT).setBrightness(1.0f * (round && (rounding.kind <= RoundKind::Release)));
-        getLight(Lights::TRANSPOSE_UP_LIGHT).setBrightness(1.0 * (middle_c > 60));
-        getLight(Lights::TRANSPOSE_NONE_LIGHT).setBrightness(1.0 * (middle_c == 60));
-        getLight(Lights::TRANSPOSE_DOWN_LIGHT).setBrightness(1.0 * (middle_c < 60));
-
     }
 
     syncParams(args.sampleTime);
