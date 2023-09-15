@@ -879,6 +879,7 @@ void Hc1ModuleWidget::appendContextMenu(Menu *menu)
                 "",
                 path)) {
                 my_module->readFavoritesFile(path);
+                updatePresetWidgets();
             }
             }, !ready));
         menu->addChild(createMenuItem("Save favorites as...", "", [=]() {
