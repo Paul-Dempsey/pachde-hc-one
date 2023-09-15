@@ -16,10 +16,10 @@ struct SmallPush : TipWidget
 
     SmallPush()
     :   bezel(RampGray(G_BLACK)), 
-        bevel1(RampGray(G_50)),
+        bevel1(RampGray(G_65)),
         bevel2(nvgRGB(0x0b, 0x0b, 0x0b)),
         face(nvgRGB(0x2e,0x2e,0x2e)),
-        face1(nvgTransRGBAf(RampGray(G_50), .29f)),
+        face1(nvgTransRGBAf(RampGray(G_65), .29f)),
         face2(nvgTransRGBAf(nvgRGB(0x0b, 0x0b, 0x0b), .29f))
     {
         box.size.x = box.size.y = 12.f;

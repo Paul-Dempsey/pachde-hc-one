@@ -25,15 +25,12 @@ struct Hamburger : TipWidget
 
     void createContextMenu() {
         ui::Menu* menu = createMenu();
-        //menu->addChild(createMenuItem("Beef!", "", [this](){}));
     	appendContextMenu(menu);
     }
 
     void onButton(const ButtonEvent& e) override
     {
         TipWidget::onButton(e);
-
-        // Right click to open context menu
         if (e.action == GLFW_PRESS && e.button == GLFW_MOUSE_BUTTON_LEFT && (e.mods & RACK_MOD_MASK) == 0) {
             createContextMenu();
             e.consume(this);

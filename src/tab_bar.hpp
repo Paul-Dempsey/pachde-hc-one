@@ -5,7 +5,7 @@
 #include "tip_widget.hpp"
 #include "text.hpp"
 #include "colors.hpp"
-
+#include "symbol_widget.hpp"
 namespace pachde {
 
 enum class PresetTab : uint8_t {
@@ -27,11 +27,17 @@ struct TabBarWidget : OpaqueWidget
         bool hovered;
         std::string title;
         PresetTab kind;
+        SymbolWidget * sym;
 
         explicit TTabWidget(const std::string& title, PresetTab tab_kind)
-        : selected(false), hovered(false), title(title), kind(tab_kind)
+        : selected(false), hovered(false), title(title), kind(tab_kind), sym(nullptr)
         {
-            //tip_text = format_string("%s presets", title.c_str());
+            if (kind == PresetTab::User)
+            {
+                sym = createWidget<SymbolWidget>(Vec(6.5f, 4.f));
+                sym->setSymbol(1);
+                OpaqueWidget::addChild(sym);
+            }
         }
 
         void onHover(const HoverEvent& e) override {
@@ -50,17 +56,21 @@ struct TabBarWidget : OpaqueWidget
 
         void draw(const DrawArgs& args) override
         {
-            TBase::draw(args);
             auto vg = args.vg;
-
             FillRect(vg, 1.f, -.5f, this->box.size.x -2.f, this->box.size.y + 1.f,
                 selected ? RampGray(G_20)
                     : hovered ? RampGray(G_30)
                     : RampGray(G_15));
+
+            if (PresetTab::User == kind && sym) {
+                sym->setVisible(selected);
+            }
+            TBase::draw(args);
+
             if (selected) {
                 switch (kind) {
                 case PresetTab::User:
-                    FillPerson(vg, 6.5f, 4.f, 8.f, nvgHSL(210.f/360.f, .5f, .5f));
+                    //FillPerson(vg, 6.5f, 4.f, 8.f, nvgHSL(210.f/360.f, .5f, .5f));
                     break;
                 case PresetTab::Favorite:
                     FillHeart(vg, 6.5f, 4.f, 6.f, PORT_PINK);

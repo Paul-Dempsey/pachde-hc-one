@@ -61,6 +61,43 @@ struct ExpanderPresence {
     bool any() { return !empty(); }
 };
 
+struct RateTrigger
+{
+    float rate_ms;
+    int steps;
+    int step_trigger;
+
+    explicit RateTrigger(float rate = 2.5f)
+    {
+        configure(rate);
+        steps = 0;
+    }
+
+    void configure(float rate) {
+        rate_ms = rate;
+        onSampleRateChanged();
+    }
+
+    // after reset, fires on next step
+    void reset() { steps = step_trigger; }
+    void start() { steps = 0; }
+
+    void onSampleRateChanged()
+    {
+        step_trigger = APP->engine->getSampleRate() * (rate_ms / 1000.0f);
+    }
+
+    bool process()
+    {
+        ++steps;
+        if (steps >= step_trigger)
+        {
+            steps = 0;
+            return true;
+        }
+        return false;
+    }
+};
 
 }
 #endif

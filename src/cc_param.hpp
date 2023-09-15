@@ -2,6 +2,7 @@
 #ifndef CC_PARAM_HPP_INCLUDED
 #define CC_PARAM_HPP_INCLUDED
 #include "rack.hpp"
+#include "components.hpp"
 #include "em_midi.hpp"
 
 namespace pachde {
@@ -120,20 +121,20 @@ TCCPQ* configCCParam(uint8_t cc, bool hiRes, Module* module, int paramId, int in
     return q;
 }
 
-struct MidiKnob : RoundSmallBlackKnob
+struct MidiKnob : SmallBlackKnob
 {
     int inputId = -1;
     int relativeParamId = -1;
 
     void drawLayer(const DrawArgs& args, int layer) override
     {
-        RoundSmallBlackKnob::drawLayer(args, layer);
+        SmallBlackKnob::drawLayer(args, layer);
         if (1 != layer) return;
         if (module
             && inputId >= 0
             && relativeParamId >= 0
             && module->getInput(inputId).isConnected()
-            && module->getParam(relativeParamId).getValue() > .5f
+            && module->getParam(relativeParamId).getValue() >= .5f
             ) {
             auto pq = dynamic_cast<CCParamQuantity*>(getParamQuantity());
             if (!pq) return;
@@ -161,24 +162,19 @@ struct MidiKnob : RoundSmallBlackKnob
             nvgRestore(vg);
         }
     }
-    void draw(const DrawArgs& args) override {
-        RoundSmallBlackKnob::draw(args);
-        if (inputId < 0 || relativeParamId < 0) return;
 
-        auto vg = args.vg;
-        nvgBeginPath(vg);
-        nvgArc(vg, box.size.x *.5f, box.size.y *.5f, 13.25f, minAngle - M_PI/2.f, maxAngle - M_PI/2.f, NVG_CW);
-        nvgStrokeColor(vg, RampGray(G_40));
-        nvgStrokeWidth(vg, 1.2f);
-        nvgLineCap(vg, NVG_ROUND);
-        nvgStroke(vg);
+    void draw(const DrawArgs& args) override {
+        SmallBlackKnob::draw(args);
+        DrawKnobTrack(args.vg, this, 13.25, 1.2f, RampGray(G_40));
     }
+
 };
 
 template <typename T = MidiKnob>
 T* createMidiKnob(Vec pos, Module * module, int paramId, int inputId, int relativeId)
 {
     auto mk = createParamCentered<T>(pos, module, paramId);
+    mk->setImage();
     mk->inputId = inputId;
     mk->relativeParamId = relativeId;
     return mk;

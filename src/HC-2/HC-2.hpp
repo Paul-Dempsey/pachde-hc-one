@@ -7,6 +7,7 @@
 #include "../presets.hpp"
 #include "../HC-1/HC-1.hpp"
 #include "../em_types.hpp"
+#include "../hc_events.hpp"
 
 // #define VERBOSE_LOG
 // #include "../debug_log.hpp"
@@ -14,21 +15,25 @@
 using namespace em_midi;
 namespace pachde {
 
-struct Hc2Module : Module, ISendMidi
+struct Hc2ModuleWidget;
+
+struct Hc2Module : Module, ISendMidi, IHandleHcEvents
 {
     enum Params
     {
-        ROUND_RATE_PARAM,    // 0..127 cc25
-        ROUND_INITIAL_PARAM, // 0..1 cc 28
-        ROUND_KIND_PARAM,    // 0..3
-//        ROUND_TUNING_PARAM,  // PackedTuning
-
-        ROUND_RATE_REL_PARAM,
+        P_ROUND_RATE,    // 0..127 cc25
+        P_ROUND_INITIAL, // 0..1 cc 28
+        P_ROUND_KIND,    // 0..3 ch16 cc61, but includes reverse surface bit
+        P_ROUND_TUNING,  // 0..69
+        //P_ROUND_EQUAL,
+        P_ROUND_RATE_REL,
+        P_TEST,
         NUM_PARAMS,
     };
     enum Inputs
     {
-        ROUND_RATE_INPUT,
+        IN_ROUND_RATE,
+        IN_ROUND_INITIAL,
         NUM_INPUTS
     };
     enum Outputs
@@ -37,24 +42,35 @@ struct Hc2Module : Module, ISendMidi
     };
     enum Lights
     {
-        ROUND_RATE_REL_LIGHT,
-        ROUND_INITIAL_LIGHT,
+        L_ROUND_RATE_REL,
+        L_ROUND_INITIAL,
         NUM_LIGHTS
     };
     Rounding rounding;
 
+    IHandleHcEvents * ui_event_sink = nullptr;
     ExpanderPresence partner_side = Expansion::None;
     Hc1Module* getPartner();
+
     // cv processing
     const int CV_INTERVAL = 64;
     int check_cv = 0;
-    
+    RateTrigger control_rate;
+    rack::dsp::SchmittTrigger round_initial_trigger;
+
     Hc2Module();
     void onExpanderChange(const ExpanderChangeEvent& e) override;
+    void onSampleRateChange() override {
+        control_rate.onSampleRateChanged();
+    }
+    std::string getDeviceName();
 
-    const char * getDeviceName();
     // json_t * dataToJson() override;
     // void dataFromJson(json_t *root) override;
+
+    void pullRounding(Hc1Module * partner = nullptr);
+    void pushRounding(Hc1Module * partner = nullptr);
+    void syncParam(int paramId);
     void processCV(int paramId);
     void process(const ProcessArgs& args) override;
 
@@ -67,13 +83,32 @@ struct Hc2Module : Module, ISendMidi
     //void sendChannelPressure(uint8_t channel, uint8_t pressure) {}
     //void sendPitchBend(uint8_t channel, uint8_t bend_lo, uint8_t bend_hi) {}
     bool readyToSend() override;
+
+    // IHandleHcEvents
+    void onPresetChanged(const PresetChangedEvent& e) override;
+    void onRoundingChanged(const RoundingChangedEvent& e) override;
 };
 
-struct Hc2ModuleWidget : ModuleWidget
+struct Hc2ModuleWidget : ModuleWidget, IHandleHcEvents
 {
-    Hc2Module * my_module;
+    Hc2Module * my_module = nullptr;
+    DynamicTextLabel* preset_label = nullptr;
+    StaticTextLabel* device_label = nullptr;
+    DynamicTextLabel* rounding_summary = nullptr;
 
     explicit Hc2ModuleWidget(Hc2Module * module);
+    virtual ~Hc2ModuleWidget() {
+        if (my_module) {
+            my_module->ui_event_sink = nullptr;
+        }
+    }
+    void createRoundingUI(float x, float y);
+
+    // IHandleHcEvents
+    void onPresetChanged(const PresetChangedEvent& e) override;
+    void onRoundingChanged(const RoundingChangedEvent& e) override;
+
+    void step() override;
     void drawExpanderConnector(const DrawArgs& args);
     void drawCCMap(const DrawArgs& args, Hc1Module * partner);
     void draw(const DrawArgs& args) override;

@@ -7,6 +7,7 @@
 #include "../em_midi.hpp"
 #include "../em_types.hpp"
 #include "../favorite_widget.hpp"
+#include "../hc_events.hpp"
 #include "../presets.hpp"
 #include "../preset_widget.hpp"
 #include "../tab_bar.hpp"
@@ -29,7 +30,6 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
         M1_PARAM, M2_PARAM, M3_PARAM, M4_PARAM, M5_PARAM, M6_PARAM,
         R1_PARAM, R2_PARAM, R3_PARAM, R4_PARAM, RMIX_PARAM,
         VOLUME_PARAM, MUTE_PARAM,
-        ROUND_RATE_PARAM,
         M1_REL_PARAM, M2_REL_PARAM, M3_REL_PARAM, M4_REL_PARAM, M5_REL_PARAM, M6_REL_PARAM,
         R1_REL_PARAM, R2_REL_PARAM, R3_REL_PARAM, R4_REL_PARAM, RMIX_REL_PARAM,
         VOLUME_REL_PARAM,
@@ -56,13 +56,8 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
         HEART_LIGHT,
         MUTE_LIGHT,
         RECIRC_EXTEND_LIGHT,
-        ROUND_Y_LIGHT,
-        ROUND_INITIAL_LIGHT,
-        ROUND_LIGHT,
-        ROUND_RELEASE_LIGHT,
-        TRANSPOSE_UP_LIGHT,
-        TRANSPOSE_NONE_LIGHT,
-        TRANSPOSE_DOWN_LIGHT,
+        ROUND_Y_LIGHT, ROUND_INITIAL_LIGHT, ROUND_LIGHT, ROUND_RELEASE_LIGHT,
+        TRANSPOSE_UP_LIGHT, TRANSPOSE_NONE_LIGHT, TRANSPOSE_DOWN_LIGHT,
 //        FILTER_LIGHT,
         NUM_LIGHTS
     };
@@ -200,6 +195,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     // heart_beating
     float heart_phase = 0.f;
     float heart_time = 1.0;
+    bool first_beat = false;
     bool tick_tock = true;
     NVGcolor ledColor = green_light;
     bool heart_beating = true;
@@ -213,6 +209,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     uint8_t pedal_fraction = 0;
     bool muted = false;
     int64_t notesOn = 0;
+    uint8_t note = 0;
     uint8_t recirculator = 0;
     uint64_t midi_receive_count = 0;
     uint64_t midi_send_count = 0;
@@ -323,6 +320,34 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     void sendSavedPreset();
     std::shared_ptr<Preset> findDefinedPreset(std::shared_ptr<Preset> preset);
 
+    void notifyPresetChanged(rack::engine::Module::Expander& expander, const IHandleHcEvents::PresetChangedEvent& e)
+    {
+        if (!expander.module) return;
+        auto sink = dynamic_cast<IHandleHcEvents*>(expander.module);
+        if (!sink) return;
+        sink->onPresetChanged(e);
+    }
+    void notifyPresetChanged()
+    {
+        auto event = IHandleHcEvents::PresetChangedEvent{current_preset};
+        notifyPresetChanged(getRightExpander(), event);
+        notifyPresetChanged(getLeftExpander(), event);
+    }
+
+    void notifyRoundingChanged(rack::engine::Module::Expander& expander, IHandleHcEvents::RoundingChangedEvent e)
+    {
+        if (!expander.module) return;
+        auto sink = dynamic_cast<IHandleHcEvents*>(expander.module);
+        if (!sink) return;
+        sink->onRoundingChanged(e);
+    }
+    void notifyRoundingChanged()
+    {
+        auto event = IHandleHcEvents::RoundingChangedEvent{rounding};
+        notifyRoundingChanged(getRightExpander(), event);
+        notifyRoundingChanged(getLeftExpander(), event);
+    }
+
     void orderFavorites(bool sort);
 
     // expanders
@@ -371,7 +396,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     void process(const ProcessArgs& args) override;
 };
 
-struct Hc1ModuleWidget : IPresetHolder, ModuleWidget
+struct Hc1ModuleWidget : ModuleWidget, IPresetHolder
 {
     Hc1Module *my_module = nullptr;
 

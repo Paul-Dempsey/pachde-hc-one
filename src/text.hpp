@@ -5,14 +5,14 @@ using namespace ::rack;
 
 namespace pachde {
 
-inline std::shared_ptr<window::Font> GetPluginFontSemiBold(const char * path = NULL)
+inline std::shared_ptr<window::Font> GetPluginFontSemiBold()
 {
-    return APP->window->loadFont(asset::plugin(pluginInstance, path ? path : "res/fonts/HankenGrotesk-SemiBold.ttf"));
+    return APP->window->loadFont(asset::plugin(pluginInstance, "res/fonts/HankenGrotesk-SemiBold.ttf"));
 }
 
-inline std::shared_ptr<window::Font> GetPluginFontRegular(const char * path = NULL)
+inline std::shared_ptr<window::Font> GetPluginFontRegular()
 {
-    return APP->window->loadFont(asset::plugin(pluginInstance, path ? path : "res/fonts/HankenGrotesk-Regular.ttf"));
+    return APP->window->loadFont(asset::plugin(pluginInstance, "res/fonts/HankenGrotesk-Regular.ttf"));
 }
 
 inline bool FontOk(std::shared_ptr<window::Font> font) {
@@ -36,59 +36,42 @@ enum class BaselineCorrection {
 void RightAlignText(NVGcontext *vg, float x, float y, const char * text, const char * end, BaselineCorrection correction = BaselineCorrection::None);
 
 enum class TextAlignment { Left, Center, Right };
-struct TextLabel : OpaqueWidget
+
+struct BasicTextLabel: Widget
 {
     std::string _text;
     NVGcolor _color;
+    TextAlignment _align;
     float _text_height;
     bool _bold;
-    bool _clip;
-    TextAlignment _align;
-    std::function<std::string ()> getText;
 
-    TextLabel() 
+    BasicTextLabel()
     :   _color(RampGray(G_90)),
+        _align(TextAlignment::Left),
         _text_height(12.f),
-        _bold(true),
-        _clip(false)
+        _bold(true)
     {
-        box.size.y = _text_height;
     }
-
-    void fetch(std::function<std::string ()> get) { getText = get; }
-    void color(const NVGcolor &new_color) { _color = new_color; }
-    void clip() { _clip = true; }
-    void noClip() { _clip = false; }
-    void left() { _align = TextAlignment::Left; }
-    void center() { _align = TextAlignment::Center; }
-    void right() { _align = TextAlignment::Right; }
-    void bold() { _bold = true; }
-    void light() { _bold = false; }
-    void size(float size) { _text_height = size; box.size.y = size; }
-
-    void setStyle(float size, bool bold = true, TextAlignment alignment = TextAlignment::Left)
+    void setPos(Vec pos) { box.pos = pos; }
+    void text(std::string text) { _text = text; }
+    void text_height(float height) { _text_height = height; box.size.y = height; }
+    void style(float height, bool bold = true, TextAlignment alignment = TextAlignment::Left)
     {
-        _text_height = size;
+        _text_height = height;
         _bold = bold;
         _align = alignment;
     }
+    void color(const NVGcolor &new_color) { _color = new_color; }
 
-    void draw(const DrawArgs& args) override
+    void render(const DrawArgs& args)
     {
-        OpaqueWidget::draw(args);
-        if (getText) {
-            _text = getText();
-        }
         if (_text.empty()) return;
 
         auto vg = args.vg;
         auto font = _bold ? GetPluginFontSemiBold() : GetPluginFontRegular();
-        if (!font) return;
+        if (!FontOk(font)) return;
 
         nvgSave(vg);
-        if (_clip) {
-            nvgScissor(vg, box.pos.x, box.pos.y, box.size.x, box.size.y);
-        }
         SetTextStyle(vg, font, _color, _text_height);
         switch (_align) {
         case TextAlignment::Left:
@@ -106,55 +89,205 @@ struct TextLabel : OpaqueWidget
         }
         nvgRestore(vg);
     }
+
+    void draw(const DrawArgs& args) override
+    {
+        Widget::draw(args);
+        render(args);
+    }
 };
 
-template<typename TWidget = TextLabel>
-TWidget* createTextLabel(
-    math::Vec pos,
-    float width,
-    TextAlignment alignment,
-    float size,
-    std::function<std::string ()> get,
-    bool is_bold = true,
-    const NVGcolor& color = RampGray(G_90),
-    bool clip = false)
+struct DynamicTextLabel : BasicTextLabel
 {
-    TWidget* w = createWidget<TWidget>(pos);
-    w->box.size.x = width;
-    if (alignment == TextAlignment::Center) {
-        w->box.pos.x -= width *.5f;
+    bool _bright = false;
+    bool _lazy = false;
+    bool _dirt = false;
+
+    std::function<std::string ()> _getText;
+    void setFetch(std::function<std::string ()> get)
+    {
+        _getText = get;
     }
-    w->_color = color;
-    w->_bold = is_bold;
-    w->_align = alignment;
-    w->_clip = clip;
-    w->size(size);
-    w->fetch(get);
+    void setLazy() {
+        _dirt = _lazy = true;
+    }
+
+    void bright(bool lit = true) { _bright = lit; }
+
+    void modified(bool changed = true)
+    {
+        _dirt = changed;
+    }
+    void setText(std::string text)
+    {
+        BasicTextLabel::text(text);
+    }
+
+    void refresh()
+    {
+        if (_getText) {
+            if (!_lazy || _dirt) {
+                BasicTextLabel::text(_getText());
+                _dirt = false;
+            }
+        }
+    }
+
+    void drawLayer(const DrawArgs& args, int layer) override
+    {
+        Widget::drawLayer(args, layer);
+        if (1 != layer || !_bright) return;
+        refresh();
+        BasicTextLabel::render(args);
+    }
+
+    void draw(const DrawArgs& args) override
+    {
+        Widget::draw(args);
+        if (_bright) return;
+        refresh();
+        BasicTextLabel::render(args);
+    }
+};
+
+inline DynamicTextLabel* createLazyDynamicTextLabel(
+    Vec pos,
+    Vec size, 
+    std::function<std::string ()> get,
+    float text_height = 12.f,
+    bool bold = true,
+    TextAlignment alignment = TextAlignment::Center,
+    const NVGcolor &color = RampGray(G_90),
+    bool bright = false)
+{
+    auto w = new DynamicTextLabel();
+    w->setSize(size);
+    w->setPos(pos);
+    w->setLazy();
+    w->setFetch(get);
+    w->style(text_height, bold, alignment);
+    if (alignment == TextAlignment::Center) {
+        w->box.pos.x -= size.x * .5f;
+    }
+    w->color(color);
+    if (bright) {
+        w->bright();
+    }
     return w;
 }
 
-template<typename TWidget = TextLabel>
+struct StaticTextLabel: Widget
+{
+    FramebufferWidget* _fb = nullptr;
+    BasicTextLabel* _label = nullptr;
+
+    StaticTextLabel() {
+        _label = new BasicTextLabel();
+        box.size.y = _label->box.size.y;
+        _fb = new widget::FramebufferWidget;
+        _fb->box.pos = Vec();
+        _fb->box.size = Vec(150.f, _label->box.size.y);
+        _fb->addChild(_label);
+	    addChild(_fb);
+        dirty();
+    }
+    std::string getText() {
+        return _label ? _label->_text : "";
+    }
+    void setPos(Vec pos) {
+        _fb->box.pos = pos;
+    }
+    void setSize(Vec size) {
+        _fb->box.size = size;
+        _label->box.size = size;
+    }
+    void modified(bool modified = true) {
+        _fb->setDirty(modified);
+    }
+    void dirty() { _fb->setDirty(); }
+    void text(const std::string & text) {
+        _label->text(text);
+        dirty();
+    }
+    void color(const NVGcolor &new_color) {
+        _label->color(new_color);
+        dirty();
+    }
+    void text_height(float height) {
+        _label->text_height(height);
+        dirty();
+    }
+    void style(float size, bool bold = true, TextAlignment alignment = TextAlignment::Left) {
+
+        _label->style(size, bold, alignment);
+        dirty();
+    }
+    void draw(const DrawArgs& args) override
+    {
+        Widget::draw(args);
+    }
+};
+
+struct LazyDynamicLabel : StaticTextLabel
+{
+    std::function<std::string ()> _getText;
+    
+    LazyDynamicLabel(){}
+
+    void modified(bool modified = true) {
+        if (modified && _getText) {
+            text(_getText());
+        } else {
+            StaticTextLabel::modified(modified);
+        }
+    }
+
+    void setFetch(std::function<std::string ()> get, bool refreshable = false)
+    {
+        _getText = get;
+    }
+};
+
+template<typename TWidget = StaticTextLabel>
 TWidget* createStaticTextLabel(
     math::Vec pos,
     float width,
     const char * text,
     TextAlignment alignment = TextAlignment::Center,
-    float size = 12.f,
+    float text_height = 12.f,
+    bool bold = true,
     const NVGcolor& color = RampGray(G_90)
     )
 {
     TWidget* w = createWidget<TWidget>(pos);
-    w->box.size.x = width;
+    w->setSize(Vec(width, text_height));
     if (alignment == TextAlignment::Center) {
-        w->box.pos.x -= width *.5f;
+        w->setPos(Vec(w->box.pos.x -= width *.5f, w->box.pos.y));
     }
-    w->_text = text;
-    w->_color = color;
-    w->_align = alignment;
-    w->size(size);
+    w->text(std::string(text));
+    w->style(text_height, bold, alignment);
+    w->color(color);
     return w;
 }
 
-
+template<typename TWidget = DynamicTextLabel>
+TWidget* createDynamicLabel (
+    math::Vec pos,
+    float width,
+    std::function<std::string ()> get,
+    TextAlignment alignment = TextAlignment::Center,
+    float text_height = 12.f,
+    bool bold = true
+    )
+{
+    TWidget* w = createWidget<TWidget>(pos);
+    w->setSize(Vec(width, text_height));
+    if (alignment == TextAlignment::Center) {
+        w->setPos(Vec(w->box.pos.x -= width *.5f, w->box.pos.y));
+    }
+    w->style(text_height, bold, alignment);
+    w->setFetch(get);
+    return w;
+}
 
 } // namespace pachde

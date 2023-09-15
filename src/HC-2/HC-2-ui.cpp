@@ -1,130 +1,138 @@
 #include "HC-2.hpp"
+#include "tuning_ui.hpp"
 #include "../cc_param.hpp"
 #include "../colors.hpp"
 #include "../components.hpp"
 #include "../em_types_ui.hpp"
-#include "../hamburger.hpp"
 #include "../misc.hpp"
 #include "../port.hpp"
 #include "../small_push.hpp"
-//#include "../tab_bar.hpp"
+#include "../switch_4.hpp"
 #include "../text.hpp"
+//#include "tuning_hamburger.hpp"
 
 namespace pachde {
 
-struct TuningMenu : Hamburger
-{
-    Hc2Module * module;
+using Hc2P = Hc2Module::Params;
+using Hc2I = Hc2Module::Inputs;
+using Hc2L = Hc2Module::Lights;
 
-    TuningMenu()
-    {
-        describe("Tuning");
-    }
-
-    MenuItem * createTuningMenuItem(Tuning tuning)
-    {
-        return createCheckMenuItem(describeTuning(tuning), "", 
-            [=](){ return module->rounding.tuning == tuning; },
-            [=](){ module->rounding.tuning = tuning; 
-            });
-    }
-
-    void appendContextMenu(Menu * menu) override
-    {
-        menu->addChild(createTuningMenuItem(Tuning::EqualTuning));
-        menu->addChild(createSubmenuItem("n-Tone Equal", "", [=](Menu * menu) {
-            menu->addChild(createTuningMenuItem(Tuning::OneTone));
-            menu->addChild(createTuningMenuItem(static_cast<Tuning>(2)));
-            menu->addChild(createTuningMenuItem(static_cast<Tuning>(3)));
-            menu->addChild(createTuningMenuItem(static_cast<Tuning>(4)));
-            menu->addChild(createTuningMenuItem(static_cast<Tuning>(5)));
-            menu->addChild(createTuningMenuItem(static_cast<Tuning>(6)));
-            menu->addChild(createTuningMenuItem(static_cast<Tuning>(7)));
-            menu->addChild(createTuningMenuItem(static_cast<Tuning>(8)));
-            menu->addChild(createTuningMenuItem(static_cast<Tuning>(9)));
-            menu->addChild(createTuningMenuItem(static_cast<Tuning>(10)));
-            menu->addChild(createTuningMenuItem(static_cast<Tuning>(11)));
-            menu->addChild(createTuningMenuItem(static_cast<Tuning>(17)));
-            menu->addChild(createTuningMenuItem(static_cast<Tuning>(19)));
-            menu->addChild(createTuningMenuItem(static_cast<Tuning>(22)));
-            menu->addChild(createTuningMenuItem(static_cast<Tuning>(24)));
-            menu->addChild(createTuningMenuItem(static_cast<Tuning>(26)));
-            menu->addChild(createTuningMenuItem(static_cast<Tuning>(31)));
-            menu->addChild(createTuningMenuItem(static_cast<Tuning>(43)));
-            menu->addChild(createTuningMenuItem(Tuning::FiftyTone));
-        }));
-        menu->addChild(createSubmenuItem("Just", "", [=](Menu * menu) {
-            menu->addChild(createTuningMenuItem(Tuning::JustC));
-            menu->addChild(createTuningMenuItem(Tuning::JustCs));
-            menu->addChild(createTuningMenuItem(Tuning::JustD));
-            menu->addChild(createTuningMenuItem(Tuning::JustEb));
-            menu->addChild(createTuningMenuItem(Tuning::JustF));
-            menu->addChild(createTuningMenuItem(Tuning::JustFs));
-            menu->addChild(createTuningMenuItem(Tuning::JustG));
-            menu->addChild(createTuningMenuItem(Tuning::JustAb));
-            menu->addChild(createTuningMenuItem(Tuning::JustA));
-            menu->addChild(createTuningMenuItem(Tuning::JustBb));
-            menu->addChild(createTuningMenuItem(Tuning::JustB));
-        }));
-        menu->addChild(createSubmenuItem("User-defined", "", [=](Menu * menu) {
-            menu->addChild(createTuningMenuItem(Tuning::UserTuning));
-            menu->addChild(createTuningMenuItem(static_cast<Tuning>(Tuning::UserTuning + 1)));
-            menu->addChild(createTuningMenuItem(static_cast<Tuning>(Tuning::UserTuning + 2)));
-            menu->addChild(createTuningMenuItem(static_cast<Tuning>(Tuning::UserTuning + 3)));
-            menu->addChild(createTuningMenuItem(static_cast<Tuning>(Tuning::UserTuning + 4)));
-            menu->addChild(createTuningMenuItem(static_cast<Tuning>(Tuning::UserTuning + 5)));
-            menu->addChild(createTuningMenuItem(static_cast<Tuning>(Tuning::UserTuning + 6)));
-            menu->addChild(createTuningMenuItem(static_cast<Tuning>(Tuning::UserTuning + 7)));
-        }));
-    }
-};
-
-constexpr const float PRESET_TOP = 135.f;
-constexpr const float PRESET_LEFT = 15.f;
-
-constexpr const float KNOB_LEFT   = 45.f;
-constexpr const float KNOB_ROW_1  = 54.f;
-constexpr const float KNOB_SPREAD = 54.25f;
-constexpr const float CV_ROW_1 = KNOB_ROW_1 + 6.f;
-
-constexpr const float LABEL_OFFSET = 20.f;
-constexpr const float STATIC_LABEL_OFFSET = 29.5f;
+constexpr const float PAD = 2.f;
+constexpr const float MORE_PAD = 4.f;
+constexpr const float ROUND_BOX_WIDTH = 105.f;
+constexpr const float ROUND_BOX_HEIGHT = 60.f;
+constexpr const float ROUND_BOX_HALF = 110.f * .5f;
+constexpr const float ROUND_BOX_QUARTER = ROUND_BOX_HALF * .5f;
+constexpr const float KNOB_RADIUS = 12.f;
+constexpr const float HALF_KNOB = KNOB_RADIUS *.5f;
+constexpr const float REL_OFFSET = 20.f;
+constexpr const float REL_VOFFSET = 10.f;
 constexpr const float CV_COLUMN_OFFSET = 24.f;
-constexpr const float RB_OFFSET = 20.f;
-constexpr const float RB_VOFFSET = 15.f;
+constexpr const float ROUND_KNOB_ROW = 32.5f;
+constexpr const float ROUND_COL1 = ROUND_BOX_HALF - KNOB_RADIUS - 3.f * PAD;
+constexpr const float ROUND_COL2 = ROUND_BOX_HALF + KNOB_RADIUS + 2.f * PAD;
+constexpr const float ROUND_COL3 = ROUND_BOX_WIDTH - KNOB_RADIUS + PAD;
+
+inline uint8_t GetSmallParamValue(rack::app::ModuleWidget* w, int id, uint8_t default_value = 0) {
+    auto p = w->getParam(id);
+    if (!p) return default_value;
+    auto pq = p->getParamQuantity();
+    if (!pq) return default_value;
+    return static_cast<uint8_t>(pq->getValue());
+}
+void Hc2ModuleWidget::createRoundingUI(float x, float y)
+{
+    // Rounding cluster
+    addChild(createStaticTextLabel<StaticTextLabel>(Vec(x + MORE_PAD, y + PAD), 40.f, "Rounding", TextAlignment::Left));
+
+    addParam(createParamCentered<SwitchHorz4>(
+        Vec(x + ROUND_COL2, y + MORE_PAD + HALF_KNOB),
+        module, Hc2P::P_ROUND_KIND));
+ 
+    addChild(createMidiKnob(
+        Vec( x + ROUND_COL1, y + ROUND_KNOB_ROW), 
+        module, Hc2P::P_ROUND_RATE, Hc2I::IN_ROUND_RATE, Hc2P::P_ROUND_RATE_REL));
+    addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<BlueLight>>>(
+        Vec( x + ROUND_COL1 - REL_OFFSET, y + ROUND_KNOB_ROW - REL_VOFFSET),
+        module, Hc2P::P_ROUND_RATE_REL, Hc2L::L_ROUND_RATE_REL));
+    addChild(createInputCentered<ColorPort>(
+        Vec( x + ROUND_COL1 - CV_COLUMN_OFFSET, y + ROUND_KNOB_ROW + HALF_KNOB),
+        module, Hc2I::IN_ROUND_RATE));
+
+    auto p = createParamCentered<TuningKnob>(Vec( x + ROUND_COL2, y + ROUND_KNOB_ROW), module, Hc2P::P_ROUND_TUNING);
+    p->setImage();
+    addChild(p);
+
+    addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<BlueLight>>>(
+        Vec( x + ROUND_COL3, y + ROUND_KNOB_ROW - REL_VOFFSET),
+        module, Hc2P::P_ROUND_INITIAL, Hc2L::L_ROUND_INITIAL));
+    addChild(createInputCentered<ColorPort>(
+        Vec( x + ROUND_COL3, y + ROUND_KNOB_ROW + HALF_KNOB),
+        module, Hc2I::IN_ROUND_INITIAL));
+
+    rounding_summary = createLazyDynamicTextLabel(
+        Vec(x + ROUND_BOX_HALF, y + ROUND_BOX_HEIGHT - 11.f),
+        Vec(100.f, 12.f),
+        [=]() {
+            bool initial = GetSmallParamValue(this, Hc2P::P_ROUND_INITIAL);
+            auto rk = describeRoundKindShort(static_cast<RoundKind>(GetSmallParamValue(this, Hc2P::P_ROUND_KIND)));
+            auto rr = GetSmallParamValue(this,Hc2P::P_ROUND_RATE);
+            PackedTuning tuning = static_cast<PackedTuning>(GetSmallParamValue(this, Hc2P::P_ROUND_TUNING));
+            auto ts = describeTuning(unpackTuning(tuning));
+            return format_string("%s %s %d %s",
+                rk.c_str(), (initial ? "I" : "\u2022"), rr, ts.c_str());
+        },
+        9.f, false, TextAlignment::Center,
+        GetStockColor(StockColor::Gold), true)
+        ;
+    addChild(rounding_summary);
+}
 
 Hc2ModuleWidget::Hc2ModuleWidget(Hc2Module * module)
 {
     my_module = module;
-
     setModule(module);
+    if (my_module) {
+        my_module->ui_event_sink = this;
+    }
     setPanel(createPanel(asset::plugin(pluginInstance, "res/HC-2.svg")));
 
-    addChild(createStaticTextLabel<TextLabel>(Vec(KNOB_LEFT, KNOB_ROW_1 - STATIC_LABEL_OFFSET), 60.f, "Rounding"));
-    addChild(createMidiKnob(Vec(KNOB_LEFT, KNOB_ROW_1), module, Hc2Module::Params::ROUND_RATE_PARAM, Hc2Module::Inputs::ROUND_RATE_INPUT, Hc2Module::Params::ROUND_RATE_REL_PARAM));
-    addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<BlueLight>>>(Vec(KNOB_LEFT - RB_OFFSET, CV_ROW_1 - RB_VOFFSET), module, Hc2Module::Params::ROUND_RATE_REL_PARAM, Hc2Module::Lights::ROUND_RATE_REL_LIGHT));
-    addChild(createInputCentered<ColorPort>(Vec(KNOB_LEFT - CV_COLUMN_OFFSET, CV_ROW_1), module, Hc2Module::Inputs::ROUND_RATE_INPUT));
-    addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<BlueLight>>>(Vec(KNOB_LEFT + RB_OFFSET, CV_ROW_1 - RB_VOFFSET), module, Hc2Module::Params::ROUND_INITIAL_PARAM, Hc2Module::Lights::ROUND_INITIAL_LIGHT));
-    auto tune = createWidgetCentered<TuningMenu>(Vec(KNOB_LEFT + CV_COLUMN_OFFSET, CV_ROW_1));
-    tune->module = my_module;
-    addChild(tune);
+    // current preset in title
+    preset_label = createStaticTextLabel<DynamicTextLabel>(
+        Vec(80.f, 7.5f), 250.f, "My Amazing Preset", TextAlignment::Left, 14.f, true, preset_name_color);
+    preset_label->bright();
+    addChild(preset_label);
 
-    //addChild(createMidiKnob(Vec(KNOB_LEFT + KNOB_SPREAD, KNOB_ROW_1), module, Hc2Module::Params::ROUND_TUNING_PARAM, 
+    createRoundingUI(15.f, 40.f);
 
     // device name
-    addChild(createTextLabel<pachde::TextLabel>(
+    device_label = createStaticTextLabel<StaticTextLabel>(
         Vec(box.size.x*.5f + 25.f, box.size.y - 14.f), 100.f,
-        TextAlignment::Left, 12.f,
-        [=]() {
-            std::string device_name;
-            device_name = my_module ? my_module->getDeviceName() : "<Eagan Matrix Device>";
-            if (device_name.empty()) {
-                device_name = "(no Eagan Matrix available)";
-            }
-            return device_name; 
-        },
-        false
-        ));
+        "", TextAlignment::Left, 12.f, false );
+    addChild(device_label);
+}
+
+void Hc2ModuleWidget::onPresetChanged(const PresetChangedEvent& e)
+{
+    preset_label->text(e.preset ? e.preset->name : "");
+    rounding_summary->modified();
+}
+
+void Hc2ModuleWidget::onRoundingChanged(const RoundingChangedEvent& e)
+{
+    rounding_summary->modified();
+}
+
+void Hc2ModuleWidget::step()
+{
+    ModuleWidget::step();
+ 
+    if (device_label) {
+        std::string device = my_module ? my_module->getDeviceName() : "<Eagan Matrix Device>";
+        if (device_label->getText() != device) {
+            device_label->text(device);
+        }
+    }
 }
 
 void Hc2ModuleWidget::drawExpanderConnector(const DrawArgs& args)
@@ -189,101 +197,14 @@ std::string PedalAssign(uint8_t a) {
 void Hc2ModuleWidget::draw(const DrawArgs& args)
 {
     ModuleWidget::draw(args);
-    auto vg = args.vg;
-    auto partner = my_module ? my_module->getPartner() : nullptr;
-    // auto font = GetPluginFontRegular();
-    // if (FontOk(font)) {
-    //     SetTextStyle(vg, font, RampGray(G_90), 12.f);
 
-    //     auto device =  partner ? my_module->getDeviceName() : nullptr;
-    //     if (device) {
-    //         nvgText(vg, box.size.x/2.f + 25.f, box.size.y - 4.f, device, nullptr);
-    //     }
-    // }
+    auto vg = args.vg;
+    BoxRect(vg, 15.f, 40.f, ROUND_BOX_WIDTH, ROUND_BOX_HEIGHT, RampGray(G_40), 0.5f);
+
+    auto partner = my_module ? my_module->getPartner() : nullptr;
     if (partner) {
         drawCCMap(args, partner);
     }
-    // if (partner && FontOk(font))
-    // {
-    //     auto y = 80.f;
-    //     const float row_interval = 14.f;
-    //     auto cc15 = partner->ch15_cc_value;
-    //     auto cc0 = partner->ch0_cc_value;
-    //     const char * const ped_indicator = "NSEDTVP";
-    //     auto ped = cc15[52];
-    //     auto peds = format_string(
-    //         "Pedal 1 %c %s(%3d) %3d..%3d",
-    //         ped_indicator[cc15[37] & 0x07], 
-    //         PedalAssign(ped).c_str(), cc0[ped],
-    //         cc15[76], cc15[77]);
-    //     nvgText(vg, 7.5, y, peds.c_str(), nullptr);
-    //     y += row_interval;
-
-    //     ped = cc15[53];
-    //     peds = format_string(
-    //         "Pedal 2 %c %s(%3d) %3d..%3d)",
-    //         ped_indicator[(cc15[37] >> 3) & 0x07],
-    //         PedalAssign(ped).c_str(), cc0[ped],
-    //         cc15[78], cc15[79]);
-    //     nvgText(vg, 7.5, y, peds.c_str(), nullptr);
-    //     y += row_interval;
-
-    //     peds = format_string("Sus %d Sos %d Sos2 %d", cc15[64], cc15[66], cc15[69]);
-    //     nvgText(vg, 7.5, y, peds.c_str(), nullptr);
-    //     y += row_interval;
-
-    //     // Apparently just Kenton
-    //     // peds = format_string("Jack1 %3d Jack2 %3d", cc15[29], cc15[30]);
-    //     // nvgText(vg, 7.5, y, peds.c_str(), nullptr);
-    //     // y += row_interval;
-
-    //     auto text = format_string("C4=%d | OCT %d | POLY %d%c T%d D%d V%d",
-    //         cc15[44],
-    //         cc0[8],
-    //         (cc15[39] & 0x1f), 
-    //         (cc15[39] & 0x40 ? '+': ' '),
-    //         cc15[71], cc15[72], cc15[73]
-    //         );
-    //     nvgText(vg, 7.5, y, text.c_str(), nullptr);
-    //     y += row_interval;
-
-    //     const char * const round_kind = "_RYy";
-    //     auto cc = cc0;
-    //     auto rk = round_kind[(cc[61] & 0x6) >> 1];
-    //     auto req = cc[65];
-    //     auto reqs = 
-    //         req == 0 ? "off":
-    //         req == 64 ? "enabled" :
-    //         req == 127 ? "equal" : "(unknown)";
-        
-    //     text = format_string("Rounding %s RR %d RI %d Rk %c", reqs, cc[25], cc[28], rk);
-    //     nvgText(vg, 7.5, y, text.c_str(), nullptr);
-    //     y += row_interval;
-
-    //     // text = format_string("device = %s", InitStateName(hc1->device_hello_state));
-    //     // nvgText(vg, 7.5, y, text.c_str(), nullptr);
-    //     // y += row_interval;
-    //     // text = format_string("system presets = %s", InitStateName(hc1->system_preset_state));
-    //     // nvgText(vg, 7.5, y, text.c_str(), nullptr);
-    //     // y += row_interval;
-    //     // text = format_string("user presets = %s", InitStateName(hc1->user_preset_state));
-    //     // nvgText(vg, 7.5, y, text.c_str(), nullptr);
-    //     // y += row_interval;
-    //     // text = format_string("config = %s", InitStateName(hc1->config_state));
-    //     // nvgText(vg, 7.5, y, text.c_str(), nullptr);
-    //     // y += row_interval;
-    //     // text = format_string("saved = %s", InitStateName(hc1->saved_preset_state));
-    //     // nvgText(vg, 7.5, y, text.c_str(), nullptr);
-    //     // y += row_interval;
-    //     // text = format_string("updates = %s", InitStateName(hc1->request_updates_state));
-    //     // nvgText(vg, 7.5, y, text.c_str(), nullptr);
-    //     // y += row_interval;
-    //     if (partner->broken) {
-    //         nvgText(vg, 7.5, y, "BROKE", nullptr);
-    //         y += row_interval;
-    //     }
-    //}
-
     drawExpanderConnector(args);
     DrawLogo(vg, box.size.x /2.f - 12.f, RACK_GRID_HEIGHT - ONE_HP, RampGray(G_90));
 }

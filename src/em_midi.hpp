@@ -141,7 +141,7 @@ constexpr const uint8_t EMCC_MonoFunction   = 46;
 //ctlReciCol
 constexpr const uint8_t EMCC_MonoInterval   = 48;
 constexpr const uint8_t EMCC_Priority       = 49;
-constexpr const uint8_t EMCC_TuningGrid     = 50;
+constexpr const uint8_t EMCC_TuningGrid     = 51;
 constexpr const uint8_t EMCC_Pedal1CC       = 52;
 constexpr const uint8_t EMCC_Pedal2CC       = 53;
 constexpr const uint8_t EMCC_OctaveShiftAmount = 54; //default=48

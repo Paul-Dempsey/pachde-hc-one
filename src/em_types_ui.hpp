@@ -42,44 +42,43 @@ struct PDLightLatch : PDLightButton<TLight> {
 	}
 };
 
-struct TuningParamQuantity: CCParamQuantity
-{
-    TuningParamQuantity()
-    {
-        minValue = float(PackedTuning::ptEqual);
-        maxValue= float(PackedTuning::ptUserLast);
-        defaultValue = float(PackedTuning::ptEqual);
-        snapEnabled = true;
-        smoothEnabled = false;
-        cc = EMCC_TuningGrid;
-        high_resolution = false;
-    }
+// struct TuningParamQuantity: CCParamQuantity
+// {
+//     TuningParamQuantity()
+//     {
+//         minValue = float(PackedTuning::ptEqual);
+//         maxValue= float(PackedTuning::ptUserLast);
+//         defaultValue = float(PackedTuning::ptEqual);
+//         snapEnabled = true;
+//         smoothEnabled = false;
+//         cc = EMCC_TuningGrid;
+//         high_resolution = false;
+//     }
 
-    std::string getDisplayValueString() override
-    {
-        PackedTuning tuning = static_cast<PackedTuning>(static_cast<uint8_t>(clamp(std::round(getValue()), minValue, maxValue)));
-        return describeTuning(unpackTuning(tuning));
-    }
-};
+//     std::string getDisplayValueString() override
+//     {
+//         PackedTuning tuning = static_cast<PackedTuning>(static_cast<uint8_t>(clamp(std::round(getValue()), minValue, maxValue)));
+//         return describeTuning(unpackTuning(tuning));
+//     }
+// };
 
-template <typename TTPQ = TuningParamQuantity>
-TTPQ* configTuningParam(int paramId, Module* module, std::string name)
-{
-    if (module->paramQuantities[paramId]) {
-        delete module->paramQuantities[paramId];
-    }
-    TTPQ* q = new TTPQ();
-    q->module = module;
-    q->name = name;
-    q->paramId = paramId;
-    module->paramQuantities[paramId] = q;
+// template <typename TTPQ = TuningParamQuantity>
+// TTPQ* configTuningParam(int paramId, Module* module, std::string name)
+// {
+//     if (module->paramQuantities[paramId]) {
+//         delete module->paramQuantities[paramId];
+//     }
+//     TTPQ* q = new TTPQ();
+//     q->module = module;
+//     q->name = name;
+//     q->paramId = paramId;
+//     module->paramQuantities[paramId] = q;
 
-    Param* p = &module->params[paramId];
-    p->value = q->getDefaultValue();
+//     Param* p = &module->params[paramId];
+//     p->value = q->getDefaultValue();
 
-    return q;
-}
-// TODO: Tuning UI
+//     return q;
+// }
 
 }
 #endif

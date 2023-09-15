@@ -4,7 +4,7 @@
 #include "em_midi.hpp"
 #include "presets.hpp"
 #include "tip_widget.hpp"
-//#include "symbol_widget.hpp"
+#include "symbol_widget.hpp"
 
 namespace pachde {
 using namespace em_midi;
@@ -15,14 +15,14 @@ struct PresetWidget : TipWidget
     bool hovered = false;
     std::shared_ptr<Preset> preset;
     IPresetHolder* holder = nullptr;
-    // SymbolWidget * category_symbol = nullptr;
+    SymbolWidget * symbol = nullptr;
 
     PresetWidget() {
         box.size.x = 320.f / 3.f;
         box.size.y = 27.f;
-        // category_symbol = createWidget<SymbolWidget>(Vec(box.size.x - 14.f, box.size.y - 16.5));
-        // category_symbol->setSymbol(0);
-        // addChild(category_symbol);
+        symbol = createWidget<SymbolWidget>(Vec(4.f, box.size.y - 10.f));
+        symbol->setSymbol(0);
+        addChild(symbol);
     }
 
     void setPresetHolder(IPresetHolder* h) {
@@ -36,8 +36,8 @@ struct PresetWidget : TipWidget
     void setPreset(std::shared_ptr<Preset> patch) {
         preset = patch;
         tip_text = preset ? preset->describe() : "(no preset)";
-        // auto sym = preset ? *(preset->get_category_list().cbegin()) : 0;
-        // category_symbol->setSymbol(sym);
+        symbol->setSymbol(preset && (0 == preset->bank_hi) ? 1 : 0);
+        symbol->box.pos.x = preset && preset->favorite ? 12.f : 4.f;
     }
 
     void onHover(const HoverEvent& e) override {

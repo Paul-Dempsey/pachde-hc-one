@@ -229,7 +229,7 @@ void Hc1Module::reboot()
     broken = false;
     broken_idle = 0.f;
     heart_phase = 0.f;
-
+    first_beat = false;
     preset0.clear();
     system_presets.clear();
     user_presets.clear();
@@ -402,7 +402,6 @@ void Hc1Module::syncParams(float sampleTime)
             if (!muted) {
                 syncParam(VOLUME_PARAM);
             }
-            syncParam(ROUND_RATE_PARAM);
         }
         dispatchMidi();
     }
@@ -481,13 +480,12 @@ void Hc1Module::process(const ProcessArgs& args)
         if (InitState::Complete == device_output_state 
             && InitState::Complete == device_input_state) {
             if (input_device_id != midi::Input::getDeviceId()) {
-                auto name = FilterDeviceName(midi::Input::getDeviceName(deviceId));
-                if (is_EMDevice(name)) {
+                device_name = FilterDeviceName(midi::Input::getDeviceName(deviceId));
+                if (is_EMDevice(device_name)) {
                     // find matching output
                     is_eagan_matrix = true;
-                    device_name = name;
                     input_device_id = midi::Input::getDeviceId();
-                    auto id = findMatchingOutputDevice(name);
+                    auto id = findMatchingOutputDevice(device_name);
                     if (id >= 0) {
                         midi_output.setDeviceId(id);
                         midi_output.setChannel(-1);
@@ -498,13 +496,12 @@ void Hc1Module::process(const ProcessArgs& args)
                 reboot();
                 return;
             } else if (output_device_id != midi_output.getDeviceId()) {
-                auto name = FilterDeviceName(midi::Input::getDeviceName(midi_output.getDeviceId()));
-                if (is_EMDevice(name)) {
+                device_name = FilterDeviceName(midi::Input::getDeviceName(midi_output.getDeviceId()));
+                if (is_EMDevice(device_name)) {
                     // find matching input
                     is_eagan_matrix = true;
-                    device_name = name;
                     output_device_id = midi_output.getDeviceId();
-                    auto id = findMatchingInputDevice(name);
+                    auto id = findMatchingInputDevice(device_name);
                     if (id >= 0) {
                         midi::Input::setDeviceId(id);
                         midi::Input::setChannel(-1);
@@ -521,7 +518,7 @@ void Hc1Module::process(const ProcessArgs& args)
         case InitState::Uninitialized: {
             // use peristed name, if any
             if (!device_name.empty()) {
-                assert(is_EMDevice(device_name));
+                //assert(is_EMDevice(device_name));
                 auto id = findMatchingOutputDevice(device_name);
                 if (id >= 0) {
                     midi_output.setDeviceId(id);
@@ -535,9 +532,8 @@ void Hc1Module::process(const ProcessArgs& args)
             }
             // scan for EM
             for (auto id : midi_output.getDeviceIds()) {
-                auto name = FilterDeviceName(midi_output.getDeviceName(id));
-                if (is_EMDevice(name)) {
-                    device_name = name;
+                device_name = FilterDeviceName(midi_output.getDeviceName(id));
+                if (is_EMDevice(device_name)) {
                     midi_output.setDeviceId(id);
                     midi_output.setChannel(-1);
                     device_output_state = InitState::Complete;
@@ -555,7 +551,7 @@ void Hc1Module::process(const ProcessArgs& args)
         switch (device_input_state) {
         case InitState::Uninitialized: {
             assert(!device_name.empty());
-            assert(is_EMDevice(device_name));
+            //assert(is_EMDevice(device_name));
             int best_id = findMatchingInputDevice(device_name);
             if (best_id >= 0) {
                 midi::Input::setDeviceId(best_id);
@@ -597,7 +593,7 @@ void Hc1Module::process(const ProcessArgs& args)
                 } else
                 if (InitState::Uninitialized == request_updates_state) {
                     transmitRequestUpdates();
-                } else if (heart_beating) {
+                } else if (heart_beating || !first_beat) {
                     sendEditorPresent();
                 }
             }

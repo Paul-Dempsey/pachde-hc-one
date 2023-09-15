@@ -13,6 +13,11 @@ namespace pachde {
 
 std::string PedalAssignment(uint8_t ped) {
     switch (ped) {
+    case 7: return "Vol";
+    case 8: return "Oct";
+    case 9: return "Mono";
+    case 10: return "Fine";
+    case 11: return "Exp";
     case 12: return "i";
     case 13: return "ii";
     case 14: return "iii";
@@ -24,10 +29,14 @@ std::string PedalAssignment(uint8_t ped) {
     case 22: return "R3";
     case 23: return "R4";
     case 24: return "RMix";
+    case 25: return "RRt";
+    case 28: return "RIn";
+    case 31: return "Adv";
     case 64: return "Sus";
+    case 65: return "Equal";
     case 66: return "Sos";
     }
-    return format_string("%d", ped);
+    return format_string("cc%d", ped);
 }
 
 const NVGcolor& InitStateColor(InitState state)
@@ -131,12 +140,12 @@ Hc1ModuleWidget::Hc1ModuleWidget(Hc1Module *module)
     addChild(createMidiKnob(Vec(KNOB_LEFT + 4.f * KNOB_SPREAD, KNOB_ROW_1), module, Hc1Module::M5_PARAM, Hc1Module::M5_INPUT, Hc1Module::M5_REL_PARAM));
     addChild(createMidiKnob(Vec(KNOB_LEFT + 5.f * KNOB_SPREAD, KNOB_ROW_1), module, Hc1Module::M6_PARAM, Hc1Module::M6_INPUT, Hc1Module::M6_REL_PARAM));
     float y = KNOB_ROW_1 - STATIC_LABEL_OFFSET;
-    addChild(createTextLabel<TextLabel>(Vec(KNOB_LEFT,                     y), 100.f, TextAlignment::Center, 12.f, [=](){ return macroName(0); }));
-    addChild(createTextLabel<TextLabel>(Vec(KNOB_LEFT +       KNOB_SPREAD, y), 100.f, TextAlignment::Center, 12.f, [=](){ return macroName(1); }));
-    addChild(createTextLabel<TextLabel>(Vec(KNOB_LEFT + 2.f * KNOB_SPREAD, y), 100.f, TextAlignment::Center, 12.f, [=](){ return macroName(2); }));
-    addChild(createTextLabel<TextLabel>(Vec(KNOB_LEFT + 3.f * KNOB_SPREAD, y), 100.f, TextAlignment::Center, 12.f, [=](){ return macroName(3); }));
-    addChild(createTextLabel<TextLabel>(Vec(KNOB_LEFT + 4.f * KNOB_SPREAD, y), 100.f, TextAlignment::Center, 12.f, [=](){ return macroName(4); }));
-    addChild(createTextLabel<TextLabel>(Vec(KNOB_LEFT + 5.f * KNOB_SPREAD, y), 100.f, TextAlignment::Center, 12.f, [=](){ return macroName(5); }));
+    addChild(createDynamicLabel<DynamicTextLabel>(Vec(KNOB_LEFT,                     y), 100.f, [=](){ return macroName(0); }));
+    addChild(createDynamicLabel<DynamicTextLabel>(Vec(KNOB_LEFT +       KNOB_SPREAD, y), 100.f, [=](){ return macroName(1); }));
+    addChild(createDynamicLabel<DynamicTextLabel>(Vec(KNOB_LEFT + 2.f * KNOB_SPREAD, y), 100.f, [=](){ return macroName(2); }));
+    addChild(createDynamicLabel<DynamicTextLabel>(Vec(KNOB_LEFT + 3.f * KNOB_SPREAD, y), 100.f, [=](){ return macroName(3); }));
+    addChild(createDynamicLabel<DynamicTextLabel>(Vec(KNOB_LEFT + 4.f * KNOB_SPREAD, y), 100.f, [=](){ return macroName(4); }));
+    addChild(createDynamicLabel<DynamicTextLabel>(Vec(KNOB_LEFT + 5.f * KNOB_SPREAD, y), 100.f, [=](){ return macroName(5); }));
 
     addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<BlueLight>>>(Vec(KNOB_LEFT                     - RB_OFFSET, CV_ROW_1 - RB_VOFFSET), module, Hc1Module::M1_REL_PARAM, Hc1Module::M1_REL_LIGHT));
     addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<BlueLight>>>(Vec(KNOB_LEFT +       KNOB_SPREAD - RB_OFFSET, CV_ROW_1 - RB_VOFFSET), module, Hc1Module::M2_REL_PARAM, Hc1Module::M2_REL_LIGHT));
@@ -153,13 +162,13 @@ Hc1ModuleWidget::Hc1ModuleWidget(Hc1Module *module)
     addChild(createMidiKnob(Vec(RKNOB_LEFT + 5.f * KNOB_SPREAD, KNOB_ROW_2), module, Hc1Module::VOLUME_PARAM, Hc1Module::VOLUME_INPUT, Hc1Module::VOLUME_REL_PARAM));
 
     y = KNOB_ROW_2 - STATIC_LABEL_OFFSET;
-    addChild(createTextLabel<TextLabel>(Vec(RKNOB_LEFT,                     y), 80.f, TextAlignment::Center, 12.f, [=](){ return RecirculatorParameterName(my_module ? my_module->recirculatorType() : EM_Recirculator::Reverb, 1); }));
-    addChild(createTextLabel<TextLabel>(Vec(RKNOB_LEFT + KNOB_SPREAD,       y), 80.f, TextAlignment::Center, 12.f, [=](){ return RecirculatorParameterName(my_module ? my_module->recirculatorType() : EM_Recirculator::Reverb, 2); }));
-    addChild(createTextLabel<TextLabel>(Vec(RKNOB_LEFT + KNOB_SPREAD * 2.f, y), 80.f, TextAlignment::Center, 12.f, [=](){ return RecirculatorParameterName(my_module ? my_module->recirculatorType() : EM_Recirculator::Reverb, 3); }));
-    addChild(createTextLabel<TextLabel>(Vec(RKNOB_LEFT + KNOB_SPREAD * 3.f, y), 80.f, TextAlignment::Center, 12.f, [=](){ return RecirculatorParameterName(my_module ? my_module->recirculatorType() : EM_Recirculator::Reverb, 4); }));
+    addChild(createDynamicLabel<DynamicTextLabel>(Vec(RKNOB_LEFT,                     y), 80.f, [=](){ return RecirculatorParameterName(my_module ? my_module->recirculatorType() : EM_Recirculator::Reverb, 1); }));
+    addChild(createDynamicLabel<DynamicTextLabel>(Vec(RKNOB_LEFT + KNOB_SPREAD,       y), 80.f, [=](){ return RecirculatorParameterName(my_module ? my_module->recirculatorType() : EM_Recirculator::Reverb, 2); }));
+    addChild(createDynamicLabel<DynamicTextLabel>(Vec(RKNOB_LEFT + KNOB_SPREAD * 2.f, y), 80.f, [=](){ return RecirculatorParameterName(my_module ? my_module->recirculatorType() : EM_Recirculator::Reverb, 3); }));
+    addChild(createDynamicLabel<DynamicTextLabel>(Vec(RKNOB_LEFT + KNOB_SPREAD * 3.f, y), 80.f, [=](){ return RecirculatorParameterName(my_module ? my_module->recirculatorType() : EM_Recirculator::Reverb, 4); }));
 
-    addChild(createStaticTextLabel<TextLabel>(Vec(RKNOB_LEFT + 4.f * KNOB_SPREAD, KNOB_ROW_2 - STATIC_LABEL_OFFSET), 25.f, "Mix"));
-    addChild(createStaticTextLabel<TextLabel>(Vec(RKNOB_LEFT + 5.f * KNOB_SPREAD, KNOB_ROW_2 - STATIC_LABEL_OFFSET), 35.f, "Volume"));
+    addChild(createStaticTextLabel<StaticTextLabel>(Vec(RKNOB_LEFT + 4.f * KNOB_SPREAD, KNOB_ROW_2 - STATIC_LABEL_OFFSET), 25.f, "Mix"));
+    addChild(createStaticTextLabel<StaticTextLabel>(Vec(RKNOB_LEFT + 5.f * KNOB_SPREAD, KNOB_ROW_2 - STATIC_LABEL_OFFSET), 35.f, "Volume"));
 
     addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<BlueLight>>>(Vec(RKNOB_LEFT                     - RB_OFFSET, CV_ROW_2 - RB_VOFFSET), module, Hc1Module::R1_REL_PARAM, Hc1Module::R1_REL_LIGHT));
     addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<BlueLight>>>(Vec(RKNOB_LEFT +       KNOB_SPREAD - RB_OFFSET, CV_ROW_2 - RB_VOFFSET), module, Hc1Module::R2_REL_PARAM, Hc1Module::R2_REL_LIGHT));
@@ -169,12 +178,12 @@ Hc1ModuleWidget::Hc1ModuleWidget(Hc1Module *module)
     addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<BlueLight>>>(Vec(RKNOB_LEFT + 5.f * KNOB_SPREAD - RB_OFFSET, CV_ROW_2 - RB_VOFFSET), module, Hc1Module::VOLUME_REL_PARAM, Hc1Module::VOLUME_REL_LIGHT));
 
     addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<RedLight>>>(Vec(RKNOB_LEFT + 5.f * KNOB_SPREAD + RB_OFFSET, CV_ROW_2 - RB_VOFFSET), module, Hc1Module::MUTE_PARAM, Hc1Module::MUTE_LIGHT));
-    addChild(createStaticTextLabel<TextLabel>(Vec(RKNOB_LEFT + KNOB_SPREAD * 5.f + 17.f, KNOB_ROW_2), 25.f, "Mute", TextAlignment::Left));
+    addChild(createStaticTextLabel<StaticTextLabel>(Vec(RKNOB_LEFT + KNOB_SPREAD * 5.f + 17.f, KNOB_ROW_2), 25.f, "Mute", TextAlignment::Left));
 
     addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<BlueLight>>>(Vec(RECIRC_LIGHT_CENTER, RECIRC_BOX_TOP), module, Hc1Module::RECIRC_EXTEND_PARAM, Hc1Module::RECIRC_EXTEND_LIGHT));
 
     y = KNOB_ROW_1 + 10.f;
-    float x = RIGHT_COLUMN_BUTTONS - 2.f * LIGHT_SPREAD;
+    float x = RIGHT_COLUMN_BUTTONS - LIGHT_SPREAD;
     addChild(createLight<TinySimpleLight<RedLight>>(Vec(x, y), module, Hc1Module::Lights::ROUND_Y_LIGHT)); x += LIGHT_SPREAD;
     addChild(createLight<TinySimpleLight<RedLight>>(Vec(x, y), module, Hc1Module::Lights::ROUND_INITIAL_LIGHT)); x += LIGHT_SPREAD;
     addChild(createLight<TinySimpleLight<RedLight>>(Vec(x, y), module, Hc1Module::Lights::ROUND_LIGHT)); x += LIGHT_SPREAD;
@@ -198,11 +207,10 @@ Hc1ModuleWidget::Hc1ModuleWidget(Hc1Module *module)
     }
 
     // todo: set text only when page changes
-    addChild(createTextLabel<pachde::TextLabel>(
+    addChild(createDynamicLabel<DynamicTextLabel>(
         Vec(RIGHT_COLUMN_BUTTONS, PRESET_TOP - 9.f), 80.f,
-        TextAlignment::Center, 10.f,
         [=]() { return format_string("%d of %d", 1 + page, my_module ? 1 + my_module->getPresets(tab).size()/24 : 1);  },
-        false
+        TextAlignment::Center, 10.f, false
         ));
 
     page_up = createWidgetCentered<SquareButton>(Vec(RIGHT_COLUMN_BUTTONS, PRESET_TOP + 12.f));
@@ -216,11 +224,10 @@ Hc1ModuleWidget::Hc1ModuleWidget(Hc1Module *module)
     addChild(page_down);
 
     // middle C
-    addChild(createTextLabel<pachde::TextLabel>(
+    addChild(createDynamicLabel<DynamicTextLabel>(
         Vec(RIGHT_COLUMN_BUTTONS, PRESET_TOP + 47.f), PANEL_WIDTH - PRESET_RIGHT,
-        TextAlignment::Center, 10.f,
         [=](){ return format_string("%d",my_module ? my_module->middle_c : 60); },
-        false
+        TextAlignment::Center, 10.f, false
         ));
 
     { // Transpose buttons
@@ -332,9 +339,8 @@ Hc1ModuleWidget::Hc1ModuleWidget(Hc1Module *module)
 
     // device name
     // todo: set text only when device name changes
-    addChild(createTextLabel<pachde::TextLabel>(
+    addChild(createDynamicLabel<DynamicTextLabel>(
         Vec(box.size.x*.5f + 25.f, box.size.y - 14.f), 100.f,
-        TextAlignment::Left, 12.f,
         [=]() {
             std::string device_name;
             device_name = my_module ? my_module->deviceName() : "<Eagan Matrix Device>";
@@ -343,19 +349,18 @@ Hc1ModuleWidget::Hc1ModuleWidget(Hc1Module *module)
             }
             return device_name; 
         },
-        false
+        TextAlignment::Left, 12.f, false
         ));
 
     // firmare version
     // todo: set text only when firmware version changes
-    addChild(createTextLabel<pachde::TextLabel>(
+    addChild(createDynamicLabel<DynamicTextLabel>(
         Vec(box.size.x - 60.f,  box.size.y - 14.f), 60.f - 7.5f,
-        TextAlignment::Right, 12.f,
         [=](){
             auto ver = my_module && my_module->is_eagan_matrix ? my_module->firmware_version : 0;
             return format_string("v%03.2f", ver/100.f);
         },
-        false
+        TextAlignment::Right, 12.f, false
         ));
 
 }
@@ -779,6 +784,9 @@ void Hc1ModuleWidget::draw(const DrawArgs& args)
             Dot(vg, left, y, InitStateColor(my_module->handshake));
         }
         left += spacing;
+        // note (debugging)
+        // auto n = format_string("%d", my_module->note);
+        // nvgText(vg, left + 5.f, box.size.y - 1.5f, n.c_str(), nullptr);
     }
 
     if (!my_module) {

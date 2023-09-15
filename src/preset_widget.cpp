@@ -3,7 +3,7 @@
 #include "text.hpp"
 #include "components.hpp"
 #include "colors.hpp"
-
+#include "symbol_widget.hpp"
 namespace pachde {
 
 //const NVGcolor user_preset_color = nvgRGB(0x7e, 0x60, 0x9f);
@@ -11,7 +11,6 @@ namespace pachde {
 
 void PresetWidget::draw(const DrawArgs& args)
 {
-
     auto vg = args.vg;
 
     bool selected = holder && holder->isCurrentPreset(preset);
@@ -45,9 +44,6 @@ void PresetWidget::draw(const DrawArgs& args)
         }
         if (preset->favorite) {
             FillHeart(vg, 4.f, 16.5f, 6.f, PORT_PINK);
-        }
-        if (0 == preset->bank_hi) {
-            FillPerson(vg, preset->favorite ? 12.f : 4.f, 15.5f, 8.f, nvgHSL(210.f/360.f, .5f, .5f));
         }
     }
 }

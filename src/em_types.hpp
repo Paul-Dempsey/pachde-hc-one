@@ -33,9 +33,24 @@ enum Tuning : uint8_t {
     JustA,
     JustBb,
     JustB,
-    UserTuning = 80,
-    UserTuningLast = 87
+    UserTuning1 = 80,
+    UserTuning2,
+    UserTuning3,
+    UserTuning4,
+    UserTuning5,
+    UserTuning6,
+    UserTuning7,
+    UserTuning8,
+    UserTuningLast = UserTuning8
 };
+
+inline Tuning nTone(int nth) {
+    assert(in_range(nth, 1, 50));
+    return static_cast<Tuning>((static_cast<int>(OneTone) + nth - 1));
+}
+
+// Packed tuning is for when you need a linear sequence of values,
+// such as putting tuning on a knob.
 enum PackedTuning: uint8_t {
     ptEqual,
     ptOneTone,
@@ -51,13 +66,22 @@ enum PackedTuning: uint8_t {
     ptJustA,
     ptJustBb,
     ptJustB,
-    ptUser,
-    ptUserLast = ptUser + (Tuning::UserTuningLast - Tuning::UserTuning)
+    ptUser1,
+    ptUser2,
+    ptUser3,
+    ptUser4,
+    ptUser5,
+    ptUser6,
+    ptUser7,
+    ptUser8,
+    ptUserLast = ptUser8
 };
 
 uint8_t packTuning(Tuning tuning);
 Tuning unpackTuning(uint8_t packed);
+
 std::string describeRoundKind(RoundKind kind);
+std::string describeRoundKindShort(RoundKind kind);
 std::string describeTuning(Tuning grid);
 
 struct Rounding
@@ -75,6 +99,15 @@ struct Rounding
         equal(RoundEqual::Equal),
         tuning(Tuning::EqualTuning)
     {}
+
+    void clear()
+    {
+        rate = 0;
+        initial = false;
+        kind = RoundKind::Normal;
+        equal = RoundEqual::Equal;
+        tuning = Tuning::EqualTuning;
+    }
 };
 
 }

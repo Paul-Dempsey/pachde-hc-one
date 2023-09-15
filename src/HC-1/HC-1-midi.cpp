@@ -86,6 +86,9 @@ void Hc1Module::transmitRequestUserPresets()
 
 void Hc1Module::setPreset(std::shared_ptr<Preset> preset)
 {
+    current_preset = nullptr;
+    notifyPresetChanged();
+
     current_preset = preset;
     if (!preset) return;
 
@@ -184,9 +187,13 @@ void Hc1Module::onChannel16CC(uint8_t cc, uint8_t value)
             middle_c = value;
             break;
 
-        case EMCC_TuningGrid:
-            rounding.tuning = static_cast<Tuning>(value);
-            break;
+        case EMCC_TuningGrid: {
+            auto new_value = static_cast<Tuning>(value);
+            if (rounding.tuning != new_value) {
+                rounding.tuning = new_value;
+                notifyRoundingChanged();
+            }
+        } break;
 
         case EMCC_DataStream: {
             switch (value) {
@@ -238,20 +245,17 @@ void Hc1Module::onChannel16CC(uint8_t cc, uint8_t value)
 
         case EMCC_Reverse_Rounding: {
             reverse_surface = static_cast<bool>(value & 1);
-            rounding.kind = static_cast<RoundKind>((value & 0x06) >>1);
+
+            auto kind = static_cast<RoundKind>((value & 0x06) >>1);
+            if (kind != rounding.kind) {
+                rounding.kind = kind;
+                notifyRoundingChanged();
+            }
         } break;
 
         case EMCC_RecirculatorType:
             recirculator = value;
             getParamQuantity(RECIRC_EXTEND_PARAM)->setValue(isExtendRecirculator() * 1.f);
-            break;
-
-        case EMCC_RoundEqual:
-            switch (value) {
-            case   0: rounding.equal = RoundEqual::Disabled; break;
-            case  64: rounding.equal = RoundEqual::Enabled; break;
-            case 127: rounding.equal = RoundEqual::Equal; break;
-            }
             break;
 
         case EMCC_VersionHigh:
@@ -323,6 +327,7 @@ void Hc1Module::onChannel16CC(uint8_t cc, uint8_t value)
             //     device_hello_state = InitState::Complete;
             // } else
             if (InitState::Pending == handshake) {
+                first_beat = true;
                 handshake = InitState::Complete;
             } else {
                 DebugLog("Extra Editor Reply");
@@ -362,6 +367,7 @@ void Hc1Module::onChannel16Message(const midi::Message& msg)
 #endif
                     current_preset = findDefinedPreset(saved_preset);
                     saved_preset_state = config_state = InitState::Complete;
+                    notifyPresetChanged();
                 } else 
                 if (configPending()) {
 #ifdef VERBOSE_LOG
@@ -384,6 +390,7 @@ void Hc1Module::onChannel16Message(const midi::Message& msg)
                         }
                     }
                     DebugLog("End config as %s with %s", InitStateName(config_state), current_preset ? current_preset->describe_short().c_str() : "nuthin");
+                    notifyPresetChanged();
                 } else
                 if (!broken && is_gathering_presets()) {
                     if (!preset0.name_empty()) {
@@ -432,6 +439,7 @@ void Hc1Module::onChannel16Message(const midi::Message& msg)
 
 void Hc1Module::onNoteOn(uint8_t channel, uint8_t note, uint8_t velocity)
 {
+    this->note = note;
     if (velocity) {
         notesOn++;
     } else {
@@ -483,21 +491,33 @@ void Hc1Module::onChannel0CC(uint8_t cc, uint8_t value)
 
         case EMCC_PostLevel: setMacroCCValue(VOLUME_PARAM, value); break;
 
-        case EMCC_RoundRate:
-            rounding.rate = value;
-            break;
-
-        case EMCC_RountInitial:
-            rounding.initial = value >= 64; // VERIFY
-            break;
-
-        case EMCC_RoundEqual:
-            switch (value) {
-            case   0: rounding.equal = RoundEqual::Disabled; break;
-            case  64: rounding.equal = RoundEqual::Enabled; break;
-            case 127: rounding.equal = RoundEqual::Equal; break;
+        case EMCC_RoundRate:{
+            if (rounding.rate != value) {
+                rounding.rate = value;
+                notifyRoundingChanged();
             }
-            break;
+        } break;
+
+        case EMCC_RountInitial: {
+            bool new_initial = value; // seems to be 0 or 127
+            if (rounding.initial != new_initial) {
+                rounding.initial = new_initial;
+                notifyRoundingChanged();
+            }
+        } break;
+
+        case EMCC_RoundEqual: {
+            RoundEqual rq = rounding.equal;
+            switch (value) {
+            case   0: rq = RoundEqual::Disabled; break;
+            case  64: rq = RoundEqual::Enabled; break;
+            case 127: rq = RoundEqual::Equal; break;
+            }
+            if (rq != rounding.equal) {
+                rounding.equal = rq;
+                notifyRoundingChanged();
+            }
+        } break;
 
         case MidiCC_AllSoundOff: onSoundOff(); break;
     }
