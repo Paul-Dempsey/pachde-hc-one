@@ -89,7 +89,7 @@ extern const NVGcolor no_light;
 extern const NVGcolor preset_name_color;
 
 #define IS_SAME_COLOR(p,q) (((p).r == (q).r) && ((p).g == (q).g) && ((p).b == (q).b) && ((p).a == (q).a))
-inline NVGcolor Overlay(NVGcolor color) { return nvgTransRGBAf(color, 0.2f); }
+inline NVGcolor Overlay(NVGcolor color, float trans = 0.2f) { return nvgTransRGBAf(color, trans); }
 inline NVGcolor Gray(float L) {
     NVGcolor color;
     color.r = color.b = color.g = L;

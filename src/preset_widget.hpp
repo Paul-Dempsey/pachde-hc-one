@@ -28,7 +28,7 @@ struct PresetWidget : TipWidget
         addChild(symbol);
         text_label = createStaticTextLabel(Vec(2.5f, 1.5f), box.size.x - 4.f, "", TextAlignment::Left, 12.f, false);
         addChild(text_label);
-        text_code = createStaticTextLabel(Vec(box.size.x - 20, box.size.y - 14.f), 16.f, "", TextAlignment::Right, 9.f, false, GetStockColor(StockColor::pachde_blue_light));
+        text_code = createStaticTextLabel(Vec(box.size.x - 20, box.size.y - 12.f), 16.f, "", TextAlignment::Right, 9.f, false, GetStockColor(StockColor::pachde_blue_light));
         addChild(text_code);
     }
 
