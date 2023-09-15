@@ -1,6 +1,5 @@
 #include "preset_widget.hpp"
 #include "misc.hpp"
-#include "text.hpp"
 #include "components.hpp"
 #include "colors.hpp"
 #include "symbol_widget.hpp"
@@ -14,7 +13,7 @@ void PresetWidget::draw(const DrawArgs& args)
     auto vg = args.vg;
 
     bool selected = holder && holder->isCurrentPreset(preset);
-    //bool user_preset = preset && (127 != preset->bank_hi);
+
     if (preset && pressed) {
         FillRect(vg, 0, 0, box.size.x, box.size.y, preset_name_color);
     }
@@ -27,25 +26,26 @@ void PresetWidget::draw(const DrawArgs& args)
         FillRect(vg, 1, 1, box.size.x-2, box.size.y-2, RampGray(G_20));
     }
 
+    nvgSave(vg);
+    nvgScissor(vg, 2.f, 2.f, box.size.x-4.f, box.size.y-4.f);
+
     TipWidget::draw(args);
 
     if (preset) {
-        auto font = GetPluginFontRegular();
-        if (FontOk(font)) {
-            nvgSave(vg);
-            nvgScissor(vg, 2.f, 2.f, box.size.x-4.f, box.size.y-4.f);
-            SetTextStyle(vg, font, pressed ? RampGray(G_15) : RampGray(G_90), 12.f);
-            nvgText(vg, 2.5f, 11.5f, preset->name.c_str(), nullptr);
-            nvgRestore(vg);
+        // auto font = GetPluginFontRegular();
+        // if (FontOk(font)) {
 
-            auto code = *preset->get_category_list().cbegin();
-            SetTextStyle(vg, font, pressed ? GetStockColor(StockColor::pachde_blue_dark) : GetStockColor(StockColor::pachde_blue_light), 9.f);
-            RightAlignText(vg, box.size.x-4.f, box.size.y-4.f, (const char *)&code, ((const char *)&code) + 2);
-        }
+        //     // SetTextStyle(vg, font, pressed ? RampGray(G_15) : RampGray(G_90), 12.f);
+        //     // nvgText(vg, 2.5f, 11.5f, preset->name.c_str(), nullptr);
+        //     // auto code = *preset->get_category_list().cbegin();
+        //     // SetTextStyle(vg, font, pressed ? GetStockColor(StockColor::pachde_blue_dark) : GetStockColor(StockColor::pachde_blue_light), 9.f);
+        //     // RightAlignText(vg, box.size.x-4.f, box.size.y-4.f, (const char *)&code, ((const char *)&code) + 2);
+        // }
         if (preset->favorite) {
             FillHeart(vg, 4.f, 16.5f, 6.f, PORT_PINK);
         }
     }
+    nvgRestore(vg);
 }
 
 }

@@ -3,6 +3,7 @@
 #define PRESET_WIDGET_HPP_INCLUDED
 #include "em_midi.hpp"
 #include "presets.hpp"
+#include "text.hpp"
 #include "tip_widget.hpp"
 #include "symbol_widget.hpp"
 
@@ -15,7 +16,9 @@ struct PresetWidget : TipWidget
     bool hovered = false;
     std::shared_ptr<Preset> preset;
     IPresetHolder* holder = nullptr;
-    SymbolWidget * symbol = nullptr;
+    SymbolWidget* symbol = nullptr;
+    StaticTextLabel* text_label = nullptr;
+    StaticTextLabel* text_code = nullptr;
 
     PresetWidget() {
         box.size.x = 320.f / 3.f;
@@ -23,6 +26,10 @@ struct PresetWidget : TipWidget
         symbol = createWidget<SymbolWidget>(Vec(4.f, box.size.y - 10.f));
         symbol->setSymbol(0);
         addChild(symbol);
+        text_label = createStaticTextLabel(Vec(2.5f, 1.5f), box.size.x - 4.f, "", TextAlignment::Left, 12.f, false);
+        addChild(text_label);
+        text_code = createStaticTextLabel(Vec(box.size.x - 20, box.size.y - 14.f), 16.f, "", TextAlignment::Right, 9.f, false, GetStockColor(StockColor::pachde_blue_light));
+        addChild(text_code);
     }
 
     void setPresetHolder(IPresetHolder* h) {
@@ -35,9 +42,20 @@ struct PresetWidget : TipWidget
 
     void setPreset(std::shared_ptr<Preset> patch) {
         preset = patch;
-        tip_text = preset ? preset->describe() : "(no preset)";
-        symbol->setSymbol(preset && (0 == preset->bank_hi) ? 1 : 0);
-        symbol->box.pos.x = preset && preset->favorite ? 12.f : 4.f;
+        if (preset) {
+            tip_text = preset->describe();
+            symbol->setSymbol((0 == preset->bank_hi) ? 1 : 0);
+            symbol->box.pos.x = preset->favorite ? 12.f : 4.f;
+            text_label->text(preset->name);
+            auto code = *preset->get_category_list().cbegin();
+            text_code->text(CategoryCode(code).to_string());
+        } else {
+            tip_text = "(no preset)";
+            symbol->setSymbol(0);
+            symbol->box.pos.x = 4.f;
+            text_label->text("");
+            text_code->text("");
+        }
     }
 
     void onHover(const HoverEvent& e) override {
@@ -56,6 +74,10 @@ struct PresetWidget : TipWidget
 
     void onDragStart(const DragStartEvent& e) override {
         pressed = true;
+        text_label->color(RampGray(G_15));
+        text_label->dirty();
+        text_code->color(GetStockColor(StockColor::pachde_blue_dark));
+        text_code->dirty();
         TipWidget::onDragStart(e);
     }
 
@@ -73,6 +95,10 @@ struct PresetWidget : TipWidget
             holder->setPreset(preset);
         }
         pressed = false;
+        text_label->color(RampGray(G_90));
+        text_label->dirty();
+        text_code->color(GetStockColor(StockColor::pachde_blue_light));
+        text_code->dirty();
     }
 
     void draw(const DrawArgs& args) override;

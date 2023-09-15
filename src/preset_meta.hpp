@@ -32,7 +32,7 @@ union CategoryCode {
     CategoryCode(const char * code_token) : letters{*code_token, *(code_token + 1)} {}
     CategoryCode(char a, char b) : letters{a, b} {}
     CategoryCode(std::string::const_iterator it) : letters{*it, *(1+it)} {}
-    std::string to_string() { return std::string(letters); }
+    std::string to_string() { return std::string{letters[0], letters[1]}; }
 };
 
 constexpr const uint16_t ST = 0x5453;
