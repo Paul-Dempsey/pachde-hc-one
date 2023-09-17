@@ -70,14 +70,26 @@ void Hc1ModuleWidget::createPresetPrevNext()
     float y = 124.f;
     auto w = createWidgetCentered<SmallSquareButton>(Vec(RIGHT_COLUMN_BUTTONS - 7.f, y));
     if (my_module) {
-        w->setHandler([=](bool,bool){ my_module->sendControlChange(EM_SettingsChannel, 109, 52); });
+        w->setHandler([=](bool ctrl, bool shift){
+            if (ctrl) {
+                my_module->sendControlChange(EM_SettingsChannel, 109, 52);
+            } else {
+                toRelativePreset(shift ? -10 : -1);
+            }
+        });
     }
     addChild(w);
     addChild(createStaticTextLabel<StaticTextLabel>(Vec(Vec(RIGHT_COLUMN_BUTTONS - 7.f, y + 5.f)), 25.f, "-", TextAlignment::Center, 9.f, false));
 
     w = createWidgetCentered<SmallSquareButton>(Vec(RIGHT_COLUMN_BUTTONS + 7.f, y));
     if (my_module) {
-        w->setHandler([=](bool,bool){ my_module->sendControlChange(EM_SettingsChannel, 109, 53); });
+        w->setHandler([=](bool ctrl, bool shift){
+            if (ctrl) {
+                my_module->sendControlChange(EM_SettingsChannel, 109, 53);
+            } else {
+               toRelativePreset(shift ? 10 : 1);
+            }
+        });
     }
     addChild(w);
     addChild(createStaticTextLabel<StaticTextLabel>(Vec(Vec(RIGHT_COLUMN_BUTTONS + 7.f, y + 5.f)), 25.f, "+", TextAlignment::Center, 9.f, false));
@@ -373,6 +385,23 @@ void Hc1ModuleWidget::pageDown()
 void Hc1ModuleWidget::onPresetChanged(const PresetChangedEvent& e)
 {
     showCurrentPreset(true);
+}
+
+void Hc1ModuleWidget::toRelativePreset(int delta)
+{
+    if (!my_module) return;
+    auto mp = my_module->getPresets(tab);
+    auto index = std::distance(mp.cbegin(), std::find_if(mp.cbegin(), mp.cend(), [=](std::shared_ptr<Preset> p){ return isCurrentPreset(p); }));
+    if (index == mp.size()) {
+        return; // not found
+    }
+    index = (index + delta);
+    if (index < 0) {
+        index = mp.size() - 1;
+    } else if (index >= mp.size()) {
+        index = 0; // wrap to start (clipped)
+    }
+    my_module->setPreset(mp[index]);
 }
 
 bool Hc1ModuleWidget::showCurrentPreset(bool changeTab)

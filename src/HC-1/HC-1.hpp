@@ -425,6 +425,8 @@ struct Hc1ModuleWidget : ModuleWidget, IPresetHolder, IHandleHcEvents
     GrayModuleLightWidget * status_light;
 
     explicit Hc1ModuleWidget(Hc1Module *module);
+
+    // HC-1-ui.cpp: make ui
     void createPresetGrid();
     void createPresetPaging();
     void createPresetPrevNext();
@@ -436,10 +438,12 @@ struct Hc1ModuleWidget : ModuleWidget, IPresetHolder, IHandleHcEvents
     void createDeviceDisplay();
     void createTestNote();
     void createUi();
+
     void setTab(PresetTab tab, bool force = false);
     const std::string macroName(int m);
     void pageUp();
     void pageDown();
+    void toRelativePreset(int delta);
     void clearPresetWidgets();
     void populatePresetWidgets();
     void updatePresetWidgets();
@@ -469,16 +473,18 @@ struct Hc1ModuleWidget : ModuleWidget, IPresetHolder, IHandleHcEvents
     void onPresetChanged(const PresetChangedEvent& e) override;
     void onRoundingChanged(const RoundingChangedEvent& e) override {}
 
+    // HC-1.draw.cpp
     void drawExpanderConnector(NVGcontext* vg);
     void drawDSP(NVGcontext* vg);
     void drawStatusDots(NVGcontext* vg);
     void drawPedals(NVGcontext* vg, std::shared_ptr<rack::window::Font> font, bool stockPedals);
+
     void onHoverScroll(const HoverScrollEvent& e) override;
     void step() override;
     void drawLayer(const DrawArgs& args, int layer) override;
     void draw(const DrawArgs& args) override;
 
-    // hc1-menu
+    // HC-1-menu.cpp
     void addSortBy(Menu *menu, std::string name, PresetOrder order);
     void addRecirculator(Menu *menu, EM_Recirculator kind);
     void appendContextMenu(Menu *menu) override;
