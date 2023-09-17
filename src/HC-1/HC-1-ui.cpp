@@ -16,9 +16,9 @@ Hc1ModuleWidget::Hc1ModuleWidget(Hc1Module* module)
     if (my_module) {
         tab = my_module->tab;
         page = my_module->getTabPage(tab);
+        my_module->ui_event_sink = this;
     }
     createUi();
-    my_module->ui_event_sink = this;
 }
 
 const std::string Hc1ModuleWidget::macroName(int m)
