@@ -38,6 +38,229 @@ const std::string Hc1ModuleWidget::macroName(int m)
     }
 }
 
+void Hc1ModuleWidget::createPresetGrid()
+{
+    tab_bar = createWidget<TabBarWidget>(Vec(PRESET_LEFT, PRESET_TOP - 13.f));
+    tab_bar->setSize(Vec(PRESET_WIDTH, 13.f));
+    tab_bar->addTab("User", PresetTab::User);
+    tab_bar->addTab("Favorite", PresetTab::Favorite);
+    tab_bar->addTab("System", PresetTab::System);
+    tab_bar->layout();
+    tab_bar->selectTab(tab);
+    addChild(tab_bar);
+
+    presets.reserve(24);
+    float x = PRESET_LEFT;
+    float y = PRESET_TOP;
+    for (int n = 0; n < 24; ++n) {
+        auto p = createWidget<PresetWidget>(Vec(x, y));
+        p->setPresetHolder(my_module);
+        addChild(p);
+        presets.push_back(p);
+        x += p->box.size.x;
+        if (0 == ((n + 1) % 3)) {
+            x = PRESET_LEFT;
+            y += p->box.size.y;
+        }
+    }
+}
+
+void Hc1ModuleWidget::createPresetPrevNext()
+{
+    float y = 124.f;
+    auto w = createWidgetCentered<SmallSquareButton>(Vec(RIGHT_COLUMN_BUTTONS - 7.f, y));
+    if (my_module) {
+        w->setHandler([=](bool,bool){ my_module->sendControlChange(EM_SettingsChannel, 109, 52); });
+    }
+    addChild(w);
+    addChild(createStaticTextLabel<StaticTextLabel>(Vec(Vec(RIGHT_COLUMN_BUTTONS - 7.f, y + 5.f)), 25.f, "-", TextAlignment::Center, 9.f, false));
+
+    w = createWidgetCentered<SmallSquareButton>(Vec(RIGHT_COLUMN_BUTTONS + 7.f, y));
+    if (my_module) {
+        w->setHandler([=](bool,bool){ my_module->sendControlChange(EM_SettingsChannel, 109, 53); });
+    }
+    addChild(w);
+    addChild(createStaticTextLabel<StaticTextLabel>(Vec(Vec(RIGHT_COLUMN_BUTTONS + 7.f, y + 5.f)), 25.f, "+", TextAlignment::Center, 9.f, false));
+    y += 12.f;
+
+    addChild(createStaticTextLabel<StaticTextLabel>(Vec(Vec(RIGHT_COLUMN_BUTTONS, y)), 25.f, "Preset", TextAlignment::Center, 9.f, false));
+}
+
+void Hc1ModuleWidget::createPresetPaging()
+{
+    // todo: set text only when page changes
+    addChild(createDynamicLabel<DynamicTextLabel>(
+        Vec(RIGHT_COLUMN_BUTTONS, PRESET_TOP - 9.f), 80.f,
+        [=]() { return format_string("%d of %d", 1 + page, my_module ? 1 + my_module->getPresets(tab).size()/24 : 1);  },
+        TextAlignment::Center, 10.f, false
+        ));
+
+    page_up = createWidgetCentered<SquareButton>(Vec(RIGHT_COLUMN_BUTTONS, PRESET_TOP + 12.f));
+    page_up->setSymbol(SquareButtonSymbol::Up);
+    page_up->onClick([this](){ pageUp(); });
+    page_up->describe("Page up");
+    addChild(page_up);
+
+    page_down = createWidgetCentered<SquareButton>(Vec(RIGHT_COLUMN_BUTTONS, PRESET_TOP + 29.f));
+    page_down->setSymbol(SquareButtonSymbol::Down);
+    page_down->onClick([this](){ pageDown(); });
+    page_down->describe("Page down");
+    addChild(page_down);
+}
+
+void Hc1ModuleWidget::createRoundingLEDs()
+{
+    float y = 108.f;
+    float x = RIGHT_COLUMN_BUTTONS - (2.f * LIGHT_SPREAD) + 1;
+    addChild(createLight<TinySimpleLight<RedLight>>(Vec(x, y), my_module, Hc1lt::ROUND_Y_LIGHT)); x += LIGHT_SPREAD;
+    addChild(createLight<TinySimpleLight<RedLight>>(Vec(x, y), my_module, Hc1lt::ROUND_INITIAL_LIGHT)); x += LIGHT_SPREAD;
+    addChild(createLight<TinySimpleLight<RedLight>>(Vec(x, y), my_module, Hc1lt::ROUND_LIGHT)); x += LIGHT_SPREAD;
+    addChild(createLight<TinySimpleLight<RedLight>>(Vec(x, y), my_module, Hc1lt::ROUND_RELEASE_LIGHT));
+}
+
+//void createFilterui()
+// {
+//     auto light = createLightCentered<SmallLight<BlueLight>>(Vec(box.size.x -15.f, PRESET_BOTTOM - 24.f), my_module, Hc1Module::Lights::FILTER_LIGHT);
+//     light->baseColors[0] = PORT_VIOLET;
+//     if (my_module) {
+//         my_module->getLight(Hc1Module::Lights::FILTER_LIGHT).setBrightness(my_module->preset_filter.isFiltered() * 1.f);
+//     }
+//     addChild(light);
+//
+//     auto filter = createWidget<SquareButton>(Vec(box.size.x - 23.f, PRESET_BOTTOM - 18.f));
+//     filter->setSymbol(SquareButtonSymbol::Funnel);
+//     filter->onClick([this]() {
+//         if (!my_module) return;
+//         my_module->filter_presets = !my_module->filter_presets;
+//     });
+//     addChild(filter);
+// }
+
+#ifdef TRANSPOSE_BUTTONS
+void Hc1ModuleWidget::createTranspose()
+{
+    // middle C
+    addChild(createDynamicLabel<DynamicTextLabel>(
+        Vec(RIGHT_COLUMN_BUTTONS, PRESET_TOP + 47.f), PANEL_WIDTH - PRESET_RIGHT,
+        [=](){ return format_string("%d", my_module ? my_module->middle_c : 60); },
+        TextAlignment::Center, 10.f, false
+        ));
+
+    auto y = PRESET_TOP + 65.f;
+    auto x = RIGHT_COLUMN_BUTTONS;
+    auto pb = createWidgetCentered<SmallPush>(Vec(x, y));
+    if (my_module) {
+#ifdef ARCH_MAC
+        pb->describe("Octave up\nCmd+Click for one semitone");
+#else
+        pb->describe("Octave up\nCtrl+Click for one semitone");
+#endif
+        pb->onClick([=](bool ctrl, bool shift) {
+            my_module->middle_c += ctrl ? 1 : 12;
+            my_module->sendControlChange(EM_SettingsChannel, EMCC_MiddleC, my_module->middle_c);
+        });
+    }
+    addChild(pb);
+    addChild(createLightCentered<TinySimpleLight<GreenLight>>(Vec(x, y), my_module, Hc1lt::TRANSPOSE_UP_LIGHT));
+
+    y += 11.5f;
+
+    pb = createWidgetCentered<SmallPush>(Vec(x, y));
+    if (my_module) {
+        pb->describe("Transpose none");
+        pb->onClick([=](bool ctrl, bool shift) {
+            my_module->middle_c = 60;
+            my_module->sendControlChange(EM_SettingsChannel, EMCC_MiddleC, my_module->middle_c);
+        });
+    }
+    addChild(pb);
+    addChild(createLightCentered<TinySimpleLight<GreenLight>>(Vec(x, y), my_module, Hc1lt::TRANSPOSE_NONE_LIGHT));
+    y += 11.5f;
+
+    pb = createWidgetCentered<SmallPush>(Vec(x, y));
+    if (my_module) {
+#ifdef ARCH_MAC
+        pb->describe("Octave down\nCmd+Click for one semitone");
+#else
+        pb->describe("Octave down\nCtrl+Click for one semitone");
+#endif
+        pb->onClick([=](bool ctrl, bool shift) {
+            my_module->middle_c -= ctrl ? 1 : 12;
+            my_module->sendControlChange(EM_SettingsChannel, EMCC_MiddleC, my_module->middle_c);
+        });
+    }
+    addChild(pb);
+    addChild(createLightCentered<TinySimpleLight<GreenLight>>(Vec(x, y), my_module, Hc1lt::TRANSPOSE_DOWN_LIGHT));
+}
+
+#endif
+
+void Hc1ModuleWidget::createMidiSelection()
+{
+    auto pm = createWidget<PickMidi>(Vec(7.5f, box.size.y - 16.f));
+    pm->describe("Midi input");
+    if (my_module) {
+        pm->setMidiPort(my_module);
+    }
+    addChild(pm);
+
+    pm = createWidget<PickMidi>(Vec(20.f, box.size.y - 16.f));
+    pm->describe("Midi output");
+    if (my_module) {
+        pm->setMidiPort(&my_module->midi_output);
+    }
+    addChild(pm);
+}
+
+void Hc1ModuleWidget::createDeviceDisplay()
+{
+    // device name
+    // todo: set text only when device name changes
+    addChild(createDynamicLabel<DynamicTextLabel>(
+        Vec(box.size.x*.5f + 25.f, box.size.y - 14.f), 100.f,
+        [=]() {
+            std::string device_name;
+            device_name = my_module ? my_module->deviceName() : "<Eagan Matrix Device>";
+            if (device_name.empty()) {
+                device_name = "(no Eagan Matrix available)";
+            }
+            return device_name; 
+        },
+        TextAlignment::Left, 12.f, false
+        ));
+
+    // firmare version
+    // todo: set text only when firmware version changes
+    addChild(createDynamicLabel<DynamicTextLabel>(
+        Vec(box.size.x - 60.f,  box.size.y - 14.f), 60.f - 7.5f,
+        [=](){
+            auto ver = my_module && my_module->is_eagan_matrix ? my_module->firmware_version : 0;
+            return format_string("v%03.2f", ver/100.f);
+        },
+        TextAlignment::Right, 12.f, false
+        ));
+}
+
+void Hc1ModuleWidget::createTestNote()
+{
+    auto pb = createWidgetCentered<SmallPush>(Vec(45.f, box.size.y -8.5f));
+    if (my_module) {
+        #ifdef ARCH_MAC
+            pb->describe("Send test Note\nCmd+click = Note off");
+        #else
+            pb->describe("Send test Note\nCtrl+click = Note off");
+        #endif
+        pb->onClick([=](bool ctrl, bool shift) {
+            if (ctrl) {
+                my_module->sendNoteOff(0, 60, 0);
+            } else {
+                my_module->sendNoteOn(0, 60, 64);
+            }
+        });
+    }
+    addChild(pb);
+}
+
 void Hc1ModuleWidget::createUi()
 {
     status_light = createLightCentered<MediumLight<BlueLight>>(Vec(12.f, 12.f), my_module, Hc1Module::HEART_LIGHT);
@@ -46,6 +269,11 @@ void Hc1ModuleWidget::createUi()
     favorite = createWidget<FavoriteWidget>(Vec(box.size.x - (12.f + 6.f), 6.f));
     favorite->setPresetHolder(this);
     addChild(favorite);
+
+    createPresetGrid();
+    createPresetPaging();
+    createRoundingLEDs();
+    createPresetPrevNext();
 
     addChild(createInputCentered<ColorPort>(Vec(KNOB_LEFT                     - CV_COLUMN_OFFSET, CV_ROW_1), my_module, Hc1in::M1_INPUT));
     addChild(createInputCentered<ColorPort>(Vec(KNOB_LEFT +       KNOB_SPREAD - CV_COLUMN_OFFSET, CV_ROW_1), my_module, Hc1in::M2_INPUT));
@@ -111,212 +339,12 @@ void Hc1ModuleWidget::createUi()
 
     addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<BlueLight>>>(Vec(RECIRC_LIGHT_CENTER, RECIRC_BOX_TOP), my_module, Hc1p::RECIRC_EXTEND_PARAM, Hc1lt::RECIRC_EXTEND_LIGHT));
 
-    // Rounding LEDs
-    y = 108.f;
-    float x = RIGHT_COLUMN_BUTTONS - (2.f * LIGHT_SPREAD) + 1;
-    addChild(createLight<TinySimpleLight<RedLight>>(Vec(x, y), my_module, Hc1lt::ROUND_Y_LIGHT)); x += LIGHT_SPREAD;
-    addChild(createLight<TinySimpleLight<RedLight>>(Vec(x, y), my_module, Hc1lt::ROUND_INITIAL_LIGHT)); x += LIGHT_SPREAD;
-    addChild(createLight<TinySimpleLight<RedLight>>(Vec(x, y), my_module, Hc1lt::ROUND_LIGHT)); x += LIGHT_SPREAD;
-    addChild(createLight<TinySimpleLight<RedLight>>(Vec(x, y), my_module, Hc1lt::ROUND_RELEASE_LIGHT));
-
-    // Sys Preset Prev/Next
-    {
-        y += 14.f;
-        auto w = createWidgetCentered<SmallSquareButton>(Vec(RIGHT_COLUMN_BUTTONS - 7.f, y));
-        if (my_module) {
-            w->setHandler([=](bool,bool){ my_module->sendControlChange(EM_SettingsChannel, 109, 52); });
-        }
-        addChild(w);
-        addChild(createStaticTextLabel<StaticTextLabel>(Vec(Vec(RIGHT_COLUMN_BUTTONS - 7.f, y + 5.f)), 25.f, "-", TextAlignment::Center, 9.f, false));
-
-        w = createWidgetCentered<SmallSquareButton>(Vec(RIGHT_COLUMN_BUTTONS + 7.f, y));
-        if (my_module) {
-            w->setHandler([=](bool,bool){ my_module->sendControlChange(EM_SettingsChannel, 109, 53); });
-        }
-        addChild(w);
-        addChild(createStaticTextLabel<StaticTextLabel>(Vec(Vec(RIGHT_COLUMN_BUTTONS + 7.f, y + 5.f)), 25.f, "+", TextAlignment::Center, 9.f, false));
-        y += 12.f;
-        addChild(createStaticTextLabel<StaticTextLabel>(Vec(Vec(RIGHT_COLUMN_BUTTONS, y)), 25.f, "Preset", TextAlignment::Center, 9.f, false));
-    }
-
-    // preset grid
-    {
-        presets.reserve(24);
-        float x = PRESET_LEFT;
-        float y = PRESET_TOP;
-        for (int n = 0; n < 24; ++n) {
-            auto p = createWidget<PresetWidget>(Vec(x, y));
-            p->setPresetHolder(my_module);
-            addChild(p);
-            presets.push_back(p);
-            x += p->box.size.x;
-            if (0 == ((n + 1) % 3)) {
-                x = PRESET_LEFT;
-                y += p->box.size.y;
-            }
-        }
-    }
-
-    // paging
-    // todo: set text only when page changes
-    addChild(createDynamicLabel<DynamicTextLabel>(
-        Vec(RIGHT_COLUMN_BUTTONS, PRESET_TOP - 9.f), 80.f,
-        [=]() { return format_string("%d of %d", 1 + page, my_module ? 1 + my_module->getPresets(tab).size()/24 : 1);  },
-        TextAlignment::Center, 10.f, false
-        ));
-
-    page_up = createWidgetCentered<SquareButton>(Vec(RIGHT_COLUMN_BUTTONS, PRESET_TOP + 12.f));
-    page_up->setSymbol(SquareButtonSymbol::Up);
-    page_up->onClick([this](){ pageUp(); });
-    page_up->describe("Page up");
-    addChild(page_up);
-
-    page_down = createWidgetCentered<SquareButton>(Vec(RIGHT_COLUMN_BUTTONS, PRESET_TOP + 29.f));
-    page_down->setSymbol(SquareButtonSymbol::Down);
-    page_down->onClick([this](){ pageDown(); });
-    page_down->describe("Page down");
-    addChild(page_down);
-
 #ifdef TRANSPOSE_BUTTONS
-    // middle C
-    addChild(createDynamicLabel<DynamicTextLabel>(
-        Vec(RIGHT_COLUMN_BUTTONS, PRESET_TOP + 47.f), PANEL_WIDTH - PRESET_RIGHT,
-        [=](){ return format_string("%d", my_module ? my_module->middle_c : 60); },
-        TextAlignment::Center, 10.f, false
-        ));
-
-    { // Transpose buttons
-        auto y = PRESET_TOP + 65.f;
-        auto x = RIGHT_COLUMN_BUTTONS;
-        auto pb = createWidgetCentered<SmallPush>(Vec(x, y));
-        if (my_module) {
-#ifdef ARCH_MAC
-            pb->describe("Octave up\nCmd+Click for one semitone");
-#else
-            pb->describe("Octave up\nCtrl+Click for one semitone");
+    createTranspose();
 #endif
-            pb->onClick([=](bool ctrl, bool shift) {
-                my_module->middle_c += ctrl ? 1 : 12;
-                my_module->sendControlChange(EM_SettingsChannel, EMCC_MiddleC, my_module->middle_c);
-            });
-        }
-        addChild(pb);
-        addChild(createLightCentered<TinySimpleLight<GreenLight>>(Vec(x, y), my_module, Hc1lt::TRANSPOSE_UP_LIGHT));
-
-        y += 11.5f;
- 
-        pb = createWidgetCentered<SmallPush>(Vec(x, y));
-        if (my_module) {
-            pb->describe("Transpose none");
-            pb->onClick([=](bool ctrl, bool shift) {
-                my_module->middle_c = 60;
-                my_module->sendControlChange(EM_SettingsChannel, EMCC_MiddleC, my_module->middle_c);
-            });
-        }
-        addChild(pb);
-        addChild(createLightCentered<TinySimpleLight<GreenLight>>(Vec(x, y), my_module, Hc1lt::TRANSPOSE_NONE_LIGHT));
-        y += 11.5f;
-
-        pb = createWidgetCentered<SmallPush>(Vec(x, y));
-        if (my_module) {
-#ifdef ARCH_MAC
-            pb->describe("Octave down\nCmd+Click for one semitone");
-#else
-            pb->describe("Octave down\nCtrl+Click for one semitone");
-#endif
-            pb->onClick([=](bool ctrl, bool shift) {
-                my_module->middle_c -= ctrl ? 1 : 12;
-                my_module->sendControlChange(EM_SettingsChannel, EMCC_MiddleC, my_module->middle_c);
-            });
-        }
-        addChild(pb);
-        addChild(createLightCentered<TinySimpleLight<GreenLight>>(Vec(x, y), my_module, Hc1lt::TRANSPOSE_DOWN_LIGHT));
-    }
-#endif
-
-    // Filter
-    // {
-    //     auto light = createLightCentered<SmallLight<BlueLight>>(Vec(box.size.x -15.f, PRESET_BOTTOM - 24.f), my_module, Hc1Module::Lights::FILTER_LIGHT);
-    //     light->baseColors[0] = PORT_VIOLET;
-    //     if (my_module) {
-    //         my_module->getLight(Hc1Module::Lights::FILTER_LIGHT).setBrightness(my_module->preset_filter.isFiltered() * 1.f);
-    //     }
-    //     addChild(light);
-        
-    //     auto filter = createWidget<SquareButton>(Vec(box.size.x - 23.f, PRESET_BOTTOM - 18.f));
-    //     filter->setSymbol(SquareButtonSymbol::Funnel);
-    //     filter->onClick([this]() {
-    //         if (!my_module) return;
-    //         my_module->filter_presets = !my_module->filter_presets;
-    //     });
-    //     addChild(filter);
-    // }
-
-    tab_bar = createWidget<TabBarWidget>(Vec(PRESET_LEFT, PRESET_TOP - 13.f));
-    tab_bar->setSize(Vec(PRESET_WIDTH, 13.f));
-    tab_bar->addTab("User", PresetTab::User);
-    tab_bar->addTab("Favorite", PresetTab::Favorite);
-    tab_bar->addTab("System", PresetTab::System);
-    tab_bar->layout();
-    tab_bar->selectTab(tab);
-    addChild(tab_bar);
-
-    auto pm = createWidget<PickMidi>(Vec(7.5f, box.size.y - 16.f));
-    pm->describe("Midi input");
-    if (my_module) {
-        pm->setMidiPort(my_module);
-    }
-    addChild(pm);
-
-    pm = createWidget<PickMidi>(Vec(20.f, box.size.y - 16.f));
-    pm->describe("Midi output");
-    if (my_module) {
-        pm->setMidiPort(&my_module->midi_output);
-    }
-    addChild(pm);
-
-    auto pb = createWidgetCentered<SmallPush>(Vec(45.f, box.size.y -8.5f));
-    if (my_module) {
-        #ifdef ARCH_MAC
-            pb->describe("Send test Note\nCmd+click = Note off");
-        #else
-            pb->describe("Send test Note\nCtrl+click = Note off");
-        #endif
-        pb->onClick([=](bool ctrl, bool shift) {
-            if (ctrl) {
-                my_module->sendNoteOff(0, 60, 0);
-            } else {
-                my_module->sendNoteOn(0, 60, 64);
-            }
-        });
-    }
-    addChild(pb);
-
-    // device name
-    // todo: set text only when device name changes
-    addChild(createDynamicLabel<DynamicTextLabel>(
-        Vec(box.size.x*.5f + 25.f, box.size.y - 14.f), 100.f,
-        [=]() {
-            std::string device_name;
-            device_name = my_module ? my_module->deviceName() : "<Eagan Matrix Device>";
-            if (device_name.empty()) {
-                device_name = "(no Eagan Matrix available)";
-            }
-            return device_name; 
-        },
-        TextAlignment::Left, 12.f, false
-        ));
-
-    // firmare version
-    // todo: set text only when firmware version changes
-    addChild(createDynamicLabel<DynamicTextLabel>(
-        Vec(box.size.x - 60.f,  box.size.y - 14.f), 60.f - 7.5f,
-        [=](){
-            auto ver = my_module && my_module->is_eagan_matrix ? my_module->firmware_version : 0;
-            return format_string("v%03.2f", ver/100.f);
-        },
-        TextAlignment::Right, 12.f, false
-        ));
+    createMidiSelection();
+    createTestNote();
+    createDeviceDisplay();
 }
 
 void Hc1ModuleWidget::pageUp()

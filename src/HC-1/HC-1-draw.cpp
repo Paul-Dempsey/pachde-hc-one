@@ -15,7 +15,8 @@ const NVGcolor& InitStateColor(InitState state)
     }
 }
 
-const NVGcolor& StatusColor(StatusItem led) {
+const NVGcolor& StatusColor(StatusItem led)
+{
     switch (led) {
         case StatusItem::ledOff: return no_light;
         case StatusItem::ledBlue: return blue_light;
@@ -30,6 +31,7 @@ const NVGcolor& StatusColor(StatusItem led) {
     }
 }
 
+// TODO: Candidate for caching. Only updates on heartbeat.
 void Hc1ModuleWidget::drawDSP(NVGcontext* vg)
 {
     const float h = 10.f;
@@ -57,6 +59,89 @@ void Hc1ModuleWidget::drawDSP(NVGcontext* vg)
         auto bh = h * (pct / 100.f);
         FillRect(vg, x, y + h - bh, w, bh, co);
         x += w + 1;
+    }
+}
+
+void Hc1ModuleWidget::drawStatusDots(NVGcontext* vg)
+{
+    float left = 60.f;
+    float spacing = 6.25f;
+    float y = box.size.y - 7.5f;
+
+    if (my_module) {
+        // note
+        Dot(vg, left, y, my_module->notesOn ? purple_light : gray_light, my_module->notesOn);
+        left += spacing;
+        //device_output_state
+        Dot(vg, left, y, InitStateColor(my_module->device_output_state));
+        left += spacing;
+        // device_input_state
+        Dot(vg, left, y, InitStateColor(my_module->device_input_state));
+        left += spacing;
+        //eagan matrix
+        Dot(vg, left, y, my_module->is_eagan_matrix ? blue_light : yellow_light);
+        left += spacing;
+        // //device_state
+        // Dot(vg, left, y, InitStateColor(my_module->device_hello_state));
+        // left += spacing;
+        //system_preset_state
+        Dot(vg, left, y, InitStateColor(my_module->system_preset_state));
+        left += spacing;
+        //user_preset_state
+        Dot(vg, left, y, InitStateColor(my_module->user_preset_state));
+        left += spacing;
+        //config_state
+        Dot(vg, left, y, InitStateColor(my_module->config_state));
+        left += spacing;
+        //saved_preset_state
+        if (my_module->restore_saved_preset){
+            Dot(vg, left, y, InitStateColor(my_module->saved_preset_state));
+        }
+        left += spacing;
+        //request_updates_state
+        Dot(vg, left, y, InitStateColor(my_module->request_updates_state));
+        left += spacing;
+        //handshake
+        if (my_module->heart_beating) {
+            Dot(vg, left, y, InitStateColor(my_module->handshake));
+        }
+        left += spacing;
+        // note (debugging)
+        // auto n = format_string("%d", my_module->note);
+        // nvgText(vg, left + 5.f, box.size.y - 1.5f, n.c_str(), nullptr);
+    } else {
+        auto co = InitStateColor(InitState::Complete);
+        Dot(vg, left, y, gray_light, false);
+        left += spacing;
+        //device_output_state
+        Dot(vg, left, y, co);
+        left += spacing;
+        // device_input_state
+        Dot(vg, left, y, co);
+        left += spacing;
+        //eagan matrix
+        Dot(vg, left, y, blue_light);
+        left += spacing;
+        // //device_state
+        // Dot(vg, left, y, InitStateColor(my_module->device_hello_state));
+        // left += spacing;
+        //system_preset_state
+        Dot(vg, left, y, co);
+        left += spacing;
+        //user_preset_state
+        Dot(vg, left, y, co);
+        left += spacing;
+        //config_state
+        Dot(vg, left, y, co);
+        left += spacing;
+        //saved_preset_state
+        Dot(vg, left, y, co);
+        left += spacing;
+        //request_updates_state
+        Dot(vg, left, y, co);
+        left += spacing;
+        //handshake
+        Dot(vg, left, y, co);
     }
 }
 
@@ -146,6 +231,26 @@ void drawPedalAssignment(NVGcontext* vg, float x, float y, char ped_char, uint8_
     Line(vg, x, y+1, x, y+1 - ped_value/16.f, GetStockColor(StockColor::Sea_green_Dark), 1.5f);
 }
 
+void Hc1ModuleWidget::drawPedals(NVGcontext* vg, std::shared_ptr<rack::window::Font> font, bool stockPedals)
+{    
+    SetTextStyle(vg, font, RampGray(G_85), 10.f);
+    if (stockPedals) {
+        drawPedalAssignment(vg, box.size.x - 3.f, PRESET_BOTTOM - 18.f, '1', 64, 0);
+        drawPedalAssignment(vg, box.size.x - 3.f, PRESET_BOTTOM - 4.5f, '2', 66, 0);
+    } else {
+        auto ped1 = my_module->ch15_cc_value[52];
+        auto ped2 = my_module->ch15_cc_value[53];
+        if (ped1 == ped2) {
+            drawPedalKnobAssignment(vg, ped1, "1,2");
+        } else {
+            drawPedalKnobAssignment(vg, ped1, "1");
+            drawPedalKnobAssignment(vg, ped2, "2");
+        }
+        drawPedalAssignment(vg, box.size.x - 3.f, PRESET_BOTTOM - 18.f, '1', ped1, my_module->ch0_cc_value[ped1]);
+        drawPedalAssignment(vg, box.size.x - 3.f, PRESET_BOTTOM - 4.5f, '2', ped2, my_module->ch0_cc_value[ped2]);
+    }
+}
+
 void Hc1ModuleWidget::drawExpanderConnector(NVGcontext* vg)
 {
     if (my_module && my_module->expanders.any()) {
@@ -176,7 +281,6 @@ void Hc1ModuleWidget::draw(const DrawArgs& args)
 
     auto font = GetPluginFontRegular();
     if (FontOk(font)) {
-
 #if defined SHOW_PRESET0
         if (my_module)
         {
@@ -197,73 +301,10 @@ void Hc1ModuleWidget::draw(const DrawArgs& args)
             CenterText(vg, RECIRC_BOX_CENTER, RECIRC_BOX_TOP + 2.f, RecirculatorName(rt), nullptr);
         }
 
-        // pedals
-        SetTextStyle(vg, font, RampGray(G_85), 10.f);
-        if (stock) {
-            drawPedalAssignment(vg, box.size.x - 3.f, PRESET_BOTTOM - 18.f, '1', 64, 0);
-            drawPedalAssignment(vg, box.size.x - 3.f, PRESET_BOTTOM - 4.5f, '2', 66, 0);
-        } else {
-            auto ped1 = my_module->ch15_cc_value[52];
-            auto ped2 = my_module->ch15_cc_value[53];
-            if (ped1 == ped2) {
-                drawPedalKnobAssignment(vg, ped1, "1,2");
-            } else {
-                drawPedalKnobAssignment(vg, ped1, "1");
-                drawPedalKnobAssignment(vg, ped2, "2");
-            }
-            drawPedalAssignment(vg, box.size.x - 3.f, PRESET_BOTTOM - 18.f, '1', ped1, my_module->ch0_cc_value[ped1]);
-            drawPedalAssignment(vg, box.size.x - 3.f, PRESET_BOTTOM - 4.5f, '2', ped2, my_module->ch0_cc_value[ped2]);
-        }
+        drawPedals(vg, font, stock);
     }
 
-    // status
-    if (my_module) {
-        float left = 60.f;
-        float spacing = 6.25f;
-        float y = box.size.y - 7.5f;
-
-        // note
-        Dot(vg, left, y, my_module->notesOn ? purple_light : gray_light, my_module->notesOn);
-        left += spacing;
-        //device_output_state
-        Dot(vg, left, y, InitStateColor(my_module->device_output_state));
-        left += spacing;
-        // device_input_state
-        Dot(vg, left, y, InitStateColor(my_module->device_input_state));
-        left += spacing;
-        //eagan matrix
-        Dot(vg, left, y, my_module->is_eagan_matrix ? blue_light : yellow_light);
-        left += spacing;
-        // //device_state
-        // Dot(vg, left, y, InitStateColor(my_module->device_hello_state));
-        // left += spacing;
-        //system_preset_state
-        Dot(vg, left, y, InitStateColor(my_module->system_preset_state));
-        left += spacing;
-        //user_preset_state
-        Dot(vg, left, y, InitStateColor(my_module->user_preset_state));
-        left += spacing;
-        //config_state
-        Dot(vg, left, y, InitStateColor(my_module->config_state));
-        left += spacing;
-        //saved_preset_state
-        if (my_module->restore_saved_preset){
-            Dot(vg, left, y, InitStateColor(my_module->saved_preset_state));
-        }
-        left += spacing;
-        //request_updates_state
-        Dot(vg, left, y, InitStateColor(my_module->request_updates_state));
-        left += spacing;
-        //handshake
-        if (my_module->heart_beating) {
-            Dot(vg, left, y, InitStateColor(my_module->handshake));
-        }
-        left += spacing;
-        // note (debugging)
-        // auto n = format_string("%d", my_module->note);
-        // nvgText(vg, left + 5.f, box.size.y - 1.5f, n.c_str(), nullptr);
-    }
-
+    drawStatusDots(vg);
     if (!my_module) {
         DrawLogo(args.vg, box.size.x*.5f - 120, 30.f, Overlay(COLOR_BRAND), 14.0);
     }
