@@ -120,8 +120,9 @@ TCCPQ* configCCParam(uint8_t cc, bool hiRes, Module* module, int paramId, int in
 
     return q;
 }
+const NVGcolor connected_track_color = nvgRGB(0x73, 0x5d, 0x26);
 
-struct MidiKnob : SmallBlackKnob
+struct ModKnob : SmallBlackKnob
 {
     int inputId = -1;
     int relativeParamId = -1;
@@ -130,48 +131,55 @@ struct MidiKnob : SmallBlackKnob
     {
         SmallBlackKnob::drawLayer(args, layer);
         if (1 != layer) return;
+
         if (module
             && inputId >= 0
-            && relativeParamId >= 0
             && module->getInput(inputId).isConnected()
-            && module->getParam(relativeParamId).getValue() >= .5f
             ) {
-            auto pq = dynamic_cast<CCParamQuantity*>(getParamQuantity());
-            if (!pq) return;
-            float value = pq->clipValue(pq->offset + pq->getValue()) / pq->getMaxValue();
-            float angle = math::rescale(value, 0.f, 1.f, minAngle, maxAngle);
-            angle = std::fmod(angle, 2 * M_PI);
+            // track
+            DrawKnobTrack(args.vg, this, 13.25, 1.2f, connected_track_color);
 
-        	float transform[6];
-            nvgTransformIdentity(transform);
-            float t[6];
-            math::Vec center = sw->box.getCenter();
-            nvgTransformTranslate(t, VEC_ARGS(center));
-            nvgTransformPremultiply(transform, t);
-            nvgTransformRotate(t, angle);
-            nvgTransformPremultiply(transform, t);
-            nvgTransformTranslate(t, VEC_ARGS(center.neg()));
-    		nvgTransformPremultiply(transform, t);
+            // LED
+            if (relativeParamId >= 0 && module->getParam(relativeParamId).getValue() >= .5f)
+            {
+                auto pq = dynamic_cast<CCParamQuantity*>(getParamQuantity());
+                if (!pq) return;
+                float value = pq->clipValue(pq->offset + pq->getValue()) / pq->getMaxValue();
+                float angle = math::rescale(value, 0.f, 1.f, minAngle, maxAngle);
+                angle = std::fmod(angle, 2 * M_PI);
 
-            auto vg = args.vg;
-            nvgSave(vg);
-    		nvgTransform(vg, transform[0], transform[1], transform[2], transform[3], transform[4], transform[5]);
-            //Line(vg, center.x, center.y, center.x, center.y - 14.f, preset_name_color, .75f);
-            CircularHalo(vg, center.x, center.y - 13.f, 2.75f, 9.5f, preset_name_color);
-            Circle(vg, center.x, center.y - 13.f, 1.75f, preset_name_color);
-            nvgRestore(vg);
+                float transform[6];
+                nvgTransformIdentity(transform);
+                float t[6];
+                math::Vec center = sw->box.getCenter();
+                nvgTransformTranslate(t, VEC_ARGS(center));
+                nvgTransformPremultiply(transform, t);
+                nvgTransformRotate(t, angle);
+                nvgTransformPremultiply(transform, t);
+                nvgTransformTranslate(t, VEC_ARGS(center.neg()));
+                nvgTransformPremultiply(transform, t);
+
+                auto vg = args.vg;
+                nvgSave(vg);
+                nvgTransform(vg, transform[0], transform[1], transform[2], transform[3], transform[4], transform[5]);
+                //Line(vg, center.x, center.y, center.x, center.y - 14.f, preset_name_color, .75f);
+                CircularHalo(vg, center.x, center.y - 13.f, 2.75f, 9.5f, preset_name_color);
+                Circle(vg, center.x, center.y - 13.f, 1.75f, preset_name_color);
+                nvgRestore(vg);
+            }
         }
     }
 
     void draw(const DrawArgs& args) override {
         SmallBlackKnob::draw(args);
-        DrawKnobTrack(args.vg, this, 13.25, 1.2f, RampGray(G_40));
+        if ((inputId >= 0) && (!module || !module->getInput(inputId).isConnected())) {
+            DrawKnobTrack(args.vg, this, 13.25, 1.2f, RampGray(G_30));
+        }
     }
-
 };
 
-template <typename T = MidiKnob>
-T* createMidiKnob(Vec pos, Module * module, int paramId, int inputId, int relativeId)
+template <typename T = ModKnob>
+T* createModKnob(Vec pos, Module * module, int paramId, int inputId, int relativeId)
 {
     auto mk = createParamCentered<T>(pos, module, paramId);
     mk->setImage();

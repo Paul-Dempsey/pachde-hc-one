@@ -49,8 +49,9 @@ TPQ* configTuningParam(Module* module, int paramId)
 struct TuningKnob : SmallBlackKnob
 {
     void draw(const DrawArgs& args) override {
+        //DrawKnobTrack(args.vg, this, 13.f, 1.2f, RampGray(G_20));
+        Circle(args.vg, box.size.x*.5f, box.size.x*.5f, 13.f, GetStockColor(StockColor::Gray_25p)); // bezel
         SmallBlackKnob::draw(args);
-        DrawKnobTrack(args.vg, this, 13.25, 1.2f, RampGray(G_40));
     }
 
     Tuning getParamValue() {
@@ -118,7 +119,6 @@ struct TuningKnob : SmallBlackKnob
             menu->addChild(createTuningMenuItem(static_cast<Tuning>(Tuning::UserTuning1 + 7)));
         }));
     }
-
 };
 
 }

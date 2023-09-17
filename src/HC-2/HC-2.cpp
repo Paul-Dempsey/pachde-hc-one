@@ -1,8 +1,8 @@
 #include "HC-2.hpp"
 #include "tuning_ui.hpp"
 #include "../cc_param.hpp"
-#include "../em_types_ui.hpp"
 #include "../colors.hpp"
+#include "../components.hpp"
 #include "../misc.hpp"
 #include "../text.hpp"
 

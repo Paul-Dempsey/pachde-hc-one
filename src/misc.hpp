@@ -5,6 +5,10 @@
 using namespace ::rack;
 namespace pachde {
 
+#if !defined U8
+#define U8(arg) static_cast<uint8_t>(arg)
+#endif
+
 std::string format_string(const char *fmt, ...);
 size_t common_prefix_length(const std::string& alpha, const std::string& beta);
 bool is_EMDevice(const std::string& name);

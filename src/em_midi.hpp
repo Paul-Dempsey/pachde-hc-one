@@ -7,6 +7,9 @@ using namespace ::rack;
 // "G:\Reference\Haken\contctl.h"
 
 namespace em_midi {
+#if !defined U8
+#define U8(arg) static_cast<uint8_t>(arg)
+#endif
 
 struct ISendMidi
 {
@@ -108,7 +111,7 @@ constexpr const uint8_t MidiCC_Poly         = 127;
 // channel 16
 constexpr const uint8_t EMCC_OctaveShift    = 8; // 48/60/72 = down, normal, up
 constexpr const uint8_t EMCC_MonoSwitch     = 9;
-constexpr const uint8_t EMCC_FineTune       = 10; // +- 60 cents
+constexpr const uint8_t EMCC_FineTune       = 10; // 4..124 = +- 60 cents
 constexpr const uint8_t EMCC_i              = 12;
 constexpr const uint8_t EMCC_ii             = 13;
 constexpr const uint8_t EMCC_iii            = 14;
@@ -172,21 +175,20 @@ constexpr const uint8_t EMCC_Actuation      = 70;
 constexpr const uint8_t EMCC_PolyTrad		= 71; // ** Continuum out: total _TRAD polyphony  6.00
 constexpr const uint8_t EMCC_PolyDsp		= 72; // ** Continuum out: total _DSP polyphony   6.00
 constexpr const uint8_t EMCC_PolyCvc		= 73; // ** Continuum out: total _CVC polyphony   6.00
+constexpr const uint8_t EMCC_Y              = 74;
 
 constexpr const uint8_t EMCC_MinPedal1	    = 76;
 constexpr const uint8_t EMCC_MaxPedal1	    = 77;
 constexpr const uint8_t EMCC_MinPedal2	    = 78;
 constexpr const uint8_t EMCC_MaxPedal2	    = 79;
 
-constexpr const uint8_t EMCC_ZMSB           = 70;
-constexpr const uint8_t EMCC_Y              = 74;
 constexpr const uint8_t EMCC_TiltEq          = 83;
 constexpr const uint8_t EMCC_TiltEqFrequency = 84; // 0..127 = 120Hz..15kHz	
 constexpr const uint8_t EMCC_TiltEqMix       = 85; // 0=dry .. 127=wet
 
 // following 4 not just ch 16
 constexpr const uint8_t EMCC_PedalFraction  = 86;
-constexpr const uint8_t EMCC_Fraction       = 87;
+constexpr const uint8_t EMCC_Fraction       = 87; //bend/y/z
 constexpr const uint8_t EMCC_SplitLow       = 88;
 constexpr const uint8_t EMCC_SplitHigh      = 89;
 
@@ -395,22 +397,22 @@ inline bool Is14BitPedalCC(uint8_t cc) { return (EMCC_i <= cc) && (cc <= EMCC_vi
 
 inline void SetNoteOn(midi::Message& msg, uint8_t channel, uint8_t note, uint8_t velocity = 127)
 {
-    msg.bytes = { static_cast<uint8_t>(MidiStatus_NoteOn | channel), note, velocity };
+    msg.bytes = { U8(MidiStatus_NoteOn | channel), note, velocity };
 }
 
 inline void SetNoteOff(midi::Message& msg, uint8_t channel, uint8_t note, uint8_t velocity = 0)
 {
-    msg.bytes = { static_cast<uint8_t>(MidiStatus_NoteOff | channel), note, velocity };
+    msg.bytes = { U8(MidiStatus_NoteOff | channel), note, velocity };
 }
 
 inline void SetCC(midi::Message& msg, uint8_t channel, uint8_t cc, uint8_t value)
 {
-    msg.bytes = { static_cast<uint8_t>(MidiStatus_CC | channel), cc, value };
+    msg.bytes = { U8(MidiStatus_CC | channel), cc, value };
 }
 
 inline void SetProgramChange(midi::Message& msg, uint8_t channel, uint8_t program)
 {
-    msg.bytes = { static_cast<uint8_t>(MidiStatus_ProgramChange | channel), program };
+    msg.bytes = { U8(MidiStatus_ProgramChange | channel), program };
 }
 
 inline uint8_t GetCC(const midi::Message& msg) { return msg.bytes[1]; }

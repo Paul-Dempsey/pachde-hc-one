@@ -81,11 +81,93 @@ struct PickMidi : app::MidiButton {
 };
 
 
+struct PDSmallButton : app::SvgSwitch {
+    PDSmallButton() {
+        addFrame(Svg::load(asset::plugin(pluginInstance, "res/TinyPush_up.svg")));
+        addFrame(Svg::load(asset::plugin(pluginInstance, "res/TinyPush_down.svg")));
+    }
+};
+
+template <typename TLight>
+struct PDLightButton : app::SvgSwitch {
+    app::ModuleLightWidget* light;
+
+    PDLightButton() {
+        addFrame(Svg::load(asset::plugin(pluginInstance, "res/TinyPush_up.svg")));
+        addFrame(Svg::load(asset::plugin(pluginInstance, "res/TinyPush_down.svg")));
+        light = new TLight;
+        // Move center of light to center of box
+        light->box.pos = box.size.div(2).minus(light->box.size.div(2));
+        addChild(light);
+    }
+
+    app::ModuleLightWidget* getLight() {
+        return light;
+    }
+};
+template <typename TLight>
+using SmallLightButton = PDLightButton<TLight>;
+
+template <typename TLight>
+struct PDLightLatch : PDLightButton<TLight> {
+    PDLightLatch() {
+        this->momentary = false;
+        this->latch = true;
+    }
+};
+
+// -- square -------------------------------
+struct PDSmallSquareButton : app::SvgSwitch
+{
+    std::function<void()> handler;
+
+    PDSmallSquareButton() {
+        addFrame(Svg::load(asset::plugin(pluginInstance, "res/TinyPush_square_up.svg")));
+        addFrame(Svg::load(asset::plugin(pluginInstance, "res/TinyPush_square_down.svg")));
+    }
+
+    void onClick(std::function<void()> callback) {
+        handler = callback;
+    }
+
+};
+
+template <typename TLight>
+struct PDSquareLightButton : app::SvgSwitch
+{
+    app::ModuleLightWidget* light;
+
+    PDSquareLightButton() {
+        addFrame(Svg::load(asset::plugin(pluginInstance, "res/TinyPush_square_up.svg")));
+        addFrame(Svg::load(asset::plugin(pluginInstance, "res/TinyPush_square_down.svg")));
+        light = new TLight;
+        // Move center of light to center of box
+        light->box.pos = box.size.div(2).minus(light->box.size.div(2));
+        addChild(light);
+    }
+
+    app::ModuleLightWidget* getLight() {
+        return light;
+    }
+};
+template <typename TLight>
+using SmallSquareLightButton = PDSquareLightButton<TLight>;
+
+template <typename TLight>
+struct PDSquareLightLatch : PDSquareLightButton<TLight>
+{
+    PDSquareLightLatch() {
+        this->momentary = false;
+        this->latch = true;
+    }
+};
+
 template<typename TSvg>
 struct TKnob: rack::RoundKnob
 {
     bool clickStepValue = true;
-    float stepIncrementBy = 1.f;
+    float stepIncrement = 1.f;
+    float stepModIncrement  = 10.f;
     bool key_modified = false;
     bool key_modified2 = false;
 
@@ -98,6 +180,14 @@ struct TKnob: rack::RoundKnob
     void onClick(std::function<void(void)> callback)
     {
         clickHandler = callback;
+    }
+    void continuous() {
+        clickStepValue = false;
+    }
+    void clicky(float step, float mod_step) {
+        clickStepValue = true;
+        stepIncrement = step;
+        stepModIncrement = mod_step;
     }
 
     void onHoverKey(const HoverKeyEvent& e) override {
@@ -119,7 +209,7 @@ struct TKnob: rack::RoundKnob
                     if (value == lim) {
                         value = pq->getMinValue();
                     } else {
-                        value = value + (key_modified2 ? stepIncrementBy * 10 : stepIncrementBy);
+                        value = value + (key_modified2 ? stepModIncrement : stepIncrement);
                         if (value > lim) {
                             value = lim;
                         }
@@ -129,7 +219,7 @@ struct TKnob: rack::RoundKnob
                     if (value == lim) {
                         value = pq->getMaxValue();
                     } else {
-                        value = value - (key_modified2 ? stepIncrementBy * 10 : stepIncrementBy);
+                        value = value - (key_modified2 ? stepModIncrement : stepIncrement);
                         if (value < pq->getMinValue()) {
                             value = lim;
                         }
@@ -169,6 +259,65 @@ struct SmallBlackKnobSvg {
 };
 using SmallBlackKnob = TKnob<SmallBlackKnobSvg>;
 
+template<typename TSvg>
+struct TButton : SvgButton
+{
+    bool key_ctrl = false;
+    bool key_shift = false;
+    std::function<void(bool, bool)> handler;
+
+    TButton() {
+        setImage();
+    }
+
+    void setHandler(std::function<void(bool,bool)> callback)
+    {
+        handler = callback;
+    }
+
+    void setImage()
+    {
+        if (frames.size() > 0) return;
+        if (TSvg::isSystemSvg()) {
+            addFrame(Svg::load(asset::system(TSvg::up())));
+            addFrame(Svg::load(asset::system(TSvg::down())));
+        } else {
+            addFrame(Svg::load(asset::plugin(pluginInstance, TSvg::up())));
+            addFrame(Svg::load(asset::plugin(pluginInstance, TSvg::down())));
+        }
+        if (fb) {
+            fb->setDirty(true);
+        }
+    }
+
+    void onHoverKey(const HoverKeyEvent& e) override
+    {
+        SvgButton::onHoverKey(e);
+        key_ctrl = (e.mods & RACK_MOD_MASK) & RACK_MOD_CTRL;
+        key_shift = (e.mods & RACK_MOD_MASK) & GLFW_MOD_SHIFT;
+    }
+
+    void onAction(const ActionEvent& e) override
+    {
+        if (handler) {
+            handler(key_ctrl, key_shift);
+        } else {
+            SvgButton::onAction(e);
+        }
+    }
+
+};
+
+struct SmallSquareButtonSvg {
+    static bool isSystemSvg() { return false; }
+    static std::string up() {
+        return "res/TinyPush_square_up.svg";
+    }
+    static std::string down() {
+        return "res/TinyPush_square_down.svg";
+    }
+};
+using SmallSquareButton = TButton<SmallSquareButtonSvg>;
 
 }
 #endif

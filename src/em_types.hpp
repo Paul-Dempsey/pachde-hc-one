@@ -7,6 +7,7 @@ using namespace ::rack;
 
 namespace pachde {
 
+
 enum class RoundKind : uint8_t {
     Normal,
     Release,
@@ -89,15 +90,15 @@ struct Rounding
     uint8_t rate;
     bool initial;
     RoundKind kind;
-    RoundEqual equal;
     Tuning tuning;
+    RoundEqual equal;
 
     Rounding()
     :   rate(0),
         initial(false),
         kind(RoundKind::Normal),
-        equal(RoundEqual::Equal),
-        tuning(Tuning::EqualTuning)
+        tuning(Tuning::EqualTuning),
+        equal(RoundEqual::Equal)
     {}
 
     void clear()
@@ -105,8 +106,8 @@ struct Rounding
         rate = 0;
         initial = false;
         kind = RoundKind::Normal;
-        equal = RoundEqual::Equal;
         tuning = Tuning::EqualTuning;
+        equal = RoundEqual::Equal;
     }
 };
 

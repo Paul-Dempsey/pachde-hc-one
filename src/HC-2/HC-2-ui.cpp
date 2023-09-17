@@ -3,13 +3,11 @@
 #include "../cc_param.hpp"
 #include "../colors.hpp"
 #include "../components.hpp"
-#include "../em_types_ui.hpp"
 #include "../misc.hpp"
 #include "../port.hpp"
 #include "../small_push.hpp"
 #include "../switch_4.hpp"
 #include "../text.hpp"
-//#include "tuning_hamburger.hpp"
 
 namespace pachde {
 
@@ -38,7 +36,7 @@ inline uint8_t GetSmallParamValue(rack::app::ModuleWidget* w, int id, uint8_t de
     if (!p) return default_value;
     auto pq = p->getParamQuantity();
     if (!pq) return default_value;
-    return static_cast<uint8_t>(pq->getValue());
+    return U8(pq->getValue());
 }
 void Hc2ModuleWidget::createRoundingUI(float x, float y)
 {
@@ -49,7 +47,7 @@ void Hc2ModuleWidget::createRoundingUI(float x, float y)
         Vec(x + ROUND_COL2, y + MORE_PAD + HALF_KNOB),
         module, Hc2P::P_ROUND_KIND));
  
-    addChild(createMidiKnob(
+    addChild(createModKnob(
         Vec( x + ROUND_COL1, y + ROUND_KNOB_ROW), 
         module, Hc2P::P_ROUND_RATE, Hc2I::IN_ROUND_RATE, Hc2P::P_ROUND_RATE_REL));
     addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<BlueLight>>>(
@@ -141,7 +139,7 @@ void Hc2ModuleWidget::drawExpanderConnector(const DrawArgs& args)
     auto vg = args.vg;
 
     auto right = my_module->partner_side.right();
-    float cy = box.size.y * .5f;
+    float cy = 80.f;
     if (right) {
         Line(vg, box.size.x - 5.5f, cy, box.size.x , cy, COLOR_BRAND, 1.75f);
         Circle(vg, box.size.x - 5.5f, cy, 2.5f, COLOR_BRAND);
@@ -173,25 +171,6 @@ void Hc2ModuleWidget::drawCCMap(const DrawArgs& args, Hc1Module * partner)
     //Line(args.vg, x + 1 + 117, 10.f, x + 1 + 117, 48.f, blue_light);
     drawMap(args.vg, partner->ch0_cc_value, x, box.size.y - 15.f - 18.f - 18.f);
     drawMap(args.vg, partner->ch15_cc_value, x, box.size.y - 15.f - 18.f);
-}
-
-std::string PedalAssign(uint8_t a) {
-    switch (a) {
-    case 12: return "i";
-    case 13: return "ii";
-    case 14: return "iii";
-    case 15: return "iv";
-    case 16: return "v";
-    case 17: return "vi";
-    case 20: return "R1";
-    case 21: return "R2";
-    case 22: return "R3";
-    case 23: return "R4";
-    case 24: return "RMix";
-    case 64: return "Sustain";
-    case 66: return "Sostenuto";
-    }
-    return format_string("%3d", a);
 }
 
 void Hc2ModuleWidget::draw(const DrawArgs& args)

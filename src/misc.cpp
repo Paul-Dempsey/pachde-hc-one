@@ -6,9 +6,9 @@ bool is_EMDevice(const std::string& name)
 {
     std::string text = name;
     std::transform(text.begin(), text.end(), text.begin(), [](unsigned char c){ return std::tolower(c); });
-    if (0 == text.compare(0, 8, "continuu", 0, 8)) { return true; }
-    if (0 == text.compare(0, 6, "osmose", 0, 6)) { return true; }
-    if (0 == text.compare(0, 5, "eagan", 0, 5)) { return true; }
+    if (0 == text.compare(0, 8, "continuu", 0, 8)) { return true; } //Continuum <serial> and ContinuuMini <serial>
+    if (0 == text.compare(0, 6, "osmose", 0, 6)) { return true; } // just a guess
+    if (0 == text.compare(0, 5, "eagan", 0, 5)) { return true; } // "EaganMatrix Module" according to the user guide
     return false;
 }
 

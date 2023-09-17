@@ -57,7 +57,7 @@ struct TabBarWidget : OpaqueWidget
         void draw(const DrawArgs& args) override
         {
             auto vg = args.vg;
-            FillRect(vg, 1.f, -.5f, this->box.size.x -2.f, this->box.size.y + 1.f,
+            FillRect(vg, .5f, -.75f, this->box.size.x -.75f, this->box.size.y + .5f,
                 selected ? RampGray(G_20)
                     : hovered ? RampGray(G_30)
                     : RampGray(G_15));
@@ -65,8 +65,10 @@ struct TabBarWidget : OpaqueWidget
             if (PresetTab::User == kind && sym) {
                 sym->setVisible(selected);
             }
+
             TBase::draw(args);
 
+            auto lineco = RampGray(G_30);
             if (selected) {
                 switch (kind) {
                 case PresetTab::User:
@@ -79,9 +81,11 @@ struct TabBarWidget : OpaqueWidget
                     Circle(vg, 6.5f, 6.f, 2.f, preset_name_color);
                     break;
                 }
-                Line(vg, 1.f, -.5f, this->box.size.x-1.f, -.5f, RampGray(G_40), .75f);
-                Line(vg, 1.f, -.5f, 1.f, this->box.size.y+1.f, RampGray(G_40), .75f);
-                Line(vg, this->box.size.x-1.f, -.5f, this->box.size.x-1.f, this->box.size.y+1.f, RampGray(G_40), .75f);
+                Line(vg, .5f, -.5f, this->box.size.x-.5f, -.5f, lineco, .75f); // top
+                Line(vg, .5f, -.5f, .5f, this->box.size.y, lineco, .75f); // left
+                Line(vg, this->box.size.x-.5f, -.5f, this->box.size.x-.5f, this->box.size.y, lineco, .75f); // right
+            } else {
+                Line(vg, 0.f, this->box.size.y-.5f, this->box.size.x, this->box.size.y-.5f, lineco, .75f);
             }
             auto font = GetPluginFontRegular();
             if (FontOk(font)) {
@@ -93,6 +97,15 @@ struct TabBarWidget : OpaqueWidget
     using TabWidget = TTabWidget<OpaqueWidget>;
 
     std::vector<TabWidget*> tabs;
+
+    // void draw(const DrawArgs& args) override {
+    //     OpaqueWidget::draw(args);
+    //     for (auto tab: tabs) {
+    //         if (!tab->selected) {
+    //             Line(args.vg, tab.pos.x, tab.size.y, tab.pos.x + )
+    //         }
+    //     }
+    // }
 
     PresetTab getSelectedTab() {
         return static_cast<PresetTab>(std::distance(tabs.begin(), std::find_if(tabs.begin(), tabs.end(), [](const TabWidget* p){ return p->selected; })));

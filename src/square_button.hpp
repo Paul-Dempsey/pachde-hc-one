@@ -7,26 +7,19 @@
 
 namespace pachde {
 
-enum SquareButtonSymbol {
+enum class SquareButtonSymbol : uint8_t {
+    Nil,
     Up,
     Down,
+    Left, 
+    Right,
     Funnel
 };
 
-struct SquareButton : TipWidget {
+struct ButtonBehavior : TipWidget {
     bool pressed = false;
     bool enabled = true;
-    SquareButtonSymbol symbol = SquareButtonSymbol::Up;
     std::function<void()> handler;
-
-    SquareButton() {
-        box.size.x = 15.f;
-        box.size.y = 16.f;
-    }
-
-    void setSymbol(SquareButtonSymbol sym) {
-        symbol = sym;
-    }
 
     void enable(bool enable = true) {
         enabled = enable;
@@ -56,13 +49,37 @@ struct SquareButton : TipWidget {
             handler();
         }
     }
+};
 
+struct SquareButton : ButtonBehavior {
+    SquareButtonSymbol symbol = SquareButtonSymbol::Funnel;
+    NVGcolor base_screen = nvgRGBAf(0.f,0.f,0.f,.75f);
+    NVGcolor med_screen = nvgRGBAf(.4f,.4f,.4f,.65f);
+    NVGcolor hi1 =  RampGray(G_75);
+    NVGcolor hi2 =  RampGray(G_35);
+    NVGcolor face1 = RampGray(G_35);
+    NVGcolor face2 = RampGray(G_20);
+
+    SquareButton() {
+        box.size.x = 15.f;
+        box.size.y = 16.f;
+    }
+
+    void setSymbol(SquareButtonSymbol sym) {
+        symbol = sym;
+    }
 
     void drawUpFace(NVGcontext* vg) {
-        FillRect(vg, 0.5f, 1.f, 14.f, 15.f, nvgRGBAf(0.f,0.f,0.f,.75f));
-        GradientRect(vg, 0.5f, 0.75f, 14.f, 14.f, RampGray(G_75), RampGray(G_25), 0.f, 8.f);
-        GradientRect(vg, .85f, 1.125f, 13.25f, 13.5f, RampGray(G_35), RampGray(G_20), 0.f, 15.f);
+        FillRect(vg, 0.5f, 1.f, 14.f, 15.f, base_screen);
+        GradientRect(vg, 0.5f, 0.75f, 14.f, 14.f, hi1, hi2, 0.f, 8.f);
+        GradientRect(vg, .85f, 1.125f, 13.25f, 13.5f, face1, face2, 0.f, 15.f);
     }
+    void drawDownFace(NVGcontext* vg) {
+        FillRect(vg, 0.5f, 1.f, 14.f, 14.25f, base_screen);
+        GradientRect(vg, 0.5f, 0.75f, 14.f, 14.f, hi2, hi1, 8.f, 15.f);
+        GradientRect(vg, .85f, 1.125f, 13.25f, 13.5f, face2, face1, 0.f, 15.f);
+    }
+
 
     void drawFunnel(NVGcontext* vg) {
         nvgBeginPath(vg);
@@ -81,7 +98,7 @@ struct SquareButton : TipWidget {
         nvgFill(vg);
     }
 
-    void drawDownSymbol(NVGcontext* vg) {
+    void drawUpSymbol(NVGcontext* vg) {
         nvgBeginPath(vg);
         nvgFillColor(vg, RampGray(G_85));
         nvgMoveTo(vg, 7.5f, 4.f);
@@ -91,7 +108,7 @@ struct SquareButton : TipWidget {
         nvgFill(vg);
     }
 
-    void drawUpSymbol(NVGcontext* vg) {
+    void drawDownSymbol(NVGcontext* vg) {
         nvgBeginPath(vg);
         nvgFillColor(vg, RampGray(G_85));
         nvgMoveTo(vg, 5.f, 8.f);
@@ -100,28 +117,59 @@ struct SquareButton : TipWidget {
         nvgFill(vg);
     }
 
+    void drawLeftSymbol(NVGcontext * vg) {
+        nvgBeginPath(vg);
+        nvgFillColor(vg, RampGray(G_85));
+        nvgMoveTo(vg, 4.f, 8.5f);
+        nvgLineTo(vg, 9.f, 6.f);
+        nvgLineTo(vg, 9.f, 11.f);
+        nvgFill(vg);
+    }
+
+    void drawRightSymbol(NVGcontext * vg) {
+        nvgBeginPath(vg);
+        nvgFillColor(vg, RampGray(G_85));
+        nvgMoveTo(vg, 11.f, 8.5f);
+        nvgLineTo(vg, 6.f, 6.f);
+        nvgLineTo(vg, 6.f, 11.f);
+        nvgFill(vg);
+    }
+
+    void drawNilSymbol(NVGcontext * vg) {
+        OpenCircle(vg, 7.5f, 8.f, 3.f, RampGray(G_45), 0.5f);
+        Line(vg, 7.f, 8.f, 8.f, 8.f, RampGray(G_50), 0.5f);
+    }
+
+    void drawSymbol(NVGcontext * vg) {
+        switch (symbol) {
+        case SquareButtonSymbol::Nil:    drawNilSymbol(vg); break;
+        case SquareButtonSymbol::Up:     drawUpSymbol(vg); break;
+        case SquareButtonSymbol::Down:   drawDownSymbol(vg); break;
+        case SquareButtonSymbol::Left:   drawLeftSymbol(vg); break;
+        case SquareButtonSymbol::Right:  drawRightSymbol(vg); break;
+        case SquareButtonSymbol::Funnel: drawFunnel(vg); break;
+        default:
+            Line(vg, 0, 0, 15, 15, GetStockColor(StockColor::Red));
+            Line(vg, 15, 0, 0, 15, GetStockColor(StockColor::Red));
+            break;
+        }
+    }
+
     void draw(const DrawArgs& args) override {
         auto vg = args.vg;
         FillRect(vg, 0.f, 0.f, 15.f, 15.f, RampGray(G_0));
-        FillRect(vg, 0.f, 0.f, 15.f, 0.5f, nvgRGBAf(.4f,.4f,.4f,.65f));
+        FillRect(vg, 0.f, 0.f, 15.f, 0.5f, med_screen);
         //FillRect(vg, 0.f, 14.5f, 15.f, 0.5f, RampGray(G_65));
         if (enabled) {
             if (pressed) {
-                FillRect(vg, 0.5f, 1.f, 14.f, 14.25f, nvgRGBAf(0.f,0.f,0.f,.75f));
-                GradientRect(vg, 0.5f, 0.75f, 14.f, 14.f, RampGray(G_25), RampGray(G_75), 8.f, 15.f);
-                GradientRect(vg, .85f, 1.125f, 13.25f, 13.5f, RampGray(G_20), RampGray(G_35), 0.f, 15.f);
+                drawDownFace(vg);
             } else {
                 drawUpFace(vg);
             }
-            switch (symbol) {
-            case SquareButtonSymbol::Up: drawUpSymbol(vg); break;
-            case SquareButtonSymbol::Down: drawDownSymbol(vg); break;
-            case SquareButtonSymbol::Funnel: drawFunnel(vg); break;
-            }
+            drawSymbol(vg);
         } else {
             drawUpFace(vg);
-            OpenCircle(vg, 7.5f, 8.f, 3.f, RampGray(G_45), 0.5f);
-            Line(vg, 7.f, 8.f, 8.f, 8.f, RampGray(G_50), 0.5f);
+            drawNilSymbol(vg);
         }
     }
 };

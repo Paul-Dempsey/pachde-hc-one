@@ -3,7 +3,6 @@
 
 namespace pachde {
 
-
 void Hc1Module::resetMidiIO()
 {
     midi_dispatch.clear();
