@@ -47,8 +47,7 @@ struct PresetWidget : TipWidget
             symbol->setSymbol((0 == preset->bank_hi) ? 1 : 0);
             symbol->box.pos.x = preset->favorite ? 12.f : 4.f;
             text_label->text(preset->name);
-            auto code = *preset->get_category_list().cbegin();
-            text_code->text(CategoryCode(code).to_string());
+            text_code->text(preset->categoryName());
         } else {
             tip_text = "(no preset)";
             symbol->setSymbol(0);

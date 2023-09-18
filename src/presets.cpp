@@ -51,6 +51,17 @@ std::string Preset::describe(bool multi_line /*= true*/)
         line_break, m.empty() ? "-" : m.c_str() );
 }
 
+uint16_t Preset::primaryCategory()
+{
+    ensure_category_list();
+    if (categories.empty()) return OT;
+    return *categories.cbegin();
+}
+
+std::string Preset::categoryName()
+{
+    return CategoryCode(primaryCategory()).to_string();
+}
 
 void Preset::nada()
 {

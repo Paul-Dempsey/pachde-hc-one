@@ -1,6 +1,16 @@
 #include "HC-1.hpp"
 namespace pachde {
 
+
+void Hc1Module::setPresetOrder(PresetOrder order)
+{
+    if (order != preset_order)
+    {
+        preset_order = order;
+        std::sort(system_presets.begin(), system_presets.end(), getPresetSort(preset_order));
+    }
+}
+
 std::string Hc1Module::userPresetsPath()
 {
     if (deviceName().empty()) return "";

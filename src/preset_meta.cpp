@@ -127,9 +127,14 @@ HCCategoryCode::HCCategoryCode()
     std::sort(data.begin(), data.end(), [](const std::shared_ptr<PresetMeta>& a, const std::shared_ptr<PresetMeta>& b) { return a->code < b->code; });
 }
 
+std::string HCCategoryCode::categoryName(uint16_t key) const
+{
+    auto cat = find(key);
+    return cat ? cat->name : "Unknown";
+}
+
 std::shared_ptr<PresetMeta> HCCategoryCode::find(uint16_t key) const
 {
-    //auto key = make_cat_code(code_text);
     auto item = std::lower_bound(data.cbegin(), data.cend(), key, [](const std::shared_ptr<PresetMeta> &p, uint16_t key){ return p->code < key; });
     return data.cend() != item ? *item : nullptr;
 }

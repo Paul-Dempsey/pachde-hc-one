@@ -16,14 +16,20 @@ void Hc1ModuleWidget::addSortBy(Menu *menu, std::string name, PresetOrder order)
     menu->addChild(createCheckMenuItem(name, "", 
          [=](){ return my_module->preset_order == order; },
          [=](){
-            my_module->preset_order = order;
-            std::sort(my_module->system_presets.begin(), my_module->system_presets.end(), getPresetSort(my_module->preset_order));
+            my_module->setPresetOrder(order);
             if (PresetTab::System == tab) {
                 populatePresetWidgets();
                 showCurrentPreset(false);
             }
          }
     ));
+}
+
+void Hc1ModuleWidget::addJumpCategory(Menu *menu, uint16_t category)
+{
+    auto title = format_string("%s (%s)", hcCategoryCode.categoryName(category).c_str(), CategoryCode(category).to_string().c_str());
+    menu->addChild(createMenuItem(title, "", 
+         [=](){ toCategory(category); }));
 }
 
 void Hc1ModuleWidget::addRecirculator(Menu *menu, EM_Recirculator kind)
@@ -120,6 +126,22 @@ void Hc1ModuleWidget::appendContextMenu(Menu *menu)
         menu->addChild(new MenuSeparator);
         menu->addChild(createMenuItem("Save presets", "", [=](){ my_module->savePresets(); }, !ready));
         menu->addChild(createMenuItem("Refresh User presets", "", [=](){ my_module->transmitRequestUserPresets(); }));
+    }));
+
+    menu->addChild(createSubmenuItem("Go to category", "", [=](Menu* menu) {
+        addJumpCategory(menu, ST);
+        addJumpCategory(menu, WI);
+        addJumpCategory(menu, VO);
+        addJumpCategory(menu, KY);
+        addJumpCategory(menu, CL);
+        addJumpCategory(menu, OT);
+        addJumpCategory(menu, PE);
+        addJumpCategory(menu, PT);
+        addJumpCategory(menu, PR);
+        addJumpCategory(menu, DO);
+        addJumpCategory(menu, MD);
+        addJumpCategory(menu, CV);
+        addJumpCategory(menu, UT);
     }));
 
     menu->addChild(createSubmenuItem("Sort System presets", "", [=](Menu* menu) {

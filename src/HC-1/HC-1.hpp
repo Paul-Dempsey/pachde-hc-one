@@ -87,6 +87,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     PresetFilter preset_filter;
 #endif
     PresetOrder preset_order = PresetOrder::Alpha;
+    void setPresetOrder(PresetOrder order);
 
     std::string favoritesPath();
     void clearFavorites();
@@ -444,6 +445,7 @@ struct Hc1ModuleWidget : ModuleWidget, IPresetHolder, IHandleHcEvents
     void pageUp();
     void pageDown();
     void toRelativePreset(int delta);
+    void toCategory(uint16_t code);
     void clearPresetWidgets();
     void populatePresetWidgets();
     void updatePresetWidgets();
@@ -486,6 +488,7 @@ struct Hc1ModuleWidget : ModuleWidget, IPresetHolder, IHandleHcEvents
 
     // HC-1-menu.cpp
     void addSortBy(Menu *menu, std::string name, PresetOrder order);
+    void addJumpCategory(Menu *menu, uint16_t category);
     void addRecirculator(Menu *menu, EM_Recirculator kind);
     void appendContextMenu(Menu *menu) override;
 };

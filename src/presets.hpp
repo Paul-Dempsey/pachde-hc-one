@@ -118,6 +118,8 @@ struct Preset
 
     std::string meta(); // cached
     std::string make_friendly_text(); // not cached
+    std::string categoryName();
+    uint16_t primaryCategory();
     void clear();
     std::string describe_short();
     std::string describe(bool multi_line = true);

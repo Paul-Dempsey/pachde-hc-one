@@ -387,18 +387,36 @@ void Hc1ModuleWidget::onPresetChanged(const PresetChangedEvent& e)
     showCurrentPreset(true);
 }
 
+void Hc1ModuleWidget::toCategory(uint16_t code)
+{
+    if (!my_module) return;
+    my_module->setPresetOrder(PresetOrder::Category);
+    setTab(PresetTab::System);
+    if (my_module->current_preset && code == my_module->current_preset->primaryCategory()) {
+        return;
+    }
+    auto mp = my_module->getPresets(tab);
+    auto index = std::distance(mp.cbegin(), std::find_if(mp.cbegin(), mp.cend(), [=](std::shared_ptr<Preset> p){ return code == p->primaryCategory(); }));
+    auto size = static_cast<ptrdiff_t>(mp.size());
+    if (index == size) {
+        return; // not found
+    }
+    my_module->setPreset(mp[index]);
+}
+
 void Hc1ModuleWidget::toRelativePreset(int delta)
 {
     if (!my_module) return;
     auto mp = my_module->getPresets(tab);
     auto index = std::distance(mp.cbegin(), std::find_if(mp.cbegin(), mp.cend(), [=](std::shared_ptr<Preset> p){ return isCurrentPreset(p); }));
-    if (index == mp.size()) {
+    auto size = static_cast<ptrdiff_t>(mp.size());
+    if (index == size) {
         return; // not found
     }
     index = (index + delta);
     if (index < 0) {
-        index = mp.size() - 1;
-    } else if (index >= mp.size()) {
+        index = size - 1;
+    } else if (index >= size) {
         index = 0; // wrap to start (clipped)
     }
     my_module->setPreset(mp[index]);
