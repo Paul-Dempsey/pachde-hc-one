@@ -50,6 +50,24 @@ struct TipWidget : OpaqueWidget {
         rack::OpaqueWidget::onDragEnd(e);
         destroyTip();
     }
+
+    void onButton(const ButtonEvent& e) override
+    {
+        OpaqueWidget::onButton(e);
+        if (e.action == GLFW_PRESS && e.button == GLFW_MOUSE_BUTTON_RIGHT && (e.mods & RACK_MOD_MASK) == 0) {
+            destroyTip();
+            createContextMenu();
+            e.consume(this);
+        }
+    }
+
+    virtual void appendContextMenu(ui::Menu* menu) {}
+
+    void createContextMenu() {
+        ui::Menu* menu = createMenu();
+    	appendContextMenu(menu);
+    }
+
 };
 
 }

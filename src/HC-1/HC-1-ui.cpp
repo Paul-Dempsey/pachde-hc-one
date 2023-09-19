@@ -42,9 +42,33 @@ void Hc1ModuleWidget::createPresetGrid()
 {
     tab_bar = createWidget<TabBarWidget>(Vec(PRESET_LEFT, PRESET_TOP - 13.f));
     tab_bar->setSize(Vec(PRESET_WIDTH, 13.f));
-    tab_bar->addTab("User", PresetTab::User);
-    tab_bar->addTab("Favorite", PresetTab::Favorite);
-    tab_bar->addTab("System", PresetTab::System);
+    tab_bar->addTab("User", PresetTab::User, nullptr);
+    tab_bar->addTab("Favorite", PresetTab::Favorite, 
+        [=](Menu* menu) { 
+            bool unready = !my_module->ready();
+            menu->addChild(createMenuItem("Favorite presets", "", [](){}, true));
+            menu->addChild(new MenuSeparator);
+            if (my_module) {
+                menu->addChild(createSubmenuItem("Sort", "", [=](Menu* menu) {
+                    menu->addChild(createMenuItem("Alphabetically", "", [=](){
+                        my_module->sortFavorites(PresetOrder::Alpha);
+                        my_module->saveFavorites();
+                        populatePresetWidgets();
+                        }, unready));
+                    menu->addChild(createMenuItem("by Category", "", [=](){
+                        my_module->sortFavorites(PresetOrder::Category);
+                        my_module->saveFavorites();
+                        populatePresetWidgets();
+                        }, unready));
+                    }, unready));
+            }
+            addFavoritesMenu(menu);
+        });
+    tab_bar->addTab("System", PresetTab::System, [=](Menu* menu){
+        menu->addChild(createMenuItem("System presets", "", [](){}, true));
+        menu->addChild(new MenuSeparator);
+        addSystemMenu(menu);
+        });
     tab_bar->layout();
     tab_bar->selectTab(tab);
     addChild(tab_bar);
@@ -54,7 +78,7 @@ void Hc1ModuleWidget::createPresetGrid()
     float y = PRESET_TOP;
     for (int n = 0; n < 24; ++n) {
         auto p = createWidget<PresetWidget>(Vec(x, y));
-        p->setPresetHolder(my_module);
+        p->setPresetHolder(this);
         addChild(p);
         presets.push_back(p);
         x += p->box.size.x;
@@ -384,6 +408,7 @@ void Hc1ModuleWidget::pageDown()
 
 void Hc1ModuleWidget::onPresetChanged(const PresetChangedEvent& e)
 {
+    favorite->setPreset(my_module->current_preset);
     showCurrentPreset(true);
 }
 
@@ -541,10 +566,6 @@ void Hc1ModuleWidget::step()
     ModuleWidget::step();
     if (my_module)
     {
-        if (my_module->current_preset) {
-            favorite->setPreset(my_module->current_preset);
-        }
-
         auto co = my_module->isEaganMatrix() ? my_module->ledColor : red_light;
         if (!IS_SAME_COLOR(co, status_light->baseColors[0])) {
             status_light->baseColors[0] = co;

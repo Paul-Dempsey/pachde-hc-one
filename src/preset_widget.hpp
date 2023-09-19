@@ -71,36 +71,56 @@ struct PresetWidget : TipWidget
         hovered = false;
     }
 
-    void onDragStart(const DragStartEvent& e) override {
-        pressed = true;
-        text_label->color(RampGray(G_15));
+    void setPressed(bool is_pressed) {
+        pressed = is_pressed;
+        if (pressed) {
+            text_label->color(RampGray(G_15));
+            text_code->color(GetStockColor(StockColor::pachde_blue_dark));
+        } else {
+            text_label->color(RampGray(G_90));
+            text_code->color(GetStockColor(StockColor::pachde_blue_light));
+        }
         text_label->dirty();
-        text_code->color(GetStockColor(StockColor::pachde_blue_dark));
         text_code->dirty();
+    }
+
+    void onDragStart(const DragStartEvent& e) override {
         TipWidget::onDragStart(e);
     }
 
     void onDragLeave(const DragLeaveEvent& e) override {
+        setPressed(false);
         TipWidget::onDragLeave(e);
     }
 
     void onDragEnd(const DragEndEvent& e) override
     {
+        setPressed(false);
         TipWidget::onDragEnd(e);
         if (e.button != GLFW_MOUSE_BUTTON_LEFT)
             return;
 
+       // e.consume(this);
         if (holder && preset) {
             holder->setPreset(preset);
         }
-        pressed = false;
-        text_label->color(RampGray(G_90));
-        text_label->dirty();
-        text_code->color(GetStockColor(StockColor::pachde_blue_light));
-        text_code->dirty();
+    }
+    void onButton(const ButtonEvent& e) override
+    {
+        setPressed(false);
+        TipWidget::onButton(e);
+        if (e.action == GLFW_PRESS && e.button == GLFW_MOUSE_BUTTON_RIGHT && (e.mods & RACK_MOD_MASK) == 0)
+        {
+            return;
+        }
+        if (holder && preset) {
+            holder->setPreset(preset);
+        }
+        //e.consume(this);
     }
 
     void draw(const DrawArgs& args) override;
+    void appendContextMenu(ui::Menu* menu) override;
 };
 
 }

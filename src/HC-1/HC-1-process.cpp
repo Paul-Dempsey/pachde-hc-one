@@ -36,9 +36,9 @@ void Hc1Module::syncStatusLights()
     getLight(Lights::ROUND_LIGHT).setBrightness(1.0f * round);
     getLight(Lights::ROUND_RELEASE_LIGHT).setBrightness(1.0f * (round && (rounding.kind <= RoundKind::Release)));
 
-    getLight(Lights::TRANSPOSE_UP_LIGHT).setBrightness(1.0 * (middle_c > 60));
-    getLight(Lights::TRANSPOSE_NONE_LIGHT).setBrightness(1.0 * (middle_c == 60));
-    getLight(Lights::TRANSPOSE_DOWN_LIGHT).setBrightness(1.0 * (middle_c < 60));
+    // getLight(Lights::TRANSPOSE_UP_LIGHT).setBrightness(1.0 * (middle_c > 60));
+    // getLight(Lights::TRANSPOSE_NONE_LIGHT).setBrightness(1.0 * (middle_c == 60));
+    // getLight(Lights::TRANSPOSE_DOWN_LIGHT).setBrightness(1.0 * (middle_c < 60));
 }
 
 void Hc1Module::processAllCV()
@@ -272,13 +272,6 @@ void Hc1Module::process(const ProcessArgs& args)
         }
 
         if (is_eagan_matrix) {
-            // switch (device_hello_state) {
-            //     case InitState::Uninitialized: transmitInitDevice(); return;
-            //     case InitState::Pending: return;
-            //     case InitState::Broken: transmitInitDevice(); return;
-            //     case InitState::Complete: break;
-            //     default: assert(false); break;
-            // }
             if (!anyPending()
                 && (notesOn <= 0)
                 && !in_preset

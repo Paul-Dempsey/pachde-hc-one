@@ -2,7 +2,7 @@
 
 namespace pachde {
 constexpr const float PANEL_WIDTH = 360.f;
-constexpr const float PRESET_TOP = 38.f;
+constexpr const float PRESET_TOP = 37.f;
 constexpr const float PRESET_LEFT = 7.5f;
 constexpr const float PRESET_WIDTH = 320.f;
 constexpr const float PRESET_RIGHT = PRESET_LEFT + PRESET_WIDTH;
@@ -13,8 +13,8 @@ constexpr const float PRESET_BOTTOM = PRESET_TOP + PRESET_HEIGHT;
 constexpr const float RIGHT_COLUMN_BUTTONS = PRESET_RIGHT + (PANEL_WIDTH - PRESET_RIGHT)*.5f;
 constexpr const float KNOB_LEFT   = 45.f;
 constexpr const float KNOB_SPREAD = 54.25f;
-constexpr const float KNOB_ROW_1  = 288.f;
-constexpr const float KNOB_ROW_2  = 346.f;
+constexpr const float KNOB_ROW_1  = 287.f;
+constexpr const float KNOB_ROW_2  = 345.f;
 constexpr const float RKNOB_LEFT  = KNOB_LEFT; //- KNOB_SPREAD *.5f;
 
 constexpr const float LIGHT_SPREAD = 4.f;

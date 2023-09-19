@@ -132,20 +132,24 @@ struct Preset
 
 struct IPresetHolder
 {
+    enum class FavoriteMove { First, Previous, Next, Last };
     virtual bool isCurrentPreset(std::shared_ptr<Preset> preset) { return false; }
     virtual void setPreset(std::shared_ptr<Preset> preset) {}
     virtual void addFavorite(std::shared_ptr<Preset> preset) {}
     virtual void unFavorite(std::shared_ptr<Preset> preset) {}
+    virtual void moveFavorite(std::shared_ptr<Preset> preset, FavoriteMove motion) {}
 };
 
 enum class PresetOrder {
     Alpha,
     System,
-    Category
+    Category,
+    Favorite, Last = Favorite
 };
 bool preset_system_order(const std::shared_ptr<Preset>& p1, const std::shared_ptr<Preset>& p2);
-bool preset_alpha_order(const std::shared_ptr<Preset>& preset1, const std::shared_ptr<Preset>& preset2);
+bool preset_alpha_order(const std::shared_ptr<Preset>& p1, const std::shared_ptr<Preset>& p2);
 bool preset_category_order(const std::shared_ptr<Preset>& p1, const std::shared_ptr<Preset>& p2);
+bool favorite_order(const std::shared_ptr<Preset>& p1, const std::shared_ptr<Preset>& p2);
 
 inline std::function<bool (const std::shared_ptr<Preset>&, const std::shared_ptr<Preset>&)> getPresetSort(PresetOrder order)
 {
@@ -153,11 +157,13 @@ inline std::function<bool (const std::shared_ptr<Preset>&, const std::shared_ptr
     case PresetOrder::Alpha: return preset_alpha_order;
     case PresetOrder::System: return preset_system_order;
     case PresetOrder::Category: return preset_category_order;
-    default: assert(false); break;
+    case PresetOrder::Favorite: return favorite_order;
+    default:
+        assert(false);
+        return preset_alpha_order;
     }
 }
 
-bool favorite_order(const std::shared_ptr<Preset>& p1, const std::shared_ptr<Preset>& p2);
 
 }
 #endif

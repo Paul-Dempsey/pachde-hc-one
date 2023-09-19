@@ -43,6 +43,84 @@ void Hc1ModuleWidget::addRecirculator(Menu *menu, EM_Recirculator kind)
     ));
 }
 
+void Hc1ModuleWidget::addSystemMenu(Menu *menu)
+{
+    menu->addChild(createSubmenuItem("Go to category", "", [=](Menu* menu) {
+        addJumpCategory(menu, ST);
+        addJumpCategory(menu, WI);
+        addJumpCategory(menu, VO);
+        addJumpCategory(menu, KY);
+        addJumpCategory(menu, CL);
+        addJumpCategory(menu, OT);
+        addJumpCategory(menu, PE);
+        addJumpCategory(menu, PT);
+        addJumpCategory(menu, PR);
+        addJumpCategory(menu, DO);
+        addJumpCategory(menu, MD);
+        addJumpCategory(menu, CV);
+        addJumpCategory(menu, UT);
+    }));
+
+    menu->addChild(createSubmenuItem("Sort", "", [=](Menu* menu) {
+        addSortBy(menu, "Alphabetically", PresetOrder::Alpha);
+        addSortBy(menu, "by Category", PresetOrder::Category);
+        addSortBy(menu, "in System order", PresetOrder::System);
+    }));
+
+    // menu->addChild(createSubmenuItem("Filter by Category", "", [=](Menu* menu) {
+    //     AddCategoryFilterItem(menu, my_module, "Strings", ST);
+    //     AddCategoryFilterItem(menu, my_module, "Winds", WI);
+    //     AddCategoryFilterItem(menu, my_module, "Vocal", VO);
+    //     AddCategoryFilterItem(menu, my_module, "Keyboard", KY);
+    //     AddCategoryFilterItem(menu, my_module, "Classic", CL);
+    //     AddCategoryFilterItem(menu, my_module, "Other", OT);
+    //     AddCategoryFilterItem(menu, my_module, "Percussion", PE);
+    //     AddCategoryFilterItem(menu, my_module, "Tuned Percussion",PT);
+    //     AddCategoryFilterItem(menu, my_module, "Processor", PR);
+    //     AddCategoryFilterItem(menu, my_module, "Drone", DO);
+    //     AddCategoryFilterItem(menu, my_module, "Midi", MD);
+    //     AddCategoryFilterItem(menu, my_module, "Control Voltage",CV);
+    //     AddCategoryFilterItem(menu, my_module, "Utility", UT);
+    //     }));
+}
+
+void Hc1ModuleWidget::addFavoritesMenu(Menu *menu)
+{
+    bool ready = my_module->ready();
+
+    menu->addChild(createMenuItem("Clear", "", [=](){ 
+        my_module->clearFavorites();
+        if (tab == PresetTab::Favorite) {
+            updatePresetWidgets();
+        }
+    }, !ready));
+    menu->addChild(createMenuItem("Open...", "", [=]() {
+        std::string path;
+        std::string folder = asset::user(pluginInstance->slug);
+        system::createDirectories(folder);
+        if (openFileDialog(
+            folder,
+            "Favorites (.fav):fav;Json (.json):json;Any (*):*))",
+            "",
+            path)) {
+            my_module->readFavoritesFile(path);
+            updatePresetWidgets();
+        }
+        }, !ready));
+    menu->addChild(createMenuItem("Save as...", "", [=]() {
+        std::string path;
+        std::string folder = asset::user(pluginInstance->slug);
+        system::createDirectories(folder);
+        if (saveFileDialog(
+            folder,
+            "Favorites (.fav):fav;Json (.json):json;Any (*):*))",
+            "my_favorites.fav",
+            path)) {
+            my_module->writeFavoritesFile(path);
+        }
+    }, !ready));
+}
+
 void Hc1ModuleWidget::appendContextMenu(Menu *menu)
 {
     if (!my_module) { return; }
@@ -76,39 +154,10 @@ void Hc1ModuleWidget::appendContextMenu(Menu *menu)
         menu->addChild(createMenuItem("Reset Midi I/O", "",  [=]() { my_module->resetMidiIO(); }));
     }));
 
-    menu->addChild(createSubmenuItem("Favorites", "", [=](Menu* menu) {
-        menu->addChild(createMenuItem("Clear favorites", "", [=](){ 
-            my_module->clearFavorites();
-            if (tab == PresetTab::Favorite) {
-                updatePresetWidgets();
-            }
-        }, !ready));
-        menu->addChild(createMenuItem("Open favorites...", "", [=]() {
-            std::string path;
-            std::string folder = asset::user(pluginInstance->slug);
-            system::createDirectories(folder);
-            if (openFileDialog(
-                folder,
-                "Favorites (.fav):fav;Json (.json):json;Any (*):*))",
-                "",
-                path)) {
-                my_module->readFavoritesFile(path);
-                updatePresetWidgets();
-            }
-            }, !ready));
-        menu->addChild(createMenuItem("Save favorites as...", "", [=]() {
-            std::string path;
-            std::string folder = asset::user(pluginInstance->slug);
-            system::createDirectories(folder);
-            if (saveFileDialog(
-                folder,
-                "Favorites (.fav):fav;Json (.json):json;Any (*):*))",
-                "my_favorites.fav",
-                path)) {
-                my_module->writeFavoritesFile(path);
-            }
-        }, !ready));
-    }, !ready));
+    // now right click on favorites tab
+    // menu->addChild(createSubmenuItem("Favorites", "", [=](Menu* menu) {
+    //     addFavoritesMenu(menu);
+    // }));
 
     menu->addChild(createSubmenuItem("Presets", "", [=](Menu* menu) {
         menu->addChild(createCheckMenuItem("Restore last preset on startup", "", 
@@ -128,44 +177,8 @@ void Hc1ModuleWidget::appendContextMenu(Menu *menu)
         menu->addChild(createMenuItem("Refresh User presets", "", [=](){ my_module->transmitRequestUserPresets(); }));
     }));
 
-    menu->addChild(createSubmenuItem("Go to category", "", [=](Menu* menu) {
-        addJumpCategory(menu, ST);
-        addJumpCategory(menu, WI);
-        addJumpCategory(menu, VO);
-        addJumpCategory(menu, KY);
-        addJumpCategory(menu, CL);
-        addJumpCategory(menu, OT);
-        addJumpCategory(menu, PE);
-        addJumpCategory(menu, PT);
-        addJumpCategory(menu, PR);
-        addJumpCategory(menu, DO);
-        addJumpCategory(menu, MD);
-        addJumpCategory(menu, CV);
-        addJumpCategory(menu, UT);
-    }));
-
-    menu->addChild(createSubmenuItem("Sort System presets", "", [=](Menu* menu) {
-        addSortBy(menu, "Alphabetically", PresetOrder::Alpha);
-        addSortBy(menu, "by Category", PresetOrder::Category);
-        addSortBy(menu, "in System order", PresetOrder::System);
-    }));
-
-    // menu->addChild(createSubmenuItem("Filter by Category", "", [=](Menu* menu) {
-    //     AddCategoryFilterItem(menu, my_module, "Strings", ST);
-    //     AddCategoryFilterItem(menu, my_module, "Winds", WI);
-    //     AddCategoryFilterItem(menu, my_module, "Vocal", VO);
-    //     AddCategoryFilterItem(menu, my_module, "Keyboard", KY);
-    //     AddCategoryFilterItem(menu, my_module, "Classic", CL);
-    //     AddCategoryFilterItem(menu, my_module, "Other", OT);
-    //     AddCategoryFilterItem(menu, my_module, "Percussion", PE);
-    //     AddCategoryFilterItem(menu, my_module, "Tuned Percussion",PT);
-    //     AddCategoryFilterItem(menu, my_module, "Processor", PR);
-    //     AddCategoryFilterItem(menu, my_module, "Drone", DO);
-    //     AddCategoryFilterItem(menu, my_module, "Midi", MD);
-    //     AddCategoryFilterItem(menu, my_module, "Control Voltage",CV);
-    //     AddCategoryFilterItem(menu, my_module, "Utility", UT);
-    //     }));
-
+    // now right click on system tab
+    // addSystemMenu(menu);
 }
 
 }

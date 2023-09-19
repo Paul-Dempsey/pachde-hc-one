@@ -50,28 +50,28 @@ Hc1Module::Hc1Module()
     configInput(VOLUME_INPUT, "Post level");
     configInput(MUTE_INPUT, "Mute trigger");
 
-    configLight(Lights::M1_REL_LIGHT, "i CV relative");
-    configLight(Lights::M2_REL_LIGHT, "ii CV relative");
-    configLight(Lights::M3_REL_LIGHT, "iii CV relative");
-    configLight(Lights::M4_REL_LIGHT, "iv CV relative");
-    configLight(Lights::M5_REL_LIGHT, "v CV relative");
-    configLight(Lights::M6_REL_LIGHT, "vi CV relative");
-    configLight(Lights::R1_REL_LIGHT, "R1 CV relative");
-    configLight(Lights::R2_REL_LIGHT, "R2 CV relative");
-    configLight(Lights::R3_REL_LIGHT, "R3 CV relative");
-    configLight(Lights::R4_REL_LIGHT, "R4 CV relative");
-    configLight(Lights::RMIX_REL_LIGHT, "RMix CV relative");
-    configLight(Lights::VOLUME_REL_LIGHT, "Volume CV relative");
+    // configLight(Lights::M1_REL_LIGHT, "i CV relative");
+    // configLight(Lights::M2_REL_LIGHT, "ii CV relative");
+    // configLight(Lights::M3_REL_LIGHT, "iii CV relative");
+    // configLight(Lights::M4_REL_LIGHT, "iv CV relative");
+    // configLight(Lights::M5_REL_LIGHT, "v CV relative");
+    // configLight(Lights::M6_REL_LIGHT, "vi CV relative");
+    // configLight(Lights::R1_REL_LIGHT, "R1 CV relative");
+    // configLight(Lights::R2_REL_LIGHT, "R2 CV relative");
+    // configLight(Lights::R3_REL_LIGHT, "R3 CV relative");
+    // configLight(Lights::R4_REL_LIGHT, "R4 CV relative");
+    // configLight(Lights::RMIX_REL_LIGHT, "RMix CV relative");
+    // configLight(Lights::VOLUME_REL_LIGHT, "Volume CV relative");
     configLight(Lights::HEART_LIGHT, "Device status");
-    configLight(Lights::MUTE_LIGHT, "Mute");
-    configLight(Lights::RECIRC_EXTEND_LIGHT, "R Extend");
+    //configLight(Lights::MUTE_LIGHT, "Mute");
+    //configLight(Lights::RECIRC_EXTEND_LIGHT, "R Extend");
     configLight(Lights::ROUND_Y_LIGHT, "Round on Y");
     configLight(Lights::ROUND_INITIAL_LIGHT, "Round initial");
     configLight(Lights::ROUND_LIGHT, "Rounding");
     configLight(Lights::ROUND_RELEASE_LIGHT, "Round on release");
-    configLight(Lights::TRANSPOSE_UP_LIGHT, "Transpose up");
-    configLight(Lights::TRANSPOSE_NONE_LIGHT, "Transpose none");
-    configLight(Lights::TRANSPOSE_DOWN_LIGHT, "Transpose down");
+    // configLight(Lights::TRANSPOSE_UP_LIGHT, "Transpose up");
+    // configLight(Lights::TRANSPOSE_NONE_LIGHT, "Transpose none");
+    // configLight(Lights::TRANSPOSE_DOWN_LIGHT, "Transpose down");
 
     //configLight(Lights::FILTER_LIGHT, "Filter presets");
 
@@ -195,7 +195,7 @@ void Hc1Module::dataFromJson(json_t *root)
     }
     j = json_object_get(root, "preset-order");
     if (j) {
-        preset_order = static_cast<PresetOrder>(clamp(static_cast<int>(json_integer_value(j)), static_cast<int>(PresetOrder::Alpha), static_cast<int>(PresetOrder::Category)));
+        preset_order = static_cast<PresetOrder>(clamp(static_cast<int>(json_integer_value(j)), static_cast<int>(PresetOrder::Alpha), static_cast<int>(PresetOrder::Last)));
     }
     j = json_object_get(root, "preset");
     if (j) {
@@ -232,6 +232,7 @@ void Hc1Module::reboot()
     broken = false;
     broken_idle = 0.f;
     heart_phase = 0.f;
+    heart_time = 1.0f;
     first_beat = false;
     preset0.clear();
     system_presets.clear();
@@ -254,7 +255,6 @@ void Hc1Module::reboot()
     data_stream = -1;
     //download_message_id = -1;
     recirculator = 0;
-    heart_time = 1.0f;
 }
 
 void Hc1Module::onRandomize(const RandomizeEvent& e)

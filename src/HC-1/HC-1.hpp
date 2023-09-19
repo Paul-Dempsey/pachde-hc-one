@@ -56,7 +56,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
         MUTE_LIGHT,
         RECIRC_EXTEND_LIGHT,
         ROUND_Y_LIGHT, ROUND_INITIAL_LIGHT, ROUND_LIGHT, ROUND_RELEASE_LIGHT,
-        TRANSPOSE_UP_LIGHT, TRANSPOSE_NONE_LIGHT, TRANSPOSE_DOWN_LIGHT,
+        //TRANSPOSE_UP_LIGHT, TRANSPOSE_NONE_LIGHT, TRANSPOSE_DOWN_LIGHT,
 //        FILTER_LIGHT,
         NUM_LIGHTS
     };
@@ -319,6 +319,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     }
     void addFavorite(std::shared_ptr<Preset> preset) override;
     void unFavorite(std::shared_ptr<Preset> preset) override;
+    void moveFavorite(std::shared_ptr<Preset> preset, FavoriteMove motion) override;
 
     void sendSavedPreset();
     std::shared_ptr<Preset> findDefinedPreset(std::shared_ptr<Preset> preset);
@@ -357,7 +358,8 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
         notifyRoundingChanged(getLeftExpander(), event);
     }
 
-    void orderFavorites(bool sort);
+    void numberFavorites();
+    void sortFavorites(PresetOrder order = PresetOrder::Favorite);
 
     // expanders
     ExpanderPresence expanders = Expansion::None;
@@ -463,12 +465,17 @@ struct Hc1ModuleWidget : ModuleWidget, IPresetHolder, IHandleHcEvents
     void addFavorite(std::shared_ptr<Preset> preset) override
     {
         my_module->addFavorite(preset);
-        populatePresetWidgets();
+        updatePresetWidgets();
     }
     void unFavorite(std::shared_ptr<Preset> preset) override
     {
         my_module->unFavorite(preset);
-        populatePresetWidgets();
+        updatePresetWidgets();
+    }
+    void moveFavorite(std::shared_ptr<Preset> preset, FavoriteMove motion) override
+    {
+        my_module->moveFavorite(preset, motion);
+        updatePresetWidgets();
     }
 
     // IHandleHcEvents
@@ -490,6 +497,8 @@ struct Hc1ModuleWidget : ModuleWidget, IPresetHolder, IHandleHcEvents
     void addSortBy(Menu *menu, std::string name, PresetOrder order);
     void addJumpCategory(Menu *menu, uint16_t category);
     void addRecirculator(Menu *menu, EM_Recirculator kind);
+    void addFavoritesMenu(Menu *menu);
+    void addSystemMenu(Menu *menu);
     void appendContextMenu(Menu *menu) override;
 };
 

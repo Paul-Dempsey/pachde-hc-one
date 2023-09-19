@@ -326,14 +326,12 @@ bool preset_alpha_order(const std::shared_ptr<Preset>& preset1, const std::share
 
 bool favorite_order(const std::shared_ptr<Preset>& p1, const std::shared_ptr<Preset>& p2)
 {
+    if (p1->favorite != p2->favorite) return p1->favorite; // favorites come first
     if (p1->favorite_order >= 0 && p2->favorite_order >= 0) return p1->favorite_order < p2->favorite_order;
     if (p1->favorite_order < 0  && p2->favorite_order >= 0) return false;
     if (p1->favorite_order >= 0 && p2->favorite_order < 0) return true;
     assert(p1->favorite_order < 0 && p2->favorite_order < 0);
-    // int cmp = p1->name.compare(p2->name);
-    // if (cmp < 0) return true;
-    // if (cmp > 0) return false;
-    return preset_system_order(p1, p2);
+    return preset_alpha_order(p1, p2);
 }
 
 }

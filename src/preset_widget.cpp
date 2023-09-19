@@ -48,4 +48,20 @@ void PresetWidget::draw(const DrawArgs& args)
     nvgRestore(vg);
 }
 
+void PresetWidget::appendContextMenu(ui::Menu* menu)
+{
+    menu->addChild(createMenuItem(preset->name, "", [](){}, true));
+    menu->addChild(new MenuSeparator);
+    if (preset->favorite) {
+        menu->addChild(createMenuItem("Move to first Favorite", "", [this](){ holder->moveFavorite(preset, IPresetHolder::FavoriteMove::First); }));
+        menu->addChild(createMenuItem("Move Favorite up", "", [this](){ holder->moveFavorite(preset, IPresetHolder::FavoriteMove::Previous); }));
+        menu->addChild(createMenuItem("Move Favorite down", "", [this](){ holder->moveFavorite(preset, IPresetHolder::FavoriteMove::Next); }));
+        menu->addChild(createMenuItem("Move to last Favorite", "", [this](){ holder->moveFavorite(preset, IPresetHolder::FavoriteMove::Last); }));
+        menu->addChild(new MenuSeparator);
+        menu->addChild(createMenuItem("un-Favorite", "", [this](){ holder->unFavorite(preset); }));
+    } else {
+        menu->addChild(createMenuItem("Add to Favorites", "", [this](){ holder->addFavorite(preset); }));
+    }
+}
+
 }

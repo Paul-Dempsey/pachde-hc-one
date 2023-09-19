@@ -162,7 +162,7 @@ void Hc1Module::favoritesFromPresets()
             favorite_presets.push_back(p);
         }
     }
-    orderFavorites(true);
+    sortFavorites();
 }
 
 void Hc1Module::userPresetsToJson(json_t* root)
@@ -295,7 +295,7 @@ void Hc1Module::readFavoritesFile(const std::string& path)
             }
         }
     }
-    orderFavorites(true);
+    sortFavorites();
     saveFavorites();
 }
 
@@ -339,15 +339,55 @@ void Hc1Module::readFavorites()
     readFavoritesFile(path);
 }
 
-void Hc1Module::orderFavorites(bool sort)
+
+void Hc1Module::sortFavorites(PresetOrder order)
 {
-    if (sort) {
-        std::sort(favorite_presets.begin(), favorite_presets.end(), favorite_order);
-    }
+    std::sort(favorite_presets.begin(), favorite_presets.end(), getPresetSort(order));
+    numberFavorites();
+}
+
+void Hc1Module::numberFavorites()
+{
     int n = 0;
     for (auto p: favorite_presets) {
         p->favorite_order = n++;
     }
+}
+
+void expandNumbers(std::vector<std::shared_ptr<pachde::Preset>>& presets, int spacing)
+{
+    int n = spacing;
+    for (auto p: presets) {
+        p->favorite_order = n;
+        n += spacing;
+    }
+}
+
+void Hc1Module::moveFavorite(std::shared_ptr<Preset> preset, IPresetHolder::FavoriteMove motion)
+{
+    if (!preset
+        || !preset->favorite
+        || !in_range(motion, IPresetHolder::FavoriteMove::First, IPresetHolder::FavoriteMove::Last)) {
+        return;
+    }
+    expandNumbers(favorite_presets, 4);
+    switch (motion) {
+    case IPresetHolder::FavoriteMove::First:
+        preset->favorite_order = 0;
+        break;
+    case IPresetHolder::FavoriteMove::Previous:
+        preset->favorite_order = preset->favorite_order - 5;
+        break;
+    case IPresetHolder::FavoriteMove::Next:
+        preset->favorite_order = preset->favorite_order + 5;
+        break;
+    case IPresetHolder::FavoriteMove::Last:
+        preset->favorite_order = 5 + 4 * favorite_presets.size();
+        break;
+    default:
+        break;
+    }
+    sortFavorites();
 }
 
 void Hc1Module::addFavorite(std::shared_ptr<Preset> preset)
@@ -369,8 +409,10 @@ void Hc1Module::addFavorite(std::shared_ptr<Preset> preset)
                 })) {
             favorite_presets.push_back(preset);
             if (!bulk_favoriting) {
-                orderFavorites(true);
+                sortFavorites();
             }
+        } else {
+            return; // already have it
         }
     }
     if (!bulk_favoriting) {
@@ -383,6 +425,7 @@ void Hc1Module::unFavorite(std::shared_ptr<Preset> preset)
     preset->favorite = false;
     if (favorite_presets.empty()) return;
     favorite_presets.erase(std::remove(favorite_presets.begin(), favorite_presets.end(), preset), favorite_presets.end());
+    numberFavorites();
     saveFavorites();
 }
 

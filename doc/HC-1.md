@@ -4,6 +4,7 @@ HC-1 supports the Haken Continuum and other Haken Audio Eagan Matrix-based devic
 It is focused on having quick and easy access to presets on the device, favorites, plus CV control of the most essential performance settings, on a compact panel.
 
 HC-1 is not a replacement for the Haken Editor.
+The Haken Editor is still required for managing and editing user presets.
 
 **Note** — This documentation uses the terms *Eagan Matrix*, *EM*, and *device* interchangeably.
 They all refer to whatever Eagan-Matrix-based device you are controlling with HC-1.
@@ -12,11 +13,16 @@ HC-1 was designed for Eagan Matrix firmware version 10.09.
 Earlier or later firmware versions may require changes to HC-1.
 If you have an issue, please open one in the Github Issues or send me an email.
 
+Here is the HC-1 module with it's expander HC-2.
+
 ![The HC-1 mdoule](HC-1.png)
 
-When first loaded, there is a long initialization time to read all user and system presets from the device.
-The Eagan Matrix devices require a high-quality MIDI connection.
-This process can sometimes fail, especially when you have a poor MIDI connection.
+When first loaded, there is a long initialization time to read all user and system presets from the device. By default, the system and user presets are cached, so the next time you open the patch or the module, it should be up and running much faster.
+
+You can watch the prograss of the multi-step initialization process with the row of dots on the bottom. When everything is connected and working as expected, all the dots will be blue.
+
+> **Trouble-shooting:** Eagan Matrix devices require a high-quality MIDI connection.
+The HC-1 initialization process can sometimes fail, especially when you have a poor MIDI connection.
 When this happens, you may need to reboot HC-1 from the menu, unplug and re-plug the MIDI connection, or power cycle the device.
 When possible, make sure you're using a connection directly to the computer, and not through a USB hub.
 Even then, you may need to use a different USB port on your computer.
@@ -40,18 +46,25 @@ From right to left, top to bottom:
   To add a preset to your favorites list, click the outlined heart.
   Clicking a filled heart removes the preset from the favorites list.
 
-  There are menu options to save and load favorites, so you can keep as many set lists as you like.
+  There are menu options to save and load Favorites, so you can keep as many set lists as you like.
 
 - Tabbed preset listing. Click on **User**, **Favorite**, or **System** to see the corresponding list of presets.
 
-  User presets are always in the order set on the device.
-  Favorites are shown in the order that they are added.
-  At this writing, you can't change the order of favorites in HC-1, but it is possible to manually edit the saved Favorites file in a text editor.
-  System presets can be sorted Alphabetically (the default), by Category, and by System order.
-  The options for this are in the menu.
+  Right click a preset for Favoriting and ordering options if the preset is a favorite. You also favorite and un-favorite the current preset with the heart button in the upper right.
+
+  - **User**
+    User presets are always in the order set on the device.
+
+  - **Favorite** Favorites are shown in the order that they are added. Favoriting a preset always adds it to the end of the list.
+  Right click a favorite for options to change it's order in the list, or to un-Favorite it.
+  Right click the **Favorite** tab for sorting and commands to Open, or Save the favorites list to a file.
+  Sorting from the **Favorite menu** is a one-time operation, unlike the System tab where the selected sort is persistent.
+
+  - **System** System presets can be sorted Alphabetically (the default), by Category, and by internal device System order.
+  The options for this are in the **System** tab right click menu.
 
 - Paging is to the right of the tabs.
-  Current page number is show above the Up and Down buttons.
+  Current page number is show above the Page up and Page down buttons.
   Roll the mouse wheel while over the tabs or page buttons to quickly scroll the list.
 
 - Click on a preset to select it. The selected preset is outlined in gold.
@@ -59,21 +72,35 @@ From right to left, top to bottom:
   The two-letter shorthand for the preset's category is shown in the lower right.
   Hovering over the preset shows a tooltip with more details about the preset.
 
-- At the bottom of the preset tabs, you can see two tiny lights that move from left to right as MDIDI communications travel between the module and the Egagan Matrix.
-  The purple light shows progress of MIDI messages **sent**, and the green light shows the progress of MIDI Messages **received**.
-  These allow you to see when the module loses MIDI communication with the device, which unfortunately happens from time to time through no fault of HC-1.
+  Right click a preset for a menu of options for that preset.
 
-- Below the preset listing are the macro and recirculator controls.
-  When a preset is selected, the preset metadata is parsed, and if it contains Macro labels, these are read and shown.
-  If no label is defined for a macro, you see the default Roman numerals.
-  Some presets make use of a macro control, but do not provide a label.
-  Similarly, there are occasionally labels defined for macros that are not actually used by the preset.
-
-- To the right of the first row is a small graph showing the DSP usage of the preset.
+- Under the paging buttons is a small graph showing the DSP usage of the preset.
 
   When this is gray, the DSP usage is not available.
   DSP usage is reported by the device heartbeat, which you can turn off in the menu.
   Why turn it off? Becuase (unfortunately) the heartbeat can cause glitches in the audio output from the EM.
+
+- The row of 4 Rounding Status LEDs under the DSP graph show the same information that a Continuum shows in the lower right of its display.
+
+- Below the Rounding Status LEDs, are preset navigation buttons similar to the buttons on the Continuum.
+  Clicking the - or + button selects previous or next preset in the list.
+  Shift+Click moves by 10 presets.
+  Ctrl+Click (Cmd on Mac) moves in device order, independent of the sorting of the current tab.
+  This is the same ordering that the buttons on the device use.
+
+- At the bottom of the preset tabs, you can see two tiny lights that move from left to right as MDIDI communications travel between the module and the Egagan Matrix.
+  The purple light shows progress of MIDI messages **sent**, and the green light shows the progress of MIDI Messages **received**.
+  These allow you to see when the module loses MIDI communication with the device, which unfortunately can happen through no fault of HC-1.
+
+- The preset's Pedal assignments are shown to the bottom right of the preset list.
+  If a pedal is assigned to a macro or recirculator, you will see a **`1`** or **`2`**
+next to the knob, indicating which pedal is assigned to that knob.
+
+- Below the preset listing are the macro and recirculator controls.
+  When a preset is selected, the preset metadata is parsed, and if it contains Macro labels, these are read and shown.
+  If no label is defined for a macro, you see the default Roman numerals.
+  Some presets use a macro controller, but do not provide a label.
+  Similarly, there are occasionally labels for macros that are not used.
 
 - Each Macro, Recirculator, and Volume control can operate independently (with no cable connected to the input jack), with absolute CV control, or combined Knob + CV Relative control.
   Click the **Relative mode** button to toggle between Absolute and Relative mode.
@@ -96,7 +123,7 @@ From right to left, top to bottom:
 
 - The bottom row shows the following, from left to right:
 
-  - Midi device input and output selectors. If you have only one Eagan Matrix device, you should never need to use these, becuase HC-1 generally finds the connected Eagan Matrix device.
+  - Midi device input and output selectors. If you have only one Eagan Matrix device, you should never need to use these, becuase HC-1 generally finds the connected Eagan Matrix device automatically.
 
   - Test note button. Click to send a Middle C (Note 60) *Note on* MIDI message, and Ctrl+Click (Cmd on Mac) to send the corresponding *Note off*.
     You'll see the little circle next to the button light up when a note is on, either through the Test note button, or when playing the device.
@@ -110,22 +137,22 @@ From right to left, top to bottom:
 
     These indicators are:
 
-    1. Note
+    1. Note (a note is currently playing). This indicator is not completely reliable when there is a high level of MIDI traffic, but can be useful to get a sense of activity.
     1. MIDI output device connection
     1. MIDI input device connection
-    1. Connected device is a recognizxed Eagan Matrix
+    1. Connected device is a recognized Eagan Matrix, based on the device name
     1. System presets initialized
     1. User presets initialized
     1. Current preset initialized
-    1. Saved preset from previous session available
-    1. Module has requested updates from the device
-    1. Device heartbeat status
+    1. Saved preset from previous session
+    1. HC-1 has requested the device for updates when presets change
+    1. Device heartbeat status (heartbeat can be disabled int he menu).
 
   - In the middle is the pachde (#d) logo
   - The name of the currently connected EM device
   - The device firmware version.
 
-## Menu options
+## Module Menu
 
 | Menu | Option | Description |
 | -- | -- | -- |
@@ -144,16 +171,33 @@ From right to left, top to bottom:
 |  | **One handshake** | Send one heartbeat handshake. When heartbeat is suppressed, use this to take a snapshot of the DSP usage. |
 |  | **Request config** | Request the current preset (edit slot) configuration from the device. |
 |  | **Reset MIDI I/O** | Re-initialize MIDI I/O. |
-| **Favorites** | **Clear favorites** | Empty the Favorites list. |
-| | **Open favorites...** | Load favorites from a file (`.fav` or `.json`) |
-| | **Save favorites as...** | Save current favorites list to a `.fav` or `.json` file. |
 | **Presets** | **Restore last preset at startup** | Enable to select the last preset used in HC1 at startup. Disable to use whatever preset is current on the device. |
 |  | **Use saved presets** | Turn on to use a cached list of user and system presets instead of (slowly) re-querying the device at startup. |
 |  | **Save presets** | Force-save the preset lists. |
 |  | **Refresh User presets** | Refresh the list of User presets from the device. Do this after adding or removing new user presets using the Haken Editor, and you have **Use saved presets** turned on. |
+
+## Favorite tab menu
+
+Right click on the **Favorite** tab to see the **Favorite menu**.
+
+| Menu | Option | Description |
+| -- | -- | -- |
+| **Sort** | **Alphabetically** | Sort favorites alphabetically by name. |
+|  | **by Category** | Sort favorites first by Category, then alphabetically within the category. |
+| **Clear** | | Empty the Favorites list. |
+| **Open...** | | Load favorites from a file (`.fav` or `.json`) |
+| **Save as...** | | Save current favorites to a `.fav` or `.json` file. |
+
+## System tab menu
+
+Right click on the **System** tab to see the **System menu** for navigation and sorting System presets.
+
+| Menu | Option | Description |
+| -- | -- | -- |
+| **Go to category** | **Strings (ST)</br>Winds (WI)</br>Vocal (VO)</br>Keyboard (KY)</br>Classic (CL)</br>Other (OT)</br>Percussion (PE)</br>Tuned (PT)</br>Processor (PR)</br>Drone (DO)</br>Midi (MD)</br>Control (CV)</br>Utility (UT)** | Moves to the **System** tab with **Sort by Category** and selects the first preset in the category, or the current preset if it is in that category. |
 | **Sort System presets** | **Alphabetically** | (default) Show system presets alphabetically by name. |
 |  | **by Category** | Sort first by Category, then alphabetically within the category. |
-|  | **in System order** | Show system presets in internal System order. This is the numerical order in the Haken Editor "File 2" list, which is mostly but not entirely alphabetical. |
+|  | **in System order** | Show system presets in internal System order. This is the numerical order in the Haken Editor "File 2" list, which is mostly but not entirely alphabetical. On the Continuum display, presets are in Category order. |
 
 ## Notes
 
@@ -174,17 +218,11 @@ Pick the _output_ device from the right-hand MIDI selector and HC-1 will automat
 - **Factory presets:** For beta, there are no Rack module factory presets.
 Please let me know if you have something useful that comes from using Rack module presets.
 
-- **HC-2:** The HC-2 module is present in the plugin.
-It is currently used for module prototyping, diagnostics and debugging.
-It's possible we may turn to it for support purposes, but HC-1 has most of what we need.
-HC-2 is really not useful to users at this time and may occasionally cause VCV Rack to deadlock.
-The CV map display on HC-2 can be somewhat interesting if you are familiar with the EM usage of Channel 1 and Channel 16 CCs.
-
 - **More functionality:** I plan to add expander modules for controlling most other things on the device.
 I am *not* planning to create a complete preset editor.
 That's not really suitable for a VCV rack module and it would require additional proprietary internal information from Haken Audio.
 
-  I am very interesting to hear from you what will be most important controls to include in future HC modules.
+  I am interested to hear from you what will be most important controls to include in future HC modules.
 
   - I have some ideas for other potential useful features, such as:
 
