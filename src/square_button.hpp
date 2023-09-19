@@ -29,10 +29,6 @@ struct ButtonBehavior : TipWidget {
         handler = callback;
     }
 
-    void describe(std::string description) {
-        tip_text = description;
-    }
-
     void onDragStart(const DragStartEvent& e) override {
         if (enabled) pressed = true;
         TipWidget::onDragStart(e);

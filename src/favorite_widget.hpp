@@ -28,9 +28,9 @@ struct FavoriteWidget : TipWidget
         if (patch == preset) { return; }
         preset = patch;
         if (!preset) {
-            tip_text = "(no preset)";
+            describe("(no preset)");
         } else {
-            tip_text = format_string("%s %s", preset->favorite ? "un-favorite" : "favorite", preset->name.c_str());
+            describe(format_string("%s %s", preset->favorite ? "un-favorite" : "favorite", preset->name.c_str()));
         }
     }
 

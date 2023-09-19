@@ -93,6 +93,7 @@ void Hc1ModuleWidget::createPresetPrevNext()
 {
     float y = 124.f;
     auto w = createWidgetCentered<SmallSquareButton>(Vec(RIGHT_COLUMN_BUTTONS - 7.f, y));
+    w->describe("Previous preset\nShift+Click by 10\nCtrl+Click for device order");
     if (my_module) {
         w->setHandler([=](bool ctrl, bool shift){
             if (ctrl) {
@@ -106,6 +107,7 @@ void Hc1ModuleWidget::createPresetPrevNext()
     addChild(createStaticTextLabel<StaticTextLabel>(Vec(Vec(RIGHT_COLUMN_BUTTONS - 7.f, y + 5.f)), 25.f, "-", TextAlignment::Center, 9.f, false));
 
     w = createWidgetCentered<SmallSquareButton>(Vec(RIGHT_COLUMN_BUTTONS + 7.f, y));
+    w->describe("Next preset\nShift+Click by 10\nCtrl+Click for device order");
     if (my_module) {
         w->setHandler([=](bool ctrl, bool shift){
             if (ctrl) {

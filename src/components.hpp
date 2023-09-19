@@ -1,8 +1,9 @@
 #pragma once
 #ifndef COMPONENTS_HPP_INCLUDED
 #define COMPONENTS_HPP_INCLUDED
-#include "plugin.hpp"
 #include "colors.hpp"
+#include "plugin.hpp"
+#include "tip_widget.hpp"
 
 //#define IMPLEMENT_DRAW_PERSON
 namespace pachde {
@@ -262,12 +263,31 @@ using SmallBlackKnob = TKnob<SmallBlackKnobSvg>;
 template<typename TSvg>
 struct TButton : SvgButton
 {
-    bool key_ctrl = false;
-    bool key_shift = false;
+    bool key_ctrl;
+    bool key_shift;
     std::function<void(bool, bool)> handler;
+    TipHolder * tip_holder;
 
-    TButton() {
+    TButton() 
+    :   key_ctrl(false),
+        key_shift(false),
+        handler(nullptr),
+        tip_holder(nullptr)
+    {
         setImage();
+    }
+    virtual ~ TButton() {
+        if (!tip_holder) {
+            delete tip_holder;
+            tip_holder = nullptr;
+        }
+    }
+
+    void describe(std::string text) {
+        if (!tip_holder) {
+            tip_holder = new TipHolder();
+        }
+        tip_holder->setText(text);
     }
 
     void setHandler(std::function<void(bool,bool)> callback)
@@ -289,6 +309,31 @@ struct TButton : SvgButton
             fb->setDirty(true);
         }
     }
+    void destroyTip() {
+        if (tip_holder) { tip_holder->destroyTip(); }
+    }
+    void createTip() {
+        if (tip_holder) { tip_holder->createTip(); }
+    }
+
+    void onEnter(const EnterEvent& e) override {
+        SvgButton::onEnter(e);
+        createTip();
+    }
+    void onLeave(const LeaveEvent& e) override {
+        SvgButton::onLeave(e);
+        destroyTip();
+    }
+    void onDragLeave(const DragLeaveEvent& e) override {
+        SvgButton::onDragLeave(e);
+        destroyTip();
+    }
+
+    void onDragEnd(const DragEndEvent& e) override
+    {
+        SvgButton::onDragEnd(e);
+        destroyTip();
+    }
 
     void onHoverKey(const HoverKeyEvent& e) override
     {
@@ -299,6 +344,7 @@ struct TButton : SvgButton
 
     void onAction(const ActionEvent& e) override
     {
+        destroyTip();
         if (handler) {
             handler(key_ctrl, key_shift);
         } else {

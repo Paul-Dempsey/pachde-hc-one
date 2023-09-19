@@ -25,10 +25,6 @@ struct SmallPush : TipWidget
         box.size.x = box.size.y = 12.f;
     }
 
-    void describe(std::string description) {
-        tip_text = description;
-    }
-
     void center(Vec pos) {
         box.pos = pos.minus(box.size.div(2));
     }

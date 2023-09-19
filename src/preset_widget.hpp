@@ -43,13 +43,13 @@ struct PresetWidget : TipWidget
     void setPreset(std::shared_ptr<Preset> patch) {
         preset = patch;
         if (preset) {
-            tip_text = preset->describe();
+            describe(preset->describe());
             symbol->setSymbol((0 == preset->bank_hi) ? 1 : 0);
             symbol->box.pos.x = preset->favorite ? 12.f : 4.f;
             text_label->text(preset->name);
             text_code->text(preset->categoryName());
         } else {
-            tip_text = "(no preset)";
+            describe("(no preset)");
             symbol->setSymbol(0);
             symbol->box.pos.x = 4.f;
             text_label->text("");

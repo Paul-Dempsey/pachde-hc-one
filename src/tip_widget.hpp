@@ -5,15 +5,18 @@
 using namespace ::rack;
 namespace pachde {
 
-struct TipWidget : OpaqueWidget {
+struct TipHolder
+{
     rack::ui::Tooltip* tip = nullptr;
     std::string tip_text;
 
-    virtual ~TipWidget() {
-        if (tip) delete tip;
-        tip = nullptr;
+    ~TipHolder() {
+        destroyTip();
     }
-    TipWidget() {}
+
+    void setText(std::string text) {
+        tip_text = text;
+    }
 
     void createTip() {
         if (!rack::settings::tooltips) return;
@@ -31,12 +34,40 @@ struct TipWidget : OpaqueWidget {
 	    APP->scene->removeChild(t);
         delete t;
     }
+};
+
+struct TipWidget : OpaqueWidget {
+    TipHolder* tip_holder;
+
+    TipWidget() : tip_holder(nullptr) {}
+    virtual ~TipWidget() {
+        if (tip_holder) delete tip_holder;
+        tip_holder = nullptr;
+    }
+
+    void describe(std::string text)
+    {
+        if (!tip_holder) {
+            tip_holder = new TipHolder();
+        }
+        tip_holder->setText(text);
+    }
+
+    void destroyTip() {
+        if (tip_holder) { tip_holder->destroyTip(); }
+    }
+
+    void createTip() {
+        if (tip_holder) { tip_holder->createTip(); }
+    }
 
     void onEnter(const EnterEvent& e) override {
+        rack::OpaqueWidget:: onEnter(e);
         createTip();
     }
 
     void onLeave(const LeaveEvent& e) override {
+        rack::OpaqueWidget:: onLeave(e);
         destroyTip();
     }
 
