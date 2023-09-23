@@ -97,7 +97,7 @@ Hc2ModuleWidget::Hc2ModuleWidget(Hc2Module * module)
 
     // current preset in title
     preset_label = createStaticTextLabel<DynamicTextLabel>(
-        Vec(80.f, 7.5f), 250.f, "My Amazing Preset", TextAlignment::Left, 14.f, true, preset_name_color);
+        Vec(70.f, 7.5f), 250.f, "My Amazing Preset", TextAlignment::Left, 14.f, true, preset_name_color);
     preset_label->bright();
     addChild(preset_label);
 

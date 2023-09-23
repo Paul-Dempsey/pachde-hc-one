@@ -8,6 +8,7 @@ SOURCES += src/em_midi.cpp
 SOURCES += src/em_pedal.cpp
 SOURCES += src/em_types.cpp
 SOURCES += src/misc.cpp
+SOURCES += src/HcOne.cpp
 SOURCES += src/open_file.cpp
 SOURCES += src/plugin.cpp
 SOURCES += src/preset_meta.cpp
@@ -27,6 +28,9 @@ SOURCES += src/HC-1/HC-1-ui.cpp
 
 SOURCES += src/HC-2/HC-2.cpp
 SOURCES += src/HC-2/HC-2-ui.cpp
+
+SOURCES += src/HC-3/HC-3.cpp
+SOURCES += src/HC-3/HC-3-ui.cpp
 
 DISTRIBUTABLES += res
 # DISTRIBUTABLES += presets

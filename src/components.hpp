@@ -276,14 +276,17 @@ struct TButton : SvgButton
     {
         setImage();
     }
-    virtual ~ TButton() {
-        if (!tip_holder) {
+
+    virtual ~TButton()
+    {
+        if (tip_holder) {
             delete tip_holder;
             tip_holder = nullptr;
         }
     }
 
-    void describe(std::string text) {
+    void describe(std::string text)
+    {
         if (!tip_holder) {
             tip_holder = new TipHolder();
         }
@@ -328,7 +331,6 @@ struct TButton : SvgButton
         SvgButton::onDragLeave(e);
         destroyTip();
     }
-
     void onDragEnd(const DragEndEvent& e) override
     {
         SvgButton::onDragEnd(e);

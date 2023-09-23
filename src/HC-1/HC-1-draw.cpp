@@ -90,6 +90,9 @@ void Hc1ModuleWidget::drawStatusDots(NVGcontext* vg)
         //user_preset_state
         Dot(vg, left, y, InitStateColor(my_module->user_preset_state));
         left += spacing;
+        //apply_favorite_state
+        Dot(vg, left, y, InitStateColor(my_module->apply_favorite_state));
+        left += spacing;
         //config_state
         Dot(vg, left, y, InitStateColor(my_module->config_state));
         left += spacing;
@@ -176,6 +179,9 @@ void Hc1ModuleWidget::drawLayer(const DrawArgs& args, int layer)
         } else
         if (InitState::Uninitialized == my_module->user_preset_state) {
             text = "... preparing user presets ...";
+        } else
+        if (InitState::Uninitialized == my_module->apply_favorite_state) {
+            text = "... preparing favorites ...";
         } else
         if (InitState::Uninitialized == my_module->config_state) {
             text = "... preparing preset details ...";

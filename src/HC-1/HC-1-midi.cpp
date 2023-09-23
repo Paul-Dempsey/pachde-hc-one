@@ -279,9 +279,10 @@ void Hc1Module::onChannel16CC(uint8_t cc, uint8_t value)
                     user_preset_state = broken ? InitState::Broken : InitState::Complete;
                     if (!broken) {
                         std::sort(user_presets.begin(), user_presets.end(), preset_system_order);
+                        heart_time = .1f; // next staep can start quickly
                     }
                     DebugLog("End User presets as %s", InitStateName(user_preset_state));
-                    sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::midiTxFull);
+                    //sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::midiTxFull);
                     break;
 
                 case EM_DownloadItem::beginSysNames:
@@ -298,7 +299,7 @@ void Hc1Module::onChannel16CC(uint8_t cc, uint8_t value)
                         readFavorites();
                     }
                     DebugLog("End System presets as %s", InitStateName(system_preset_state));
-                    sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::midiTxFull);
+                    //sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::midiTxFull);
                     break;
             }
             break;

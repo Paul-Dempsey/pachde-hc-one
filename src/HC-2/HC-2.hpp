@@ -3,9 +3,9 @@
 #define HC2_HPP_INCLUDED
 #include <stdint.h>
 #include "../plugin.hpp"
+#include "../HC-1/HC-1.hpp"
 #include "../em_midi.hpp"
 #include "../presets.hpp"
-#include "../HC-1/HC-1.hpp"
 #include "../em_types.hpp"
 #include "../hc_events.hpp"
 

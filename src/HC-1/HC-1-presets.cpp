@@ -163,6 +163,7 @@ void Hc1Module::favoritesFromPresets()
         }
     }
     sortFavorites();
+    apply_favorite_state = InitState::Complete;
 }
 
 void Hc1Module::userPresetsToJson(json_t* root)
@@ -190,7 +191,7 @@ void Hc1Module::systemPresetsToJson(json_t* root)
 }
 
 
-std::string Hc1Module::favoritesPath()
+std::string Hc1Module::moduleFavoritesPath()
 {
     if (broken || !is_eagan_matrix) return "";
     return asset::user(format_string("%s/fav-%s.json", pluginInstance->slug.c_str(), deviceName().c_str()));
@@ -229,9 +230,10 @@ json_t* Hc1Module::favoritesToJson()
 
 void Hc1Module::saveFavorites()
 {
-    if (favorite_presets.empty()) return;
-    auto path = favoritesPath();
-    writeFavoritesFile(path);
+    if (!favoritesFile.empty()) {
+        writeFavoritesFile(favoritesFile);
+    }
+    writeFavoritesFile(moduleFavoritesPath());
 }
 
 void Hc1Module::writeFavoritesFile(const std::string& path)
@@ -256,26 +258,28 @@ void Hc1Module::writeFavoritesFile(const std::string& path)
 	system::rename(tmpPath, path);
 }
 
-void Hc1Module::readFavoritesFile(const std::string& path)
+bool Hc1Module::readFavoritesFile(const std::string& path, bool fresh)
 {
-    if (system_presets.empty()) return;
-    if (path.empty()) return;
+    if (system_presets.empty()) return false;
+    if (path.empty()) return false;
     FILE* file = std::fopen(path.c_str(), "r");
 	if (!file) {
-		return;
+		return false;
     }
 	DEFER({std::fclose(file);});
 	json_error_t error;
 	json_t* root = json_loadf(file, 0, &error);
 	if (!root) {
 		DebugLog("Invalid JSON at %d:%d %s in %s", error.line, error.column, error.text, path.c_str());
-        return;
+        return false;
     }
 	DEFER({json_decref(root);});
     auto bulk = BulkFavoritingMode(this);
     auto jar = json_object_get(root, "favorites");
     if (jar) {
-        clearFavorites();
+        if (fresh) {
+            clearFavorites();
+        }
         json_t* jp;
         size_t index;
         Preset preset;
@@ -297,6 +301,7 @@ void Hc1Module::readFavoritesFile(const std::string& path)
     }
     sortFavorites();
     saveFavorites();
+    return true;
 }
 
 std::shared_ptr<Preset> Hc1Module::findDefinedPreset(std::shared_ptr<Preset> preset)
@@ -335,8 +340,8 @@ void Hc1Module::readFavorites()
 {
     if (system_presets.empty()) return;
     if (!favorite_presets.empty()) return;
-    auto path = favoritesPath();
-    readFavoritesFile(path);
+    auto path = moduleFavoritesPath();
+    readFavoritesFile(path, true);
 }
 
 

@@ -282,6 +282,14 @@ void Hc1Module::process(const ProcessArgs& args)
                 if (InitState::Uninitialized == user_preset_state || InitState::Broken == user_preset_state) {
                     transmitRequestUserPresets();
                 } else
+                if (InitState::Uninitialized == apply_favorite_state) {
+                    if (favoritesFile.empty()) {
+                        readFavorites();
+                    } else {
+                        readFavoritesFile(favoritesFile, true);
+                    }
+                    apply_favorite_state = InitState::Complete;
+                } else
                 if (InitState::Uninitialized == saved_preset_state) {
                     sendSavedPreset();
                 } else

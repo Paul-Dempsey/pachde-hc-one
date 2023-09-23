@@ -89,11 +89,12 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     PresetOrder preset_order = PresetOrder::Alpha;
     void setPresetOrder(PresetOrder order);
 
-    std::string favoritesPath();
+    std::string favoritesFile;
+    std::string moduleFavoritesPath();
     void clearFavorites();
     void saveFavorites();
     void readFavorites();
-    void readFavoritesFile(const std::string& path);
+    bool readFavoritesFile(const std::string& path, bool fresh);
     void writeFavoritesFile(const std::string& path);
     json_t* favoritesToJson();
     void favoritesFromPresets();
@@ -143,6 +144,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     InitState device_input_state    = InitState::Uninitialized;
     InitState system_preset_state   = InitState::Uninitialized;
     InitState user_preset_state     = InitState::Uninitialized;
+    InitState apply_favorite_state  = InitState::Uninitialized;
     InitState config_state          = InitState::Uninitialized;
     InitState saved_preset_state    = InitState::Uninitialized;
     InitState request_updates_state = InitState::Uninitialized;
@@ -162,6 +164,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
             || InitState::Pending == device_input_state
             || InitState::Pending == system_preset_state
             || InitState::Pending == user_preset_state
+            || InitState::Pending == apply_favorite_state
             || InitState::Pending == config_state
             || InitState::Pending == handshake;
     }
@@ -171,6 +174,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
             && InitState::Complete == device_input_state
             && InitState::Complete == system_preset_state
             && InitState::Complete == user_preset_state
+            && InitState::Complete == apply_favorite_state
             && InitState::Complete == config_state
             && InitState::Complete == saved_preset_state
             && InitState::Complete == request_updates_state
@@ -246,12 +250,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
 
     Hc1Module();
 
-    virtual ~Hc1Module()
-    {
-        if (restore_ui_data) {
-            delete restore_ui_data;
-        }
-    }
+    virtual ~Hc1Module();
 
     // midi::Input
     void onMessage(const midi::Message& msg) override;
@@ -456,24 +455,28 @@ struct Hc1ModuleWidget : ModuleWidget, IPresetHolder, IHandleHcEvents
     // IPresetHolder
     void setPreset(std::shared_ptr<Preset> preset) override
     {
+        if (! my_module) return;
         my_module->setPreset(preset);
     }
     bool isCurrentPreset(std::shared_ptr<Preset> preset) override
     {
-        return my_module->isCurrentPreset(preset);
+        return my_module ? my_module->isCurrentPreset(preset) : false;
     }
     void addFavorite(std::shared_ptr<Preset> preset) override
     {
+        if (! my_module) return;
         my_module->addFavorite(preset);
         updatePresetWidgets();
     }
     void unFavorite(std::shared_ptr<Preset> preset) override
     {
+        if (! my_module) return;
         my_module->unFavorite(preset);
         updatePresetWidgets();
     }
     void moveFavorite(std::shared_ptr<Preset> preset, FavoriteMove motion) override
     {
+        if (! my_module) return;
         my_module->moveFavorite(preset, motion);
         updatePresetWidgets();
     }

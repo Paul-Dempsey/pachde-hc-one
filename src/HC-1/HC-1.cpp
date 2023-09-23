@@ -1,10 +1,13 @@
 #include "HC-1.hpp"
 #include "../cc_param.hpp"
 #include "../misc.hpp"
+#include "../HcOne.hpp"
+
 namespace pachde {
 
 Hc1Module::Hc1Module()
 {
+    HcOne::get()->registerHc1(this);
     //system_presets.reserve(700);
     //user_presets.reserve(128);
     config(Params::NUM_PARAMS, Inputs::NUM_INPUTS, Outputs::NUM_OUTPUTS, Lights::NUM_LIGHTS);
@@ -21,12 +24,12 @@ Hc1Module::Hc1Module()
     configCCParam(em_midi::EMCC_RMIX, false, this, RMIX_PARAM, RMIX_INPUT, RMIX_REL_PARAM, RMIX_REL_LIGHT, 0.f, 127.f, 64.f, "Recirculator Mix");
     configCCParam(em_midi::EMCC_PostLevel, true, this, VOLUME_PARAM, VOLUME_INPUT, VOLUME_REL_PARAM, VOLUME_REL_LIGHT, 0.f, EM_Max14f, EM_Max14f/2.f, "Post level");
 
-    configSwitch(M1_REL_PARAM, 0.f, 1.f, 0.f, "i relative-CV", {"off", "on"});
-    configSwitch(M2_REL_PARAM, 0.f, 1.f, 0.f, "ii relative-CV", {"off", "on"});
-    configSwitch(M3_REL_PARAM, 0.f, 1.f, 0.f, "iii relative-CV", {"off", "on"});
-    configSwitch(M4_REL_PARAM, 0.f, 1.f, 0.f, "iv relative-CV", {"off", "on"});
-    configSwitch(M5_REL_PARAM, 0.f, 1.f, 0.f, "v relative-CV", {"off", "on"});
-    configSwitch(M6_REL_PARAM, 0.f, 1.f, 0.f, "vi relative-CV", {"off", "on"});
+    configSwitch(M1_REL_PARAM, 0.f, 1.f, 0.f, "Macro i relative-CV", {"off", "on"});
+    configSwitch(M2_REL_PARAM, 0.f, 1.f, 0.f, "Macro ii relative-CV", {"off", "on"});
+    configSwitch(M3_REL_PARAM, 0.f, 1.f, 0.f, "Macro iii relative-CV", {"off", "on"});
+    configSwitch(M4_REL_PARAM, 0.f, 1.f, 0.f, "Macro iv relative-CV", {"off", "on"});
+    configSwitch(M5_REL_PARAM, 0.f, 1.f, 0.f, "Macro v relative-CV", {"off", "on"});
+    configSwitch(M6_REL_PARAM, 0.f, 1.f, 0.f, "Macro vi relative-CV", {"off", "on"});
     configSwitch(R1_REL_PARAM, 0.f, 1.f, 0.f, "R-1 relative-CV", {"off", "on"});
     configSwitch(R2_REL_PARAM, 0.f, 1.f, 0.f, "R-2 relative-CV", {"off", "on"});
     configSwitch(R3_REL_PARAM, 0.f, 1.f, 0.f, "R-3 relative-CV", {"off", "on"});
@@ -50,33 +53,22 @@ Hc1Module::Hc1Module()
     configInput(VOLUME_INPUT, "Post level");
     configInput(MUTE_INPUT, "Mute trigger");
 
-    // configLight(Lights::M1_REL_LIGHT, "i CV relative");
-    // configLight(Lights::M2_REL_LIGHT, "ii CV relative");
-    // configLight(Lights::M3_REL_LIGHT, "iii CV relative");
-    // configLight(Lights::M4_REL_LIGHT, "iv CV relative");
-    // configLight(Lights::M5_REL_LIGHT, "v CV relative");
-    // configLight(Lights::M6_REL_LIGHT, "vi CV relative");
-    // configLight(Lights::R1_REL_LIGHT, "R1 CV relative");
-    // configLight(Lights::R2_REL_LIGHT, "R2 CV relative");
-    // configLight(Lights::R3_REL_LIGHT, "R3 CV relative");
-    // configLight(Lights::R4_REL_LIGHT, "R4 CV relative");
-    // configLight(Lights::RMIX_REL_LIGHT, "RMix CV relative");
-    // configLight(Lights::VOLUME_REL_LIGHT, "Volume CV relative");
     configLight(Lights::HEART_LIGHT, "Device status");
-    //configLight(Lights::MUTE_LIGHT, "Mute");
-    //configLight(Lights::RECIRC_EXTEND_LIGHT, "R Extend");
     configLight(Lights::ROUND_Y_LIGHT, "Round on Y");
     configLight(Lights::ROUND_INITIAL_LIGHT, "Round initial");
     configLight(Lights::ROUND_LIGHT, "Rounding");
     configLight(Lights::ROUND_RELEASE_LIGHT, "Round on release");
-    // configLight(Lights::TRANSPOSE_UP_LIGHT, "Transpose up");
-    // configLight(Lights::TRANSPOSE_NONE_LIGHT, "Transpose none");
-    // configLight(Lights::TRANSPOSE_DOWN_LIGHT, "Transpose down");
-
-    //configLight(Lights::FILTER_LIGHT, "Filter presets");
 
     getLight(HEART_LIGHT).setBrightness(.8f);
     clearCCValues();
+}
+
+Hc1Module::~Hc1Module()
+{
+    HcOne::get()->unregisterHc1(this);
+    if (restore_ui_data) {
+        delete restore_ui_data;
+    }
 }
 
 void Hc1Module::centerKnobs() {
@@ -141,12 +133,15 @@ void Hc1Module::relativeCV()
     getParam(VOLUME_REL_PARAM).setValue(1.f);
 }
 
-
-void Hc1Module::onSave(const SaveEvent& e) {
+void Hc1Module::onSave(const SaveEvent& e)
+{
     savePresets();
     Module::onSave(e);
 }
-void Hc1Module::onRemove(const RemoveEvent& e) {
+
+void Hc1Module::onRemove(const RemoveEvent& e)
+{
+    HcOne::get()->unregisterHc1(this);
     savePresets();
     Module::onRemove(e);
 }
@@ -170,6 +165,7 @@ json_t * Hc1Module::dataToJson()
     json_object_set_new(root, "restore-preset", json_boolean(restore_saved_preset));
     json_object_set_new(root, "cache-presets", json_boolean(cache_presets));
     json_object_set_new(root, "heartbeat",  json_boolean(heart_beating));
+    json_object_set_new(root, "favorites-file", json_stringn(favoritesFile.c_str(), favoritesFile.size()));
     return root;
 }
 
@@ -212,12 +208,25 @@ void Hc1Module::dataFromJson(json_t *root)
     if (j) {
         device_name = json_string_value(j);
     }
-
+    
+    j = json_object_get(root, "favorites-file");
+    if (j) {
+        favoritesFile = json_string_value(j);
+    }
     cache_presets = GetBool(root, "cache-presets", cache_presets);
     if (cache_presets) {
         loadSystemPresets();
         loadUserPresets();
-        favoritesFromPresets();
+        if (favoritesFile.empty()) {
+            favoritesFromPresets();
+        }
+    }
+    if (!system_presets.empty() && !favoritesFile.empty()) {
+        if (readFavoritesFile(favoritesFile, true)) {
+            apply_favorite_state = InitState::Complete;
+        } else {
+            apply_favorite_state = InitState::Broken;
+        }
     }
 }
 
@@ -242,6 +251,7 @@ void Hc1Module::reboot()
         device_input_state =
         system_preset_state = 
         user_preset_state = 
+        apply_favorite_state =
         config_state = 
         request_updates_state = 
         saved_preset_state =

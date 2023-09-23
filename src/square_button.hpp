@@ -76,7 +76,6 @@ struct SquareButton : ButtonBehavior {
         GradientRect(vg, .85f, 1.125f, 13.25f, 13.5f, face2, face1, 0.f, 15.f);
     }
 
-
     void drawFunnel(NVGcontext* vg) {
         nvgBeginPath(vg);
         nvgMoveTo(vg, 4.f, 4.f);
