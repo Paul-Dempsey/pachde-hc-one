@@ -22,13 +22,13 @@
       {
         "slug": "pachde-hc-2",
         "name": "HC-2",
-        "description": "More Eagan Matrix controls (HC-1 expander)",
+        "description": "More Eagan Matrix controls (HC-1 companion)",
         "tags": [ "Expander" ]
       },
       {
         "slug": "pachde-hc-3",
         "name": "HC-3",
-        "description": "Eagan Matrix Set lists (favorites groups)",
+        "description": "Eagan Matrix set lists (HC-1 companion)",
         "tags": [ "Expander" ]
       }
     ]

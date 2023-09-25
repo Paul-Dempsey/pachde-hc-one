@@ -23,6 +23,27 @@ std::string format_string(const char *fmt, ...)
     return r < 0 ? "??" : s;
 }
 
+// case-insensitive
+bool alpha_order(const std::string& a, const std::string& b)
+{
+    if (a.empty()) return false;
+    if (!a.empty() && b.empty()) return true;
+    auto ita = a.cbegin();
+    auto itb = b.cbegin();
+    for (; ita != a.cend() && itb != b.cend(); ++ita, ++itb) {
+        if (*ita == *itb) continue;
+        auto c1 = std::tolower(*ita);
+        auto c2 = std::tolower(*itb);
+        if (c1 == c2) continue;
+        if (c1 < c2) return true;
+        return false;
+    }
+    if (ita == a.cend() && itb != b.cend()) {
+        return true;
+    }
+    return false;
+}
+
 std::size_t common_prefix_length(const std::string& alpha, const std::string& beta) {
     auto a = alpha.cbegin(), ae = alpha.cend();
     auto b = beta.cbegin(), be = beta.cend();

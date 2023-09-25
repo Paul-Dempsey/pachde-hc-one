@@ -27,7 +27,7 @@ struct Hc2Module : Module, ISendMidi, IHandleHcEvents
         P_ROUND_TUNING,  // 0..69
         //P_ROUND_EQUAL,
         P_ROUND_RATE_REL,
-        P_TEST,
+        //P_TEST,
         NUM_PARAMS,
     };
     enum Inputs
@@ -49,8 +49,8 @@ struct Hc2Module : Module, ISendMidi, IHandleHcEvents
     Rounding rounding;
 
     IHandleHcEvents * ui_event_sink = nullptr;
-    ExpanderPresence partner_side = Expansion::None;
     Hc1Module* getPartner();
+    bool partner_subscribed = false;
 
     // cv processing
     const int CV_INTERVAL = 64;
@@ -59,11 +59,11 @@ struct Hc2Module : Module, ISendMidi, IHandleHcEvents
     rack::dsp::SchmittTrigger round_initial_trigger;
 
     Hc2Module();
-    void onExpanderChange(const ExpanderChangeEvent& e) override;
+    virtual ~Hc2Module();
+
     void onSampleRateChange() override {
         control_rate.onSampleRateChanged();
     }
-    std::string getDeviceName();
 
     // json_t * dataToJson() override;
     // void dataFromJson(json_t *root) override;
@@ -87,12 +87,13 @@ struct Hc2Module : Module, ISendMidi, IHandleHcEvents
     // IHandleHcEvents
     void onPresetChanged(const PresetChangedEvent& e) override;
     void onRoundingChanged(const RoundingChangedEvent& e) override;
+    void onDeviceChanged(const DeviceChangedEvent& e) override;
+    void onDisconnect(const DisconnectEvent& e) override;
 };
 
 struct Hc2ModuleWidget : ModuleWidget, IHandleHcEvents
 {
     Hc2Module * my_module = nullptr;
-    DynamicTextLabel* preset_label = nullptr;
     StaticTextLabel* device_label = nullptr;
     DynamicTextLabel* rounding_summary = nullptr;
 
@@ -102,14 +103,15 @@ struct Hc2ModuleWidget : ModuleWidget, IHandleHcEvents
             my_module->ui_event_sink = nullptr;
         }
     }
+    Hc1Module* getPartner();
     void createRoundingUI(float x, float y);
 
     // IHandleHcEvents
     void onPresetChanged(const PresetChangedEvent& e) override;
     void onRoundingChanged(const RoundingChangedEvent& e) override;
+    void onDeviceChanged(const DeviceChangedEvent& e) override;
+    void onDisconnect(const DisconnectEvent& e) override;
 
-    void step() override;
-    void drawExpanderConnector(const DrawArgs& args);
     void drawCCMap(const DrawArgs& args, Hc1Module * partner);
     void draw(const DrawArgs& args) override;
     void appendContextMenu(Menu *menu) override;

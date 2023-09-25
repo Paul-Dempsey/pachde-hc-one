@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include "../colors.hpp"
 #include "../em_midi.hpp"
+#include "../em_picker.hpp"
 #include "../em_types.hpp"
 #include "../favorite_widget.hpp"
 #include "../hc_events.hpp"
@@ -22,7 +23,7 @@ namespace pachde {
 #include "../debug_log.hpp"
 const NVGcolor& StatusColor(StatusItem led);
 
-struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
+struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, midi::Input, Module
 {
     enum Params
     {
@@ -66,7 +67,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     std::vector<std::shared_ptr<Preset>> system_presets;
     std::vector<std::shared_ptr<Preset>> favorite_presets;
 
-    IHandleHcEvents * ui_event_sink = nullptr;
+    std::vector<IHandleHcEvents*> event_subscriptions;
 
     // ui persistence
     PresetTab tab = PresetTab::User;
@@ -139,9 +140,9 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     }
     
     bool is_eagan_matrix = false;
-
     InitState device_output_state   = InitState::Uninitialized;
     InitState device_input_state    = InitState::Uninitialized;
+    InitState duplicate_instance    = InitState::Uninitialized;
     InitState system_preset_state   = InitState::Uninitialized;
     InitState user_preset_state     = InitState::Uninitialized;
     InitState apply_favorite_state  = InitState::Uninitialized;
@@ -153,7 +154,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     bool hasSystemPresets() { return InitState::Complete == system_preset_state && !system_presets.empty(); }
     bool hasUserPresets() { return InitState::Complete == user_preset_state && !user_presets.empty(); }
     bool hasConfig() { return InitState::Complete == config_state; }
-
+    void tryCachedPresets();
     bool configPending() { return InitState::Pending == config_state; }
     bool savedPresetPending() { return InitState::Pending == saved_preset_state; }
     bool handshakePending() { return InitState::Pending == handshake; }
@@ -172,6 +173,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
         return !broken 
             && InitState::Complete == device_output_state
             && InitState::Complete == device_input_state
+            && InitState::Complete == duplicate_instance
             && InitState::Complete == system_preset_state
             && InitState::Complete == user_preset_state
             && InitState::Complete == apply_favorite_state
@@ -185,6 +187,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     bool in_user_names = false;
     bool in_sys_names = false;
     bool broken = false;
+    bool dupe = false;
 #ifdef VERBOSE_LOG
     bool log_midi = false;
 #endif
@@ -249,8 +252,18 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     bool is_gathering_presets() { return system_preset_state == InitState::Pending || user_preset_state == InitState::Pending; }
 
     Hc1Module();
-
     virtual ~Hc1Module();
+
+    // ISetDevice
+    void setMidiDevice(int id) override;
+
+    // IHandleHcEvents subscription and notification
+    void subscribeHcEvents(IHandleHcEvents* client);
+    void unsubscribeHcEvents(IHandleHcEvents* client);
+    void notifyPresetChanged();
+    void notifyRoundingChanged();
+    void notifyDeviceChanged();
+    void notifyDisconnect();
 
     // midi::Input
     void onMessage(const midi::Message& msg) override;
@@ -319,69 +332,16 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
     void addFavorite(std::shared_ptr<Preset> preset) override;
     void unFavorite(std::shared_ptr<Preset> preset) override;
     void moveFavorite(std::shared_ptr<Preset> preset, FavoriteMove motion) override;
+    void numberFavorites();
+    void sortFavorites(PresetOrder order = PresetOrder::Favorite);
 
     void sendSavedPreset();
     std::shared_ptr<Preset> findDefinedPreset(std::shared_ptr<Preset> preset);
 
-    void notifyPresetChanged(rack::engine::Module::Expander& expander, const IHandleHcEvents::PresetChangedEvent& e)
-    {
-        if (!expander.module) return;
-        auto sink = dynamic_cast<IHandleHcEvents*>(expander.module);
-        if (!sink) return;
-        sink->onPresetChanged(e);
-    }
-    void notifyPresetChanged()
-    {
-        auto event = IHandleHcEvents::PresetChangedEvent{current_preset};
-        if (ui_event_sink) {
-            ui_event_sink->onPresetChanged(event);
-        }
-        notifyPresetChanged(getRightExpander(), event);
-        notifyPresetChanged(getLeftExpander(), event);
-    }
-
-    void notifyRoundingChanged(rack::engine::Module::Expander& expander, IHandleHcEvents::RoundingChangedEvent e)
-    {
-        if (!expander.module) return;
-        auto sink = dynamic_cast<IHandleHcEvents*>(expander.module);
-        if (!sink) return;
-        sink->onRoundingChanged(e);
-    }
-    void notifyRoundingChanged()
-    {
-        auto event = IHandleHcEvents::RoundingChangedEvent{rounding};
-        if (ui_event_sink) {
-            ui_event_sink->onRoundingChanged(event);
-        }
-        notifyRoundingChanged(getRightExpander(), event);
-        notifyRoundingChanged(getLeftExpander(), event);
-    }
-
-    void numberFavorites();
-    void sortFavorites(PresetOrder order = PresetOrder::Favorite);
-
-    // expanders
-    ExpanderPresence expanders = Expansion::None;
-    // Only handles removal. We depend on adjacent modules to tell us 
-    // that they are an expander via expanderAdded().
-    void onExpanderChange(const ExpanderChangeEvent& e) override
-    {
-        if (e.side) {
-            if (!getRightExpander().module) {
-                expanders.removeRight();
-            }
-        } else {
-            if (!getLeftExpander().module) {
-                expanders.removeLeft();
-            }
-        }
-    }
-    void expanderAdded(Expansion side) {
-        expanders.add(side);
-    }
     void syncStatusLights();
     void syncParam(int paramId);
     void syncParams(float sampleTime);
+    void checkDuplicate();
     void resetMidiIO();
     void sendResetAllreceivers();
     void transmitRequestUpdates();
@@ -407,6 +367,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, midi::Input, Module
 };
 
 // -----------------------------------------------------------------------------------------
+const NVGcolor& InitStateColor(InitState state);
 using Hc1p = Hc1Module::Params;
 using Hc1in = Hc1Module::Inputs;
 using Hc1out = Hc1Module::Outputs;
@@ -415,18 +376,20 @@ using Hc1lt = Hc1Module::Lights;
 struct Hc1ModuleWidget : ModuleWidget, IPresetHolder, IHandleHcEvents
 {
     Hc1Module* my_module = nullptr;
-
+    StaticTextLabel* device_label = nullptr;
     std::vector<PresetWidget*> presets;
     bool have_preset_widgets = false;
-    TabBarWidget* tab_bar;
-    FavoriteWidget* favorite;
+    TabBarWidget* tab_bar = nullptr;
+    FavoriteWidget* favorite = nullptr;
     PresetTab tab = PresetTab::Favorite;
     int page = 0;
-    SquareButton* page_up;
-    SquareButton* page_down;
-    GrayModuleLightWidget * status_light;
+    SquareButton* page_up = nullptr;
+    SquareButton* page_down = nullptr;
+    GrayModuleLightWidget * status_light = nullptr;
+    EMPicker* em_picker = nullptr;
 
     explicit Hc1ModuleWidget(Hc1Module *module);
+    virtual ~Hc1ModuleWidget();
 
     // HC-1-ui.cpp: make ui
     void createPresetGrid();
@@ -439,6 +402,7 @@ struct Hc1ModuleWidget : ModuleWidget, IPresetHolder, IHandleHcEvents
     void createMidiSelection();
     void createDeviceDisplay();
     void createTestNote();
+    void createStatusDots();
     void createUi();
 
     void setTab(PresetTab tab, bool force = false);
@@ -453,40 +417,19 @@ struct Hc1ModuleWidget : ModuleWidget, IPresetHolder, IHandleHcEvents
     bool showCurrentPreset(bool changeTab);
 
     // IPresetHolder
-    void setPreset(std::shared_ptr<Preset> preset) override
-    {
-        if (! my_module) return;
-        my_module->setPreset(preset);
-    }
-    bool isCurrentPreset(std::shared_ptr<Preset> preset) override
-    {
-        return my_module ? my_module->isCurrentPreset(preset) : false;
-    }
-    void addFavorite(std::shared_ptr<Preset> preset) override
-    {
-        if (! my_module) return;
-        my_module->addFavorite(preset);
-        updatePresetWidgets();
-    }
-    void unFavorite(std::shared_ptr<Preset> preset) override
-    {
-        if (! my_module) return;
-        my_module->unFavorite(preset);
-        updatePresetWidgets();
-    }
-    void moveFavorite(std::shared_ptr<Preset> preset, FavoriteMove motion) override
-    {
-        if (! my_module) return;
-        my_module->moveFavorite(preset, motion);
-        updatePresetWidgets();
-    }
+    void setPreset(std::shared_ptr<Preset> preset) override;
+    bool isCurrentPreset(std::shared_ptr<Preset> preset) override;
+    void addFavorite(std::shared_ptr<Preset> preset) override;
+    void unFavorite(std::shared_ptr<Preset> preset) override;
+    void moveFavorite(std::shared_ptr<Preset> preset, FavoriteMove motion) override;
 
     // IHandleHcEvents
     void onPresetChanged(const PresetChangedEvent& e) override;
     void onRoundingChanged(const RoundingChangedEvent& e) override {}
+    void onDeviceChanged(const DeviceChangedEvent& e) override;
+    void onDisconnect(const DisconnectEvent& e) override;
 
     // HC-1.draw.cpp
-    void drawExpanderConnector(NVGcontext* vg);
     void drawDSP(NVGcontext* vg);
     void drawStatusDots(NVGcontext* vg);
     void drawPedals(NVGcontext* vg, std::shared_ptr<rack::window::Font> font, bool stockPedals);

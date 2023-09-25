@@ -68,54 +68,11 @@ void Hc1ModuleWidget::drawStatusDots(NVGcontext* vg)
     float spacing = 6.25f;
     float y = box.size.y - 7.5f;
 
-    if (my_module) {
+    if (!my_module) {
         // note
-        Dot(vg, left, y, my_module->notesOn ? purple_light : gray_light, my_module->notesOn);
-        left += spacing;
-        //device_output_state
-        Dot(vg, left, y, InitStateColor(my_module->device_output_state));
-        left += spacing;
-        // device_input_state
-        Dot(vg, left, y, InitStateColor(my_module->device_input_state));
-        left += spacing;
-        //eagan matrix
-        Dot(vg, left, y, my_module->is_eagan_matrix ? blue_light : yellow_light);
-        left += spacing;
-        // //device_state
-        // Dot(vg, left, y, InitStateColor(my_module->device_hello_state));
-        // left += spacing;
-        //system_preset_state
-        Dot(vg, left, y, InitStateColor(my_module->system_preset_state));
-        left += spacing;
-        //user_preset_state
-        Dot(vg, left, y, InitStateColor(my_module->user_preset_state));
-        left += spacing;
-        //apply_favorite_state
-        Dot(vg, left, y, InitStateColor(my_module->apply_favorite_state));
-        left += spacing;
-        //config_state
-        Dot(vg, left, y, InitStateColor(my_module->config_state));
-        left += spacing;
-        //saved_preset_state
-        if (my_module->restore_saved_preset){
-            Dot(vg, left, y, InitStateColor(my_module->saved_preset_state));
-        }
-        left += spacing;
-        //request_updates_state
-        Dot(vg, left, y, InitStateColor(my_module->request_updates_state));
-        left += spacing;
-        //handshake
-        if (my_module->heart_beating) {
-            Dot(vg, left, y, InitStateColor(my_module->handshake));
-        }
-        left += spacing;
-        // note (debugging)
-        // auto n = format_string("%d", my_module->note);
-        // nvgText(vg, left + 5.f, box.size.y - 1.5f, n.c_str(), nullptr);
-    } else {
+        Dot(vg, 41.f, y, gray_light, false);
+
         auto co = InitStateColor(InitState::Complete);
-        Dot(vg, left, y, gray_light, false);
-        left += spacing;
         //device_output_state
         Dot(vg, left, y, co);
         left += spacing;
@@ -125,9 +82,6 @@ void Hc1ModuleWidget::drawStatusDots(NVGcontext* vg)
         //eagan matrix
         Dot(vg, left, y, blue_light);
         left += spacing;
-        // //device_state
-        // Dot(vg, left, y, InitStateColor(my_module->device_hello_state));
-        // left += spacing;
         //system_preset_state
         Dot(vg, left, y, co);
         left += spacing;
@@ -161,6 +115,10 @@ void Hc1ModuleWidget::drawLayer(const DrawArgs& args, int layer)
     std::string text;
     SetTextStyle(vg, font_normal, RampGray(G_85), 12.f);
     if (my_module) {
+        if (my_module->dupe) {
+            SetTextStyle(vg, bold_font, GetStockColor(StockColor::Fuchsia), 16.f);
+            text = "[Only one HC-1 per EM]";
+        } else
         if (my_module->broken) {
             SetTextStyle(vg, bold_font, GetStockColor(StockColor::Fuchsia), 16.f);
             text = "[MIDI error - please wait]";
@@ -170,6 +128,9 @@ void Hc1ModuleWidget::drawLayer(const DrawArgs& args, int layer)
         } else
         if (InitState::Uninitialized == my_module->device_input_state) {
             text = ".. looking for EM input ...";
+        } else
+        if (InitState::Uninitialized == my_module->duplicate_instance) {
+            text = ".. checking for duplicate HC-1 ...";
         } else
         if (my_module->is_gathering_presets()) {
             text = format_string("... gathering %s preset %d ...", my_module->in_user_names ? "User" : "System", my_module->in_user_names ? my_module->user_presets.size() : my_module->system_presets.size());
@@ -257,38 +218,18 @@ void Hc1ModuleWidget::drawPedals(NVGcontext* vg, std::shared_ptr<rack::window::F
     }
 }
 
-void Hc1ModuleWidget::drawExpanderConnector(NVGcontext* vg)
-{
-    if (my_module && my_module->expanders.any()) {
-        bool right_expander = my_module->expanders.right();
-        float left, right;
-        if (right_expander) {
-            left = box.size.x - 5.5f;
-            right = box.size.x;
-        } else {
-            left = 0.f;
-            right = 5.5f;
-        }
-        float y = 80.f;
-        Line(vg,   left, y, right, y, COLOR_BRAND, 1.75f);
-        Circle(vg, left, y, 2.5f, COLOR_BRAND);
-    }
-}
-
 void Hc1ModuleWidget::draw(const DrawArgs& args)
 {
     ModuleWidget::draw(args);
     auto vg = args.vg;
 
-    bool stock = !my_module || !my_module->ready();
+    bool stock = !module || !my_module->ready();
     auto rt = stock ? EM_Recirculator::Reverb : my_module->recirculatorType();
-
-    drawExpanderConnector(vg);
 
     auto font = GetPluginFontRegular();
     if (FontOk(font)) {
 #if defined SHOW_PRESET0
-        if (my_module)
+        if (module)
         {
             SetTextStyle(vg, font, orange_light, 9.f);
             auto text = my_module->preset0.describe_short();
@@ -310,8 +251,12 @@ void Hc1ModuleWidget::draw(const DrawArgs& args)
         drawPedals(vg, font, stock);
     }
 
+    if (module && my_module->dupe) {
+        BoxRect(vg, 1.f, 1.f, box.size.x-2, box.size.y-2, GetStockColor(StockColor::Orange_red), 1.5f);
+    }
+
     drawStatusDots(vg);
-    if (!my_module) {
+    if (!module) {
         DrawLogo(args.vg, box.size.x*.5f - 120, 30.f, Overlay(COLOR_BRAND), 14.0);
     }
     DrawLogo(vg, box.size.x /2.f - 12.f, RACK_GRID_HEIGHT - ONE_HP, RampGray(G_90));

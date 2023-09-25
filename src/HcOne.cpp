@@ -36,17 +36,27 @@ Hc1Module* HcOne::getHc1(std::function<bool (Hc1Module* const&)> pred)
     auto item = std::find_if(my->hc1s.cbegin(), my->hc1s.cend(), pred);
     return item == my->hc1s.cend() ? nullptr : *item;
 }
+
+void HcOne::scan(std::function<bool(Hc1Module* const&)> pred)
+{
+    for (auto m: my->hc1s) {
+        if (!pred(m)) break;
+    }
+}
+
 Hc1Module* HcOne::getHc1(int64_t id)
 {
     auto item = std::find_if(my->hc1s.cbegin(), my->hc1s.cend(), [=](Hc1Module* const& m){ return m->getId() == id; });
     return item == my->hc1s.cend() ? nullptr : *item;
 }
+
 void HcOne::registerHc1(Hc1Module* module)
 {
     if (my->hc1s.cend() == std::find(my->hc1s.cbegin(), my->hc1s.cend(), module)) {
         my->hc1s.push_back(module);
     }
 }
+
 void HcOne::unregisterHc1(Hc1Module* module)
 {
     auto item = std::find(my->hc1s.cbegin(), my->hc1s.cend(), module);

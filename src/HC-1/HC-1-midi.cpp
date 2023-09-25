@@ -1,21 +1,72 @@
 #include "HC-1.hpp"
 #include "../cc_param.hpp"
+#include "../HcOne.hpp"
 
 namespace pachde {
 
+void Hc1Module::setMidiDevice(int id)
+{
+    if (-1 == id) {
+        resetMidiIO();
+        device_name = "(no Eagan Matrix device)";
+        return;
+    }
+    output_device_id = id;
+    midi_output.setDeviceId(id);
+    device_name = midi_output.getDeviceName(id);
+    int id_in = findMatchingInputDevice(device_name);
+    midi::Input::setDeviceId(id_in);
+    input_device_id = id_in;
+    device_output_state = id == -1 ? InitState::Uninitialized : InitState::Complete;
+    device_input_state = id_in == -1 ? InitState::Uninitialized : InitState::Complete;
+    notifyDeviceChanged();
+    checkDuplicate();
+}
+
 void Hc1Module::resetMidiIO()
 {
+    device_name.clear();
+
     midi_dispatch.clear();
+
     midi::Input::reset();
     input_device_id = -1;
     device_input_state = InitState::Uninitialized;
+
     midi_output.reset();
     output_device_id = -1;
     device_output_state = InitState::Uninitialized;
+
+    dupe = false;
+    duplicate_instance = InitState::Uninitialized;
+
+    notifyDeviceChanged();
+}
+
+void Hc1Module::checkDuplicate()
+{
+    dupe = false;
+    auto one = HcOne::get();
+    if (one->Hc1count() > 1) {
+        one->scan([=](Hc1Module* const& m) { 
+            if (m != this
+                && this->output_device_id >= 0 
+                && (this->output_device_id == m->output_device_id)) {
+                dupe = true;
+                return false;
+            }
+            return true;
+        });
+    } 
+    duplicate_instance = InitState::Complete;
 }
 
 void Hc1Module::queueMidiMessage(uMidiMessage msg)
 {
+    if (dupe) {
+        DebugLog("MIDI Output disabled when duplicate");
+        return;
+    }
     if (midi_dispatch.full()) {
         DebugLog("MIDI Output queue full: resetting MIDI IO");
         resetMidiIO();

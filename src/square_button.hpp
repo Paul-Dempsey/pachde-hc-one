@@ -47,8 +47,8 @@ struct ButtonBehavior : TipWidget {
     }
 };
 
-struct SquareButton : ButtonBehavior {
-    SquareButtonSymbol symbol = SquareButtonSymbol::Funnel;
+struct DrawSquareButton
+{
     NVGcolor base_screen = nvgRGBAf(0.f,0.f,0.f,.75f);
     NVGcolor med_screen = nvgRGBAf(.4f,.4f,.4f,.65f);
     NVGcolor hi1 =  RampGray(G_75);
@@ -56,27 +56,19 @@ struct SquareButton : ButtonBehavior {
     NVGcolor face1 = RampGray(G_35);
     NVGcolor face2 = RampGray(G_20);
 
-    SquareButton() {
-        box.size.x = 15.f;
-        box.size.y = 16.f;
-    }
-
-    void setSymbol(SquareButtonSymbol sym) {
-        symbol = sym;
-    }
-
     void drawUpFace(NVGcontext* vg) {
         FillRect(vg, 0.5f, 1.f, 14.f, 15.f, base_screen);
         GradientRect(vg, 0.5f, 0.75f, 14.f, 14.f, hi1, hi2, 0.f, 8.f);
         GradientRect(vg, .85f, 1.125f, 13.25f, 13.5f, face1, face2, 0.f, 15.f);
     }
+
     void drawDownFace(NVGcontext* vg) {
         FillRect(vg, 0.5f, 1.f, 14.f, 14.25f, base_screen);
         GradientRect(vg, 0.5f, 0.75f, 14.f, 14.f, hi2, hi1, 8.f, 15.f);
         GradientRect(vg, .85f, 1.125f, 13.25f, 13.5f, face2, face1, 0.f, 15.f);
     }
 
-    void drawFunnel(NVGcontext* vg) {
+    void drawFunnel(NVGcontext* vg, bool pressed) {
         nvgBeginPath(vg);
         nvgMoveTo(vg, 4.f, 4.f);
         nvgLineTo(vg, 11.f, 4.f );
@@ -135,14 +127,14 @@ struct SquareButton : ButtonBehavior {
         Line(vg, 7.f, 8.f, 8.f, 8.f, RampGray(G_50), 0.5f);
     }
 
-    void drawSymbol(NVGcontext * vg) {
+    void drawSymbol(NVGcontext * vg, SquareButtonSymbol symbol, bool pressed) {
         switch (symbol) {
         case SquareButtonSymbol::Nil:    drawNilSymbol(vg); break;
         case SquareButtonSymbol::Up:     drawUpSymbol(vg); break;
         case SquareButtonSymbol::Down:   drawDownSymbol(vg); break;
         case SquareButtonSymbol::Left:   drawLeftSymbol(vg); break;
         case SquareButtonSymbol::Right:  drawRightSymbol(vg); break;
-        case SquareButtonSymbol::Funnel: drawFunnel(vg); break;
+        case SquareButtonSymbol::Funnel: drawFunnel(vg, pressed); break;
         default:
             Line(vg, 0, 0, 15, 15, GetStockColor(StockColor::Red));
             Line(vg, 15, 0, 0, 15, GetStockColor(StockColor::Red));
@@ -150,21 +142,39 @@ struct SquareButton : ButtonBehavior {
         }
     }
 
-    void draw(const DrawArgs& args) override {
-        auto vg = args.vg;
+    void drawBase(NVGcontext * vg) {
         FillRect(vg, 0.f, 0.f, 15.f, 15.f, RampGray(G_0));
         FillRect(vg, 0.f, 0.f, 15.f, 0.5f, med_screen);
         //FillRect(vg, 0.f, 14.5f, 15.f, 0.5f, RampGray(G_65));
+    }
+};
+
+struct SquareButton : ButtonBehavior {
+    SquareButtonSymbol symbol = SquareButtonSymbol::Funnel;
+    DrawSquareButton image;
+
+    SquareButton() {
+        box.size.x = 15.f;
+        box.size.y = 16.f;
+    }
+
+    void setSymbol(SquareButtonSymbol sym) {
+        symbol = sym;
+    }
+
+    void draw(const DrawArgs& args) override {
+        auto vg = args.vg;
+        image.drawBase(vg);
         if (enabled) {
             if (pressed) {
-                drawDownFace(vg);
+                image.drawDownFace(vg);
             } else {
-                drawUpFace(vg);
+                image.drawUpFace(vg);
             }
-            drawSymbol(vg);
+            image.drawSymbol(vg, symbol, pressed);
         } else {
-            drawUpFace(vg);
-            drawNilSymbol(vg);
+            image.drawUpFace(vg);
+            image.drawNilSymbol(vg);
         }
     }
 };

@@ -3,6 +3,7 @@
 #include "../cc_param.hpp"
 #include "../colors.hpp"
 #include "../components.hpp"
+#include "../HcOne.hpp"
 #include "../misc.hpp"
 #include "../text.hpp"
 
@@ -30,49 +31,30 @@ Hc2Module::Hc2Module()
         });
     configTuningParam(this, P_ROUND_TUNING);
 
-    configParam(P_TEST, 0.f, 1.f, .5f, "Test");
+    //configParam(P_TEST, 0.f, 1.f, .5f, "Test");
+
+
+}
+
+Hc2Module::~Hc2Module()
+{
+    auto partner = getPartner();
+    if (partner){
+        partner->unsubscribeHcEvents(this);
+    }
 }
 
 Hc1Module* Hc2Module::getPartner()
 {
-    if (partner_side.left()) {
-        return dynamic_cast<Hc1Module*>(getLeftExpander().module);
-    }
-    if (partner_side.right()) {
-        return dynamic_cast<Hc1Module*>(getRightExpander().module);
+    auto partner = HcOne::get()->getSoleHc1();
+    if (partner) {
+        if (!partner_subscribed) {
+            partner->subscribeHcEvents(this);
+            partner_subscribed = true;
+        }
+        return partner;
     }
     return nullptr;
-}
-
-std::string Hc2Module::getDeviceName()
-{
-    if (auto partner = getPartner()) {
-        return partner->device_name;
-    }
-    return "";
-}
-
-void Hc2Module::onExpanderChange(const ExpanderChangeEvent& e)
-{
-    partner_side.clear();
-    auto left = dynamic_cast<Hc1Module*>(getLeftExpander().module);
-    auto right = dynamic_cast<Hc1Module*>(getRightExpander().module);
-    Hc1Module* partner = nullptr;
-    if (left) {
-        partner_side.addLeft();
-        left->expanderAdded(Expansion::Right);
-        partner = left;
-    }
-    if (right) {
-        partner_side.addRight();
-        right->expanderAdded(Expansion::Left);
-        partner = right;
-    }
-    if (partner) {
-        pullRounding(partner);
-    } else {
-        rounding.clear();
-    }
 }
 
 void Hc2Module::onPresetChanged(const PresetChangedEvent& e)
@@ -116,6 +98,20 @@ void Hc2Module::onRoundingChanged(const RoundingChangedEvent& e)
 
     if (changed && ui_event_sink) {
         ui_event_sink->onRoundingChanged(e);
+    }
+}
+
+void Hc2Module::onDeviceChanged(const DeviceChangedEvent& e)
+{
+    if (ui_event_sink) {
+        ui_event_sink->onDeviceChanged(e);
+    }
+}
+
+void Hc2Module::onDisconnect(const DisconnectEvent& e)
+{
+    if (ui_event_sink) {
+        ui_event_sink->onDisconnect(e);
     }
 }
 

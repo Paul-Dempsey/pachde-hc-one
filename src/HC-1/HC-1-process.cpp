@@ -1,6 +1,6 @@
 #include "HC-1.hpp"
 #include "../cc_param.hpp"
-
+#include "../HcOne.hpp"
 namespace pachde {
 
 void Hc1Module::processCV(int paramId)
@@ -119,7 +119,7 @@ void Hc1Module::dispatchMidi()
 
 void Hc1Module::process(const ProcessArgs& args)
 {
-    bool is_ready = ready();
+    bool is_ready = ready() && !dupe;
 
     if (++check_cv > CV_INTERVAL) {
         check_cv = 0;
@@ -178,7 +178,7 @@ void Hc1Module::process(const ProcessArgs& args)
     heart_phase += args.sampleTime;
     if (heart_phase >= heart_time) {
         heart_phase -= heart_time;
-        heart_time = 2.5f;
+        heart_time = 2.1f;
 
         // handle device changes
         if (InitState::Complete == device_output_state 
@@ -194,6 +194,7 @@ void Hc1Module::process(const ProcessArgs& args)
                         midi_output.setDeviceId(id);
                         midi_output.setChannel(-1);
                         output_device_id = id;
+                        notifyDeviceChanged();
                         return;
                     }
                 } 
@@ -210,6 +211,7 @@ void Hc1Module::process(const ProcessArgs& args)
                         midi::Input::setDeviceId(id);
                         midi::Input::setChannel(-1);
                         input_device_id = id;
+                        notifyDeviceChanged();
                         return;
                     }
                 }
@@ -229,9 +231,11 @@ void Hc1Module::process(const ProcessArgs& args)
                     midi_output.setChannel(-1);
                     device_output_state = InitState::Complete;
                     heart_time = 5.f;
+                    notifyDeviceChanged();
                     return;
                 } else { 
                     device_name.clear();
+                    notifyDeviceChanged();
                 }
             }
             // scan for EM
@@ -242,8 +246,13 @@ void Hc1Module::process(const ProcessArgs& args)
                     midi_output.setChannel(-1);
                     device_output_state = InitState::Complete;
                     heart_time =5.f;
+                    break;
                 }
             }
+            if (!is_EMDevice(device_name)) {
+                device_name = "";
+            }
+            notifyDeviceChanged();
             return;
         } break;
         case InitState::Complete: break;
@@ -276,8 +285,18 @@ void Hc1Module::process(const ProcessArgs& args)
                 && (notesOn <= 0)
                 && !in_preset
                 ) {
+                if (InitState::Uninitialized == duplicate_instance) {
+                    checkDuplicate();
+                }
+                if (dupe) return;
+
                 if (InitState::Uninitialized == system_preset_state || InitState::Broken == system_preset_state) {
-                    transmitRequestSystemPresets();
+                    if (InitState::Broken != system_preset_state) {
+                        tryCachedPresets();
+                    }
+                    if (system_preset_state != InitState::Complete) {
+                        transmitRequestSystemPresets();
+                    }
                 } else 
                 if (InitState::Uninitialized == user_preset_state || InitState::Broken == user_preset_state) {
                     transmitRequestUserPresets();

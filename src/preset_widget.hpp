@@ -107,13 +107,14 @@ struct PresetWidget : TipWidget
     }
     void onButton(const ButtonEvent& e) override
     {
+        bool was_pressed = pressed;
         setPressed(false);
         TipWidget::onButton(e);
         if (e.action == GLFW_PRESS && e.button == GLFW_MOUSE_BUTTON_RIGHT && (e.mods & RACK_MOD_MASK) == 0)
         {
             return;
         }
-        if (holder && preset) {
+        if (was_pressed && holder && preset) {
             holder->setPreset(preset);
         }
         //e.consume(this);

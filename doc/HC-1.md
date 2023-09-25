@@ -123,33 +123,33 @@ next to the knob, indicating which pedal is assigned to that knob.
 
 - The bottom row shows the following, from left to right:
 
-  - Midi device input and output selectors. If you have only one Eagan Matrix device, you should never need to use these, becuase HC-1 generally finds the connected Eagan Matrix device automatically.
+  - EM Midi device selector. If you have only one Eagan Matrix device, you should never need to use this. HC-1 finds a connected EM device automatically.
 
-  - Test note button. Click to send a Middle C (Note 60) *Note on* MIDI message, and Ctrl+Click (Cmd on Mac) to send the corresponding *Note off*.
+  - Test note button. Click to send a Middle C *Note on* MIDI message (Note 60, velocity 64), and Ctrl+Click (Cmd on Mac) to send the corresponding *Note off*.
     You'll see the little circle next to the button light up when a note is on, either through the Test note button, or when playing the device.
+    This indicator is not completely reliable, but can be useful to get a sense of MIDI activity.
 
   - The row of indicators show different parts of the state of the module/device connection and initialization process.
     When everything is conencted and working properly, you should see a row of blue indicators.
     When an indicator is orange, it means the corresponding item is in-progress.
 
-    If the module gets stuck, an indicator may remain orange, and you may see the MIDI communication lights stop moving.
-    If you see this happen you may need to reboot the module from the menu, or unplug/power cycle your device.
+    If the module gets stuck, an indicator may remain orange and you may see the MIDI communication lights stop moving.
+    If you see this happen you may need to reset MIDI I/O, reboot the module from the menu, or unplug the Midi or USB or even power cycle your EM device.
 
     These indicators are:
 
-    1. Note (a note is currently playing). This indicator is not completely reliable when there is a high level of MIDI traffic, but can be useful to get a sense of activity.
     1. MIDI output device connection
     1. MIDI input device connection
     1. Connected device is a recognized Eagan Matrix, based on the device name
     1. System presets initialized
     1. User presets initialized
     1. Current preset initialized
-    1. Saved preset from previous session
+    1. Saved preset from previous session is set
     1. HC-1 has requested the device for updates when presets change
     1. Device heartbeat status (heartbeat can be disabled int he menu).
 
   - In the middle is the pachde (#d) logo
-  - The name of the currently connected EM device
+  - The name of the currently connected EM device, if any
   - The device firmware version.
 
 ## Module Menu

@@ -1,15 +1,14 @@
 #include "HC-1.hpp"
 #include "../cc_param.hpp"
-#include "../misc.hpp"
 #include "../HcOne.hpp"
+#include "../misc.hpp"
 
 namespace pachde {
 
 Hc1Module::Hc1Module()
 {
-    HcOne::get()->registerHc1(this);
-    //system_presets.reserve(700);
-    //user_presets.reserve(128);
+    system_presets.reserve(700);
+    user_presets.reserve(128);
     config(Params::NUM_PARAMS, Inputs::NUM_INPUTS, Outputs::NUM_OUTPUTS, Lights::NUM_LIGHTS);
     configCCParam(em_midi::EMCC_i,   true, this, M1_PARAM, M1_INPUT, M1_REL_PARAM, M1_REL_LIGHT, 0.f, EM_Max14f, EM_Max14f/2.f, "i");
     configCCParam(em_midi::EMCC_ii,  true, this, M2_PARAM, M2_INPUT, M2_REL_PARAM, M2_REL_LIGHT, 0.f, EM_Max14f, EM_Max14f/2.f, "ii");
@@ -61,13 +60,76 @@ Hc1Module::Hc1Module()
 
     getLight(HEART_LIGHT).setBrightness(.8f);
     clearCCValues();
+
+    HcOne::get()->registerHc1(this);
 }
 
 Hc1Module::~Hc1Module()
 {
+    notifyDisconnect();
     HcOne::get()->unregisterHc1(this);
     if (restore_ui_data) {
         delete restore_ui_data;
+    }
+}
+
+//
+// IHandleHcEvents notification
+//
+void Hc1Module::subscribeHcEvents(IHandleHcEvents*client)
+{
+    if (event_subscriptions.empty()
+        || event_subscriptions.cend() == std::find(event_subscriptions.cbegin(), event_subscriptions.cend(), client)) 
+    {
+        event_subscriptions.push_back(client);
+
+        auto dce = IHandleHcEvents::DeviceChangedEvent{device_name};
+        client->onDeviceChanged(dce);
+
+        auto pce = IHandleHcEvents::PresetChangedEvent{current_preset};
+        client->onPresetChanged(pce);
+
+        auto rce = IHandleHcEvents::RoundingChangedEvent{rounding};
+        client->onRoundingChanged(rce);
+    }
+}
+void Hc1Module::unsubscribeHcEvents(IHandleHcEvents*client)
+{
+    auto it = std::find(event_subscriptions.begin(), event_subscriptions.end(), client);
+    if (it != event_subscriptions.end()) {
+        event_subscriptions.erase(it);
+    }
+}
+void Hc1Module::notifyPresetChanged()
+{
+    if (event_subscriptions.empty()) return;
+    auto event = IHandleHcEvents::PresetChangedEvent{current_preset};
+    for (auto client: event_subscriptions) {
+        client->onPresetChanged(event);
+    }
+}
+void Hc1Module::notifyRoundingChanged()
+{
+    if (event_subscriptions.empty()) return;
+    auto event = IHandleHcEvents::RoundingChangedEvent{rounding};
+    for (auto client: event_subscriptions) {
+        client->onRoundingChanged(event);
+    }
+}
+void Hc1Module::notifyDeviceChanged()
+{
+    if (event_subscriptions.empty()) return;
+    auto event = IHandleHcEvents::DeviceChangedEvent{device_name};
+    for (auto client: event_subscriptions) {
+        client->onDeviceChanged(event);
+    }
+}
+void Hc1Module::notifyDisconnect()
+{
+    if (event_subscriptions.empty()) return;
+    auto event = IHandleHcEvents::DisconnectEvent{};
+    for (auto client: event_subscriptions) {
+        client->onDisconnect(event);
     }
 }
 
@@ -141,6 +203,7 @@ void Hc1Module::onSave(const SaveEvent& e)
 
 void Hc1Module::onRemove(const RemoveEvent& e)
 {
+    notifyDisconnect();
     HcOne::get()->unregisterHc1(this);
     savePresets();
     Module::onRemove(e);
@@ -214,24 +277,12 @@ void Hc1Module::dataFromJson(json_t *root)
         favoritesFile = json_string_value(j);
     }
     cache_presets = GetBool(root, "cache-presets", cache_presets);
-    if (cache_presets) {
-        loadSystemPresets();
-        loadUserPresets();
-        if (favoritesFile.empty()) {
-            favoritesFromPresets();
-        }
-    }
-    if (!system_presets.empty() && !favoritesFile.empty()) {
-        if (readFavoritesFile(favoritesFile, true)) {
-            apply_favorite_state = InitState::Complete;
-        } else {
-            apply_favorite_state = InitState::Broken;
-        }
-    }
+    tryCachedPresets();
 }
 
 void Hc1Module::reboot()
 {
+    dupe = false;
     device_name = "";
     midi::Input::reset();
     midi_output.reset();
@@ -250,6 +301,7 @@ void Hc1Module::reboot()
     device_output_state =
         device_input_state =
         system_preset_state = 
+        duplicate_instance = 
         user_preset_state = 
         apply_favorite_state =
         config_state = 
@@ -265,6 +317,8 @@ void Hc1Module::reboot()
     data_stream = -1;
     //download_message_id = -1;
     recirculator = 0;
+
+    notifyDeviceChanged();
 }
 
 void Hc1Module::onRandomize(const RandomizeEvent& e)

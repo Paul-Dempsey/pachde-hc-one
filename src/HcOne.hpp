@@ -20,6 +20,9 @@ struct HcOne
     Hc1Module* getHc1(std::function<bool(Hc1Module* const&)> pred);
     Hc1Module* getHc1(int64_t id);
 
+    // pred returns false to stop scan
+    void scan(std::function<bool(Hc1Module* const&)> pred);
+
 private:
     HcOne();
 };

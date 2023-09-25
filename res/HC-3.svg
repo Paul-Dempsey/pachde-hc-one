@@ -4,28 +4,10 @@
    xmlns:svg="http://www.w3.org/2000/svg">
    <g id="HC-3">
       <rect id="panel" style="fill:#101010" x="0" y="0" width="90" height="380" />
-
-      <g style="fill:none;stroke-width:.5;stroke:#d0d0d0">
-         <line x1="2.5" y1="35" x2="87.5" y2="35" style="stroke:#a0a0a0"/>
-         <rect x="7.5" y="40" width="15" height="15" />
-         <!-- <rect x="15" y="47.5" width="1" height="1" /> -->
-         <rect x="7.5" y="60" width="15" height="15" />
-         <rect x="7.5" y="80" width="15" height="15" />
-         <rect x="7.5" y="100" width="15" height="15" />
-         <rect x="7.5" y="120" width="15" height="15" />
-         <rect x="7.5" y="140" width="15" height="15" />
-         <rect x="7.5" y="160" width="15" height="15" />
-         <rect x="7.5" y="180" width="15" height="15" />
-         <line x1="2.5" y1="200" x2="87.5" y2="200" style="stroke:#a0a0a0"/>
-         <rect x="7.5" y="205" width="15" height="15" />
-         <rect x="7.5" y="225" width="15" height="15" />
-         <rect x="7.5" y="245" width="15" height="15" />
-         <rect x="7.5" y="265" width="15" height="15" />
-         <rect x="7.5" y="285" width="15" height="15" />
-         <rect x="7.5" y="305" width="15" height="15" />
-         <rect x="7.5" y="325" width="15" height="15" />
-         <rect x="7.5" y="345" width="15" height="15" />
-         <line x1="2.5" y1="365" x2="87.5" y2="365" style="stroke:#a0a0a0"/>
+      <g style="fill:none;stroke-width:.5;stroke:#a0a0a0">
+         <line x1="2.5" y1="35"  x2="87.5" y2="35"  />
+         <line x1="2.5" y1="200" x2="87.5" y2="200" />
+         <line x1="2.5" y1="365" x2="87.5" y2="365" />
       </g>
       <g aria-label="HC-3" style="fill:#d0d0d0" transform="translate(-15)">
          <!-- 20pt Garamond -->

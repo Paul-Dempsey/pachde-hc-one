@@ -37,7 +37,7 @@ struct TuningMenu : Hamburger
     void appendContextMenu(Menu * menu) override
     {
         if (!my_module) return;
-        menu->addChild(createMenuItem(describeTuning(tuning), "", [](){}, true));
+        menu->addChild(createMenuLabel(describeTuning(tuning));
         menu->addChild(new MenuSeparator);
         menu->addChild(createTuningMenuItem(Tuning::EqualTuning));
         menu->addChild(createSubmenuItem("n-Tone Equal", "", [=](Menu * menu) {

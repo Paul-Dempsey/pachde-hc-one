@@ -44,6 +44,8 @@ struct TipWidget : OpaqueWidget {
         if (tip_holder) delete tip_holder;
         tip_holder = nullptr;
     }
+    
+    bool hasText() { return tip_holder && !tip_holder->tip_text.empty(); }
 
     void describe(std::string text)
     {

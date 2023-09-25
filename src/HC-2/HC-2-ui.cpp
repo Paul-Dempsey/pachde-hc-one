@@ -38,6 +38,7 @@ inline uint8_t GetSmallParamValue(rack::app::ModuleWidget* w, int id, uint8_t de
     if (!pq) return default_value;
     return U8(pq->getValue());
 }
+
 void Hc2ModuleWidget::createRoundingUI(float x, float y)
 {
     // Rounding cluster
@@ -95,24 +96,16 @@ Hc2ModuleWidget::Hc2ModuleWidget(Hc2Module * module)
     }
     setPanel(createPanel(asset::plugin(pluginInstance, "res/HC-2.svg")));
 
-    // current preset in title
-    preset_label = createStaticTextLabel<DynamicTextLabel>(
-        Vec(70.f, 7.5f), 250.f, "My Amazing Preset", TextAlignment::Left, 14.f, true, preset_name_color);
-    preset_label->bright();
-    addChild(preset_label);
+    // device name in title
+    device_label = createStaticTextLabel<StaticTextLabel>(
+        Vec(62.f, 9.), 150.f, "", TextAlignment::Left, 12.f, false );
+    addChild(device_label);
 
     createRoundingUI(15.f, 40.f);
-
-    // device name
-    device_label = createStaticTextLabel<StaticTextLabel>(
-        Vec(box.size.x*.5f + 25.f, box.size.y - 14.f), 100.f,
-        "", TextAlignment::Left, 12.f, false );
-    addChild(device_label);
 }
 
 void Hc2ModuleWidget::onPresetChanged(const PresetChangedEvent& e)
 {
-    preset_label->text(e.preset ? e.preset->name : "");
     rounding_summary->modified();
 }
 
@@ -121,32 +114,20 @@ void Hc2ModuleWidget::onRoundingChanged(const RoundingChangedEvent& e)
     rounding_summary->modified();
 }
 
-void Hc2ModuleWidget::step()
+void Hc2ModuleWidget::onDeviceChanged(const DeviceChangedEvent& e)
 {
-    ModuleWidget::step();
- 
-    if (device_label) {
-        std::string device = my_module ? my_module->getDeviceName() : "<Eagan Matrix Device>";
-        if (device_label->getText() != device) {
-            device_label->text(device);
-        }
-    }
+    device_label->text(e.name);
 }
 
-void Hc2ModuleWidget::drawExpanderConnector(const DrawArgs& args)
+void Hc2ModuleWidget::onDisconnect(const DisconnectEvent& e)
 {
-    if (!my_module || my_module->partner_side.empty()) return;
-    auto vg = args.vg;
+    device_label->text("");
+}
 
-    auto right = my_module->partner_side.right();
-    float cy = 80.f;
-    if (right) {
-        Line(vg, box.size.x - 5.5f, cy, box.size.x , cy, COLOR_BRAND, 1.75f);
-        Circle(vg, box.size.x - 5.5f, cy, 2.5f, COLOR_BRAND);
-    } else {
-        Line(vg, 0.f, cy, 5.5f, cy, COLOR_BRAND, 1.75f);
-        Circle(vg, 5.5f, cy, 2.5f, COLOR_BRAND);
-    }
+Hc1Module* Hc2ModuleWidget::getPartner()
+{
+    if (!my_module) return nullptr;
+    return my_module->getPartner();
 }
 
 void drawMap(NVGcontext* vg, uint8_t * map, float x, float y)
@@ -180,17 +161,16 @@ void Hc2ModuleWidget::draw(const DrawArgs& args)
     auto vg = args.vg;
     BoxRect(vg, 15.f, 40.f, ROUND_BOX_WIDTH, ROUND_BOX_HEIGHT, RampGray(G_40), 0.5f);
 
-    auto partner = my_module ? my_module->getPartner() : nullptr;
+    auto partner = getPartner();
     if (partner) {
         drawCCMap(args, partner);
     }
-    drawExpanderConnector(args);
     DrawLogo(vg, box.size.x /2.f - 12.f, RACK_GRID_HEIGHT - ONE_HP, RampGray(G_90));
 }
 
 void Hc2ModuleWidget::appendContextMenu(Menu *menu)
 {
-    auto partner = my_module ? my_module->getPartner() : nullptr;
+    auto partner = getPartner();
     menu->addChild(new MenuSeparator);
     if (partner) {
         menu->addChild(createMenuItem("Clear CC Map", "",

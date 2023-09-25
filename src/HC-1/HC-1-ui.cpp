@@ -2,10 +2,10 @@
 #include "HC-1-layout.hpp"
 #include "../cc_param.hpp"
 #include "../components.hpp"
+#include "../indicator_widget.hpp"
 #include "../misc.hpp"
 #include "../port.hpp"
 #include "../small_push.hpp"
-
 namespace pachde {
 
 Hc1ModuleWidget::Hc1ModuleWidget(Hc1Module* module)
@@ -16,9 +16,18 @@ Hc1ModuleWidget::Hc1ModuleWidget(Hc1Module* module)
     if (my_module) {
         tab = my_module->tab;
         page = my_module->getTabPage(tab);
-        my_module->ui_event_sink = this;
     }
     createUi();
+    if (my_module) {
+        my_module->subscribeHcEvents(this);
+    }
+}
+
+Hc1ModuleWidget::~Hc1ModuleWidget()
+{
+    if (module) {
+        my_module->unsubscribeHcEvents(this);
+    }
 }
 
 const std::string Hc1ModuleWidget::macroName(int m)
@@ -235,37 +244,22 @@ void Hc1ModuleWidget::createTranspose()
 
 void Hc1ModuleWidget::createMidiSelection()
 {
-    auto pm = createWidget<PickMidi>(Vec(7.5f, box.size.y - 16.f));
-    pm->describe("Midi input");
-    if (my_module) {
-        pm->setMidiPort(my_module);
+    em_picker = createWidget<EMPicker>(Vec(7.5f, box.size.y - 16.f));
+    em_picker->describe("Choose Eagan Matrix device");
+    if (module) {
+        em_picker->setExternals(&my_module->midi_output, my_module);
     }
-    addChild(pm);
-
-    pm = createWidget<PickMidi>(Vec(20.f, box.size.y - 16.f));
-    pm->describe("Midi output");
-    if (my_module) {
-        pm->setMidiPort(&my_module->midi_output);
-    }
-    addChild(pm);
+    addChild(em_picker);
 }
 
 void Hc1ModuleWidget::createDeviceDisplay()
 {
     // device name
-    // todo: set text only when device name changes
-    addChild(createDynamicLabel<DynamicTextLabel>(
-        Vec(box.size.x*.5f + 25.f, box.size.y - 14.f), 100.f,
-        [=]() {
-            std::string device_name;
-            device_name = my_module ? my_module->deviceName() : "<Eagan Matrix Device>";
-            if (device_name.empty()) {
-                device_name = "(no Eagan Matrix available)";
-            }
-            return device_name; 
-        },
+    device_label = createStaticTextLabel<StaticTextLabel>(
+        Vec(box.size.x*.5f + 25.f, box.size.y - 14.f), 100.f, "<Eagan Matrix Device>",
         TextAlignment::Left, 12.f, false
-        ));
+        );
+    addChild(device_label);
 
     // firmare version
     // todo: set text only when firmware version changes
@@ -281,7 +275,7 @@ void Hc1ModuleWidget::createDeviceDisplay()
 
 void Hc1ModuleWidget::createTestNote()
 {
-    auto pb = createWidgetCentered<SmallPush>(Vec(45.f, box.size.y -8.5f));
+    auto pb = createWidgetCentered<SmallPush>(Vec(32.f, box.size.y -8.5f));
     if (my_module) {
         #ifdef ARCH_MAC
             pb->describe("Send test Note\nCmd+click = Note off");
@@ -297,6 +291,44 @@ void Hc1ModuleWidget::createTestNote()
         });
     }
     addChild(pb);
+}
+
+void Hc1ModuleWidget::createStatusDots()
+{
+    float left = 60.f;
+    float spacing = 6.25f;
+    float y = box.size.y - 7.5f;
+
+    if (my_module) {
+        addChild(createIndicatorCentered(41.f, y, "Note", [=]()->const NVGcolor& { return (my_module->notesOn ? purple_light : gray_light); }, [=]()-> bool { return my_module->notesOn; }));
+        //device_output_state
+        addChild(createIndicatorCentered(left, y, "Midi output device", [=]()->const NVGcolor& { return InitStateColor(my_module->device_output_state); }));
+        left += spacing;
+        // device_input_state
+        addChild(createIndicatorCentered(left, y, "Midi input device", [=]()->const NVGcolor& { return InitStateColor(my_module->device_input_state); }));
+        left += spacing;
+        //eagan matrix
+        addChild(createIndicatorCentered(left, y, "Eagan Matrix", [=]()->const NVGcolor& { return my_module->is_eagan_matrix ? blue_light : yellow_light; }));
+        left += spacing;
+        //system_preset_state
+        addChild(createIndicatorCentered(left, y, "System presets", [=]()->const NVGcolor& { return InitStateColor(my_module->system_preset_state); }));
+        left += spacing;
+        //user_preset_state
+        addChild(createIndicatorCentered(left, y, "User presets", [=]()->const NVGcolor& { return InitStateColor(my_module->user_preset_state); }));
+        left += spacing;
+        //apply_favorite_state
+        addChild(createIndicatorCentered(left, y, "Favorites applied", [=]()->const NVGcolor& { return InitStateColor(my_module->apply_favorite_state); }));
+        left += spacing;
+        //config_state
+        addChild(createIndicatorCentered(left, y, "Received configuration", [=]()->const NVGcolor& { return InitStateColor(my_module->config_state); }));
+        left += spacing;
+        //saved_preset_state
+        addChild(createIndicatorCentered(left, y, "Set saved preset", [=]()->const NVGcolor& { return InitStateColor(my_module->saved_preset_state); }));
+        left += spacing;
+        addChild(createIndicatorCentered(left, y, "Request updates", [=]()->const NVGcolor& { return InitStateColor(my_module->request_updates_state); }));
+        left += spacing;
+        addChild(createIndicatorCentered(left, y, "Heartbeat", [=]()->const NVGcolor& { return InitStateColor(my_module->handshake); }));
+    }
 }
 
 void Hc1ModuleWidget::createUi()
@@ -382,6 +414,7 @@ void Hc1ModuleWidget::createUi()
 #endif
     createMidiSelection();
     createTestNote();
+    createStatusDots();
     createDeviceDisplay();
 }
 
@@ -408,10 +441,57 @@ void Hc1ModuleWidget::pageDown()
     page_down->enable(static_cast<unsigned>(page*24) < max-24);
 }
 
+//
+// IPresetHolder
+//
+void Hc1ModuleWidget::setPreset(std::shared_ptr<Preset> preset)
+{
+    if (! my_module) return;
+    my_module->setPreset(preset);
+}
+bool Hc1ModuleWidget::isCurrentPreset(std::shared_ptr<Preset> preset)
+{
+    return my_module ? my_module->isCurrentPreset(preset) : false;
+}
+void Hc1ModuleWidget::addFavorite(std::shared_ptr<Preset> preset)
+{
+    if (! my_module) return;
+    my_module->addFavorite(preset);
+    updatePresetWidgets();
+}
+void Hc1ModuleWidget::unFavorite(std::shared_ptr<Preset> preset)
+{
+    if (! my_module) return;
+    my_module->unFavorite(preset);
+    updatePresetWidgets();
+}
+void Hc1ModuleWidget::moveFavorite(std::shared_ptr<Preset> preset, FavoriteMove motion)
+{
+    if (! my_module) return;
+    my_module->moveFavorite(preset, motion);
+    updatePresetWidgets();
+}
+
+//
+// IHandleHcEvents
+//
 void Hc1ModuleWidget::onPresetChanged(const PresetChangedEvent& e)
 {
     favorite->setPreset(my_module->current_preset);
     showCurrentPreset(true);
+}
+void Hc1ModuleWidget::onDeviceChanged(const DeviceChangedEvent& e)
+{
+    em_picker->describe(e.name.empty() 
+        ? "Choose Eagan Matrix device"
+        : format_string("EM device: %s", e.name.c_str()));
+
+    device_label->text(e.name.empty() ? "<Eagan Matrix device>" : e.name);
+}
+
+void Hc1ModuleWidget::onDisconnect(const DisconnectEvent& e)
+{
+    device_label->text("");
 }
 
 void Hc1ModuleWidget::toCategory(uint16_t code)

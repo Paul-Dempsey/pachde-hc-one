@@ -19,6 +19,14 @@ struct IHandleHcEvents
     };
     virtual void onRoundingChanged(const RoundingChangedEvent& e) = 0;
 
+    struct DeviceChangedEvent {
+        std::string name;
+    };
+    virtual void onDeviceChanged(const DeviceChangedEvent& e) = 0;
+
+    struct DisconnectEvent { };
+    virtual void onDisconnect(const DisconnectEvent& e) = 0;
+
 };
 
 }

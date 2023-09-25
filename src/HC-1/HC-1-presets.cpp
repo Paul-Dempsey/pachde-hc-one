@@ -1,6 +1,32 @@
 #include "HC-1.hpp"
 namespace pachde {
 
+void Hc1Module::tryCachedPresets() {
+    if (cache_presets) {
+        loadSystemPresets();
+        if (system_presets.empty()) {
+            system_preset_state = InitState::Uninitialized;
+        }
+        loadUserPresets();
+        if (user_presets.empty()) {
+            user_preset_state = InitState::Uninitialized;
+        }
+        if (favoritesFile.empty()) {
+            favoritesFromPresets();
+        }
+    }
+    if (!favoritesFile.empty()) {
+        if (system_presets.empty() || user_presets.empty()) {
+            apply_favorite_state = InitState::Uninitialized;
+        } else {
+            if (readFavoritesFile(favoritesFile, true)) {
+                apply_favorite_state = InitState::Complete;
+            } else {
+                apply_favorite_state = InitState::Broken;
+            }
+        }
+    }
+}
 
 void Hc1Module::setPresetOrder(PresetOrder order)
 {

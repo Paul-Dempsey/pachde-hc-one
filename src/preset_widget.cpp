@@ -50,7 +50,7 @@ void PresetWidget::draw(const DrawArgs& args)
 
 void PresetWidget::appendContextMenu(ui::Menu* menu)
 {
-    menu->addChild(createMenuItem(preset->name, "", [](){}, true));
+    menu->addChild(createMenuLabel(preset->name));
     menu->addChild(new MenuSeparator);
     if (preset->favorite) {
         menu->addChild(createMenuItem("Move to first Favorite", "", [this](){ holder->moveFavorite(preset, IPresetHolder::FavoriteMove::First); }));

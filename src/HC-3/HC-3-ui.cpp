@@ -1,5 +1,7 @@
 #include "hc-3.hpp"
 #include "../HcOne.hpp"
+#include "../misc.hpp"
+#include "preset_file_widget.hpp"
 
 namespace pachde {
 
@@ -17,6 +19,7 @@ Hc3ModuleWidget::Hc3ModuleWidget(Hc3Module* module)
     float y = START_ROW;
     float x = 15.f;
     for (auto i = 0; i < 16; ++i) {
+        addChild(createPFWidget<PresetFileWidget>(Vec(x - 7.5, y - 7.5), module, i, &drawButton));
         addChild(createLightCentered<SmallLight<BlueLight>>(Vec(x,y), module, Hc3Module::Lights::SETLIST + i));
         y += ITEM_INTERVAL;
         if (i == 7) {
@@ -34,24 +37,6 @@ Hc3ModuleWidget::Hc3ModuleWidget(Hc3Module* module)
 // {
 // }
 
-void Hc3ModuleWidget::drawLayer(const DrawArgs& args, int layer)
-{
-    ModuleWidget::drawLayer(args, layer);
-    if (layer != 1 
-        || !my_module 
-        || my_module->loaded_id < 0
-        || my_module->files[my_module->loaded_id].empty()) {
-        return;
-    }
-    auto id = my_module->loaded_id;
-    auto vg = args.vg;
-    auto font = GetPluginFontSemiBold();
-    const float y = START_ROW + LABEL_VOFFSET + (id * ITEM_INTERVAL) + (DIVIDER_OFFSET * (id > 7));
-    SetTextStyle(vg, font, preset_name_color, 9.f);
-    nvgTextAlign(vg, NVG_ALIGN_LEFT);
-    nvgText(vg, LABEL_COLUMN, y, my_module->files[id].c_str(), nullptr);
-}
-
 void Hc3ModuleWidget::draw(const DrawArgs& args)
 {
     ModuleWidget::draw(args);
@@ -59,25 +44,18 @@ void Hc3ModuleWidget::draw(const DrawArgs& args)
     auto font = GetPluginFontRegular();
     SetTextStyle(vg, font, RampGray(G_85), 9.f);
 
-    if (my_module) {
+    if (module) {
         auto one = HcOne::get();
         auto hc1 = one->getSoleHc1();
         std::string info = "";
         if (hc1) {
             info = hc1->deviceName();
+        } else if (one->Hc1count() > 1) {
+            info = "<multiple HC-!>";
         } else {
-            info = format_string("%d", one->Hc1count());
+            info = "<no HC-1>";
         }
         CenterText(vg, box.size.x*.5f, 30.f, info.c_str(), nullptr);
-        nvgTextAlign(vg, NVG_ALIGN_LEFT);
-
-        float y = START_ROW + LABEL_VOFFSET;
-        for (auto n = 0; n < 16; ++n) {
-            if (!my_module->files[n].empty() && my_module->loaded_id != n) {
-                nvgText(vg, LABEL_COLUMN, y, my_module->files[n].c_str(), nullptr);
-            }
-            y += ITEM_INTERVAL + ((n == 7) * DIVIDER_OFFSET);
-        }
     } else {
         CenterText(vg, box.size.x*.5f, 30.f, "<device name>", nullptr);
     }
@@ -87,7 +65,40 @@ void Hc3ModuleWidget::draw(const DrawArgs& args)
 
 void Hc3ModuleWidget::appendContextMenu(Menu *menu)
 {
+    if (!module) return;
+    ///pick companion hc1
 
+    menu->addChild(new MenuSeparator);
+
+    auto count = std::count_if(my_module->files.cbegin(), my_module->files.cend(), [](const std::string& s){ return !s.empty(); });
+    bool any = count > 0;
+    menu->addChild(createMenuItem("Clear", "", [=](){ my_module->clearFiles(); }));
+    
+    menu->addChild(createMenuItem("Sort", "", [=](){
+        std::sort(my_module->files.begin(), my_module->files.end(), alpha_order);
+    }, !any));
+
+    menu->addChild(createMenuItem("Compact", "", [=](){
+        int gap = 0;
+        std::vector<std::string> items;
+        items.reserve(16);
+        int n = 0;
+        for (auto s: my_module->files) {
+            if (s.empty()) {
+                ++gap;
+            } else {
+                items.push_back(s);
+                if (n == my_module->loaded_id) {
+                    my_module->loaded_id = n - gap;
+                }
+            }
+            ++n;
+        }
+        for (n = 0; n < gap; ++n) {
+            items.push_back("");
+        }
+        my_module->files = items;
+    }, !any || 16 == count));
 }
 
 }
