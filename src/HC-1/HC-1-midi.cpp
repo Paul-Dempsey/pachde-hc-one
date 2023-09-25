@@ -48,7 +48,7 @@ void Hc1Module::checkDuplicate()
     dupe = false;
     auto one = HcOne::get();
     if (one->Hc1count() > 1) {
-        one->scan([=](Hc1Module* const& m) { 
+        one->scan_while([=](Hc1Module* const& m) { 
             if (m != this
                 && this->output_device_id >= 0 
                 && (this->output_device_id == m->output_device_id)) {

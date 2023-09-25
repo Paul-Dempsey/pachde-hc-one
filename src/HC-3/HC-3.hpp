@@ -43,6 +43,7 @@ struct Hc3Module : Module, IHandleHcEvents
 
     void openFile(int id);
     void setSynchronizedLoadedId(int id);
+    void useCurrentFavoriteFile(int id);
 
     // IHandleHcEvents
     // void onPresetChanged(const PresetChangedEvent& e) override {}
@@ -51,6 +52,7 @@ struct Hc3Module : Module, IHandleHcEvents
     void onDisconnect(const DisconnectEvent& e) override;
     void onFavoritesFileChanged(const FavoritesFileChangedEvent& e) override;
 
+    void onRandomize() override;
     json_t *dataToJson() override;
     void dataFromJson(json_t *root) override;
     void onReset() override;
@@ -65,12 +67,14 @@ struct Hc3ModuleWidget : ModuleWidget, IHandleHcEvents
 
     Hc3ModuleWidget(Hc3Module* module);
 
+    void refreshDescriptions();
+
     // IHandleHcEvents
     // void onPresetChanged(const PresetChangedEvent& e) override {}
     // void onRoundingChanged(const RoundingChangedEvent& e) override {}
     void onDeviceChanged(const DeviceChangedEvent& e) override;
     void onDisconnect(const DisconnectEvent& e) override;
-    //void onFavoritesFileChanged(const FavoritesFileChangedEvent& e) override;
+    void onFavoritesFileChanged(const FavoritesFileChangedEvent& e) override;
 
     void step() override;
     void appendContextMenu(Menu *menu) override;

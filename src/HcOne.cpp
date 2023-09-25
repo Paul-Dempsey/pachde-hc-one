@@ -37,7 +37,7 @@ Hc1Module* HcOne::getHc1(std::function<bool (Hc1Module* const&)> pred)
     return item == my->hc1s.cend() ? nullptr : *item;
 }
 
-void HcOne::scan(std::function<bool(Hc1Module* const&)> pred)
+void HcOne::scan_while(std::function<bool(Hc1Module* const&)> pred)
 {
     for (auto m: my->hc1s) {
         if (!pred(m)) break;

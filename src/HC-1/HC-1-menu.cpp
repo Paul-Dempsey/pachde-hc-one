@@ -90,24 +90,6 @@ void Hc1ModuleWidget::addFavoritesMenu(Menu *menu)
 
     std::string filename = my_module->favoritesFile.empty() ? "(none)" : system::getFilename(my_module->favoritesFile);
 
-    menu->addChild(new MenuSeparator);
-    menu->addChild(createMenuItem(format_string("File: %s", filename.c_str()), "", [=](){ }, true));
-
-    menu->addChild(new MenuSeparator);
-    menu->addChild(createMenuItem("Clear", "", [=](){ 
-        my_module->clearFavorites();
-        my_module->saveFavorites();
-        if (tab == PresetTab::Favorite) {
-            updatePresetWidgets();
-        }
-    }, !ready));
-
-    if (!my_module->favoritesFile.empty()) {
-        menu->addChild(createMenuItem(format_string("Forget %s", filename.c_str()), "", [=]() {
-            my_module->favoritesFile = "";
-            }, !ready));
-    }
-
     menu->addChild(createMenuItem("Open...", "", [=]() {
         std::string path;
         std::string folder = asset::user(pluginInstance->slug);
@@ -121,19 +103,14 @@ void Hc1ModuleWidget::addFavoritesMenu(Menu *menu)
         }
         }, !ready));
 
-    menu->addChild(createMenuItem("Add from...", "", [=]() {
-        std::string path;
-        std::string folder = asset::user(pluginInstance->slug);
-        system::createDirectories(folder);
-        if (openFileDialog(
-            folder,
-            "Favorites (.fav):fav;Json (.json):json;Any (*):*))",
-            "",
-            path)) {
-            my_module->readFavoritesFile(path, false);
-            updatePresetWidgets();
-        }
-        }, !ready));
+    menu->addChild(new MenuSeparator);
+    menu->addChild(createMenuLabel(format_string("File: %s", filename.c_str())));
+
+    if (!my_module->favoritesFile.empty()) {
+        menu->addChild(createMenuItem(format_string("Forget %s", filename.c_str()), "", [=]() {
+            my_module->favoritesFile = "";
+            }, !ready));
+    }
 
     std::string prompt = my_module->favoritesFile.empty() ? "Save as..." : format_string("Save %s as...", filename.c_str());
     menu->addChild(createMenuItem(prompt, "", [=]() {
@@ -150,6 +127,7 @@ void Hc1ModuleWidget::addFavoritesMenu(Menu *menu)
             my_module->notifyFavoritesFileChanged();
         }
     }, !ready));
+
     menu->addChild(createMenuItem("Save copy as...", "", [=]() {
         std::string path;
         std::string folder = asset::user(pluginInstance->slug);
@@ -163,6 +141,29 @@ void Hc1ModuleWidget::addFavoritesMenu(Menu *menu)
             my_module->writeFavoritesFile(path);
         }
     }, !ready || my_module->favoritesFile.empty()));
+
+    menu->addChild(createMenuItem("Add from...", "", [=]() {
+        std::string path;
+        std::string folder = asset::user(pluginInstance->slug);
+        system::createDirectories(folder);
+        if (openFileDialog(
+            folder,
+            "Favorites (.fav):fav;Json (.json):json;Any (*):*))",
+            "",
+            path)) {
+            my_module->readFavoritesFile(path, false);
+            updatePresetWidgets();
+        }
+        }, !ready));
+
+    prompt = my_module->favoritesFile.empty() ? "Clear" : format_string("Clear %s", filename.c_str());
+    menu->addChild(createMenuItem(prompt, "", [=](){ 
+        my_module->clearFavorites();
+        my_module->saveFavorites();
+        if (tab == PresetTab::Favorite) {
+            updatePresetWidgets();
+        }
+    }, !ready || my_module->favorite_presets.empty()));
 
 }
 

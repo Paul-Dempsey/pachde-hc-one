@@ -21,10 +21,30 @@ struct HcOne
     Hc1Module* getHc1(int64_t id);
 
     // pred returns false to stop scan
-    void scan(std::function<bool(Hc1Module* const&)> pred);
+    void scan_while(std::function<bool(Hc1Module* const&)> pred);
 
 private:
     HcOne();
+};
+
+struct DeviceAssociation {
+    const std::string device_name;
+    int64_t module_id;
+
+    DeviceAssociation(std::string device, int64_t id)
+    : device_name(device), module_id(id)
+    {}
+
+    static std::vector<DeviceAssociation> getList()
+    {
+        std::vector<DeviceAssociation> list;
+        auto one = HcOne::get();
+        one->scan_while([&](Hc1Module* const& mod){
+            list.push_back(DeviceAssociation{mod->deviceName(), mod->getId()});
+            return true;
+        });
+        return list;
+    }
 };
 
 struct PartnerBinding
@@ -66,19 +86,17 @@ struct PartnerBinding
             // if only one HC-1, grab it
             partner = one->getSoleHc1();
             if (!partner) {
-                // otherwise grab the first one
-                one->scan([&](Hc1Module* const& mod)->bool {
-                    if (mod) {
-                        this->module_id = mod->getId();
-                        partner = mod;
-                        return false;
-                    }
-                    return true;
+                // otherwise grab the first 
+                one->scan_while([&](Hc1Module* const& mod)->bool {
+                    if (!mod) return true;
+                    this->module_id = mod->getId();
+                    partner = mod;
+                    return false;
                 });
             }
         } else {
             // bind by device name
-            one->scan([&](Hc1Module* const& mod)->bool {
+            one->scan_while([&](Hc1Module* const& mod)->bool {
                 if (mod && mod->deviceName() == this->device_name) {
                     this->module_id = mod->getId();
                     partner = mod;

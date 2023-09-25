@@ -124,10 +124,10 @@ void Hc1ModuleWidget::drawLayer(const DrawArgs& args, int layer)
             text = "[MIDI error - please wait]";
         } else
         if (InitState::Uninitialized == my_module->device_output_state) {
-            text = "... looking for EM output ...";
+            text = "... looking for available EM ...";
         } else
         if (InitState::Uninitialized == my_module->device_input_state) {
-            text = ".. looking for EM input ...";
+            text = format_string("..preparing %s ...", my_module->device_name.c_str());
         } else
         if (InitState::Uninitialized == my_module->duplicate_instance) {
             text = ".. checking for duplicate HC-1 ...";

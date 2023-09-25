@@ -32,6 +32,7 @@ struct PresetFileWidget : TipWidget
         assert(the_id >= 0);
         id = the_id;
     }
+    int getId() { return id; }
     bool haveFile() { return my_module && !my_module->files[id].empty(); }
     bool isCurrent() { return my_module && my_module->loaded_id == id; }
     std::string getLabel() { return my_module ? system::getStem(my_module->files[id]) : ""; }
@@ -99,7 +100,7 @@ struct PresetFileWidget : TipWidget
     void step() override {
         TipWidget::step();
         if (!TipWidget::hasText() && haveFile()) {
-            describe(my_module->files[id]);
+            describe(format_string("Open %s", my_module->files[id].c_str()));
         }
     }
 
@@ -121,7 +122,7 @@ struct PresetFileWidget : TipWidget
                 "",
                 path)) {
                 my_module->files[id] = path;
-                describe(path);
+                describe(format_string("Open %s", path.c_str()));
             }
         }));
 
@@ -130,6 +131,19 @@ struct PresetFileWidget : TipWidget
             my_module->loaded_id = -1;
             describe("");
         }, !haveFile()));
+
+        auto partner = my_module->getPartner();
+        if (partner && !partner->favoritesFile.empty()) {
+            auto partnerFile = partner->favoritesFile;
+            if (partnerFile != my_module->files[id]) {
+                auto stem =  system::getStem(partnerFile);
+
+                menu->addChild(createMenuItem(format_string("Use %s", stem.c_str()), "", [&](){
+                    my_module->useCurrentFavoriteFile(id);
+                    describe(format_string("Open %s", my_module->files[id].c_str()));
+                    }));
+            }
+        }
     }
 };
 

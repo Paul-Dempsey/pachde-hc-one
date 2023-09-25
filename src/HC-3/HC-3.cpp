@@ -28,6 +28,7 @@ Hc3Module::~Hc3Module()
 
 Hc1Module* Hc3Module::getPartner() {
     auto partner = partner_binding.getPartner();
+    if (!partner) return nullptr;
     if (!partner_subscribed) {
         partner->subscribeHcEvents(this);
         partner_subscribed = true;
@@ -58,8 +59,14 @@ void Hc3Module::onFavoritesFileChanged(const FavoritesFileChangedEvent& e)
         setSynchronizedLoadedId(-1);
         return;
     }
+    if (loaded_id >= 0 && files[loaded_id] == e.path) {
+        return;
+    }
     auto it = std::find_if(files.cbegin(), files.cend(), [&](std::string const& f)->bool { return f == e.path; });
     setSynchronizedLoadedId(it == files.cend() ? -1 : static_cast<int>(std::distance(files.cbegin(), it)));
+    if (ui_event_sink) {
+        ui_event_sink->onFavoritesFileChanged(e);
+    }
 }
 
 void Hc3Module::clearFiles()
@@ -74,7 +81,39 @@ void Hc3Module::clearFiles()
 void Hc3Module::onReset()
 {
     clearFiles();
+    if (ui_event_sink) {
+        ui_event_sink->onFavoritesFileChanged(FavoritesFileChangedEvent{""});
+    }
 }
+
+void Hc3Module::onRandomize()
+{
+    auto partner = getPartner();
+    if (!partner) return;
+
+    std::vector<int> items;
+    int n = 0;
+    for (auto f: files) {
+        if (!f.empty()) {
+            items.push_back(n);
+        }
+        ++n;
+    }
+    if (items.empty()) return;
+    setSynchronizedLoadedId(items[randomZeroTo(items.size())]);
+    partner->openFavoritesFile(files[loaded_id]);
+}
+
+void Hc3Module::useCurrentFavoriteFile(int id)
+{
+    auto partner = getPartner();
+    if (!partner) return;
+    files[id] = partner->favoritesFile;
+    if (ui_event_sink) {
+        ui_event_sink->onFavoritesFileChanged(FavoritesFileChangedEvent{""});
+    }
+}
+
 
 json_t * Hc3Module::dataToJson()
 {

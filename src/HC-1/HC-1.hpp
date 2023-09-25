@@ -155,10 +155,17 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, midi::Input, Module
     bool hasSystemPresets() { return InitState::Complete == system_preset_state && !system_presets.empty(); }
     bool hasUserPresets() { return InitState::Complete == user_preset_state && !user_presets.empty(); }
     bool hasConfig() { return InitState::Complete == config_state; }
-    void tryCachedPresets();
     bool configPending() { return InitState::Pending == config_state; }
     bool savedPresetPending() { return InitState::Pending == saved_preset_state; }
     bool handshakePending() { return InitState::Pending == handshake; }
+
+    void tryCachedPresets();
+
+    int findMatchingInputDevice(const std::string& name);
+    int findMatchingOutputDevice(const std::string& name);
+    bool checkDeviceChange();
+    void initOutputDevice();
+    bool initDevices();
 
     bool anyPending() {
         return 
@@ -213,6 +220,8 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, midi::Input, Module
     // device management
     int input_device_id = -1;
     int output_device_id = -1;
+
+    std::string saved_device_name = "";
     std::string device_name = "";
 
     // cc handling
@@ -294,9 +303,6 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, midi::Input, Module
     void dataFromJson(json_t *root) override;
     void onRandomize(const RandomizeEvent& e) override;
     void reboot();
-
-    int findMatchingInputDevice(const std::string& name);
-    int findMatchingOutputDevice(const std::string& name);
 
     EM_Recirculator recirculatorType() {
         return static_cast<EM_Recirculator>(recirculator & EM_Recirculator::Mask);

@@ -1,6 +1,7 @@
 #include "hc-3.hpp"
 #include "../HcOne.hpp"
 #include "../misc.hpp"
+#include "../small_push.hpp"
 #include "preset_file_widget.hpp"
 
 namespace pachde {
@@ -45,11 +46,30 @@ void Hc3ModuleWidget::onDisconnect(const DisconnectEvent& e)
     device_label->text("");
 }
 
+void Hc3ModuleWidget::onFavoritesFileChanged(const FavoritesFileChangedEvent& e)
+{
+    refreshDescriptions();
+}
+
 void Hc3ModuleWidget::step() 
 {
     ModuleWidget::step();
     if (module && device_label->getText().empty()) {
         my_module->getPartner();
+    }
+}
+
+void Hc3ModuleWidget::refreshDescriptions()
+{
+    for (auto child: children) {
+        auto w = dynamic_cast<PresetFileWidget*>(child);
+        if (w) {
+            if (my_module) {
+                w->describe(format_string("Open %s", my_module->files[w->getId()].c_str()));
+            } else {
+                w->describe("");
+            }
+        }
     }
 }
 
@@ -65,6 +85,7 @@ void Hc3ModuleWidget::appendContextMenu(Menu *menu)
     menu->addChild(createMenuItem("Clear", "", [=](){ 
         my_module->clearFiles();
         my_module->setSynchronizedLoadedId(-1);
+        refreshDescriptions();
     }));
     
     menu->addChild(createMenuItem("Sort", "", [=](){
@@ -73,8 +94,9 @@ void Hc3ModuleWidget::appendContextMenu(Menu *menu)
         if (my_module->loaded_id >= 0) {
             auto it = std::find_if(my_module->files.cbegin(), my_module->files.cend(), [&](std::string const& f)->bool { return f == selected; });
             assert(it != my_module->files.cend());
-            my_module->setSynchronizedLoadedId(static_cast<int>(my_module->files.cend() - it));
+            my_module->setSynchronizedLoadedId(static_cast<int>(std::distance(my_module->files.cbegin(), it)));
         }
+        refreshDescriptions();
     }, !any));
 
     menu->addChild(createMenuItem("Compact", "", [=](){
@@ -97,16 +119,23 @@ void Hc3ModuleWidget::appendContextMenu(Menu *menu)
             items.push_back("");
         }
         my_module->files = items;
+        refreshDescriptions();
     }, !any || 16 == count));
 
     menu->addChild(new MenuSeparator);
-    menu->addChild(createMenuItem("Refresh HC-1", "", [=](){
+    menu->addChild(createMenuItem("Refresh HC-1 connection", "", [=]() {
         auto partner = my_module->getPartner();
         if (partner) {
             device_label->text(partner->deviceName());
         }
     }));
-
+    menu->addChild(createMenuItem("Clear HC-1 Favorite tab", "", [=]() {
+            auto partner = my_module->getPartner();
+            if (partner) {
+                partner->clearFavorites();
+                partner->openFavoritesFile("");
+            }
+    }));
 
 }
 

@@ -18,10 +18,7 @@ Hc2Module::Hc2Module()
     auto p = configCCParam(EMCC_RoundRate, false, this, Params::P_ROUND_RATE, Inputs::IN_ROUND_RATE, Params::P_ROUND_RATE_REL, Lights::L_ROUND_RATE_REL, 0.f, 127.f, 0.f, "Round rate");
     p->snapEnabled = true;
     configSwitch(P_ROUND_RATE_REL, 0.f, 1.f, 0.f, "Round rate CV-relative", {"off", "on"});
-    configLight(L_ROUND_RATE_REL, "Rate CV-relative");
-
     configSwitch(P_ROUND_INITIAL, 0.f, 1.f, 0.f, "Round initial", {"off", "on"});
-    configLight(L_ROUND_INITIAL, "Round initial");
     configInput(Inputs::IN_ROUND_INITIAL, "Round initial");
     configSwitch(P_ROUND_KIND, 0.f, 3.f, 0.f, "Round type", {
         "Normal",
@@ -32,8 +29,6 @@ Hc2Module::Hc2Module()
     configTuningParam(this, P_ROUND_TUNING);
 
     //configParam(P_TEST, 0.f, 1.f, .5f, "Test");
-
-
 }
 
 Hc2Module::~Hc2Module()

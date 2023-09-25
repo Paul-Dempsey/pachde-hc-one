@@ -277,7 +277,7 @@ void Hc1Module::dataFromJson(json_t *root)
 
     j = json_object_get(root, "midi-device");
     if (j) {
-        device_name = json_string_value(j);
+        saved_device_name = json_string_value(j);
     }
     
     j = json_object_get(root, "favorites-file");
