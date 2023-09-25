@@ -330,6 +330,15 @@ bool Hc1Module::readFavoritesFile(const std::string& path, bool fresh)
     return true;
 }
 
+void Hc1Module::openFavoritesFile(const std::string& path)
+{
+    favoritesFile = path;
+    if (!readFavoritesFile(favoritesFile, true)) {
+        favoritesFile = "";
+    }
+    notifyFavoritesFileChanged();
+}
+
 std::shared_ptr<Preset> Hc1Module::findDefinedPreset(std::shared_ptr<Preset> preset)
 {
     if (preset) {

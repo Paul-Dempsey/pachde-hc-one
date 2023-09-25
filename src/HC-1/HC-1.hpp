@@ -97,6 +97,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, midi::Input, Module
     void readFavorites();
     bool readFavoritesFile(const std::string& path, bool fresh);
     void writeFavoritesFile(const std::string& path);
+    void openFavoritesFile(const std::string& path);
     json_t* favoritesToJson();
     void favoritesFromPresets();
 
@@ -264,6 +265,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, midi::Input, Module
     void notifyRoundingChanged();
     void notifyDeviceChanged();
     void notifyDisconnect();
+    void notifyFavoritesFileChanged();
 
     // midi::Input
     void onMessage(const midi::Message& msg) override;
@@ -425,9 +427,10 @@ struct Hc1ModuleWidget : ModuleWidget, IPresetHolder, IHandleHcEvents
 
     // IHandleHcEvents
     void onPresetChanged(const PresetChangedEvent& e) override;
-    void onRoundingChanged(const RoundingChangedEvent& e) override {}
+    // void onRoundingChanged(const RoundingChangedEvent& e) override {}
     void onDeviceChanged(const DeviceChangedEvent& e) override;
     void onDisconnect(const DisconnectEvent& e) override;
+    void onFavoritesFileChanged(const FavoritesFileChangedEvent& e) override;
 
     // HC-1.draw.cpp
     void drawDSP(NVGcontext* vg);

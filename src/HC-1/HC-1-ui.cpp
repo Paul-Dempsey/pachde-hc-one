@@ -494,6 +494,13 @@ void Hc1ModuleWidget::onDisconnect(const DisconnectEvent& e)
     device_label->text("");
 }
 
+void Hc1ModuleWidget::onFavoritesFileChanged(const FavoritesFileChangedEvent& e)
+{
+    if (tab == PresetTab::Favorite) {
+        updatePresetWidgets();
+    }
+}
+
 void Hc1ModuleWidget::toCategory(uint16_t code)
 {
     if (!my_module) return;
@@ -648,7 +655,7 @@ void Hc1ModuleWidget::step()
     ModuleWidget::step();
     if (my_module)
     {
-        auto co = my_module->isEaganMatrix() ? my_module->ledColor : red_light;
+        auto co = (my_module->isEaganMatrix() && !my_module->dupe) ? my_module->ledColor : red_light;
         if (!IS_SAME_COLOR(co, status_light->baseColors[0])) {
             status_light->baseColors[0] = co;
             my_module->getLight(Hc1Module::HEART_LIGHT).setBrightness(1.f);

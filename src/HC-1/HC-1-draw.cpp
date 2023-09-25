@@ -259,7 +259,6 @@ void Hc1ModuleWidget::draw(const DrawArgs& args)
     if (!module) {
         DrawLogo(args.vg, box.size.x*.5f - 120, 30.f, Overlay(COLOR_BRAND), 14.0);
     }
-    DrawLogo(vg, box.size.x /2.f - 12.f, RACK_GRID_HEIGHT - ONE_HP, RampGray(G_90));
 }
 
 }

@@ -10,22 +10,27 @@ namespace pachde {
 struct IHandleHcEvents
 {
     struct PresetChangedEvent {
-        std::shared_ptr<Preset> preset;
+        const std::shared_ptr<Preset> preset;
     };
-    virtual void onPresetChanged(const PresetChangedEvent& e) = 0;
+    virtual void onPresetChanged(const PresetChangedEvent& e) {}
+
+    struct FavoritesFileChangedEvent {
+        const std::string &path;
+    };
+    virtual void onFavoritesFileChanged(const FavoritesFileChangedEvent& e) {}
 
     struct RoundingChangedEvent {
-        Rounding rounding;
+        const Rounding rounding;
     };
-    virtual void onRoundingChanged(const RoundingChangedEvent& e) = 0;
+    virtual void onRoundingChanged(const RoundingChangedEvent& e) {}
 
     struct DeviceChangedEvent {
-        std::string name;
+        const std::string &name;
     };
-    virtual void onDeviceChanged(const DeviceChangedEvent& e) = 0;
+    virtual void onDeviceChanged(const DeviceChangedEvent& e) {}
 
     struct DisconnectEvent { };
-    virtual void onDisconnect(const DisconnectEvent& e) = 0;
+    virtual void onDisconnect(const DisconnectEvent& e) {}
 
 };
 

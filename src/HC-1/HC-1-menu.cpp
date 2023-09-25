@@ -117,12 +117,7 @@ void Hc1ModuleWidget::addFavoritesMenu(Menu *menu)
             "Favorites (.fav):fav;Json (.json):json;Any (*):*))",
             "",
             path)) {
-            if (my_module->readFavoritesFile(path, true)) {
-                my_module->favoritesFile = path;
-            } else {
-                my_module->favoritesFile = "";
-            }
-            updatePresetWidgets();
+            my_module->openFavoritesFile(path);
         }
         }, !ready));
 
@@ -152,6 +147,7 @@ void Hc1ModuleWidget::addFavoritesMenu(Menu *menu)
             path)) {
             my_module->writeFavoritesFile(path);
             my_module->favoritesFile = path;
+            my_module->notifyFavoritesFileChanged();
         }
     }, !ready));
     menu->addChild(createMenuItem("Save copy as...", "", [=]() {

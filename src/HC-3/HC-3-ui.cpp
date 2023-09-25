@@ -15,7 +15,14 @@ Hc3ModuleWidget::Hc3ModuleWidget(Hc3Module* module)
 :   my_module(module)
 {
     setModule(module);
+    if (module) {
+        my_module->ui_event_sink = this;
+    }
     setPanel(createPanel(asset::plugin(pluginInstance, "res/HC-3.svg")));
+    device_label = createStaticTextLabel<StaticTextLabel>(
+        Vec(7.5f, 22.f), 180.f, "", TextAlignment::Left, 9.f, false );
+    addChild(device_label);
+
     float y = START_ROW;
     float x = 15.f;
     for (auto i = 0; i < 16; ++i) {
@@ -28,39 +35,22 @@ Hc3ModuleWidget::Hc3ModuleWidget(Hc3Module* module)
     }
 }
 
-// void Hc3ModuleWidget::step()
-// {
-//     ModuleWidget::step();
-// }
-
-// void Hc3ModuleWidget::drawExpanderConnector(const DrawArgs& args)
-// {
-// }
-
-void Hc3ModuleWidget::draw(const DrawArgs& args)
+void Hc3ModuleWidget::onDeviceChanged(const DeviceChangedEvent& e)
 {
-    ModuleWidget::draw(args);
-    auto vg = args.vg;
-    auto font = GetPluginFontRegular();
-    SetTextStyle(vg, font, RampGray(G_85), 9.f);
+    device_label->text(e.name);
+}
 
-    if (module) {
-        auto one = HcOne::get();
-        auto hc1 = one->getSoleHc1();
-        std::string info = "";
-        if (hc1) {
-            info = hc1->deviceName();
-        } else if (one->Hc1count() > 1) {
-            info = "<multiple HC-!>";
-        } else {
-            info = "<no HC-1>";
-        }
-        CenterText(vg, box.size.x*.5f, 30.f, info.c_str(), nullptr);
-    } else {
-        CenterText(vg, box.size.x*.5f, 30.f, "<device name>", nullptr);
+void Hc3ModuleWidget::onDisconnect(const DisconnectEvent& e)
+{
+    device_label->text("");
+}
+
+void Hc3ModuleWidget::step() 
+{
+    ModuleWidget::step();
+    if (module && device_label->getText().empty()) {
+        my_module->getPartner();
     }
-//    drawExpanderConnector(args);
-    DrawLogo(vg, box.size.x*.5f - 8.f, RACK_GRID_HEIGHT - ONE_HP, RampGray(G_90));
 }
 
 void Hc3ModuleWidget::appendContextMenu(Menu *menu)
@@ -72,10 +62,19 @@ void Hc3ModuleWidget::appendContextMenu(Menu *menu)
 
     auto count = std::count_if(my_module->files.cbegin(), my_module->files.cend(), [](const std::string& s){ return !s.empty(); });
     bool any = count > 0;
-    menu->addChild(createMenuItem("Clear", "", [=](){ my_module->clearFiles(); }));
+    menu->addChild(createMenuItem("Clear", "", [=](){ 
+        my_module->clearFiles();
+        my_module->setSynchronizedLoadedId(-1);
+    }));
     
     menu->addChild(createMenuItem("Sort", "", [=](){
+        std::string selected = my_module->loaded_id >= 0 ? my_module->files[my_module->loaded_id] : "";
         std::sort(my_module->files.begin(), my_module->files.end(), alpha_order);
+        if (my_module->loaded_id >= 0) {
+            auto it = std::find_if(my_module->files.cbegin(), my_module->files.cend(), [&](std::string const& f)->bool { return f == selected; });
+            assert(it != my_module->files.cend());
+            my_module->setSynchronizedLoadedId(static_cast<int>(my_module->files.cend() - it));
+        }
     }, !any));
 
     menu->addChild(createMenuItem("Compact", "", [=](){
@@ -89,7 +88,7 @@ void Hc3ModuleWidget::appendContextMenu(Menu *menu)
             } else {
                 items.push_back(s);
                 if (n == my_module->loaded_id) {
-                    my_module->loaded_id = n - gap;
+                    my_module->setSynchronizedLoadedId(n - gap);
                 }
             }
             ++n;
@@ -99,6 +98,16 @@ void Hc3ModuleWidget::appendContextMenu(Menu *menu)
         }
         my_module->files = items;
     }, !any || 16 == count));
+
+    menu->addChild(new MenuSeparator);
+    menu->addChild(createMenuItem("Refresh HC-1", "", [=](){
+        auto partner = my_module->getPartner();
+        if (partner) {
+            device_label->text(partner->deviceName());
+        }
+    }));
+
+
 }
 
 }

@@ -17,6 +17,8 @@ using Hc2L = Hc2Module::Lights;
 
 constexpr const float PAD = 2.f;
 constexpr const float MORE_PAD = 4.f;
+constexpr const float ROUND_BOX_TOP = 35.f;
+constexpr const float ROUND_BOX_LEFT = 7.5f;
 constexpr const float ROUND_BOX_WIDTH = 105.f;
 constexpr const float ROUND_BOX_HEIGHT = 60.f;
 constexpr const float ROUND_BOX_HALF = 110.f * .5f;
@@ -98,10 +100,10 @@ Hc2ModuleWidget::Hc2ModuleWidget(Hc2Module * module)
 
     // device name in title
     device_label = createStaticTextLabel<StaticTextLabel>(
-        Vec(62.f, 9.), 150.f, "", TextAlignment::Left, 12.f, false );
+        Vec(62.f, 11.25f), 180.f, "", TextAlignment::Left, 9.f, false );
     addChild(device_label);
 
-    createRoundingUI(15.f, 40.f);
+    createRoundingUI(ROUND_BOX_LEFT, ROUND_BOX_TOP);
 }
 
 void Hc2ModuleWidget::onPresetChanged(const PresetChangedEvent& e)
@@ -159,13 +161,12 @@ void Hc2ModuleWidget::draw(const DrawArgs& args)
     ModuleWidget::draw(args);
 
     auto vg = args.vg;
-    BoxRect(vg, 15.f, 40.f, ROUND_BOX_WIDTH, ROUND_BOX_HEIGHT, RampGray(G_40), 0.5f);
+    BoxRect(vg, ROUND_BOX_LEFT, ROUND_BOX_TOP, ROUND_BOX_WIDTH, ROUND_BOX_HEIGHT, RampGray(G_40), 0.5f);
 
     auto partner = getPartner();
     if (partner) {
         drawCCMap(args, partner);
     }
-    DrawLogo(vg, box.size.x /2.f - 12.f, RACK_GRID_HEIGHT - ONE_HP, RampGray(G_90));
 }
 
 void Hc2ModuleWidget::appendContextMenu(Menu *menu)

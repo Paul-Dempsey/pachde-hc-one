@@ -54,11 +54,9 @@ struct PresetFileWidget : TipWidget
         if (!my_module) return;
         if (e.action == GLFW_PRESS && e.button == GLFW_MOUSE_BUTTON_LEFT && (e.mods & RACK_MOD_MASK) == 0) {
             if (isCurrent()) {
-                my_module->loaded_id = -1;
-                my_module->getParam(id).setValue(-1);
+                my_module->openFile(-1);
             } else if (haveFile()) {
-                my_module->loaded_id = id;
-                my_module->getParam(id).setValue(id);
+                my_module->openFile(id);
             }
         }
     }

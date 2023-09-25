@@ -132,6 +132,14 @@ void Hc1Module::notifyDisconnect()
         client->onDisconnect(event);
     }
 }
+void Hc1Module::notifyFavoritesFileChanged()
+{
+    if (event_subscriptions.empty()) return;
+    auto event = IHandleHcEvents::FavoritesFileChangedEvent{favoritesFile};
+    for (auto client: event_subscriptions) {
+        client->onFavoritesFileChanged(event);
+    }
+}
 
 void Hc1Module::centerKnobs() {
     paramToDefault(M1_PARAM);

@@ -38,15 +38,19 @@ Hc2Module::Hc2Module()
 
 Hc2Module::~Hc2Module()
 {
-    auto partner = getPartner();
-    if (partner){
-        partner->unsubscribeHcEvents(this);
+    if (partner_subscribed)
+    {
+        auto partner = partner_binding.getPartner();
+        if (partner){
+            partner->unsubscribeHcEvents(this);
+            partner_subscribed = false;
+        }
     }
 }
 
 Hc1Module* Hc2Module::getPartner()
 {
-    auto partner = HcOne::get()->getSoleHc1();
+    auto partner = partner_binding.getPartner();
     if (partner) {
         if (!partner_subscribed) {
             partner->subscribeHcEvents(this);
@@ -103,6 +107,7 @@ void Hc2Module::onRoundingChanged(const RoundingChangedEvent& e)
 
 void Hc2Module::onDeviceChanged(const DeviceChangedEvent& e)
 {
+    partner_binding.setDevice(e.name);
     if (ui_event_sink) {
         ui_event_sink->onDeviceChanged(e);
     }
@@ -110,6 +115,7 @@ void Hc2Module::onDeviceChanged(const DeviceChangedEvent& e)
 
 void Hc2Module::onDisconnect(const DisconnectEvent& e)
 {
+    partner_subscribed = false;
     if (ui_event_sink) {
         ui_event_sink->onDisconnect(e);
     }

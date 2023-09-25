@@ -2,12 +2,13 @@
 #ifndef HC2_HPP_INCLUDED
 #define HC2_HPP_INCLUDED
 #include <stdint.h>
-#include "../plugin.hpp"
-#include "../HC-1/HC-1.hpp"
 #include "../em_midi.hpp"
-#include "../presets.hpp"
 #include "../em_types.hpp"
 #include "../hc_events.hpp"
+#include "../HC-1/HC-1.hpp"
+#include "../HCOne.hpp"
+#include "../plugin.hpp"
+#include "../presets.hpp"
 
 // #define VERBOSE_LOG
 // #include "../debug_log.hpp"
@@ -49,6 +50,7 @@ struct Hc2Module : Module, ISendMidi, IHandleHcEvents
     Rounding rounding;
 
     IHandleHcEvents * ui_event_sink = nullptr;
+    PartnerBinding partner_binding;
     Hc1Module* getPartner();
     bool partner_subscribed = false;
 

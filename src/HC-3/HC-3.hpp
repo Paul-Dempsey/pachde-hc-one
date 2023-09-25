@@ -2,14 +2,16 @@
 #ifndef HC3_HPP_INCLUDED
 #define HC3_HPP_INCLUDED
 #include <stdint.h>
-#include "../plugin.hpp"
 #include "../HC-1/HC-1.hpp"
+#include "../hc_events.hpp"
+#include "../HcOne.hpp"
+#include "../plugin.hpp"
 #include "../presets.hpp"
 #include "../square_button.hpp"
 
 namespace pachde {
 
-struct Hc3Module : Module
+struct Hc3Module : Module, IHandleHcEvents
 {
     enum Params {
         SELECTED_PARAM,
@@ -23,11 +25,31 @@ struct Hc3Module : Module
         NUM_LIGHTS
     };
 
-    int loaded_id = 5; //for testing, later -1, meaning (none).
+
+    int loaded_id;
     std::vector<std::string> files;
+    PartnerBinding partner_binding;
+    bool partner_subscribed = false;
+    IHandleHcEvents * ui_event_sink = nullptr;
+
+    const float POLL_RATE = 1.5f;
+    rack::dsp::Timer poll_timer;
 
     Hc3Module();
+    virtual ~Hc3Module();
     void clearFiles();
+
+    Hc1Module* getPartner();
+
+    void openFile(int id);
+    void setSynchronizedLoadedId(int id);
+
+    // IHandleHcEvents
+    // void onPresetChanged(const PresetChangedEvent& e) override {}
+    // void onRoundingChanged(const RoundingChangedEvent& e) override {}
+    void onDeviceChanged(const DeviceChangedEvent& e) override;
+    void onDisconnect(const DisconnectEvent& e) override;
+    void onFavoritesFileChanged(const FavoritesFileChangedEvent& e) override;
 
     json_t *dataToJson() override;
     void dataFromJson(json_t *root) override;
@@ -35,19 +57,22 @@ struct Hc3Module : Module
     void process(const ProcessArgs& args) override;
 };
 
-struct Hc3ModuleWidget : ModuleWidget
+struct Hc3ModuleWidget : ModuleWidget, IHandleHcEvents
 {
     Hc3Module* my_module;
-    Hc3ModuleWidget(Hc3Module* module);
     DrawSquareButton drawButton;
+    StaticTextLabel* device_label = nullptr;
+
+    Hc3ModuleWidget(Hc3Module* module);
 
     // IHandleHcEvents
-    // void onPresetChanged(const PresetChangedEvent& e) override;
-    // void onRoundingChanged(const RoundingChangedEvent& e) override;
+    // void onPresetChanged(const PresetChangedEvent& e) override {}
+    // void onRoundingChanged(const RoundingChangedEvent& e) override {}
+    void onDeviceChanged(const DeviceChangedEvent& e) override;
+    void onDisconnect(const DisconnectEvent& e) override;
+    //void onFavoritesFileChanged(const FavoritesFileChangedEvent& e) override;
 
-    //void step() override;
-    //void drawExpanderConnector(const DrawArgs& args);
-    void draw(const DrawArgs& args) override;
+    void step() override;
     void appendContextMenu(Menu *menu) override;
 
 };
