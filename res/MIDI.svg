@@ -5,21 +5,21 @@
     <linearGradient id="a"
       x1="0" y1="0" x2="0" y2="15"
       gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#808080" />
+      <stop offset="0" stop-color="#a0a0a0" />
       <stop offset="1" stop-color="#303030" />
     </linearGradient>
     <linearGradient id="b"
       x1="0" y1="2" x2="0" y2="14"
       gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#303030" />
-      <stop offset="1" stop-color="#606060" />
+      <stop offset="0" stop-color="#262626" />
+      <stop offset="1" stop-color="#707070" />
     </linearGradient>
 </defs>
 <g>
    <circle cx="8" cy="8" r="6" style="fill:url(#a)"/>
    <circle cx="8" cy="8" r="5" style="fill:url(#b)"/>
-   <!-- <circle cx="8" cy="8" r="2.2" style="fill:#a0a0a0;"/> -->
-   <circle cx="8" cy="8" r="1.75" style="fill:#202020"/>
-   <line x1="4.5" y1="8" x2="11.5" y2="8" style="stroke:#202020"/>
+   <circle cx="8" cy="8" r="2.65" style="fill:#518bbc"/>
+   <circle cx="8" cy="8" r="1.75" style="fill:#040404"/>
+   <line x1="8" y1="5" x2="8" y2="8" style="stroke:#040404;stroke-width:1.2"/>
 </g>
 </svg>

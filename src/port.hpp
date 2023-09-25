@@ -13,13 +13,13 @@ struct ColorPort : PortWidget
     ColorPort()
     { 
         box.size.x = box.size.y = 14.f;
-        sleeve  = RampGray(G_20);
+        sleeve  = RampGray(G_15);
         tube    = RampGray(G_05);
         collar1 = RampGray(G_50);
         collar2 = RampGray(G_30);
         bezel   = RampGray(G_25);
-        bevel1  = RampGray(G_75);
-        bevel2  = RampGray(G_90);
+        bevel1  = RampGray(G_65);
+        bevel2  = RampGray(G_85);
     }
 	void draw(const DrawArgs& args) override;
 
