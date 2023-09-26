@@ -11,6 +11,9 @@
 
 namespace pachde {
 
+extern std::string hc3_sample_data[];
+constexpr const int CHOSEN_SAMPLE = 11;
+
 struct Hc3Module : Module, IHandleHcEvents
 {
     enum Params {
@@ -24,7 +27,6 @@ struct Hc3Module : Module, IHandleHcEvents
         ENUMS(SETLIST, 16),
         NUM_LIGHTS
     };
-
 
     int loaded_id;
     std::vector<std::string> files;
@@ -64,6 +66,7 @@ struct Hc3ModuleWidget : ModuleWidget, IHandleHcEvents
     Hc3Module* my_module;
     DrawSquareButton drawButton;
     StaticTextLabel* device_label = nullptr;
+    bool hacked_lights = false;
 
     Hc3ModuleWidget(Hc3Module* module);
 

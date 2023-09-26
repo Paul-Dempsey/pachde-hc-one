@@ -33,9 +33,17 @@ struct PresetFileWidget : TipWidget
         id = the_id;
     }
     int getId() { return id; }
-    bool haveFile() { return my_module && !my_module->files[id].empty(); }
-    bool isCurrent() { return my_module && my_module->loaded_id == id; }
-    std::string getLabel() { return my_module ? system::getStem(my_module->files[id]) : ""; }
+    bool haveFile() { 
+        if (my_module) { return !my_module->files[id].empty(); }
+        return !hc3_sample_data[id].empty();
+    }
+    bool isCurrent() { 
+        if (my_module) { return my_module->loaded_id == id; }
+        return id == CHOSEN_SAMPLE;
+    }
+    std::string getLabel() {
+        return my_module ? system::getStem(my_module->files[id]) : hc3_sample_data[id];
+    }
 
     void onDragStart(const DragStartEvent& e) override {
         if (e.button == GLFW_MOUSE_BUTTON_LEFT) {
@@ -99,6 +107,7 @@ struct PresetFileWidget : TipWidget
 
     void step() override {
         TipWidget::step();
+        if (!my_module) return;
         if (!TipWidget::hasText() && haveFile()) {
             describe(format_string("Open %s", my_module->files[id].c_str()));
         }

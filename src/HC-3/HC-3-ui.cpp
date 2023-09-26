@@ -12,6 +12,11 @@ constexpr const float START_ROW = 47.5f;
 constexpr const float ITEM_INTERVAL = 20.f;
 constexpr const float DIVIDER_OFFSET = 5.f;
 
+std::string hc3_sample_data[] = {
+    "Experimental", "Strings", "Winds", "Guitars", "Pads", "Leads", "Album 4", "Album 5",
+    "Mon practice", "", "Th Jam", "Blues setlist", "Recital 10/7", "Community Concert 8/21", "" ,"empty"
+};
+
 Hc3ModuleWidget::Hc3ModuleWidget(Hc3Module* module)
 :   my_module(module)
 {
@@ -56,6 +61,21 @@ void Hc3ModuleWidget::step()
     ModuleWidget::step();
     if (module && device_label->getText().empty()) {
         my_module->getPartner();
+    }
+    if (!module && !hacked_lights) {
+        // Rack turns every light to full brightness in the module browser
+        // we hack it here to show a more representative state.
+        int n = 0;
+        for (auto child: children) {
+            auto light = dynamic_cast<BlueLight*>(child);
+            if (light) {
+                NVGcolor co = *light->baseColors.begin();
+                co.a = n == CHOSEN_SAMPLE ? 1.f : hc3_sample_data[n].empty() ? 0.f : .3f;
+                light->color = co;
+                ++n;
+            }
+        }
+        hacked_lights = true;
     }
 }
 
