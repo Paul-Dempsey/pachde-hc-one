@@ -1,6 +1,6 @@
 #include "HC-1.hpp"
 #include "../cc_param.hpp"
-#include "../HcOne.hpp"
+#include "../module_broker.hpp"
 #include "../misc.hpp"
 
 namespace pachde {
@@ -61,13 +61,13 @@ Hc1Module::Hc1Module()
     getLight(HEART_LIGHT).setBrightness(.8f);
     clearCCValues();
 
-    HcOne::get()->registerHc1(this);
+    ModuleBroker::get()->registerHc1(this);
 }
 
 Hc1Module::~Hc1Module()
 {
     notifyDisconnect();
-    HcOne::get()->unregisterHc1(this);
+    ModuleBroker::get()->unregisterHc1(this);
     if (restore_ui_data) {
         delete restore_ui_data;
     }
@@ -212,7 +212,7 @@ void Hc1Module::onSave(const SaveEvent& e)
 void Hc1Module::onRemove(const RemoveEvent& e)
 {
     notifyDisconnect();
-    HcOne::get()->unregisterHc1(this);
+    ModuleBroker::get()->unregisterHc1(this);
     savePresets();
     Module::onRemove(e);
 }

@@ -1,6 +1,6 @@
 #include "HC-1.hpp"
 #include "../cc_param.hpp"
-#include "../HcOne.hpp"
+#include "../module_broker.hpp"
 
 namespace pachde {
 
@@ -46,7 +46,7 @@ void Hc1Module::resetMidiIO()
 void Hc1Module::checkDuplicate()
 {
     dupe = false;
-    auto one = HcOne::get();
+    auto one = ModuleBroker::get();
     if (one->Hc1count() > 1) {
         one->scan_while([=](Hc1Module* const& m) { 
             if (m != this

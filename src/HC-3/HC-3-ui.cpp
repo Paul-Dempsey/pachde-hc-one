@@ -1,6 +1,6 @@
 #include "hc-3.hpp"
-#include "../HcOne.hpp"
 #include "../misc.hpp"
+#include "../module_broker.hpp"
 #include "../small_push.hpp"
 #include "preset_file_widget.hpp"
 

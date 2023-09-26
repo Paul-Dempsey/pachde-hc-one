@@ -1,18 +1,18 @@
 #pragma once
-#ifndef HCONE_HPP_INCLUDED
-#define HCONE_HPP_INCLUDED
+#ifndef MODULE_BROKER_HPP_INCLUDED
+#define MODULE_BROKER_HPP_INCLUDED
 #include "./HC-1/HC-1.hpp"
 // #include "./HC-2/HC-2.hpp"
 // #include "./HC-3/HC-3.hpp"
 
 namespace pachde {
 
-struct HcOne
+struct ModuleBroker
 {
     struct Internal;
     Internal * my;
 
-    static HcOne* get();
+    static ModuleBroker* get();
     void registerHc1(Hc1Module * module);
     void unregisterHc1(Hc1Module * module);
     int Hc1count();
@@ -24,7 +24,7 @@ struct HcOne
     void scan_while(std::function<bool(Hc1Module* const&)> pred);
 
 private:
-    HcOne();
+    ModuleBroker();
 };
 
 struct DeviceAssociation {
@@ -38,7 +38,7 @@ struct DeviceAssociation {
     static std::vector<DeviceAssociation> getList()
     {
         std::vector<DeviceAssociation> list;
-        auto one = HcOne::get();
+        auto one = ModuleBroker::get();
         one->scan_while([&](Hc1Module* const& mod){
             list.push_back(DeviceAssociation{mod->deviceName(), mod->getId()});
             return true;
@@ -60,7 +60,7 @@ struct PartnerBinding
 
     Hc1Module* getPartner()
     {
-        auto one = HcOne::get();
+        auto one = ModuleBroker::get();
 
         // If no HC-1, forget any we remember and give up (but still remember
         // the device name, if one comes along that matches)

@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include "../HC-1/HC-1.hpp"
 #include "../hc_events.hpp"
-#include "../HcOne.hpp"
+#include "../module_broker.hpp"
 #include "../plugin.hpp"
 #include "../presets.hpp"
 #include "../square_button.hpp"
