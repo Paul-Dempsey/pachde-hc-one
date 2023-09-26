@@ -6,8 +6,6 @@
 
 namespace pachde {
 
-constexpr const float LABEL_COLUMN = 28.f;
-constexpr const float LABEL_VOFFSET = 3.f;
 constexpr const float START_ROW = 47.5f;
 constexpr const float ITEM_INTERVAL = 20.f;
 constexpr const float DIVIDER_OFFSET = 5.f;

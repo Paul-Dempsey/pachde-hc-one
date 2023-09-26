@@ -1,30 +1,33 @@
-# HC-One
+# HC One
 
-[Repo](https://github.com/Paul-Dempsey/pachde-hc-one)
-
-HC-One is a plugin with modules for working with Haken Audio's Eagan Matrix devices.
+HC One is a plugin with modules for working with Haken Audio's Eagan Matrix devices.
 These include the Haken Continuum, Continuu Mini, and Eagan Matrix Module, and Expressive E's Osmose.
 
-The beta release can be downloaded here: [HC-One 2.0.0-beta](https://github.com/Paul-Dempsey/pachde-hc-one/releases/edit/v2.0.0-beta).
-If you're adventurous, drill down in Actions and grab a more recent build.
+If you're adventurous, grab a development build: [![Build Status](https://github.com/Paul-Dempsey/pachde-hc-one/actions/workflows/build-plugin.yml/badge.svg)](https://github.com/Paul-Dempsey/pachde-hc-one/actions/workflows/build-plugin.yml)
 
-Pachde and HC-One are not affiliated with or sponsored by Haken Audio.
+The beta release announced online can be downloaded here: [HC-One 2.0.0-beta](https://github.com/Paul-Dempsey/pachde-hc-one/releases/edit/v2.0.0-beta).
 
 - [Documentation](doc/index.md)
 
-- [Buy me a coffee](https://venmo.com/u/pcdempsey). Thank you!
+- [Buy pachde a coffee](https://venmo.com/u/pcdempsey). Thank you!
 
-  Donations go to keeping me caffeinated, or help fund getting hardware for testing and development. (I have a wish list :-).\
+  Donations help pachde's morale, and fund hardware for testing, and developing this software.\
   ![Buy pachde a coffee with VenMo](doc/VenMo.png)
+
+Pachde and HC One are not affiliated with or sponsored by Haken Audio.
 
 ## Acknowledgements
 
-Special thanks to Lippold Haken (and all of the Haken Audio team), for creating the Continuum.
-Lippold has provided generous support by sharing technical details that make this software possible.
+Special thanks to Lippold Haken (and the Haken Audio team), for creating the Continuum.
+Lippold personally has provided generous support by sharing technical details that make this software possible.
 
 ## Modules
 
-- **[HC-1](HC-1.md)** Fast access to favorite presets, with knobs and CV for the essential controls: Macros and the Recirculator.
+- **[HC-1](./docs/HC-1.md)** Fast access to favorite presets, with knobs and CV for the essential controls: Macros and the Recirculator.
+
+- **HC-2** Companion to HC-1 for more matrix controls.
+
+- **[HC-3]{./docs/HC-3.md}** Pushbuttons to access up to 16 Favorite files.
 
 ## Building
 
