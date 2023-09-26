@@ -5,9 +5,10 @@
 HC-One is a plugin with modules for working with Haken Audio's Eagan Matrix devices.
 These include the Haken Continuum, Continuu Mini, and Eagan Matrix Module, and Expressive E's Osmose.
 
-The beta release can be downloaded here: [HC-One 2.0.0-beta](https://github.com/Paul-Dempsey/pachde-hc-one/releases/edit/v2.0.0-beta)
+The beta release can be downloaded here: [HC-One 2.0.0-beta](https://github.com/Paul-Dempsey/pachde-hc-one/releases/edit/v2.0.0-beta).
+If you're adventurous, drill down in Actions and grab a more recent build.
 
-HC-One is not affiliated with or sponsored by Haken Audio.
+Pachde and HC-One are not affiliated with or sponsored by Haken Audio.
 
 - [Documentation](doc/index.md)
 

@@ -1,5 +1,8 @@
 # HC-1
 
+HC-1 is the core module for the pachde (#d) HC One plugin.
+All other modules in the plugin are companions for HC-1, and don't do anything without HC-1 in the patch.
+
 HC-1 supports the Haken Continuum and other Haken Audio Eagan Matrix-based devices like the Eagan Matrix Eurorack module (EMM) and the Osmose from Expressive E.
 It is focused on having quick and easy access to presets on the device, favorites, plus CV control of the most essential performance settings, on a compact panel.
 
@@ -13,13 +16,18 @@ HC-1 was designed for Eagan Matrix firmware version 10.09.
 Earlier or later firmware versions may require changes to HC-1.
 If you have an issue, please open one in the Github Issues or send me an email.
 
-Here is the HC-1 module with it's expander HC-2.
+Here is the HC-1 module with it's companions HC-2, and [HC-3](HC-3.md).
 
-![The HC-1 mdoule](HC-1.png)
+![The HC One modules](HC-1.png)
 
-When first loaded, there is a long initialization time to read all user and system presets from the device. By default, the system and user presets are cached, so the next time you open the patch or the module, it should be up and running much faster.
+While they're shown side-by-side as typical for Rack modules with expanders,
+the HC One modules automatically find each other without having to sit next to each other.
 
-You can watch the prograss of the multi-step initialization process with the row of dots on the bottom. When everything is connected and working as expected, all the dots will be blue.
+When first loaded, there is a long initialization time to read all user and system presets from the device.
+By default, the presets are cached, so the next time you open the patch, it should be up and running much faster.
+
+You can watch the prograss of the multi-step initialization process with the row of dots on the bottom.
+When everything is connected and working as expected, all the dots are blue, and you can begin playing.
 
 > **Trouble-shooting:** Eagan Matrix devices require a high-quality MIDI connection.
 The HC-1 initialization process can sometimes fail, especially when you have a poor MIDI connection.
@@ -30,7 +38,7 @@ Be sure to use the MIDI cable that came with your device or another high-quality
 
 ## A tour of the user interface
 
-There's a lot of UI packed into this module, so let's take a tour.
+There's a lot packed into HC-1, so let's take a tour.
 
 From right to left, top to bottom:
 
@@ -209,11 +217,11 @@ You can, of course, save favorites anywhere you like, but this is the default, p
 - **Preset `.mid`:** At this time, this plugin has no support for managing preset .mid files.
 I do have plans to build such functionality, but it may not be in the Rack plugin format.
 
-- **Multiple EM Devices:** The USB plug on my ContinuuMini is broken, so I haven't been able to test the multiple-EM device scenario.
-That's where *you* come in!
-If you own multiple EM-based devices, you should be able to use an instance of HC-1 for each device in the same Rack patch to control multiple devices.
-The automatic discovery will always choose the first EM device it finds, but you can choose another from the MIDI controls in the bottom left:
-Pick the _output_ device from the right-hand MIDI selector and HC-1 will automatically find the corresponding input.
+- **Multiple EM Devices:** My ContinuuMini is back at Haken Audio for repairs, so I haven't been able to test the multiple-EM device scenario.
+
+  If you own multiple EM-based devices, you should be able to use an instance of HC-1 for each device in the same Rack patch to control multiple devices.
+Currently, the automatic discovery will always choose the first one it finds, and you'll get a big red error display if you have more than one HC-1 on the same device.
+You can choose another device from the EM Device button in the bottom left. From there, things should remain sorted out.
 
 - **Factory presets:** For beta, there are no Rack module factory presets.
 Please let me know if you have something useful that comes from using Rack module presets.
