@@ -1,4 +1,4 @@
-#include "hc-3.hpp"
+#include "HC-3.hpp"
 #include "../misc.hpp"
 #include "../module_broker.hpp"
 #include "../small_push.hpp"
