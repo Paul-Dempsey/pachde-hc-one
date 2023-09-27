@@ -1,4 +1,7 @@
 name: Build VCV Rack Plugin
+permissions:
+  contents: write
+
 on:
   push:
     paths-ignore:
