@@ -1,7 +1,7 @@
 {
     "slug": "pachde-hc-one",
     "name": "HC One",
-    "version": "2.0.0-beta",
+    "version": "2.0.0-beta2",
     "license": "GPL-3.0-or-later",
     "brand": "pachde",
     "author": "pachde",
@@ -23,12 +23,12 @@
         "slug": "pachde-hc-2",
         "name": "HC-2",
         "description": "More Eagan Matrix controls (HC-1 companion)",
-        "tags": [ "Expander" ]
+        "tags": [ "Controller", "MIDI", "Expander" ]
       },
       {
         "slug": "pachde-hc-3",
         "name": "HC-3",
-        "description": "Eagan Matrix set lists (HC-1 companion)",
+        "description": "Eagan Matrix favorites files (a.k.a. set lists) (HC-1 companion)",
         "tags": [ "Expander" ]
       }
     ]

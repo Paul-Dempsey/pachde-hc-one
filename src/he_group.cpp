@@ -9,15 +9,15 @@ bool he_item_order(const HEPresetItem& i1, const HEPresetItem& i2)
     return i1.index < i2.index;
 }
 
-using CBIT = std::vector<uint8_t>::const_iterator;
-
-enum class HakenPresetItemParseState { // Haken Preset Item Parse State
+enum class HakenPresetItemParseState {
     start,
     num,
     comma,
     quote,
     end
 };
+
+using CBIT = std::vector<uint8_t>::const_iterator;
 using PS = HakenPresetItemParseState;
 
 bool parse_line(CBIT it, CBIT end, std::vector<HEPresetItem>& result)
@@ -99,7 +99,6 @@ bool parse_line(CBIT it, CBIT end, std::vector<HEPresetItem>& result)
     result.push_back(HEPresetItem{num, std::string(it, end)});
     return true;
 }
-
 
 std::vector<HEPresetItem> ReadGroupFile(const std::string& path)
 {

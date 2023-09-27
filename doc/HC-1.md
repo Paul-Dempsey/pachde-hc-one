@@ -16,7 +16,7 @@ HC-1 was designed for Eagan Matrix firmware version 10.09.
 Earlier or later firmware versions may require changes to HC-1.
 If you have an issue, please open one in the Github Issues or send me an email.
 
-Here is the HC-1 module with it's companions HC-2, and [HC-3](HC-3.md).
+Here is the HC-1 module with it's companions HC-2 and [HC-3](HC-3.md).
 
 ![The HC One modules](HC-1.png)
 
@@ -64,9 +64,12 @@ From right to left, top to bottom:
     User presets are always in the order set on the device.
 
   - **Favorite** Favorites are shown in the order that they are added. Favoriting a preset always adds it to the end of the list.
-  Right click a favorite for options to change it's order in the list, or to un-Favorite it.
-  Right click the **Favorite** tab for sorting and commands to Open, or Save the favorites list to a file.
+  Right click a preset for options to change it's order in the list, or to un-Favorite it.
+  Right click the **Favorite** tab for sorting and Favorites file operations.
   Sorting from the **Favorite menu** is a one-time operation, unlike the System tab where the selected sort is persistent.
+  If you load and save presets in the Haken Editor by Groups, you can import an HE group list (`.txt`) file into Favorites.
+
+  See the companion **[HC-3](HC-3.md)** module for more options for working with favorites files.
 
   - **System** System presets can be sorted Alphabetically (the default), by Category, and by internal device System order.
   The options for this are in the **System** tab right click menu.
