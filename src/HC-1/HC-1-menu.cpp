@@ -86,9 +86,26 @@ void Hc1ModuleWidget::addSystemMenu(Menu *menu)
 
 void Hc1ModuleWidget::addFavoritesMenu(Menu *menu)
 {
-    bool ready = my_module->ready();
+    bool unready = !my_module->ready();
 
     std::string filename = my_module->favoritesFile.empty() ? "(none)" : system::getFilename(my_module->favoritesFile);
+
+    menu->addChild(createMenuItem("Favorite presets", "", [](){}, true));
+    menu->addChild(new MenuSeparator);
+    if (my_module) {
+        menu->addChild(createSubmenuItem("Sort", "", [=](Menu* menu) {
+            menu->addChild(createMenuItem("Alphabetically", "", [=](){
+                my_module->sortFavorites(PresetOrder::Alpha);
+                my_module->saveFavorites();
+                populatePresetWidgets();
+                }, unready));
+            menu->addChild(createMenuItem("by Category", "", [=](){
+                my_module->sortFavorites(PresetOrder::Category);
+                my_module->saveFavorites();
+                populatePresetWidgets();
+                }, unready));
+            }, unready));
+    }
 
     menu->addChild(createMenuItem("Open...", "", [=]() {
         std::string path;
@@ -101,15 +118,46 @@ void Hc1ModuleWidget::addFavoritesMenu(Menu *menu)
             path)) {
             my_module->openFavoritesFile(path);
         }
-        }, !ready));
+        }, unready));
+        
+    menu->addChild(createMenuItem("Add from...", "", [=]() {
+        std::string path;
+        std::string folder = asset::user(pluginInstance->slug);
+        system::createDirectories(folder);
+        if (openFileDialog(
+            folder,
+            "Favorites (.fav):fav;Json (.json):json;Any (*):*))",
+            "",
+            path)) {
+            my_module->readFavoritesFile(path, false);
+            updatePresetWidgets();
+        }
+        }, unready));
 
+    menu->addChild(createMenuItem("Import Haken Editor group list...", "", [=]() {
+        std::string path;
+        std::string folder = asset::user(pluginInstance->slug);
+        system::createDirectories(folder);
+        if (openFileDialog(
+            folder,
+            "Haken Editor group list (.txt):txt;Any (*):*.*",
+            "",
+            path)) {
+            my_module->importHEGroupFile(path);
+        }
+        }, unready));
+    menu->addChild(createMenuItem("Forget and clear", "", [=]() {
+        my_module->favoritesFile = "";
+        my_module->clearFavorites();
+        my_module->notifyFavoritesFileChanged();
+    }));
     menu->addChild(new MenuSeparator);
     menu->addChild(createMenuLabel(format_string("File: %s", filename.c_str())));
 
     if (!my_module->favoritesFile.empty()) {
         menu->addChild(createMenuItem(format_string("Forget %s", filename.c_str()), "", [=]() {
             my_module->favoritesFile = "";
-            }, !ready));
+            }, unready));
     }
 
     std::string prompt = my_module->favoritesFile.empty() ? "Save as..." : format_string("Save %s as...", filename.c_str());
@@ -126,7 +174,7 @@ void Hc1ModuleWidget::addFavoritesMenu(Menu *menu)
             my_module->favoritesFile = path;
             my_module->notifyFavoritesFileChanged();
         }
-    }, !ready));
+    }, unready));
 
     menu->addChild(createMenuItem("Save copy as...", "", [=]() {
         std::string path;
@@ -140,21 +188,7 @@ void Hc1ModuleWidget::addFavoritesMenu(Menu *menu)
             path)) {
             my_module->writeFavoritesFile(path);
         }
-    }, !ready || my_module->favoritesFile.empty()));
-
-    menu->addChild(createMenuItem("Add from...", "", [=]() {
-        std::string path;
-        std::string folder = asset::user(pluginInstance->slug);
-        system::createDirectories(folder);
-        if (openFileDialog(
-            folder,
-            "Favorites (.fav):fav;Json (.json):json;Any (*):*))",
-            "",
-            path)) {
-            my_module->readFavoritesFile(path, false);
-            updatePresetWidgets();
-        }
-        }, !ready));
+    }, unready || my_module->favoritesFile.empty()));
 
     prompt = my_module->favoritesFile.empty() ? "Clear" : format_string("Clear %s", filename.c_str());
     menu->addChild(createMenuItem(prompt, "", [=](){ 
@@ -163,7 +197,7 @@ void Hc1ModuleWidget::addFavoritesMenu(Menu *menu)
         if (tab == PresetTab::Favorite) {
             updatePresetWidgets();
         }
-    }, !ready || my_module->favorite_presets.empty()));
+    }, unready || my_module->favorite_presets.empty()));
 
 }
 

@@ -98,6 +98,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, midi::Input, Module
     bool readFavoritesFile(const std::string& path, bool fresh);
     void writeFavoritesFile(const std::string& path);
     void openFavoritesFile(const std::string& path);
+    void importHEGroupFile(const std::string& path);
     json_t* favoritesToJson();
     void favoritesFromPresets();
 
@@ -344,6 +345,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, midi::Input, Module
     void sortFavorites(PresetOrder order = PresetOrder::Favorite);
 
     void sendSavedPreset();
+    std::shared_ptr<Preset> findDefinedPresetByName(std::string name);
     std::shared_ptr<Preset> findDefinedPreset(std::shared_ptr<Preset> preset);
 
     void syncStatusLights();

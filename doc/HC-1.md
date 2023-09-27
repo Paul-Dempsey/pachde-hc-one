@@ -192,9 +192,14 @@ Right click on the **Favorite** tab to see the **Favorite menu**.
 | -- | -- | -- |
 | **Sort** | **Alphabetically** | Sort favorites alphabetically by name. |
 |  | **by Category** | Sort favorites first by Category, then alphabetically within the category. |
-| **Clear** | | Empty the Favorites list. |
 | **Open...** | | Load favorites from a file (`.fav` or `.json`) |
-| **Save as...** | | Save current favorites to a `.fav` or `.json` file. |
+| **Add from...** | | Append to the current list from a favorites file. |
+| **Import Haken Editor group list** | | Create Favorites from a Haken editor group listing. Presets named in the group file are first matched by name from user presets, then from system presets. The first matching name is used. If a name is not found, it is silently omitted. |
+| **Forget and clear** | | Forget the current favorites file (if any) and empty the list. |
+| File _name_ | | Shows current favorites file name or `(none)` if no favorites file is open. |
+| **Save as...** | | Save current favorites to a `.fav` or `.json` file, and switch to that file. |
+| **Save copy as...** | | Save current favorites to a new `.fav` or `.json` file, but remain in the current favorites file. |
+| **Clear** | | Empty the current Favorites file.  |
 
 ## System tab menu
 
@@ -203,9 +208,9 @@ Right click on the **System** tab to see the **System menu** for navigation and 
 | Menu | Option | Description |
 | -- | -- | -- |
 | **Go to category** | **Strings (ST)</br>Winds (WI)</br>Vocal (VO)</br>Keyboard (KY)</br>Classic (CL)</br>Other (OT)</br>Percussion (PE)</br>Tuned (PT)</br>Processor (PR)</br>Drone (DO)</br>Midi (MD)</br>Control (CV)</br>Utility (UT)** | Moves to the **System** tab with **Sort by Category** and selects the first preset in the category, or the current preset if it is in that category. |
-| **Sort System presets** | **Alphabetically** | (default) Show system presets alphabetically by name. |
-|  | **by Category** | Sort first by Category, then alphabetically within the category. |
-|  | **in System order** | Show system presets in internal System order. This is the numerical order in the Haken Editor "File 2" list, which is mostly but not entirely alphabetical. On the Continuum display, presets are in Category order. |
+| **Sort System presets** | **Alphabetically** | (default) Sort system presets alphabetically by name. |
+|  | **by Category** | Sort first by Category, then alphabetically within the category. This is the order that presets are shown on a Continuum. |
+|  | **in System order** | Show system presets in internal System order. This is the numerical order in the Haken Editor "File 2" list, which is mostly but not entirely alphabetical. |
 
 ## Notes
 

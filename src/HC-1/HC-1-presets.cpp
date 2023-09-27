@@ -1,4 +1,5 @@
 #include "HC-1.hpp"
+#include "../he_group.hpp"
 namespace pachde {
 
 void Hc1Module::tryCachedPresets() {
@@ -227,10 +228,10 @@ void Hc1Module::clearFavorites()
 {
     favorite_presets.clear();
     for (auto p: user_presets) {
-        if (p->favorite) p->favorite = false;
+        p->favorite = false;
     }
     for (auto p: system_presets) {
-        if (p->favorite) p->favorite = false;
+        p->favorite = false;
     }
 }
 
@@ -337,6 +338,39 @@ void Hc1Module::openFavoritesFile(const std::string& path)
         favoritesFile = "";
     }
     notifyFavoritesFileChanged();
+}
+
+void Hc1Module::importHEGroupFile(const std::string& path)
+{
+    auto items = he_group::ReadGroupFile(path);
+    favoritesFile = "";
+    clearFavorites();
+    auto bf = BulkFavoritingMode(this);
+    for (auto item : items) {
+        auto p = findDefinedPresetByName(item.name);
+        if (p) {
+            addFavorite(p);
+        }
+    }
+    notifyFavoritesFileChanged();
+}
+
+std::shared_ptr<Preset> Hc1Module::findDefinedPresetByName(std::string name)
+{
+    if (name.empty()) return nullptr;
+    if (!user_presets.empty()) {
+        auto it = std::find_if(user_presets.begin(), user_presets.end(), [name](std::shared_ptr<Preset>& p) { return p->name == name; });
+        if (it != user_presets.end()) {
+            return *it;
+        }
+    }
+    if (!system_presets.empty()) {
+        auto it = std::find_if(system_presets.begin(), system_presets.end(),[name](std::shared_ptr<Preset>& p) { return p->name == name; });
+        if (it != system_presets.end()) {
+            return *it;
+        }
+    }
+    return nullptr;
 }
 
 std::shared_ptr<Preset> Hc1Module::findDefinedPreset(std::shared_ptr<Preset> preset)

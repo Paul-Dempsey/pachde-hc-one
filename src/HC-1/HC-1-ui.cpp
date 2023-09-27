@@ -54,23 +54,6 @@ void Hc1ModuleWidget::createPresetGrid()
     tab_bar->addTab("User", PresetTab::User, nullptr);
     tab_bar->addTab("Favorite", PresetTab::Favorite, 
         [=](Menu* menu) { 
-            bool unready = !my_module->ready();
-            menu->addChild(createMenuItem("Favorite presets", "", [](){}, true));
-            menu->addChild(new MenuSeparator);
-            if (my_module) {
-                menu->addChild(createSubmenuItem("Sort", "", [=](Menu* menu) {
-                    menu->addChild(createMenuItem("Alphabetically", "", [=](){
-                        my_module->sortFavorites(PresetOrder::Alpha);
-                        my_module->saveFavorites();
-                        populatePresetWidgets();
-                        }, unready));
-                    menu->addChild(createMenuItem("by Category", "", [=](){
-                        my_module->sortFavorites(PresetOrder::Category);
-                        my_module->saveFavorites();
-                        populatePresetWidgets();
-                        }, unready));
-                    }, unready));
-            }
             addFavoritesMenu(menu);
         });
     tab_bar->addTab("System", PresetTab::System, [=](Menu* menu){

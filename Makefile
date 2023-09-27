@@ -7,6 +7,7 @@ SOURCES += src/components.cpp
 SOURCES += src/em_midi.cpp
 SOURCES += src/em_pedal.cpp
 SOURCES += src/em_types.cpp
+SOURCES += src/he_group.cpp
 SOURCES += src/misc.cpp
 SOURCES += src/module_broker.cpp
 SOURCES += src/open_file.cpp
