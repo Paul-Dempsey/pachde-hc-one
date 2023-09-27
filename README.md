@@ -11,7 +11,7 @@ The beta 2 release announced online can be downloaded here: [HC-One 2.0.0-beta2]
 
 - [Buy pachde a coffee](https://venmo.com/u/pcdempsey). Thank you!
 
-  Donations help pachde's morale, and fund hardware for testing, and developing this software.\
+  Donations help pachde's morale, and fund hardware for testing and developing this software.\
   ![Buy pachde a coffee with VenMo](doc/VenMo.png)
 
 Pachde and HC One are not affiliated with or sponsored by Haken Audio.
@@ -23,11 +23,11 @@ Lippold personally has provided generous support by sharing technical details th
 
 ## Modules
 
-- **[HC-1](./docs/HC-1.md)** Fast access to favorite presets, with knobs and CV for the essential controls: Macros and the Recirculator.
+- **[HC-1](./docs/HC-1.md)** — Fast access to favorite presets, with knobs and CV for the essential controls: Macros and the Recirculator.
 
-- **HC-2** Companion to HC-1 for more matrix controls.
+- **HC-2** — Companion to HC-1 for more matrix controls.
 
-- **[HC-3]{./docs/HC-3.md}** Pushbuttons to access up to 16 Favorite files.
+- **[HC-3](./docs/HC-3.md)** — Pushbuttons to access up to 16 Favorite files.
 
 ## Building
 
@@ -51,10 +51,10 @@ If you already have a Rack build environment set up:
 
 No need to `make dep` or `git submodule update --init --recursive` for this module, because there are no dependencies other than Rack itself.
 
-## Contributing
+## Contributing code
 
-Contributions are generally welcome.
-I'd appreciate if you're planning to add something, please open a Discussion so we can discuss it.
+Contributions (both code and donations) are welcome.
+I'd appreciate if you're planning to add something, please open a Discussion  or contact me by email so we can discuss it.
 
 If you've found a bug, please open an issue.
 If you have a fix for the bug, then that's fantastic. Bug fix PRs are always welcome.
