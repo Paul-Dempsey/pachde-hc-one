@@ -5,7 +5,7 @@ These include the Haken Continuum, Continuu Mini, and Eagan Matrix Module, and E
 
 If you're adventurous, grab a development build: [![Build Status](https://github.com/Paul-Dempsey/pachde-hc-one/actions/workflows/build-plugin.yml/badge.svg)](https://github.com/Paul-Dempsey/pachde-hc-one/actions/workflows/build-plugin.yml)
 
-The beta release announced online can be downloaded here: [HC-One 2.0.0-beta](https://github.com/Paul-Dempsey/pachde-hc-one/releases/edit/v2.0.0-beta).
+The beta 2 release announced online can be downloaded here: [HC-One 2.0.0-beta2](https://github.com/Paul-Dempsey/pachde-hc-one/releases/tag/v2.0.0-beta2).
 
 - [Documentation](doc/index.md)
 
