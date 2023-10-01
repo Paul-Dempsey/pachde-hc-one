@@ -1,7 +1,7 @@
 #pragma once
 #ifndef INDICATOR_WIDGET_INCLUDED
 #define INDICATOR_WIDGET_INCLUDED
-#include "colors.hpp"
+#include "../colors.hpp"
 #include "tip_widget.hpp"
 
 namespace pachde {

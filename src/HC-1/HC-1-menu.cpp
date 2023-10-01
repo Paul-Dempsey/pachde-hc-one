@@ -34,6 +34,7 @@ void Hc1ModuleWidget::addJumpCategory(Menu *menu, uint16_t category)
 
 void Hc1ModuleWidget::addRecirculator(Menu *menu, EM_Recirculator kind)
 {
+    if (!my_module) { return; }
     menu->addChild(createCheckMenuItem(RecirculatorName(kind), "", 
          [=](){ return my_module->recirculatorType() == kind; },
          [=](){
@@ -86,26 +87,25 @@ void Hc1ModuleWidget::addSystemMenu(Menu *menu)
 
 void Hc1ModuleWidget::addFavoritesMenu(Menu *menu)
 {
+    if (!my_module) { return; }
     bool unready = !my_module->ready();
 
     std::string filename = my_module->favoritesFile.empty() ? "(none)" : system::getFilename(my_module->favoritesFile);
 
     menu->addChild(createMenuItem("Favorite presets", "", [](){}, true));
     menu->addChild(new MenuSeparator);
-    if (my_module) {
-        menu->addChild(createSubmenuItem("Sort", "", [=](Menu* menu) {
-            menu->addChild(createMenuItem("Alphabetically", "", [=](){
-                my_module->sortFavorites(PresetOrder::Alpha);
-                my_module->saveFavorites();
-                populatePresetWidgets();
-                }, unready));
-            menu->addChild(createMenuItem("by Category", "", [=](){
-                my_module->sortFavorites(PresetOrder::Category);
-                my_module->saveFavorites();
-                populatePresetWidgets();
-                }, unready));
+    menu->addChild(createSubmenuItem("Sort", "", [=](Menu* menu) {
+        menu->addChild(createMenuItem("Alphabetically", "", [=](){
+            my_module->sortFavorites(PresetOrder::Alpha);
+            my_module->saveFavorites();
+            populatePresetWidgets();
             }, unready));
-    }
+        menu->addChild(createMenuItem("by Category", "", [=](){
+            my_module->sortFavorites(PresetOrder::Category);
+            my_module->saveFavorites();
+            populatePresetWidgets();
+            }, unready));
+        }, unready));
 
     menu->addChild(createMenuItem("Open...", "", [=]() {
         std::string path;
@@ -146,7 +146,7 @@ void Hc1ModuleWidget::addFavoritesMenu(Menu *menu)
             my_module->importHEGroupFile(path);
         }
         }, unready));
-    menu->addChild(createMenuItem("Forget and clear", "", [=]() {
+    menu->addChild(createMenuItem("Forget file and clear", "", [=]() {
         my_module->favoritesFile = "";
         my_module->clearFavorites();
         my_module->notifyFavoritesFileChanged();
@@ -229,10 +229,17 @@ void Hc1ModuleWidget::appendContextMenu(Menu *menu)
         menu->addChild(createCheckMenuItem("Suppress heartbeat handshake", "",
             [=](){ return !my_module->heart_beating; },
             [=](){ my_module->heart_beating = !my_module->heart_beating; }));
-        menu->addChild(createMenuItem("One handshake", "",   [=](){ my_module->sendEditorPresent(); }));
+        menu->addChild(createMenuItem("One handshake", "",   [=](){ my_module->sendEditorPresent(true); }));
         menu->addChild(createMenuItem("Request config", "",  [=](){ my_module->transmitRequestConfiguration(); }));
         menu->addChild(createMenuItem("Reset Midi I/O", "",  [=]() { my_module->resetMidiIO(); }));
-    }));
+        menu->addChild(createMenuItem("Remake QSPI Data", "", [=]() { my_module->sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::remakeSRMahl); }));
+        // menu->addChild(createMenuItem("Reboot device", "", [=]() { 
+        //     my_module->sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::rebootUser);
+        //     my_module->resetMidiIO();
+        //     }));
+//        menu->addChild(createMenuItem("Probe pedals", "", [=]() { my_module->sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::gridToFlash); }));
+
+        }));
 
     // now right click on favorites tab
     // menu->addChild(createSubmenuItem("Favorites", "", [=](Menu* menu) {

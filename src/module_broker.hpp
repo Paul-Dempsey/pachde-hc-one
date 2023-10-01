@@ -12,6 +12,10 @@ struct ModuleBroker
     struct Internal;
     Internal * my;
 
+    ~ModuleBroker() { if (my) { delete my; } }
+    ModuleBroker & operator=(const ModuleBroker &) = delete;
+    ModuleBroker(const ModuleBroker&) = delete;
+
     static ModuleBroker* get();
     void registerHc1(Hc1Module * module);
     void unregisterHc1(Hc1Module * module);

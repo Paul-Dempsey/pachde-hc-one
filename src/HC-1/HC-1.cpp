@@ -1,7 +1,7 @@
 #include "HC-1.hpp"
-#include "../cc_param.hpp"
 #include "../module_broker.hpp"
 #include "../misc.hpp"
+#include "../widgets/cc_param.hpp"
 
 namespace pachde {
 
@@ -100,6 +100,16 @@ void Hc1Module::unsubscribeHcEvents(IHandleHcEvents*client)
         event_subscriptions.erase(it);
     }
 }
+
+void Hc1Module::notifyPedalChanged(uint8_t pedal)
+{
+    if (event_subscriptions.empty()) return;
+    auto event = IHandleHcEvents::PedalChangedEvent{ pedal ? pedal2 : pedal1 };
+    for (auto client: event_subscriptions) {
+        client->onPedalChanged(event);
+    }
+}
+
 void Hc1Module::notifyPresetChanged()
 {
     if (event_subscriptions.empty()) return;
@@ -292,9 +302,13 @@ void Hc1Module::reboot()
 {
     dupe = false;
     device_name = "";
+    firmware_version = 0;
     midi::Input::reset();
     midi_output.reset();
     clearCCValues();
+    pedal_fraction = 0;
+    pedal1 = PedalInfo(0);
+    pedal2 = PedalInfo(1);
     midi_receive_count = 0;
     midi_send_count = 0;
     broken = false;
@@ -320,7 +334,6 @@ void Hc1Module::reboot()
 
     in_preset = in_sys_names = in_user_names = false;
 
-    pedal_fraction = 0;
     notesOn = 0;
     data_stream = -1;
     //download_message_id = -1;

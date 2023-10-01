@@ -4,17 +4,17 @@
 #include <stdint.h>
 #include "../colors.hpp"
 #include "../em_midi.hpp"
-#include "../em_picker.hpp"
 #include "../em_types.hpp"
-#include "../favorite_widget.hpp"
 #include "../hc_events.hpp"
 #include "../plugin.hpp"
 #include "../preset_meta.hpp"
-#include "../preset_widget.hpp"
 #include "../presets.hpp"
-#include "../square_button.hpp"
-#include "../tab_bar.hpp"
 #include "../text.hpp"
+#include "../widgets/em_picker.hpp"
+#include "../widgets/favorite_widget.hpp"
+#include "../widgets/preset_widget.hpp"
+#include "../widgets/square_button.hpp"
+#include "../widgets/tab_bar.hpp"
 
 using namespace em_midi;
 namespace pachde {
@@ -106,7 +106,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, midi::Input, Module
     class BulkFavoritingMode {
         Hc1Module* hc1;
     public:
-        BulkFavoritingMode(Hc1Module* hc1) : hc1(hc1) {
+        explicit BulkFavoritingMode(Hc1Module* hc1) : hc1(hc1) {
             hc1->bulk_favoriting = true;
         }
         ~ BulkFavoritingMode() {
@@ -227,6 +227,9 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, midi::Input, Module
 
     // cc handling
     uint8_t pedal_fraction = 0;
+    PedalInfo pedal1 = PedalInfo(0);
+    PedalInfo pedal2 = PedalInfo(1);
+
     bool muted = false;
     int64_t notesOn = 0;
     uint8_t note = 0;
@@ -241,6 +244,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, midi::Input, Module
         memset(ch0_cc_value, 0, 127); 
         memset(ch15_cc_value, 0, 127);
     }
+    //std::vector<uint8_t> system_data;
     uint16_t firmware_version = 0;
     uint8_t middle_c = 60;
     bool reverse_surface;
@@ -272,6 +276,11 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, midi::Input, Module
     void subscribeHcEvents(IHandleHcEvents* client);
     void unsubscribeHcEvents(IHandleHcEvents* client);
     void notifyPresetChanged();
+    void notifyPedalsChanged() {
+        notifyPedalChanged(0);
+        notifyPedalChanged(1);
+    }
+    void notifyPedalChanged(uint8_t pedal);
     void notifyRoundingChanged();
     void notifyDeviceChanged();
     void notifyDisconnect();
@@ -358,17 +367,17 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, midi::Input, Module
     void transmitRequestConfiguration();
     void transmitRequestSystemPresets();
     void transmitRequestUserPresets();
-    void sendEditorPresent();
+    void sendEditorPresent(bool init_handshake);
     void silence(bool reset);
     void beginPreset();
-    void onChannel16CC(uint8_t cc, uint8_t value);
-    void onChannel16Message(const midi::Message& msg);
     void onNoteOn(uint8_t channel, uint8_t note, uint8_t velocity);
     void onNoteOff(uint8_t channel, uint8_t note, uint8_t velocity);
     void setMacroCCValue(int id, uint8_t value);
     void onSoundOff();
-    void onChannel0CC(uint8_t cc, uint8_t value);
-    void onChannel0Message(const midi::Message& msg);
+    void onChannelOneCC(uint8_t cc, uint8_t value);
+    void onChannel16CC(uint8_t cc, uint8_t value);
+    void onChannelOneMessage(const midi::Message& msg);
+    void onChannel16Message(const midi::Message& msg);
     void processCV(int inputId);
     void processAllCV();
     void onSave(const SaveEvent& e) override;
@@ -387,6 +396,7 @@ struct Hc1ModuleWidget : ModuleWidget, IPresetHolder, IHandleHcEvents
 {
     Hc1Module* my_module = nullptr;
     StaticTextLabel* device_label = nullptr;
+    StaticTextLabel* firmware_label = nullptr;
     std::vector<PresetWidget*> presets;
     bool have_preset_widgets = false;
     TabBarWidget* tab_bar = nullptr;

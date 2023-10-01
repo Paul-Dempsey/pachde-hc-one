@@ -1,14 +1,16 @@
 #pragma once
 #ifndef PRESET_WIDGET_HPP_INCLUDED
 #define PRESET_WIDGET_HPP_INCLUDED
-#include "em_midi.hpp"
-#include "presets.hpp"
-#include "text.hpp"
+#include "../em_midi.hpp"
+#include "../presets.hpp"
+#include "../text.hpp"
 #include "tip_widget.hpp"
 #include "symbol_widget.hpp"
 
 namespace pachde {
 using namespace em_midi;
+
+using Symbol = SymbolWidget::Symbol;
 
 struct PresetWidget : TipWidget
 {
@@ -24,7 +26,7 @@ struct PresetWidget : TipWidget
         box.size.x = 320.f / 3.f;
         box.size.y = 27.f;
         symbol = createWidget<SymbolWidget>(Vec(4.f, box.size.y - 10.f));
-        symbol->setSymbol(0);
+        symbol->setSymbol(Symbol::Blank);
         addChild(symbol);
         text_label = createStaticTextLabel(Vec(2.5f, 1.5f), box.size.x - 4.f, "", TextAlignment::Left, 12.f, false);
         addChild(text_label);
@@ -44,13 +46,13 @@ struct PresetWidget : TipWidget
         preset = patch;
         if (preset) {
             describe(preset->describe());
-            symbol->setSymbol((0 == preset->bank_hi) ? 1 : 0);
+            symbol->setSymbol((0 == preset->bank_hi) ? Symbol::Person : Symbol::Blank);
             symbol->box.pos.x = preset->favorite ? 12.f : 4.f;
             text_label->text(preset->name);
             text_code->text(preset->categoryName());
         } else {
             describe("(no preset)");
-            symbol->setSymbol(0);
+            symbol->setSymbol(Symbol::Blank);
             symbol->box.pos.x = 4.f;
             text_label->text("");
             text_code->text("");

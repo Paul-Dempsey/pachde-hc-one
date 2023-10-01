@@ -3,7 +3,7 @@
 #define HC_EVENTS_HPP_INCLUDED
 #include <rack.hpp>
 #include "presets.hpp"
-//#include "em_types.hpp"
+#include "em_types.hpp"
 
 namespace pachde {
 
@@ -19,8 +19,13 @@ struct IHandleHcEvents
     };
     virtual void onFavoritesFileChanged(const FavoritesFileChangedEvent& e) {}
 
+    struct PedalChangedEvent {
+        const em_midi::PedalInfo & pedal;
+    };
+    virtual void onPedalChanged(const PedalChangedEvent& e) {}
+
     struct RoundingChangedEvent {
-        const Rounding rounding;
+        const em_midi::Rounding rounding;
     };
     virtual void onRoundingChanged(const RoundingChangedEvent& e) {}
 

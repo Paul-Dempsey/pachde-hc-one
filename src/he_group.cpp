@@ -89,7 +89,7 @@ bool parse_line(CBIT it, CBIT end, std::vector<HEPresetItem>& result)
             --last;
             if ('m' == *last || 'M' == *last) {
                 --last;
-                if ('.' == *last || '.' == *last) {
+                if ('.' == *last) {
                     dot_mid = true;
                 }
             }
@@ -112,11 +112,11 @@ std::vector<HEPresetItem> ReadGroupFile(const std::string& path)
         auto it = bytes.cbegin();
         while (it != bytes.cend()) {
             auto line_start = it;
-            while (*it != '\n' && it != bytes.cend()) {
+            while (it != bytes.cend() && *it != '\n') {
                 ++it;
             }
             if (!parse_line(line_start, it, result)) { break; }
-            while (*it <= 32 && it != bytes.cend()) { ++it; }
+            while (it != bytes.cend() && *it <= 32) { ++it; }
         }
         std::sort(result.begin(), result.end(), he_item_order);
     } catch(Exception& e) {

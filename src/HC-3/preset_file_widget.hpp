@@ -2,7 +2,7 @@
 #ifndef PRESET_FILE_WIDGET_HPP_INCLUDED
 #define PRESET_FILE_WIDGET_HPP_INCLUDED
 #include <rack.hpp>
-#include "../tip_widget.hpp"
+#include "../widgets/tip_widget.hpp"
 #include "../open_file.hpp"
 #include "../colors.hpp"
 #include "HC-3.hpp"

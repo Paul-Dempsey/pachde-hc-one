@@ -1,9 +1,9 @@
 #pragma once
 #ifndef CC_PARAM_HPP_INCLUDED
 #define CC_PARAM_HPP_INCLUDED
-#include "rack.hpp"
+#include <rack.hpp>
 #include "components.hpp"
-#include "em_midi.hpp"
+#include "../em_midi.hpp"
 
 namespace pachde {
 using namespace em_midi;
@@ -50,19 +50,19 @@ struct CCParamQuantity : rack::engine::ParamQuantity
     {
         auto to_send = valueToSend();
         last_value = to_send;
-        if (enabled) {
-            auto iSend = dynamic_cast<ISendMidi*>(module);
-            if (iSend && iSend->readyToSend()) {
-                if (high_resolution) {
-                    uint8_t lo = to_send & 0x7f;
-                    if (lo) {
-                        iSend->sendControlChange(EM_SettingsChannel, EMCC_PedalFraction, lo);
-                    }
-                    uint8_t hi = to_send >> 7;
-                    iSend->sendControlChange(EM_SettingsChannel, cc, hi);
-                } else {
-                    iSend->sendControlChange(EM_SettingsChannel, cc, to_send & 0x7f);
+        if (!enabled) return;
+
+        auto iSend = dynamic_cast<ISendMidi*>(module);
+        if (iSend && iSend->readyToSend()) {
+            if (high_resolution) {
+                uint8_t lo = to_send & 0x7f;
+                if (lo) {
+                    iSend->sendControlChange(EM_SettingsChannel, EMCC_PedalFraction, lo);
                 }
+                uint8_t hi = to_send >> 7;
+                iSend->sendControlChange(EM_SettingsChannel, cc, hi);
+            } else {
+                iSend->sendControlChange(EM_SettingsChannel, cc, to_send & 0x7f);
             }
         }
     }
@@ -120,6 +120,7 @@ TCCPQ* configCCParam(uint8_t cc, bool hiRes, Module* module, int paramId, int in
 
     return q;
 }
+
 const NVGcolor connected_track_color = nvgRGB(0x73, 0x5d, 0x26);
 
 struct ModKnob : SmallBlackKnob

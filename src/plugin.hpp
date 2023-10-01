@@ -6,4 +6,5 @@ extern Plugin* pluginInstance;
 extern Model* modelHc1;
 extern Model* modelHc2;
 extern Model* modelHc3;
+extern Model* modelHc4;
 

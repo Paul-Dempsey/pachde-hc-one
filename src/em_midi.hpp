@@ -128,11 +128,14 @@ constexpr const uint8_t EMCC_RMIX           = 24;
 constexpr const uint8_t EMCC_RoundRate 	    = 25;
 constexpr const uint8_t EMCC_PreLevel       = 26;
 constexpr const uint8_t EMCC_Attenuation    = 27;
-constexpr const uint8_t EMCC_RountInitial   = 28;
+constexpr const uint8_t EMCC_RoundInitial   = 28;
 constexpr const uint8_t EMCC_Pedal1         = 29;
 constexpr const uint8_t EMCC_Pedal2         = 30;
 constexpr const uint8_t EMCC_Advance        = 31; //127 next, 64=next layer
 constexpr const uint8_t EMCC_Category       = 32;
+
+constexpr const uint8_t EMCC_Routing        = 36;
+constexpr const uint8_t EMCC_PedalType      = 37;
 
 constexpr const uint8_t EMCC_Polyphony      = 39;
 constexpr const uint8_t EMCC_BendRange      = 40; //MPE_MIN=12, default|max=96
@@ -170,7 +173,7 @@ constexpr const uint8_t EMCC_RoundEqual     = 65; //0=disable, 64=enable, 127=ro
 constexpr const uint8_t EMCC_Sostenuto      = 66;
 constexpr const uint8_t EMCC_HeadphoneLevel = 67;
 constexpr const uint8_t EMCC_LineLevel      = 68;
-constexpr const uint8_t EMCC_Sos2           = 69;
+constexpr const uint8_t EMCC_Sostenuto2     = 69;
 constexpr const uint8_t EMCC_Actuation      = 70;
 constexpr const uint8_t EMCC_PolyTrad		= 71; // ** Continuum out: total _TRAD polyphony  6.00
 constexpr const uint8_t EMCC_PolyDsp		= 72; // ** Continuum out: total _DSP polyphony   6.00
@@ -336,7 +339,7 @@ enum EM_DownloadItem {
     burnRecovery593 = 124,	//    done firmware 21593 download, burn recovery (done at factory only!)
 };
 
-// EMCC_Info values
+// EMCC_Info (110) values
 enum InfoItem {
     profileEnd		= 0,	// LC erase message bar, Editor puts up Save dialog
     percentFirst	= 1,	// L  left display "1%"
@@ -365,7 +368,7 @@ enum InfoItem {
     profileStart	= 127,	// C  center display: "Profile is being generated. Please wait."
 };
 
-// EMCC_Status cvalues
+// EMCC_Status (111) cvalues
 enum StatusItem {
     sLedBits        = 0x0f,	//    select led color bits
     ledOff          = 0,	//	  led color
@@ -422,40 +425,40 @@ std::string ToFormattedString(const midi::Message& msg);
 
 inline int MessageBytes(uint8_t status_byte)
 {
-	switch (status_byte & 0xf0) {
-	case MidiStatus_NoteOff:
-	case MidiStatus_NoteOn:
-	case MidiStatus_PolyKeyPressure:
-	case MidiStatus_CC:
-		return 2;
+    switch (status_byte & 0xf0) {
+    case MidiStatus_NoteOff:
+    case MidiStatus_NoteOn:
+    case MidiStatus_PolyKeyPressure:
+    case MidiStatus_CC:
+        return 2;
 
-	case MidiStatus_ProgramChange:
-	case MidiStatus_ChannelPressure:
-		return 1;
+    case MidiStatus_ProgramChange:
+    case MidiStatus_ChannelPressure:
+        return 1;
 
-	case MidiStatus_PitchBend:
-		return 2;
+    case MidiStatus_PitchBend:
+        return 2;
 
-	default:
-		return 0;
-	}
+    default:
+        return 0;
+    }
 }
 
 union uMidiMessage {
-	uint64_t dwData;
-	uint8_t bytes[4];
-	uMidiMessage() : dwData(0) {}
-	uMidiMessage(uint64_t dw) : dwData(dw) {}
-	uMidiMessage(uint8_t b1, uint8_t b2) : dwData(0) {
-		bytes[0] = b1;
-		bytes[1] = b2;
-	}
-	uMidiMessage(uint8_t b0, uint8_t b1, uint8_t b2) : dwData(0) {
-		bytes[0] = b0;
-		bytes[1] = b1;
-		bytes[2] = b2;
-	}
-    uMidiMessage(midi::Message& msg) : dwData(0) {
+    uint64_t dwData;
+    uint8_t bytes[4];
+    uMidiMessage() : dwData(0) {}
+    uMidiMessage(uint64_t dw) : dwData(dw) {}
+    uMidiMessage(uint8_t b1, uint8_t b2) : dwData(0) {
+        bytes[0] = b1;
+        bytes[1] = b2;
+    }
+    uMidiMessage(uint8_t b0, uint8_t b1, uint8_t b2) : dwData(0) {
+        bytes[0] = b0;
+        bytes[1] = b1;
+        bytes[2] = b2;
+    }
+    uMidiMessage(const midi::Message& msg) : dwData(0) {
         size_t i = 0;
         for (auto b: msg.bytes) {
             bytes[i++] = b;

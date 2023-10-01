@@ -8,7 +8,7 @@
     "authorEmail": "pcdempsey@live.com",
     "authorUrl": "",
     "pluginUrl": "",
-    "manualUrl": "https://github.com/Paul-Dempsey/pachde-hc-one/doc/index.md",
+    "manualUrl": "https://github.com/Paul-Dempsey/pachde-hc-one/blob/main/doc/index.md",
     "sourceUrl": "https://github.com/Paul-Dempsey/pachde-hc-one",
     "donateUrl": "https://venmo.com/u/pcdempsey",
     "changelogUrl": "",
@@ -29,6 +29,12 @@
         "slug": "pachde-hc-3",
         "name": "HC-3",
         "description": "Eagan Matrix favorites files (a.k.a. set lists) (HC-1 companion)",
+        "tags": [ "Expander" ]
+      },
+      {
+        "slug": "pachde-hc-4",
+        "name": "HC-4",
+        "description": "CV out from the Eagan Matrix",
         "tags": [ "Expander" ]
       }
     ]

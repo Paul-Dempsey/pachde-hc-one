@@ -1,9 +1,9 @@
 #pragma once
 #ifndef FAVORITE_WIDGET_HPP_INCLUDED
 #define FAVORITE_WIDGET_HPP_INCLUDED
+#include "../colors.hpp"
+#include "../presets.hpp"
 #include "components.hpp"
-#include "colors.hpp"
-#include "presets.hpp"
 #include "tip_widget.hpp"
 
 namespace pachde {

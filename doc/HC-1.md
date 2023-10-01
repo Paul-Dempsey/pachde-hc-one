@@ -1,4 +1,4 @@
-# HC-1
+# Module HC-1
 
 HC-1 is the core module for the pachde (#d) HC One plugin.
 All other modules in the plugin are companions for HC-1, and don't do anything without HC-1 in the patch.
@@ -228,14 +228,15 @@ I do have plans to build such functionality, but it may not be in the Rack plugi
 - **Multiple EM Devices:** My ContinuuMini is back at Haken Audio for repairs, so I haven't been able to test the multiple-EM device scenario.
 
   If you own multiple EM-based devices, you should be able to use an instance of HC-1 for each device in the same Rack patch to control multiple devices.
-Currently, the automatic discovery will always choose the first one it finds, and you'll get a big red error display if you have more than one HC-1 on the same device.
-You can choose another device from the EM Device button in the bottom left. From there, things should remain sorted out.
+  The automatic discovery *should* choose a second (or third) device if there is already an HC-1 bound to the first device. When y Mini comes back from the shop, I'll be able to test the scenario. If you have more than one HC-1 on the same device you'll see a big red error display.
+  You can choose another device from the **EM Device** button in the bottom left. From there, things should remain sorted out, even across new Rack sessions for that patch.
 
 - **Factory presets:** For beta, there are no Rack module factory presets.
 Please let me know if you have something useful that comes from using Rack module presets.
+Module presets are important to use for HC-3 to save the list for use in other patches.
 
 - **More functionality:** I plan to add expander modules for controlling most other things on the device.
-I am *not* planning to create a complete preset editor.
+I am *not* planning to create a complete preset (matrix) editor.
 That's not really suitable for a VCV rack module and it would require additional proprietary internal information from Haken Audio.
 
   I am interested to hear from you what will be most important controls to include in future HC modules.
@@ -243,8 +244,8 @@ That's not really suitable for a VCV rack module and it would require additional
   - I have some ideas for other potential useful features, such as:
 
     - Save and load profiles. These would contain a profile of settings including pedal assignments, rounding, MIDI routing, and so on.
-    These could be independent and also optionally associated with a specific preset (or presets), so that when you load a preset of any kind (user favorite, or system), the associated profile is applied.
+    These could be independent and also optionally associated with a specific preset (or presets), so that when you load a preset of any kind (user, favorite, or system), the associated profile is applied. This won't come until I've covered the basic controls.
 
-    - User preset archive and restore. This possibly in a separate program rather than VCV Rack modules.
+    - User preset save, load, archive-all, and restore-all. This possibly in a separate program rather than VCV Rack modules.
 
 ![pachde (#d) logo](Logo.svg)

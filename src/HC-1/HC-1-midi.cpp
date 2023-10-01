@@ -1,6 +1,6 @@
 #include "HC-1.hpp"
-#include "../cc_param.hpp"
 #include "../module_broker.hpp"
+#include "../widgets/cc_param.hpp"
 
 namespace pachde {
 
@@ -48,7 +48,7 @@ void Hc1Module::checkDuplicate()
     dupe = false;
     auto one = ModuleBroker::get();
     if (one->Hc1count() > 1) {
-        one->scan_while([=](Hc1Module* const& m) { 
+        one->scan_while([=](const Hc1Module* const m) { 
             if (m != this
                 && this->output_device_id >= 0 
                 && (this->output_device_id == m->output_device_id)) {
@@ -94,7 +94,7 @@ void Hc1Module::transmitRequestUpdates()
 {
     DebugLog("Request updates");
     request_updates_state = InitState::Complete; // one-shot
-    sendControlChange(EM_SettingsChannel, EMCC_Preserve, 1);
+    sendControlChange(EM_SettingsChannel, EMCC_Preserve, 1); // bit 1 means request config
 }
 
 void Hc1Module::transmitRequestConfiguration()
@@ -107,6 +107,8 @@ void Hc1Module::transmitRequestConfiguration()
     //log_midi = true;
 #endif
     beginPreset(); // force preset
+    sendEditorPresent(false);
+    sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::gridToFlash);
     sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::configToMidi);
 }
 
@@ -116,8 +118,7 @@ void Hc1Module::transmitRequestSystemPresets()
     clearCCValues();
     system_presets.clear();
     system_preset_state = InitState::Pending;
-    //silence(false);
-    // todo: save/restore EM MIDI routing to disable surface > midi/cvc to avoid interruption while loading
+    // consider: save/restore EM MIDI routing to disable surface > midi/cvc to avoid interruption while loading
 //    sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::midiTxTweenth);
     sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::sysToMidi);
 }
@@ -129,7 +130,7 @@ void Hc1Module::transmitRequestUserPresets()
     user_presets.clear();
     user_preset_state = InitState::Pending;
     //silence(false);
-    // todo: save/restore EM MIDI routing to disable surface > midi/cvc to avoid interruption while loading
+    // consider: save/restore EM MIDI routing to disable surface > midi/cvc to avoid interruption while loading
 //    sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::midiTxTweenth);
     sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::userToMidi);
 }
@@ -138,6 +139,7 @@ void Hc1Module::setPreset(std::shared_ptr<Preset> preset)
 {
     current_preset = nullptr;
     notifyPresetChanged();
+    notifyPedalsChanged();
 
     current_preset = preset;
     if (!preset) return;
@@ -156,6 +158,9 @@ void Hc1Module::sendSavedPreset() {
         return;
     }
     DebugLog("Sending saved preset [%s]", saved_preset->name.c_str());
+    sendEditorPresent(false);
+    sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::gridToFlash);
+
     saved_preset_state = InitState::Pending;
     sendControlChange(15, MidiCC_BankSelect, saved_preset->bank_hi);
     sendControlChange(15, EMCC_Category, saved_preset->bank_lo);
@@ -173,7 +178,7 @@ void Hc1Module::silence(bool reset)
     }
 }
 
-void Hc1Module::sendEditorPresent()
+void Hc1Module::sendEditorPresent(bool init_handshake)
 {
     DebugLog("Editor present");
     handshake = InitState::Pending;
@@ -233,6 +238,15 @@ void Hc1Module::onChannel16CC(uint8_t cc, uint8_t value)
             preset0.bank_lo = value;
             break;
 
+        case EMCC_PedalType:
+            pedal1.type = static_cast<PedalType>(value & 0x07);
+            pedal2.type = static_cast<PedalType>((value >> 3) & 0x07);
+            if (!in_preset) {
+                notifyPedalChanged(0);
+                notifyPedalChanged(1);
+            }
+            break;
+
         case EMCC_MiddleC:
             middle_c = value;
             break;
@@ -244,6 +258,20 @@ void Hc1Module::onChannel16CC(uint8_t cc, uint8_t value)
                 notifyRoundingChanged();
             }
         } break;
+
+        case EMCC_Pedal1CC:
+            pedal1.cc = value;
+            if (!in_preset) {
+                notifyPedalChanged(0);
+            }
+            break;
+
+        case EMCC_Pedal2CC:
+            pedal2.cc = value;
+            if (!in_preset) {
+                notifyPedalChanged(0);
+            }
+            break;
 
         case EMCC_DataStream: {
             switch (value) {
@@ -272,6 +300,11 @@ void Hc1Module::onChannel16CC(uint8_t cc, uint8_t value)
                     }
                 } break;
 
+                // case EM_StreamType::Sys: {
+                //     system_data.clear();
+                //     data_stream = value;
+                // } break;
+
                 case EM_StreamType::DataEnd: {
                     switch (data_stream) {
                         case EM_StreamType::Name:
@@ -283,6 +316,9 @@ void Hc1Module::onChannel16CC(uint8_t cc, uint8_t value)
                                 preset0.parse_text();
                             }
                             break;
+                        // case EM_StreamType::Sys:
+                        //     //DebugLog("End Sys data");
+                        //     break;
                     }
                     data_stream = -1;
                 } break;
@@ -306,6 +342,31 @@ void Hc1Module::onChannel16CC(uint8_t cc, uint8_t value)
         case EMCC_RecirculatorType:
             recirculator = value;
             getParamQuantity(RECIRC_EXTEND_PARAM)->setValue(isExtendRecirculator() * 1.f);
+            break;
+
+        case EMCC_MinPedal1:
+            pedal1.min = value;
+            if (!in_preset) {
+                notifyPedalChanged(0);
+            }
+            break;
+        case EMCC_MaxPedal1:
+            pedal1.max = value;
+            if (!in_preset) {
+                notifyPedalChanged(0);
+            }
+            break;
+        case EMCC_MinPedal2:
+            pedal2.min = value;
+            if (!in_preset) {
+                notifyPedalChanged(1);
+            }
+            break;
+        case EMCC_MaxPedal2:
+            pedal2.max = value;
+            if (!in_preset) {
+                notifyPedalChanged(1);
+            }
             break;
 
         case EMCC_VersionHigh:
@@ -419,6 +480,7 @@ void Hc1Module::onChannel16Message(const midi::Message& msg)
                     current_preset = findDefinedPreset(saved_preset);
                     saved_preset_state = config_state = InitState::Complete;
                     notifyPresetChanged();
+                    notifyPedalsChanged();
                 } else 
                 if (configPending()) {
 #ifdef VERBOSE_LOG
@@ -442,6 +504,7 @@ void Hc1Module::onChannel16Message(const midi::Message& msg)
                     }
                     DebugLog("End config as %s with %s", InitStateName(config_state), current_preset ? current_preset->describe_short().c_str() : "nuthin");
                     notifyPresetChanged();
+                    notifyPedalsChanged();
                 } else
                 if (!broken && is_gathering_presets()) {
                     if (!preset0.name_empty()) {
@@ -478,6 +541,9 @@ void Hc1Module::onChannel16Message(const midi::Message& msg)
                         break;
                 }
             }
+            // if (EM_StreamType::Sys == data_stream) {
+            //     system_data.push_back(msg.bytes[1]);
+            // }
             break;
         case MidiStatus_PitchBend:
             break;
@@ -519,12 +585,26 @@ void Hc1Module::onSoundOff()
     }
 }
 
-void Hc1Module::onChannel0CC(uint8_t cc, uint8_t value)
+void Hc1Module::onChannelOneCC(uint8_t cc, uint8_t value)
 {
     ch0_cc_value[cc] = value;
+
+    // Continuum doesn't send high resolution for pedals
+    if (cc == pedal1.cc) {
+        pedal1.value = value;
+        if (!in_preset) {
+            notifyPedalChanged(0);
+        }
+    } else if (cc == pedal2.cc) {
+        pedal2.value = value;
+        if (!in_preset) {
+            notifyPedalChanged(1);
+        }
+    }
+
     switch (cc) {
         case EMCC_PedalFraction: 
-            pedal_fraction =  value; // setMacroCCValue uses pedal_fraction
+            pedal_fraction =  value; // setMacroCCValue consumes pedal_fraction
             break;
 
         case EMCC_i:   setMacroCCValue(M1_PARAM, value); break;
@@ -549,7 +629,7 @@ void Hc1Module::onChannel0CC(uint8_t cc, uint8_t value)
             }
         } break;
 
-        case EMCC_RountInitial: {
+        case EMCC_RoundInitial: {
             bool new_initial = value; // seems to be 0 or 127
             if (rounding.initial != new_initial) {
                 rounding.initial = new_initial;
@@ -574,7 +654,7 @@ void Hc1Module::onChannel0CC(uint8_t cc, uint8_t value)
     }
 }
 
-void Hc1Module::onChannel0Message(const midi::Message& msg)
+void Hc1Module::onChannelOneMessage(const midi::Message& msg)
 {
     switch (GetRawStatus(msg)) {
         case MidiStatus_NoteOff:
@@ -584,10 +664,9 @@ void Hc1Module::onChannel0Message(const midi::Message& msg)
             onNoteOn(0, msg.bytes[1], msg.bytes[2]);
             break;
         case MidiStatus_CC:
-            onChannel0CC(msg.bytes[1], msg.bytes[2]);
+            onChannelOneCC(msg.bytes[1], msg.bytes[2]);
             break;
     }
-
 }
 
 bool isLoopbackDetect(const midi::Message& msg) {
@@ -613,22 +692,24 @@ void Hc1Module::onMessage(const midi::Message& msg)
 
     auto channel = msg.getChannel();
     switch (channel) {
-        case EM_MasterChannel:
-            onChannel0Message(msg);
+        case EM_MasterChannel: // 0 (channel 1)
+            onChannelOneMessage(msg);
             break;
 
-        case EM_KentonChannel:
+        case EM_KentonChannel: // 13 (channel 14)
             break;
 
-        case EM_MatrixChannel:
+        case EM_MatrixChannel:  // 14 (channel 15)
             break;
 
-        case EM_SettingsChannel:
+        case EM_SettingsChannel: // 15 (channel 16)
             onChannel16Message(msg);
             break;
 
         default:
             switch (GetRawStatus(msg)) {
+                case MidiStatus_CC:
+                    break;
                 case MidiStatus_NoteOff:
                     onNoteOff(channel, msg.bytes[1], msg.bytes[2]);
                     break;

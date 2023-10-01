@@ -2,8 +2,8 @@
 #ifndef EM_PICKER_HPP_INCLUDED
 #define EM_PICKER_HPP_INCLUDED
 #include <rack.hpp>
-#include "misc.hpp"
-#include "plugin.hpp"
+#include "../misc.hpp"
+#include "../plugin.hpp"
 #include "tip_widget.hpp"
 using namespace ::rack;
 namespace pachde {
@@ -15,11 +15,15 @@ struct ISetDevice {
 struct EMPicker : TipWidget
 {
     midi::Port* port;
-	widget::FramebufferWidget* fb;
-	widget::SvgWidget* sw;
+    widget::FramebufferWidget* fb;
+    widget::SvgWidget* sw;
     ISetDevice* setter;
+    EMPicker & operator=(const EMPicker &) = delete;
+    EMPicker(const EMPicker&) = delete;
 
-    EMPicker() {
+    EMPicker()
+    : port(nullptr), setter(nullptr)
+    {
         fb = new widget::FramebufferWidget;
         addChild(fb);
         sw = new widget::SvgWidget;
@@ -48,9 +52,7 @@ struct EMPicker : TipWidget
 
     void appendContextMenu(Menu* menu) override
     {
-        if (!port || ! setter) return;
-        assert(port);
-        assert(setter);
+        if (!port || !setter) return;
         menu->addChild(createMenuLabel("Eagan Matrix device"));
         menu->addChild(new MenuSeparator);
         menu->addChild(createMenuItem("Reset (auto)", "", [=](){ setter->setMidiDevice(-1); }));

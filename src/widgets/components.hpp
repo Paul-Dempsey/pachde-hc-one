@@ -1,8 +1,8 @@
 #pragma once
 #ifndef COMPONENTS_HPP_INCLUDED
 #define COMPONENTS_HPP_INCLUDED
-#include "colors.hpp"
-#include "plugin.hpp"
+#include "../colors.hpp"
+#include "../plugin.hpp"
 #include "tip_widget.hpp"
 
 //#define IMPLEMENT_DRAW_PERSON

@@ -1,7 +1,7 @@
 #include "HC-3.hpp"
 #include "../misc.hpp"
 #include "../module_broker.hpp"
-#include "../small_push.hpp"
+#include "../widgets/small_push.hpp"
 #include "preset_file_widget.hpp"
 
 namespace pachde {
@@ -24,7 +24,7 @@ Hc3ModuleWidget::Hc3ModuleWidget(Hc3Module* module)
     }
     setPanel(createPanel(asset::plugin(pluginInstance, "res/HC-3.svg")));
     device_label = createStaticTextLabel<StaticTextLabel>(
-        Vec(7.5f, 22.f), 180.f, "", TextAlignment::Left, 9.f, false );
+        Vec(7.f, 21.f), 180.f, "", TextAlignment::Left, 12.f, false, GetStockColor(StockColor::pachde_blue_medium));
     addChild(device_label);
 
     float y = START_ROW;

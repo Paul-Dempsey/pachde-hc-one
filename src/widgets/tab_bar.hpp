@@ -1,11 +1,11 @@
 #pragma once
 #ifndef TAB_BAR_HPP_INCLUDED
 #define TAB_BAR_HPP_INCLUDED
-#include "plugin.hpp"
-#include "tip_widget.hpp"
-#include "text.hpp"
-#include "colors.hpp"
+#include "../colors.hpp"
+#include "../plugin.hpp"
+#include "../text.hpp"
 #include "symbol_widget.hpp"
+#include "tip_widget.hpp"
 namespace pachde {
 
 enum class PresetTab : uint8_t {
@@ -17,6 +17,7 @@ enum class PresetTab : uint8_t {
     Last = System
 };
 
+using Symbol = SymbolWidget::Symbol;
 
 struct TabBarWidget : OpaqueWidget
 {
@@ -41,7 +42,7 @@ struct TabBarWidget : OpaqueWidget
             if (kind == PresetTab::User)
             {
                 sym = createWidget<SymbolWidget>(Vec(6.5f, 4.f));
-                sym->setSymbol(1);
+                sym->setSymbol(Symbol::Person);
                 TBase::addChild(sym);
             }
         }

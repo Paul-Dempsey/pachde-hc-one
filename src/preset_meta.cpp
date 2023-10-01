@@ -168,7 +168,7 @@ bool order_codes(const uint16_t &a, const uint16_t &b)
     auto p2 = hcCategoryCode.find(b);
     if (!p1 && !p2) return a < b;
     if (p1 && !p2) return true;
-    if (p2 && !p1) return false;
+    if (!p1) return false; //p2 is non-null from above two
     if (p1->group < p2->group) return true;
     if (p1->group == p2->group) return p1->index < p2->index;
     return false;

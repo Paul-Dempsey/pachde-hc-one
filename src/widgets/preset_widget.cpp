@@ -1,7 +1,7 @@
-#include "preset_widget.hpp"
-#include "misc.hpp"
+#include "../misc.hpp"
+#include "../colors.hpp"
 #include "components.hpp"
-#include "colors.hpp"
+#include "preset_widget.hpp"
 #include "symbol_widget.hpp"
 namespace pachde {
 

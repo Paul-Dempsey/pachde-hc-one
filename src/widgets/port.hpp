@@ -1,6 +1,6 @@
 #pragma once
 #include <rack.hpp>
-#include "colors.hpp"
+#include "../colors.hpp"
 using namespace ::rack;
 
 namespace pachde {
@@ -29,5 +29,12 @@ struct ColorPort : PortWidget
     }
     NVGcolor getMainColor() { return ring; }
 };
+
+inline ColorPort * createColorPortCentered(float x, float y, int id, const NVGcolor &color, Module * module)
+{
+    ColorPort * p = createOutputCentered<ColorPort>(Vec(x,y), module, id);
+    p->setMainColor(color);
+    return p;
+}
 
 }

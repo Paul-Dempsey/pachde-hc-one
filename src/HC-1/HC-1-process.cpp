@@ -1,6 +1,7 @@
 #include "HC-1.hpp"
-#include "../cc_param.hpp"
 #include "../module_broker.hpp"
+#include "../widgets/cc_param.hpp"
+
 namespace pachde {
 
 void Hc1Module::processCV(int paramId)
@@ -175,7 +176,7 @@ bool claimed(std::vector<DeviceAssociation>& claims, int64_t my_module_id, const
 void Hc1Module::initOutputDevice()
 {
     assert(InitState::Uninitialized == device_output_state);
-    assert(device_name.empty());
+    device_name = "";
 
     bool singleton = ModuleBroker::get()->Hc1count() == 1;
     auto claims = !singleton
@@ -358,7 +359,7 @@ void Hc1Module::process(const ProcessArgs& args)
                 if (InitState::Uninitialized == request_updates_state) {
                     transmitRequestUpdates();
                 } else if (heart_beating || !first_beat) {
-                    sendEditorPresent();
+                    sendEditorPresent(true);
                 }
             }
         }

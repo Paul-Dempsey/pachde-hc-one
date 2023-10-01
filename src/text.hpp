@@ -277,7 +277,8 @@ TWidget* createDynamicLabel (
     std::function<std::string ()> get,
     TextAlignment alignment = TextAlignment::Center,
     float text_height = 12.f,
-    bool bold = true
+    bool bold = true,
+    const NVGcolor& text_color = RampGray(G_85)
     )
 {
     TWidget* w = createWidget<TWidget>(pos);
@@ -287,6 +288,7 @@ TWidget* createDynamicLabel (
     }
     w->style(text_height, bold, alignment);
     w->setFetch(get);
+    w->color(text_color);
     return w;
 }
 

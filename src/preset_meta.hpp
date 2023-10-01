@@ -101,7 +101,7 @@ public:
         return  (it == data.cend()) ? false : it->show;
     }
 
-    bool setShow(uint16_t code, bool visible)
+    void setShow(uint16_t code, bool visible)
     {
         auto it = std::lower_bound(data.begin(), data.end(), code, [](const FilterItem& item, uint16_t code) { return item.code < code; });
         if (it != data.end()) {

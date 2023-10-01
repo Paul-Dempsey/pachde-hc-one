@@ -1,6 +1,6 @@
 #pragma once
-#include "plugin.hpp"
-#include "colors.hpp"
+#include "../plugin.hpp"
+#include "../colors.hpp"
 #include "components.hpp"
 #include "tip_widget.hpp"
 

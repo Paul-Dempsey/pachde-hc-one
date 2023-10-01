@@ -63,11 +63,6 @@ std::string Preset::categoryName()
     return CategoryCode(primaryCategory()).to_string();
 }
 
-void Preset::nada()
-{
-    number = number;
-}
-
 bool Preset::is_same_preset(const LivePreset& other)
 {
     if ((bank_hi == other.bank_hi) 

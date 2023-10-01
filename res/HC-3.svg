@@ -4,10 +4,10 @@ xmlns="http://www.w3.org/2000/svg"
 xmlns:svg="http://www.w3.org/2000/svg">
 <g id="HC-3">
     <rect id="panel" style="fill:#101010" x="0" y="0" width="90" height="380" />
-    <g style="fill:none;stroke-width:.5;stroke:#a0a0a0" id="g139">
-        <line x1="2.5" y1="35" x2="87.5" y2="35" id="line133" />
-        <line x1="2.5" y1="200" x2="87.5" y2="200" id="line135" />
-        <line x1="2.5" y1="365" x2="87.5" y2="365" id="line137" />
+    <g style="fill:none;stroke-width:.5;stroke:#a0a0a0">
+        <line x1="2.5" y1="35" x2="87.5" y2="35" />
+        <line x1="2.5" y1="200" x2="87.5" y2="200" />
+        <line x1="2.5" y1="365" x2="87.5" y2="365" />
     </g>
     <g aria-label="HC-3" style="fill:#d0d0d0" transform="translate(-15)" id="g145">
         <!-- 20pt Garamond -->

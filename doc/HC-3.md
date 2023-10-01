@@ -1,4 +1,4 @@
-# HC-3
+# Module HC-3
 
 HC-3 is a companion for HC-1, offering easy access for up to 16 HC-1 favorites files.
 If you want access to more than 16, just add another instance of HC-3.

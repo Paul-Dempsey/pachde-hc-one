@@ -1,6 +1,6 @@
 #include "HC-1.hpp"
 #include "HC-1-layout.hpp"
-#include "../em_pedal.hpp"
+
 namespace pachde {
 //#define SHOW_PRESET0 // debug: show preset0 on module
 
@@ -64,42 +64,42 @@ void Hc1ModuleWidget::drawDSP(NVGcontext* vg)
 
 void Hc1ModuleWidget::drawStatusDots(NVGcontext* vg)
 {
+    if (my_module) { return; }
+
     float left = 60.f;
     float spacing = 6.25f;
     float y = box.size.y - 7.5f;
 
-    if (!my_module) {
-        // note
-        Dot(vg, 41.f, y, gray_light, false);
+    // note
+    Dot(vg, 41.f, y, gray_light, false);
 
-        auto co = InitStateColor(InitState::Complete);
-        //device_output_state
-        Dot(vg, left, y, co);
-        left += spacing;
-        // device_input_state
-        Dot(vg, left, y, co);
-        left += spacing;
-        //eagan matrix
-        Dot(vg, left, y, blue_light);
-        left += spacing;
-        //system_preset_state
-        Dot(vg, left, y, co);
-        left += spacing;
-        //user_preset_state
-        Dot(vg, left, y, co);
-        left += spacing;
-        //config_state
-        Dot(vg, left, y, co);
-        left += spacing;
-        //saved_preset_state
-        Dot(vg, left, y, co);
-        left += spacing;
-        //request_updates_state
-        Dot(vg, left, y, co);
-        left += spacing;
-        //handshake
-        Dot(vg, left, y, co);
-    }
+    auto co = InitStateColor(InitState::Complete);
+    //device_output_state
+    Dot(vg, left, y, co);
+    left += spacing;
+    // device_input_state
+    Dot(vg, left, y, co);
+    left += spacing;
+    //eagan matrix
+    Dot(vg, left, y, blue_light);
+    left += spacing;
+    //system_preset_state
+    Dot(vg, left, y, co);
+    left += spacing;
+    //user_preset_state
+    Dot(vg, left, y, co);
+    left += spacing;
+    //config_state
+    Dot(vg, left, y, co);
+    left += spacing;
+    //saved_preset_state
+    Dot(vg, left, y, co);
+    left += spacing;
+    //request_updates_state
+    Dot(vg, left, y, co);
+    left += spacing;
+    //handshake
+    Dot(vg, left, y, co);
 }
 
 void Hc1ModuleWidget::drawLayer(const DrawArgs& args, int layer)
@@ -195,7 +195,7 @@ void drawPedalAssignment(NVGcontext* vg, float x, float y, char ped_char, uint8_
     auto text =  format_string("p%c %s", ped_char, ShortPedalAssignment(ped).c_str());
     nvgTextAlign(vg, NVGalign::NVG_ALIGN_LEFT);
     nvgText(vg, PRESET_RIGHT + 1.f, y, text.c_str(), nullptr);
-    Line(vg, x, y+1, x, y+1 - ped_value/16.f, GetStockColor(StockColor::Sea_green_Dark), 1.5f);
+    Line(vg, x, y+1, x, y+1 - (ped_value * 10.f / 255.f), GetStockColor(StockColor::Sea_green_Dark), 1.5f);
 }
 
 void Hc1ModuleWidget::drawPedals(NVGcontext* vg, std::shared_ptr<rack::window::Font> font, bool stockPedals)
@@ -205,16 +205,16 @@ void Hc1ModuleWidget::drawPedals(NVGcontext* vg, std::shared_ptr<rack::window::F
         drawPedalAssignment(vg, box.size.x - 3.f, PRESET_BOTTOM - 18.f, '1', 64, 0);
         drawPedalAssignment(vg, box.size.x - 3.f, PRESET_BOTTOM - 4.5f, '2', 66, 0);
     } else {
-        auto ped1 = my_module->ch15_cc_value[52];
-        auto ped2 = my_module->ch15_cc_value[53];
+        auto ped1 = my_module->pedal1.cc;
+        auto ped2 = my_module->pedal2.cc;
         if (ped1 == ped2) {
             drawPedalKnobAssignment(vg, ped1, "1,2");
         } else {
             drawPedalKnobAssignment(vg, ped1, "1");
             drawPedalKnobAssignment(vg, ped2, "2");
         }
-        drawPedalAssignment(vg, box.size.x - 3.f, PRESET_BOTTOM - 18.f, '1', ped1, my_module->ch0_cc_value[ped1]);
-        drawPedalAssignment(vg, box.size.x - 3.f, PRESET_BOTTOM - 4.5f, '2', ped2, my_module->ch0_cc_value[ped2]);
+        drawPedalAssignment(vg, box.size.x - 3.f, PRESET_BOTTOM - 18.f, '1', ped1, my_module->pedal1.value);
+        drawPedalAssignment(vg, box.size.x - 3.f, PRESET_BOTTOM - 4.5f, '2', ped2, my_module->pedal2.value);
     }
 }
 

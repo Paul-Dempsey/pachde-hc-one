@@ -1,7 +1,7 @@
 #pragma once
 #ifndef TUNING_UI_HPP_INCLUDED
 #define TUNING_UI_HPP_INCLUDED
-#include "rack.hpp"
+#include <rack.hpp>
 #include "HC-2.hpp"
 #include "../em_types.hpp"
 using namespace ::rack;

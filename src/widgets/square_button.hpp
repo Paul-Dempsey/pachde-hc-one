@@ -1,8 +1,8 @@
 #pragma once
 #ifndef SQUARE_BUTTON_HPP_INCLUDED
 #define SQUARE_BUTTON_HPP_INCLUDED
-#include "plugin.hpp"
-#include "colors.hpp"
+#include "../plugin.hpp"
+#include "../colors.hpp"
 #include "tip_widget.hpp"
 
 namespace pachde {

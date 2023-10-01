@@ -1,11 +1,12 @@
 #include "HC-2.hpp"
-#include "tuning_ui.hpp"
-#include "../cc_param.hpp"
 #include "../colors.hpp"
-#include "../components.hpp"
-#include "../module_broker.hpp"
 #include "../misc.hpp"
+#include "../module_broker.hpp"
 #include "../text.hpp"
+#include "../widgets/cc_param.hpp"
+#include "../widgets/components.hpp"
+#include "../widgets/pedal_param.hpp"
+#include "tuning_ui.hpp"
 
 namespace pachde {
 
@@ -28,18 +29,19 @@ Hc2Module::Hc2Module()
         });
     configTuningParam(this, P_ROUND_TUNING);
 
+    configPedalParam(0, PedalAssign::Sustain, this, Params::P_PEDAL1);
+    configPedalParam(1, PedalAssign::Sostenuto, this, Params::P_PEDAL2);
+
     //configParam(P_TEST, 0.f, 1.f, .5f, "Test");
 }
 
 Hc2Module::~Hc2Module()
 {
-    if (partner_subscribed)
-    {
-        auto partner = partner_binding.getPartner();
-        if (partner){
-            partner->unsubscribeHcEvents(this);
-            partner_subscribed = false;
-        }
+    if (!partner_subscribed) return;
+    auto partner = partner_binding.getPartner();
+    if (partner){
+        partner->unsubscribeHcEvents(this);
+        partner_subscribed = false;
     }
 }
 
@@ -51,9 +53,24 @@ Hc1Module* Hc2Module::getPartner()
             partner->subscribeHcEvents(this);
             partner_subscribed = true;
         }
-        return partner;
     }
-    return nullptr;
+    return partner;
+}
+
+void Hc2Module::onPedalChanged(const PedalChangedEvent& e)
+{
+    PedalParamQuantity* pq = nullptr;
+    switch (e.pedal.jack) {
+    case 0: pq = static_cast<PedalParamQuantity*>(getParamQuantity((Params::P_PEDAL1))); break;
+    case 1: pq = static_cast<PedalParamQuantity*>(getParamQuantity((Params::P_PEDAL2))); break;
+    default: break;
+    }
+    if (pq) {
+        pq->setAssignSilent(PedalAssignFromCC(e.pedal.cc));
+    }
+    if (ui_event_sink) {
+        ui_event_sink->onPedalChanged(e);
+    }
 }
 
 void Hc2Module::onPresetChanged(const PresetChangedEvent& e)
@@ -167,11 +184,84 @@ void Hc2Module::processCV(int paramId)
     }
 }
 
-void Hc2Module::syncParam(int paramId)
+void Hc2Module::syncCCParam(int paramId)
 {
     auto pq = dynamic_cast<CCParamQuantity*>(getParamQuantity(paramId));
     if (pq) {
         pq->syncValue();
+    }
+}
+
+void Hc2Module::processControls()
+{
+    if (!control_rate.process()) { return; }
+
+    {
+        Hc1Module * partner = nullptr;
+        auto pq = dynamic_cast<PedalParamQuantity*>(getParamQuantity(Params::P_PEDAL1));
+        assert(pq);
+        if (pq->syncValue()) {
+            partner = getPartner();
+            if (partner) {
+                partner->pedal1.cc = pq->last_cc;
+                if (ui_event_sink) {
+                    ui_event_sink->onPedalChanged(PedalChangedEvent{partner->pedal1});
+                }
+            }
+        }
+
+        pq = dynamic_cast<PedalParamQuantity*>(getParamQuantity(Params::P_PEDAL2));
+        assert(pq);
+        if (pq->syncValue()) {
+            if (!partner) { partner = getPartner(); }
+            if (partner) {
+                partner->pedal2.cc = pq->last_cc;
+                if (ui_event_sink) {
+                    ui_event_sink->onPedalChanged(PedalChangedEvent{partner->pedal2});
+                }
+            }
+        }
+    }
+
+    {
+        auto pq = dynamic_cast<CCParamQuantity*>(getParamQuantity(Params::P_ROUND_RATE));
+        assert(pq);
+        auto rr = pq->valueToSend();
+        if (pq->last_value != rr) {
+            rounding.rate = rr;
+            pushRounding();
+            pq->syncValue();
+        }
+    }
+    {
+        bool ri = getParamQuantity(Params::P_ROUND_INITIAL)->getValue() >= .5f;
+        getLight(Lights::L_ROUND_INITIAL).setBrightness(1.0f * rounding.initial);
+        if (rounding.initial != ri) {
+            rounding.initial = ri;
+            pushRounding();
+            sendControlChange(EM_MasterChannel, EMCC_RoundInitial, ri * 127);
+        }
+    }
+
+    {
+        RoundKind kind = static_cast<RoundKind>(static_cast<uint8_t>(getParamQuantity(P_ROUND_KIND)->getValue()));
+        if (kind != rounding.kind) {
+            rounding.kind = kind;
+            pushRounding();
+            auto partner = getPartner();
+            uint8_t rev = partner ? partner->reverse_surface : 0;
+            sendControlChange(EM_SettingsChannel, EMCC_Reverse_Rounding, (static_cast<uint8_t>(kind) << 1) | rev);
+        }
+    }
+
+    {
+        auto tq = dynamic_cast<TuningParamQuantity*>(getParamQuantity(P_ROUND_TUNING));
+        Tuning tuning = tq->getTuning();
+        if (tuning != rounding.tuning) {
+            rounding.tuning = tuning;
+            pushRounding();
+            sendControlChange(EM_SettingsChannel, EMCC_TuningGrid, tuning);
+        }
     }
 }
 
@@ -191,43 +281,8 @@ void Hc2Module::process(const ProcessArgs& args)
             pq->setValue(1.0f * ri);
         }
     }
+    processControls();
 
-    if (control_rate.process()) {
-
-        auto pq = dynamic_cast<CCParamQuantity*>(getParamQuantity(Params::P_ROUND_RATE));
-        assert(pq);
-        auto rr = pq->valueToSend();
-        if (pq->last_value != rr) {
-            rounding.rate = rr;
-            pushRounding();
-            pq->syncValue();
-        }
-
-        bool ri = getParamQuantity(Params::P_ROUND_INITIAL)->getValue() >= .5f;
-        getLight(Lights::L_ROUND_INITIAL).setBrightness(1.0f * rounding.initial);
-        if (rounding.initial != ri) {
-            rounding.initial = ri;
-            pushRounding();
-            sendControlChange(EM_MasterChannel, EMCC_RountInitial, ri * 127);
-        }
-
-        RoundKind kind = static_cast<RoundKind>(static_cast<uint8_t>(getParamQuantity(P_ROUND_KIND)->getValue()));
-        if (kind != rounding.kind) {
-            rounding.kind = kind;
-            pushRounding();
-            auto partner = getPartner();
-            uint8_t rev = partner ? partner->reverse_surface : 0;
-            sendControlChange(EM_SettingsChannel, EMCC_Reverse_Rounding, (static_cast<uint8_t>(kind) << 1) | rev);
-        }
-
-        auto tq = dynamic_cast<TuningParamQuantity*>(getParamQuantity(P_ROUND_TUNING));
-        Tuning tuning = tq->getTuning();
-        if (tuning != rounding.tuning) {
-            rounding.tuning = tuning;
-            pushRounding();
-            sendControlChange(EM_SettingsChannel, EMCC_TuningGrid, tuning);
-        }
-    }
 }
 
 // ISendMidi

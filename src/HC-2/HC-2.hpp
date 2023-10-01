@@ -9,6 +9,7 @@
 #include "../module_broker.hpp"
 #include "../plugin.hpp"
 #include "../presets.hpp"
+#include "../widgets/symbol_widget.hpp"
 
 // #define VERBOSE_LOG
 // #include "../debug_log.hpp"
@@ -16,6 +17,7 @@
 using namespace em_midi;
 namespace pachde {
 
+using Symbol = SymbolWidget::Symbol;
 struct Hc2ModuleWidget;
 
 struct Hc2Module : Module, ISendMidi, IHandleHcEvents
@@ -26,9 +28,10 @@ struct Hc2Module : Module, ISendMidi, IHandleHcEvents
         P_ROUND_INITIAL, // 0..1 cc 28
         P_ROUND_KIND,    // 0..3 ch16 cc61, but includes reverse surface bit
         P_ROUND_TUNING,  // 0..69
-        //P_ROUND_EQUAL,
         P_ROUND_RATE_REL,
-        //P_TEST,
+
+        P_PEDAL1,
+        P_PEDAL2,
         NUM_PARAMS,
     };
     enum Inputs
@@ -60,7 +63,7 @@ struct Hc2Module : Module, ISendMidi, IHandleHcEvents
     RateTrigger control_rate;
     rack::dsp::SchmittTrigger round_initial_trigger;
 
-    Hc2Module();
+     explicit Hc2Module();
     virtual ~Hc2Module();
 
     void onSampleRateChange() override {
@@ -72,8 +75,9 @@ struct Hc2Module : Module, ISendMidi, IHandleHcEvents
 
     void pullRounding(Hc1Module * partner = nullptr);
     void pushRounding(Hc1Module * partner = nullptr);
-    void syncParam(int paramId);
+    void syncCCParam(int paramId);
     void processCV(int paramId);
+    void processControls();
     void process(const ProcessArgs& args) override;
 
     // ISendMidi
@@ -88,6 +92,7 @@ struct Hc2Module : Module, ISendMidi, IHandleHcEvents
 
     // IHandleHcEvents
     void onPresetChanged(const PresetChangedEvent& e) override;
+    void onPedalChanged(const PedalChangedEvent& e) override;
     void onRoundingChanged(const RoundingChangedEvent& e) override;
     void onDeviceChanged(const DeviceChangedEvent& e) override;
     void onDisconnect(const DisconnectEvent& e) override;
@@ -99,6 +104,12 @@ struct Hc2ModuleWidget : ModuleWidget, IHandleHcEvents
     StaticTextLabel* device_label = nullptr;
     DynamicTextLabel* rounding_summary = nullptr;
 
+    SymbolWidget * pedal1_type = nullptr;
+    StaticTextLabel * pedal1_assign = nullptr;
+
+    SymbolWidget * pedal2_type = nullptr;
+    StaticTextLabel * pedal2_assign = nullptr;
+
     explicit Hc2ModuleWidget(Hc2Module * module);
     virtual ~Hc2ModuleWidget() {
         if (my_module) {
@@ -107,9 +118,11 @@ struct Hc2ModuleWidget : ModuleWidget, IHandleHcEvents
     }
     Hc1Module* getPartner();
     void createRoundingUI(float x, float y);
+    void createPedalUI(float x, float y);
 
     // IHandleHcEvents
     void onPresetChanged(const PresetChangedEvent& e) override;
+    void onPedalChanged(const PedalChangedEvent& e) override;
     void onRoundingChanged(const RoundingChangedEvent& e) override;
     void onDeviceChanged(const DeviceChangedEvent& e) override;
     void onDisconnect(const DisconnectEvent& e) override;

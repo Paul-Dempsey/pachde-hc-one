@@ -2,7 +2,7 @@
 #ifndef SWITCH_VERT_4_HPP_INCLUDED
 #define SWITCH_VERT_4_HPP_INCLUDED
 #include <rack.hpp>
-#include <plugin.hpp>
+#include "../plugin.hpp"
 using namespace ::rack;
 namespace pachde
 {

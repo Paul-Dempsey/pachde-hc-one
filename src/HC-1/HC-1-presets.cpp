@@ -179,16 +179,9 @@ void Hc1Module::loadSystemPresets()
 void Hc1Module::favoritesFromPresets()
 {
     favorite_presets.clear();
-    for (auto p: user_presets) {
-        if (p->favorite) {
-            favorite_presets.push_back(p);
-        }
-    }
-    for (auto p: system_presets) {
-        if (p->favorite) {
-            favorite_presets.push_back(p);
-        }
-    }
+    auto back_insert = std::back_inserter(favorite_presets);
+    std::copy_if(user_presets.cbegin(), user_presets.cend(), back_insert, [](const std::shared_ptr<Preset> & p){ return p->favorite; });
+    std::copy_if(system_presets.cbegin(), system_presets.cend(), back_insert, [](const std::shared_ptr<Preset> & p){ return p->favorite; });
     sortFavorites();
     apply_favorite_state = InitState::Complete;
 }
@@ -196,7 +189,7 @@ void Hc1Module::favoritesFromPresets()
 void Hc1Module::userPresetsToJson(json_t* root)
 {
     auto device = deviceName();
-    json_object_set_new(root, "device", json_stringn(deviceName().c_str(), deviceName().size()));
+    json_object_set_new(root, "device", json_stringn(device.c_str(), device.size()));
 
     auto jaru = json_array();
     for (auto preset: user_presets) {
@@ -208,7 +201,7 @@ void Hc1Module::userPresetsToJson(json_t* root)
 void Hc1Module::systemPresetsToJson(json_t* root)
 {
     auto device = deviceName();
-    json_object_set_new(root, "device", json_stringn(deviceName().c_str(), deviceName().size()));
+    json_object_set_new(root, "device", json_stringn(device.c_str(), device.size()));
 
     auto jars = json_array();
     for (auto preset: system_presets) {
@@ -239,7 +232,7 @@ json_t* Hc1Module::favoritesToJson()
 {
     json_t* root = json_object();
     auto device = FilterDeviceName(deviceName());
-    json_object_set_new(root, "device", json_stringn(deviceName().c_str(), deviceName().size()));
+    json_object_set_new(root, "device", json_stringn(device.c_str(), device.size()));
     auto ar = json_array();
     for (auto preset: system_presets) {
         if (preset->favorite) {
@@ -359,13 +352,13 @@ std::shared_ptr<Preset> Hc1Module::findDefinedPresetByName(std::string name)
 {
     if (name.empty()) return nullptr;
     if (!user_presets.empty()) {
-        auto it = std::find_if(user_presets.begin(), user_presets.end(), [name](std::shared_ptr<Preset>& p) { return p->name == name; });
+        auto it = std::find_if(user_presets.begin(), user_presets.end(), [name](const std::shared_ptr<Preset> const & p) { return p->name == name; });
         if (it != user_presets.end()) {
             return *it;
         }
     }
     if (!system_presets.empty()) {
-        auto it = std::find_if(system_presets.begin(), system_presets.end(),[name](std::shared_ptr<Preset>& p) { return p->name == name; });
+        auto it = std::find_if(system_presets.begin(), system_presets.end(),[name](const std::shared_ptr<Preset>const & p) { return p->name == name; });
         if (it != system_presets.end()) {
             return *it;
         }
@@ -377,26 +370,26 @@ std::shared_ptr<Preset> Hc1Module::findDefinedPreset(std::shared_ptr<Preset> pre
 {
     if (preset) {
         if (!user_presets.empty()) {
-            auto it = std::find_if(user_presets.begin(), user_presets.end(), [preset](std::shared_ptr<Preset>& p) { return p->is_same_preset(*preset); });
+            auto it = std::find_if(user_presets.begin(), user_presets.end(), [preset](const std::shared_ptr<Preset> const& p) { return p->is_same_preset(*preset); });
             if (it != user_presets.end()) {
                 return *it;
             }
         }
         if (!system_presets.empty()) {
-            auto it = std::find_if(system_presets.begin(), system_presets.end(), [preset](std::shared_ptr<Preset>& p) { return p->is_same_preset(*preset); });
+            auto it = std::find_if(system_presets.begin(), system_presets.end(), [preset](const std::shared_ptr<Preset> const & p) { return p->is_same_preset(*preset); });
             if (it != system_presets.end()) {
                 return *it;
             }
         }
     } else {
         if (!user_presets.empty()) {
-            auto it = std::find_if(user_presets.begin(), user_presets.end(), [this](std::shared_ptr<Preset>& p) { return p->is_same_preset(preset0); });
+            auto it = std::find_if(user_presets.begin(), user_presets.end(), [this](const std::shared_ptr<Preset>const & p) { return p->is_same_preset(preset0); });
             if (it != user_presets.end()) {
                 return *it;
             }
         }
         if (!system_presets.empty()) {
-            auto it = std::find_if(system_presets.begin(), system_presets.end(), [this](std::shared_ptr<Preset>& p) { return p->is_same_preset(preset0); });
+            auto it = std::find_if(system_presets.begin(), system_presets.end(), [this](const std::shared_ptr<Preset>const & p) { return p->is_same_preset(preset0); });
             if (it != system_presets.end()) {
                 return *it;
             }
@@ -428,7 +421,7 @@ void Hc1Module::numberFavorites()
     }
 }
 
-void expandNumbers(std::vector<std::shared_ptr<pachde::Preset>>& presets, int spacing)
+void expandNumbers(std::vector<std::shared_ptr<pachde::Preset>>const & presets, int spacing)
 {
     int n = spacing;
     for (auto p: presets) {

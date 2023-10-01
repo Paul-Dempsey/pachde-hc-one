@@ -112,8 +112,6 @@ struct Preset
     void ensure_category_list();
     const std::vector<uint16_t>& get_category_list();
 
-    void nada(); // debugging
-
     bool isSysPreset() { return 127 == bank_hi; }
 
     std::string meta(); // cached

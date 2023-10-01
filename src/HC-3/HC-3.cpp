@@ -106,7 +106,7 @@ void Hc3Module::onRandomize()
 
 void Hc3Module::useCurrentFavoriteFile(int id)
 {
-    auto partner = getPartner();
+    const Hc1Module* partner = getPartner();
     if (!partner) return;
     files[id] = partner->favoritesFile;
     if (ui_event_sink) {

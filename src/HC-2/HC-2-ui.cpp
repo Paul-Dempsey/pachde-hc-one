@@ -1,18 +1,22 @@
 #include "HC-2.hpp"
-#include "tuning_ui.hpp"
-#include "../cc_param.hpp"
 #include "../colors.hpp"
-#include "../components.hpp"
 #include "../misc.hpp"
-#include "../port.hpp"
-#include "../small_push.hpp"
-#include "../switch_4.hpp"
 #include "../text.hpp"
+#include "../widgets/cc_param.hpp"
+#include "../widgets/components.hpp"
+#include "../widgets/pedal_param.hpp"
+#include "../widgets/port.hpp"
+#include "../widgets/small_push.hpp"
+#include "../widgets/switch_4.hpp"
+#include "tuning_ui.hpp"
 
 namespace pachde {
 
+#define SHOW_RCC_REFERENCE // show reference lines at key cc values
+
 using Hc2P = Hc2Module::Params;
 using Hc2I = Hc2Module::Inputs;
+using Hc2O = Hc2Module::Outputs;
 using Hc2L = Hc2Module::Lights;
 
 constexpr const float PAD = 2.f;
@@ -22,7 +26,6 @@ constexpr const float ROUND_BOX_LEFT = 7.5f;
 constexpr const float ROUND_BOX_WIDTH = 105.f;
 constexpr const float ROUND_BOX_HEIGHT = 60.f;
 constexpr const float ROUND_BOX_HALF = 110.f * .5f;
-//constexpr const float ROUND_BOX_QUARTER = ROUND_BOX_HALF * .5f;
 constexpr const float KNOB_RADIUS = 12.f;
 constexpr const float HALF_KNOB = KNOB_RADIUS *.5f;
 constexpr const float REL_OFFSET = 20.f;
@@ -32,6 +35,11 @@ constexpr const float ROUND_KNOB_ROW = 32.5f;
 constexpr const float ROUND_COL1 = ROUND_BOX_HALF - KNOB_RADIUS - 3.f * PAD;
 constexpr const float ROUND_COL2 = ROUND_BOX_HALF + KNOB_RADIUS + 2.f * PAD;
 constexpr const float ROUND_COL3 = ROUND_BOX_WIDTH - KNOB_RADIUS + PAD;
+
+constexpr const float PEDAL_BOX_TOP = 35.f;
+constexpr const float PEDAL_BOX_LEFT = ROUND_BOX_LEFT + ROUND_BOX_WIDTH + 7.5f;
+constexpr const float PEDAL_BOX_WIDTH = 125.f;
+constexpr const float PEDAL_BOX_HEIGHT =ROUND_BOX_HEIGHT;
 
 inline uint8_t GetSmallParamValue(rack::app::ModuleWidget* w, int id, uint8_t default_value = 0) {
     auto p = w->getParam(id);
@@ -89,6 +97,27 @@ void Hc2ModuleWidget::createRoundingUI(float x, float y)
     addChild(rounding_summary);
 }
 
+void Hc2ModuleWidget::createPedalUI(float x, float y)
+{
+    y += PAD;
+    addChild(createStaticTextLabel<StaticTextLabel>(Vec(x + 30.f, y), 30.f, "Pedal 1", TextAlignment::Center));
+    addChild(createStaticTextLabel<StaticTextLabel>(Vec(x + 92.f, y), 30.f, "Pedal 2", TextAlignment::Center));
+
+    x += 7.5;
+    y += 16.f;
+    addChild(pedal1_type = createSymbolWidget(x, y + 5.5f, Symbol::NoPedal));
+
+    x += 35.f;
+    addChild(createParamCentered<PedalKnob>(Vec(x, y + 10.f), module, Hc2P::P_PEDAL1));
+    addChild(pedal1_assign = createStaticTextLabel<StaticTextLabel>(Vec(x, y + 24.f), 60.f, "Sustain", TextAlignment::Center, 10.f, true));
+
+    x += 25.f;
+    addChild(pedal2_type = createSymbolWidget(x, y + 5.5f, Symbol::NoPedal));
+    x += 35.f;
+    addChild(createParamCentered<PedalKnob>(Vec(x, y + 10.f), module, Hc2P::P_PEDAL2));
+    addChild(pedal2_assign = createStaticTextLabel<StaticTextLabel>(Vec(x, y + 24.f), 60.f, "Sostenuto", TextAlignment::Center, 10.f, true));
+}
+
 Hc2ModuleWidget::Hc2ModuleWidget(Hc2Module * module)
 {
     my_module = module;
@@ -100,15 +129,50 @@ Hc2ModuleWidget::Hc2ModuleWidget(Hc2Module * module)
 
     // device name in title
     device_label = createStaticTextLabel<StaticTextLabel>(
-        Vec(62.f, 11.25f), 180.f, "", TextAlignment::Left, 9.f, false );
+        Vec(7.f, 21.f), 180.f, "", TextAlignment::Left, 12.f, false, GetStockColor(StockColor::pachde_blue_medium));
     addChild(device_label);
 
     createRoundingUI(ROUND_BOX_LEFT, ROUND_BOX_TOP);
+    createPedalUI(PEDAL_BOX_LEFT, PEDAL_BOX_TOP);
+}
+
+SymbolWidget::Symbol SymbolForPedal(PedalType pedal)
+{
+    switch (pedal) {
+    case PedalType::NoPedal: return Symbol::NoPedal;
+    case PedalType::SwitchPedal: return Symbol::SwitchPedal;
+    case PedalType::ExpressionPedal: return Symbol::ExpressionPedal;
+    case PedalType::DamperPedal: return Symbol::DamperPedal;
+    case PedalType::TriValuePedal: return Symbol::TriValuePedal;
+    case PedalType::CVPedal: return Symbol::CVPedal;
+    case PedalType::PotPedal: return Symbol::PotPedal;
+    default:
+        return Symbol::OtherPedal;
+    }
 }
 
 void Hc2ModuleWidget::onPresetChanged(const PresetChangedEvent& e)
 {
+    if (my_module) {
+        static_cast<PedalParamQuantity*>(my_module->getParamQuantity(Hc2P::P_PEDAL1))->setEnabled(true);
+        static_cast<PedalParamQuantity*>(my_module->getParamQuantity(Hc2P::P_PEDAL2))->setEnabled(true);
+    }
     rounding_summary->modified();
+}
+
+void Hc2ModuleWidget::onPedalChanged(const PedalChangedEvent& e)
+{
+    switch (e.pedal.jack) {
+    case 0: 
+        pedal1_type->setSymbol(SymbolForPedal(e.pedal.type)); 
+        pedal1_assign->text(LongPedalAssignment(e.pedal.cc));
+        break;
+    case 1:
+        pedal2_type->setSymbol(SymbolForPedal(e.pedal.type));
+        pedal2_assign->text(LongPedalAssignment(e.pedal.cc));
+        break;
+    default: break;
+    }
 }
 
 void Hc2ModuleWidget::onRoundingChanged(const RoundingChangedEvent& e)
@@ -132,9 +196,10 @@ Hc1Module* Hc2ModuleWidget::getPartner()
     return my_module->getPartner();
 }
 
+NVGcolor ref_line_color = nvgHSLAf(210.f/360.f, .5f, .5f, .5f);
+
 void drawMap(NVGcontext* vg, uint8_t * map, float x, float y)
 {
-    auto ref_line_color = nvgHSLAf(210.f/360.f, .5f, .5f, .5f);
     Line (vg, x + 1.25f + 32.f, y, x + 1.25f + 32.f, y + 17.f, ref_line_color, .5f);
     Line (vg, x + 1.25f + 64.f, y, x + 1.25f + 64.f, y + 17.f, ref_line_color, .5f);
     BoxRect(vg, x, y, 254, 18, RampGray(G_35), .5f);
@@ -147,12 +212,21 @@ void drawMap(NVGcontext* vg, uint8_t * map, float x, float y)
     }
 }
 
+#ifdef SHOW_RCC_REFERENCE
+std::vector<uint8_t> reference_points = { EMCC_Download };
+#endif
+
 void Hc2ModuleWidget::drawCCMap(const DrawArgs& args, Hc1Module * partner)
 {
     assert(partner);
     auto x = box.size.x * .5f - 126.5f;
-    //Line(args.vg, x + 1 + 117, 10.f, x + 1 + 117, 48.f, blue_light);
-    drawMap(args.vg, partner->ch0_cc_value, x, box.size.y - 15.f - 18.f - 18.f);
+    auto y0 = box.size.y - 15.f - 18.f - 18.f; //51
+#ifdef SHOW_RCC_REFERENCE
+    for (auto n: reference_points) {
+        Line (args.vg, x + 1.25f + 2.f*n, y0, x + 1.25f + 2.f*n, y0 - 5.f, GetStockColor(StockColor::Magenta), .75f);
+    }
+#endif
+    drawMap(args.vg, partner->ch0_cc_value, x, y0);
     drawMap(args.vg, partner->ch15_cc_value, x, box.size.y - 15.f - 18.f);
 }
 
@@ -162,11 +236,27 @@ void Hc2ModuleWidget::draw(const DrawArgs& args)
 
     auto vg = args.vg;
     BoxRect(vg, ROUND_BOX_LEFT, ROUND_BOX_TOP, ROUND_BOX_WIDTH, ROUND_BOX_HEIGHT, RampGray(G_40), 0.5f);
+    BoxRect(vg, PEDAL_BOX_LEFT, PEDAL_BOX_TOP, PEDAL_BOX_WIDTH, PEDAL_BOX_HEIGHT, RampGray(G_40), 0.5f);
 
     auto partner = getPartner();
     if (partner) {
         drawCCMap(args, partner);
+
+        // system_data
+        // auto font = GetPluginFontRegular();
+        // SetTextStyle(args.vg, font, RampGray(G_90), 10.f);
+        // std::string data;
+        // if (partner->system_data.empty()) {
+        //     data = "(empty)";
+        // } else {
+        //     for (auto b:partner->system_data) {
+        //         auto hex = format_string("%02x", b);
+        //         data.append(hex);
+        //     }
+        // }
+        // nvgText(args.vg, 7.5, box.size.y - 64, data.c_str(), nullptr);
     }
+
 }
 
 void Hc2ModuleWidget::appendContextMenu(Menu *menu)

@@ -27,7 +27,7 @@ std::string format_string(const char *fmt, ...)
 bool alpha_order(const std::string& a, const std::string& b)
 {
     if (a.empty()) return false;
-    if (!a.empty() && b.empty()) return true;
+    if (b.empty()) return true;
     auto ita = a.cbegin();
     auto itb = b.cbegin();
     for (; ita != a.cend() && itb != b.cend(); ++ita, ++itb) {
