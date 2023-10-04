@@ -16,6 +16,9 @@ struct TipHolder
 
     void setText(std::string text) {
         tip_text = text;
+        if (tip) {
+            tip->onChange(widget::Widget::ChangeEvent{});
+        }
     }
 
     void createTip() {
@@ -94,13 +97,12 @@ struct TipWidget : OpaqueWidget {
         }
     }
 
-    virtual void appendContextMenu(ui::Menu* menu) {}
-
     void createContextMenu() {
         ui::Menu* menu = createMenu();
     	appendContextMenu(menu);
     }
 
+    virtual void appendContextMenu(ui::Menu* menu) {}
 };
 
 }

@@ -105,14 +105,14 @@ void Hc2ModuleWidget::createPedalUI(float x, float y)
 
     x += 7.5;
     y += 16.f;
-    addChild(pedal1_type = createSymbolWidget(x, y + 5.5f, Symbol::NoPedal));
+    addChild(pedal1_type = createSymbolWidget<SymbolTipWidget>(x, y + 5.5f, Symbol::NoPedal));
 
     x += 35.f;
     addChild(createParamCentered<PedalKnob>(Vec(x, y + 10.f), module, Hc2P::P_PEDAL1));
     addChild(pedal1_assign = createStaticTextLabel<StaticTextLabel>(Vec(x, y + 24.f), 60.f, "Sustain", TextAlignment::Center, 10.f, true));
 
     x += 25.f;
-    addChild(pedal2_type = createSymbolWidget(x, y + 5.5f, Symbol::NoPedal));
+    addChild(pedal2_type = createSymbolWidget<SymbolTipWidget>(x, y + 5.5f, Symbol::NoPedal));
     x += 35.f;
     addChild(createParamCentered<PedalKnob>(Vec(x, y + 10.f), module, Hc2P::P_PEDAL2));
     addChild(pedal2_assign = createStaticTextLabel<StaticTextLabel>(Vec(x, y + 24.f), 60.f, "Sostenuto", TextAlignment::Center, 10.f, true));
@@ -127,13 +127,15 @@ Hc2ModuleWidget::Hc2ModuleWidget(Hc2Module * module)
     }
     setPanel(createPanel(asset::plugin(pluginInstance, "res/HC-2.svg")));
 
-    // device name in title
-    device_label = createStaticTextLabel<StaticTextLabel>(
-        Vec(7.f, 21.f), 180.f, "", TextAlignment::Left, 12.f, false, GetStockColor(StockColor::pachde_blue_medium));
-    addChild(device_label);
+    addChild(device_label = createStaticTextLabel<StaticTextLabel>(
+        Vec(7.f, 21.f), 180.f, "", TextAlignment::Left, 10.f, false, GetStockColor(StockColor::pachde_blue_medium)));
 
     createRoundingUI(ROUND_BOX_LEFT, ROUND_BOX_TOP);
     createPedalUI(PEDAL_BOX_LEFT, PEDAL_BOX_TOP);
+
+    auto x = box.size.x * .5f;
+    addChild(createCCMap<CCMap>(x, box.size.y - 24.f - 20.f, true, CCMapChannel::One, this));
+    addChild(createCCMap<CCMap>(x, box.size.y - 24.f, true, CCMapChannel::Sixteen, this));
 }
 
 SymbolWidget::Symbol SymbolForPedal(PedalType pedal)
@@ -196,39 +198,39 @@ Hc1Module* Hc2ModuleWidget::getPartner()
     return my_module->getPartner();
 }
 
-NVGcolor ref_line_color = nvgHSLAf(210.f/360.f, .5f, .5f, .5f);
+// NVGcolor ref_line_color = nvgHSLAf(210.f/360.f, .5f, .5f, .5f);
 
-void drawMap(NVGcontext* vg, uint8_t * map, float x, float y)
-{
-    Line (vg, x + 1.25f + 32.f, y, x + 1.25f + 32.f, y + 17.f, ref_line_color, .5f);
-    Line (vg, x + 1.25f + 64.f, y, x + 1.25f + 64.f, y + 17.f, ref_line_color, .5f);
-    BoxRect(vg, x, y, 254, 18, RampGray(G_35), .5f);
-    ++x;
-    y += 17.f;
-    for (auto n = 0; n < 127; ++n, ++map, x += 2) {
-        if (auto v = *map) {
-            Line(vg, x, y, x, y - v/8.f, RampGray(G_85), 1.6f);
-        }
-    }
-}
+// void drawMap(NVGcontext* vg, uint8_t * map, float x, float y)
+// {
+//     Line (vg, x + 1.25f + 32.f, y, x + 1.25f + 32.f, y + 17.f, ref_line_color, .5f);
+//     Line (vg, x + 1.25f + 64.f, y, x + 1.25f + 64.f, y + 17.f, ref_line_color, .5f);
+//     BoxRect(vg, x, y, 254, 18, RampGray(G_35), .5f);
+//     ++x;
+//     y += 17.f;
+//     for (auto n = 0; n < 127; ++n, ++map, x += 2) {
+//         if (auto v = *map) {
+//             Line(vg, x, y, x, y - v/8.f, RampGray(G_85), 1.6f);
+//         }
+//     }
+// }
 
-#ifdef SHOW_RCC_REFERENCE
-std::vector<uint8_t> reference_points = { EMCC_Download };
-#endif
+// #ifdef SHOW_RCC_REFERENCE
+// std::vector<uint8_t> reference_points = { EMCC_Download };
+// #endif
 
-void Hc2ModuleWidget::drawCCMap(const DrawArgs& args, Hc1Module * partner)
-{
-    assert(partner);
-    auto x = box.size.x * .5f - 126.5f;
-    auto y0 = box.size.y - 15.f - 18.f - 18.f; //51
-#ifdef SHOW_RCC_REFERENCE
-    for (auto n: reference_points) {
-        Line (args.vg, x + 1.25f + 2.f*n, y0, x + 1.25f + 2.f*n, y0 - 5.f, GetStockColor(StockColor::Magenta), .75f);
-    }
-#endif
-    drawMap(args.vg, partner->ch0_cc_value, x, y0);
-    drawMap(args.vg, partner->ch15_cc_value, x, box.size.y - 15.f - 18.f);
-}
+// void Hc2ModuleWidget::drawCCMap(const DrawArgs& args, Hc1Module * partner)
+// {
+//     assert(partner);
+//     auto x = box.size.x * .5f - 126.5f;
+//     auto y0 = box.size.y - 15.f - 18.f - 18.f; //51
+// #ifdef SHOW_RCC_REFERENCE
+//     for (auto n: reference_points) {
+//         Line (args.vg, x + 1.25f + 2.f*n, y0, x + 1.25f + 2.f*n, y0 - 5.f, GetStockColor(StockColor::Magenta), .75f);
+//     }
+// #endif
+//     drawMap(args.vg, partner->ch0_cc_value, x, y0);
+//     drawMap(args.vg, partner->ch15_cc_value, x, box.size.y - 15.f - 18.f);
+// }
 
 void Hc2ModuleWidget::draw(const DrawArgs& args)
 {
@@ -238,9 +240,9 @@ void Hc2ModuleWidget::draw(const DrawArgs& args)
     BoxRect(vg, ROUND_BOX_LEFT, ROUND_BOX_TOP, ROUND_BOX_WIDTH, ROUND_BOX_HEIGHT, RampGray(G_40), 0.5f);
     BoxRect(vg, PEDAL_BOX_LEFT, PEDAL_BOX_TOP, PEDAL_BOX_WIDTH, PEDAL_BOX_HEIGHT, RampGray(G_40), 0.5f);
 
-    auto partner = getPartner();
-    if (partner) {
-        drawCCMap(args, partner);
+    //auto partner = getPartner();
+    //if (partner) {
+    //    drawCCMap(args, partner);
 
         // system_data
         // auto font = GetPluginFontRegular();
@@ -255,7 +257,7 @@ void Hc2ModuleWidget::draw(const DrawArgs& args)
         //     }
         // }
         // nvgText(args.vg, 7.5, box.size.y - 64, data.c_str(), nullptr);
-    }
+    //}
 
 }
 

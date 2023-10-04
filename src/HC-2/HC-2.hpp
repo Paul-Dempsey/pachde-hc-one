@@ -10,6 +10,7 @@
 #include "../plugin.hpp"
 #include "../presets.hpp"
 #include "../widgets/symbol_widget.hpp"
+#include "cc_map_widget.hpp"
 
 // #define VERBOSE_LOG
 // #include "../debug_log.hpp"
@@ -63,7 +64,7 @@ struct Hc2Module : Module, ISendMidi, IHandleHcEvents
     RateTrigger control_rate;
     rack::dsp::SchmittTrigger round_initial_trigger;
 
-     explicit Hc2Module();
+    explicit Hc2Module();
     virtual ~Hc2Module();
 
     void onSampleRateChange() override {
@@ -100,21 +101,21 @@ struct Hc2Module : Module, ISendMidi, IHandleHcEvents
 
 struct Hc2ModuleWidget : ModuleWidget, IHandleHcEvents
 {
-    Hc2Module * my_module = nullptr;
+    Hc2Module* my_module = nullptr;
     StaticTextLabel* device_label = nullptr;
     DynamicTextLabel* rounding_summary = nullptr;
 
-    SymbolWidget * pedal1_type = nullptr;
-    StaticTextLabel * pedal1_assign = nullptr;
+    SymbolTipWidget* pedal1_type = nullptr;
+    StaticTextLabel* pedal1_assign = nullptr;
 
-    SymbolWidget * pedal2_type = nullptr;
-    StaticTextLabel * pedal2_assign = nullptr;
+    SymbolTipWidget* pedal2_type = nullptr;
+    StaticTextLabel* pedal2_assign = nullptr;
 
     explicit Hc2ModuleWidget(Hc2Module * module);
     virtual ~Hc2ModuleWidget() {
-        if (my_module) {
-            my_module->ui_event_sink = nullptr;
-        }
+        // if (my_module) {
+        //     my_module->ui_event_sink = nullptr;
+        // }
     }
     Hc1Module* getPartner();
     void createRoundingUI(float x, float y);
@@ -127,7 +128,7 @@ struct Hc2ModuleWidget : ModuleWidget, IHandleHcEvents
     void onDeviceChanged(const DeviceChangedEvent& e) override;
     void onDisconnect(const DisconnectEvent& e) override;
 
-    void drawCCMap(const DrawArgs& args, Hc1Module * partner);
+    //void drawCCMap(const DrawArgs& args, Hc1Module * partner);
     void draw(const DrawArgs& args) override;
     void appendContextMenu(Menu *menu) override;
 };

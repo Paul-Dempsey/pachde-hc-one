@@ -203,9 +203,10 @@ void Hc2Module::processControls()
         if (pq->syncValue()) {
             partner = getPartner();
             if (partner) {
-                partner->pedal1.cc = pq->last_cc;
+                auto pedal = partner->getPedal(0);
+                pedal.cc = pq->last_cc;
                 if (ui_event_sink) {
-                    ui_event_sink->onPedalChanged(PedalChangedEvent{partner->pedal1});
+                    ui_event_sink->onPedalChanged(PedalChangedEvent{pedal});
                 }
             }
         }
@@ -215,9 +216,10 @@ void Hc2Module::processControls()
         if (pq->syncValue()) {
             if (!partner) { partner = getPartner(); }
             if (partner) {
-                partner->pedal2.cc = pq->last_cc;
+                auto pedal = partner->getPedal(1);
+                pedal.cc = pq->last_cc;
                 if (ui_event_sink) {
-                    ui_event_sink->onPedalChanged(PedalChangedEvent{partner->pedal2});
+                    ui_event_sink->onPedalChanged(PedalChangedEvent{pedal});
                 }
             }
         }

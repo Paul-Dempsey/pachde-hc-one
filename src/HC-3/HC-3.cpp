@@ -114,7 +114,6 @@ void Hc3Module::useCurrentFavoriteFile(int id)
     }
 }
 
-
 json_t * Hc3Module::dataToJson()
 {
     auto root = json_object();

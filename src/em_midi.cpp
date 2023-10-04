@@ -377,6 +377,27 @@ const char * RecirculatorParameterName(EM_Recirculator r_type, int r)
     return "?!!?";
 }
 
+const char * HardwareName(EM_Hardware hw)
+{
+    switch (hw) {
+    default:
+    case EM_Hardware::Unknown:        return "Unknown";
+    case EM_Hardware::hw_LightFull:   return "Full (Light)";    // light action full, not UP version
+    case EM_Hardware::hw_LightHalf:   return "Half (Light)";    // light action, not UP version
+    case EM_Hardware::hw_ClassicFull: return "Full (Classic)";  // classic action full size
+    case EM_Hardware::hw_ClassicHalf: return "Half (Classic)";  // classic action half size
+    case EM_Hardware::hw_Mini:        return "ContinuuMini";          // ContinuuMini 
+    case EM_Hardware::hw_Osmose49:    return "Osmose 49";        // Osmose
+    case EM_Hardware::hw_Slim22:      return "Slim 22";       // slim 22L6x
+    case EM_Hardware::hw_Slim46:      return "Slim 46";       // slim 46L6x
+    case EM_Hardware::hw_Slim70:      return "Slim 70";       // slim 70L6x
+    case EM_Hardware::hw_EMM:         return "EMM";           // Eurorack EaganMatrix Module
+    case EM_Hardware::hw_LightFullUp: return "Full (Light) 6x"; // light action full, UP triple-dsp board
+    case EM_Hardware::hw_LightHalfUp: return "Half (Light) 6x"; // light action half, UP triple-dsp board
+    }
+}
+
+
 const char * DownloadMessage(int id)
 {
     if (id < 0) return "";

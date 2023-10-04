@@ -8,19 +8,19 @@ void Hc1Module::setMidiDevice(int id)
 {
     if (-1 == id) {
         resetMidiIO();
-        device_name = "(no Eagan Matrix device)";
         return;
     }
+    
     output_device_id = id;
     midi_output.setDeviceId(id);
-    device_name = midi_output.getDeviceName(id);
+    device_name = FilterDeviceName(midi_output.getDeviceName(id));
+    is_eagan_matrix = is_EMDevice(device_name);
     int id_in = findMatchingInputDevice(device_name);
     midi::Input::setDeviceId(id_in);
     input_device_id = id_in;
     device_output_state = id == -1 ? InitState::Uninitialized : InitState::Complete;
     device_input_state = id_in == -1 ? InitState::Uninitialized : InitState::Complete;
-    notifyDeviceChanged();
-    checkDuplicate();
+    reboot(true);
 }
 
 void Hc1Module::resetMidiIO()
@@ -104,11 +104,12 @@ void Hc1Module::transmitRequestConfiguration()
     current_preset = nullptr;
     config_state = InitState::Pending;
 #ifdef VERBOSE_LOG
-    //log_midi = true;
+    log_midi = true;
 #endif
     beginPreset(); // force preset
     sendEditorPresent(false);
     sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::gridToFlash);
+    //sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::gridToFlash);
     sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::configToMidi);
 }
 
@@ -120,6 +121,7 @@ void Hc1Module::transmitRequestSystemPresets()
     system_preset_state = InitState::Pending;
     // consider: save/restore EM MIDI routing to disable surface > midi/cvc to avoid interruption while loading
 //    sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::midiTxTweenth);
+//    sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::midiTxThird);
     sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::sysToMidi);
 }
 
@@ -131,7 +133,6 @@ void Hc1Module::transmitRequestUserPresets()
     user_preset_state = InitState::Pending;
     //silence(false);
     // consider: save/restore EM MIDI routing to disable surface > midi/cvc to avoid interruption while loading
-//    sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::midiTxTweenth);
     sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::userToMidi);
 }
 
@@ -145,6 +146,9 @@ void Hc1Module::setPreset(std::shared_ptr<Preset> preset)
     if (!preset) return;
 
     DebugLog("Setting preset [%s]", preset ? preset->describe_short().c_str(): "(none)");
+    sendEditorPresent(false);
+    sendControlChange(15, EMCC_Download, EM_DownloadItem::gridToFlash);
+
     config_state = InitState::Pending;
     sendControlChange(15, MidiCC_BankSelect, preset->bank_hi);
     sendControlChange(15, EMCC_Category, preset->bank_lo);
@@ -181,7 +185,7 @@ void Hc1Module::silence(bool reset)
 void Hc1Module::sendEditorPresent(bool init_handshake)
 {
     DebugLog("Editor present");
-    handshake = InitState::Pending;
+    if (init_handshake) { handshake = InitState::Pending; }
     sendControlChange(EM_SettingsChannel, EMCC_EditorPresent, tick_tock ? 85 : 42);
     tick_tock = !tick_tock;
 }
@@ -238,14 +242,20 @@ void Hc1Module::onChannel16CC(uint8_t cc, uint8_t value)
             preset0.bank_lo = value;
             break;
 
-        case EMCC_PedalType:
-            pedal1.type = static_cast<PedalType>(value & 0x07);
-            pedal2.type = static_cast<PedalType>((value >> 3) & 0x07);
+        case EMCC_PedalType: {
+            auto new_p1 = static_cast<PedalType>(value & 0x07);
+            bool p1_change = new_p1 != pedal1.type;
+            pedal1.type = new_p1;
+
+            auto new_p2 = static_cast<PedalType>((value >> 3) & 0x07);
+            bool p2_change = new_p2 != pedal2.type;
+            pedal2.type = new_p2;
+
             if (!in_preset) {
-                notifyPedalChanged(0);
-                notifyPedalChanged(1);
+                if (p1_change) notifyPedalChanged(0);
+                if (p2_change) notifyPedalChanged(1);
             }
-            break;
+        } break;
 
         case EMCC_MiddleC:
             middle_c = value;
@@ -375,6 +385,19 @@ void Hc1Module::onChannel16CC(uint8_t cc, uint8_t value)
 
         case EMCC_VersionLow:
             firmware_version = (firmware_version << 7) | value;
+            break;
+
+        case EMCC_CVCHi_Hardware:
+            cvc_version = static_cast<uint16_t>(value & 0x03) << 14;
+            hardware = static_cast<EM_Hardware>((value & 0x7c) >> 2);
+            break;
+
+        case EMCC_CVCMid:
+            cvc_version |= static_cast<uint16_t>(value) << 7;
+            break;
+
+        case EMCC_CVCLo:
+            cvc_version |= static_cast<uint16_t>(value);
             break;
 
         case EMCC_Download:
@@ -603,6 +626,16 @@ void Hc1Module::onChannelOneCC(uint8_t cc, uint8_t value)
     }
 
     switch (cc) {
+        // case EMCC_Pedal1:
+        //     DEBUG("EMCC_Pedal1 %d", value);
+        //     break;
+        // case EMCC_Pedal2:
+        //     DEBUG("EMCC_Pedal2 %d", value);
+        //     break;
+        // case MidiCC_Hold:
+        //     DEBUG("MidiCC_Hold %d", value);
+        //     break;
+
         case EMCC_PedalFraction: 
             pedal_fraction =  value; // setMacroCCValue consumes pedal_fraction
             break;

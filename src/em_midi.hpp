@@ -202,7 +202,9 @@ constexpr const uint8_t EMCC_CompressorMix        = 93;
 
 constexpr const uint8_t EMCC_VersionHigh 	= 102;
 constexpr const uint8_t EMCC_VersionLow 	= 103;
-
+constexpr const uint8_t EMCC_CVCHi_Hardware = 104; // 5/hardware, 2/cvcSerialMsb (bits 15..14)
+constexpr const uint8_t EMCC_CVCMid         = 105; // med 7 bits
+constexpr const uint8_t EMCC_CVCLo          = 106; // low 7 bits
 constexpr const uint8_t EMCC_Download       = 109;
 constexpr const uint8_t EMCC_Info           = 110;
 constexpr const uint8_t EMCC_Status         = 111;
@@ -224,6 +226,26 @@ constexpr const uint8_t EM_SettingsChannel   = 15;
 constexpr const uint8_t EM_UserCategopry    = 0;
 constexpr const uint8_t EM_EditBuffer       = 126;
 constexpr const uint8_t EM_SystemSlot       = 127;
+
+// EMCC_CVCHi_Hardware values
+enum EM_Hardware
+{
+    Unknown,
+    hw_LightFull,   // light action full, not UP version
+    hw_LightHalf,   // light action, not UP version
+    hw_ClassicFull, // classic action full size
+    hw_ClassicHalf, // classic action half size
+    hw_Mini,        // ContinuuMini 
+    hw_Osmose49,    // Osmose
+    hw_Slim22,      // slim 22L6x
+    hw_Slim46,      // slim 46L6x
+    hw_Slim70,      // slim 70L6x
+    hw_EMM,         // Eurorack EaganMatrix Module
+    hw_LightFullUp, // light action full, UP triple-dsp board
+    hw_LightHalfUp, // light action half, UP triple-dsp board
+};
+
+const char * HardwareName(EM_Hardware hw);
 
 // EMCC_Download values
 // cc109 and cc110 use Editor's Message Bar: C = Center Display, L = Left Display, M = Max Log
@@ -421,6 +443,8 @@ inline void SetProgramChange(midi::Message& msg, uint8_t channel, uint8_t progra
 inline uint8_t GetCC(const midi::Message& msg) { return msg.bytes[1]; }
 inline uint8_t GetRawStatus(const midi::Message& msg) { return msg.bytes[0] & 0xf0; }
 const char * StatusName(uint8_t status);
+const char * continuumCC(uint8_t cc);
+const char * midiCC(uint8_t cc);
 std::string ToFormattedString(const midi::Message& msg);
 
 inline int MessageBytes(uint8_t status_byte)

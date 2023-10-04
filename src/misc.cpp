@@ -93,7 +93,7 @@ float GetFloat(const json_t* root, const char* key, float default_value) {
 // }
 
 std::string TempName(const std::string& suffix) {
-    return format_string("-%d-%d.%s",
+    return format_string("(%d-%d).%s",
         random::get<uint16_t>(),
         random::get<uint32_t>(),
         suffix.empty() ? ".tmp" : suffix.c_str()

@@ -66,12 +66,14 @@ void Hc1ModuleWidget::drawStatusDots(NVGcontext* vg)
 {
     if (my_module) { return; }
 
-    float left = 60.f;
+    float left = 41.f;
     float spacing = 6.25f;
     float y = box.size.y - 7.5f;
 
     // note
     Dot(vg, 41.f, y, gray_light, false);
+    left += spacing;
+    left += spacing;
 
     auto co = InitStateColor(InitState::Complete);
     //device_output_state
@@ -109,11 +111,12 @@ void Hc1ModuleWidget::drawLayer(const DrawArgs& args, int layer)
 
     auto vg = args.vg;
     auto bold_font = GetPluginFontSemiBold();
-    auto font_normal = GetPluginFontRegular();
     assert(FontOk(bold_font));
-    assert(FontOk(font_normal));
+    auto normal_font = GetPluginFontRegular();
+    assert(FontOk(normal_font));
     std::string text;
-    SetTextStyle(vg, font_normal, RampGray(G_85), 12.f);
+
+    SetTextStyle(vg, normal_font, RampGray(G_85), 12.f);
     if (my_module) {
         if (my_module->dupe) {
             SetTextStyle(vg, bold_font, GetStockColor(StockColor::Fuchsia), 16.f);
@@ -127,10 +130,10 @@ void Hc1ModuleWidget::drawLayer(const DrawArgs& args, int layer)
             text = "... looking for available EM ...";
         } else
         if (InitState::Uninitialized == my_module->device_input_state) {
-            text = format_string("..preparing %s ...", my_module->device_name.c_str());
+            text = format_string("... preparing %s ...", my_module->device_name.c_str());
         } else
         if (InitState::Uninitialized == my_module->duplicate_instance) {
-            text = ".. checking for duplicate HC-1 ...";
+            text = "... checking for duplicate HC-1 ...";
         } else
         if (my_module->is_gathering_presets()) {
             text = format_string("... gathering %s preset %d ...", my_module->in_user_names ? "User" : "System", my_module->in_user_names ? my_module->user_presets.size() : my_module->system_presets.size());
@@ -164,14 +167,15 @@ void Hc1ModuleWidget::drawLayer(const DrawArgs& args, int layer)
 
     // MIDI animation
     if (my_module) {
-        const float y = PRESET_BOTTOM + 1.75f;
-        auto cx = PRESET_LEFT + fmodf(my_module->midi_send_count / 20.f, 320.f);
-        CircularHalo(vg, cx, y, 2.f, 8.5f, purple_light);
-        Circle(vg, cx, y, 1.25f, purple_light);
-
-        cx = PRESET_LEFT + fmodf(my_module->midi_receive_count / 20.f, 320.f);
+        float y = PRESET_BOTTOM + 1.75f;
+        float cx;
+        cx = PRESET_LEFT + static_cast<float>((my_module->midi_receive_count / 15) % 320);
         CircularHalo(vg, cx, y, 2.f, 8.5f, green_light);
         Circle(vg, cx, y, 1.25f, green_light);
+        y += .75;
+        cx = PRESET_LEFT + static_cast<float>((my_module->midi_send_count / 15) % 320);
+        CircularHalo(vg, cx, y, 2.f, 8.5f, purple_light);
+        Circle(vg, cx, y, 1.25f, purple_light);
     }
     drawDSP(vg);
 }
@@ -249,6 +253,11 @@ void Hc1ModuleWidget::draw(const DrawArgs& args)
         }
 
         drawPedals(vg, font, stock);
+
+        // if (module) {
+        //     auto t = format_string("%d", my_module->midi_send_count);
+        //     RightAlignText(vg, box.size.x - 2.f, box.size.y *.5f, t.c_str(), nullptr);
+        // }
     }
 
     if (module && my_module->dupe) {

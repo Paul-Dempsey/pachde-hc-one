@@ -22,8 +22,8 @@ struct SymbolWidget : widget::Widget
         PotPedal,
         OtherPedal, LastPedal = OtherPedal
     };
-	widget::FramebufferWidget* fb;
-	widget::SvgWidget* sw;
+    widget::FramebufferWidget* fb;
+    widget::SvgWidget* sw;
     bool visible;
 
 	SymbolWidget() : visible(true) {
@@ -90,9 +90,45 @@ struct SymbolWidget : widget::Widget
     }
 };
 
-inline SymbolWidget * createSymbolWidget(float x, float y, SymbolWidget::Symbol symbol = SymbolWidget::Symbol::Blank, bool visible = true)
+
+struct SymbolTipWidget : TipWidget
 {
-    auto w = createWidget<SymbolWidget>(Vec(x,y));
+    using Symbol = SymbolWidget::Symbol;
+    SymbolWidget* symbol;
+
+    SymbolTipWidget()
+    {
+        addChild(symbol = new SymbolWidget());
+    }
+    void setVisible(bool shown)
+    {
+        symbol->setVisible(shown);
+    }
+    void setSymbol(Symbol category)
+    {
+        switch (category) {
+        default:
+        case Symbol::Blank: 
+        case Symbol::Person: describe(""); break;
+
+        case Symbol::NoPedal :        describe("No pedal"); break;
+        case Symbol::SwitchPedal:     describe("Switch pedal"); break;
+        case Symbol::ExpressionPedal: describe("Expression pedal"); break;
+        case Symbol::DamperPedal:     describe("Damper pedal"); break;
+        case Symbol::TriValuePedal:   describe("Tri-value pedal"); break;
+        case Symbol::CVPedal:         describe("CV pedal"); break;
+        case Symbol::PotPedal:        describe("Pot pedal"); break;
+        case Symbol::OtherPedal:      describe("Other pedal"); break;
+        }
+        symbol->setSymbol(category);
+        box.size = symbol->box.size;
+    }
+};
+
+template <typename SWT>
+SWT * createSymbolWidget(float x, float y, SymbolWidget::Symbol symbol = SymbolWidget::Symbol::Blank, bool visible = true)
+{
+    auto w = createWidget<SWT>(Vec(x,y));
     w->setSymbol(symbol);
     w->setVisible(visible);
     return w;

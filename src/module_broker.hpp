@@ -12,7 +12,7 @@ struct ModuleBroker
     struct Internal;
     Internal * my;
 
-    ~ModuleBroker() { if (my) { delete my; } }
+    ~ModuleBroker();
     ModuleBroker & operator=(const ModuleBroker &) = delete;
     ModuleBroker(const ModuleBroker&) = delete;
 

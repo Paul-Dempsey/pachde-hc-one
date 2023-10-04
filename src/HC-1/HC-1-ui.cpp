@@ -239,19 +239,24 @@ void Hc1ModuleWidget::createMidiSelection()
 void Hc1ModuleWidget::createDeviceDisplay()
 {
     auto co = GetStockColor(StockColor::pachde_blue_medium);
+    auto y = box.size.y - 12.f;
+
+    // hardware model
+    addChild(hardware_label = createStaticTextLabel<StaticTextLabel>(
+        Vec(box.size.x*.5f - 40.f, y), 80.f, "", TextAlignment::Center, 10.f, false, co));
 
     // device name
-    device_label = createStaticTextLabel<StaticTextLabel>(
-        Vec(box.size.x*.5f + 25.f, box.size.y - 14.f), 100.f, "<Eagan Matrix Device>",
-        TextAlignment::Left, 12.f, false, co
-        );
-    addChild(device_label);
+    addChild(device_label = createStaticTextLabel<StaticTextLabel>(
+        Vec(box.size.x*.75f, y), 120.f, "<Eagan Matrix Device>",
+        TextAlignment::Center, 10.f, false, co
+        ));
 
     // firmware version
-    firmware_label = createStaticTextLabel<StaticTextLabel>(
-        Vec(box.size.x - 60.f,  box.size.y - 14.f), 60.f - 7.5f, "",
-        TextAlignment::Right, 12.f, false, co);
-    addChild(firmware_label);
+    addChild(firmware_label = createStaticTextLabel<StaticTextLabel>(
+        Vec(box.size.x - 60.f,  y), 60.f - 7.5f, "",
+        TextAlignment::Right, 10.f, false, co));
+
+
 }
 
 void Hc1ModuleWidget::createTestNote()
@@ -278,19 +283,19 @@ void Hc1ModuleWidget::createStatusDots()
 {
     if (!my_module) { return; }
 
-    float left = 60.f;
+    float left = 48.f;
     float spacing = 6.25f;
     float y = box.size.y - 7.5f;
-
+    //notes_on
     addChild(createIndicatorCentered(41.f, y, "Note", [=]()->const NVGcolor& { return (my_module->notesOn ? purple_light : gray_light); }, [=]()-> bool { return my_module->notesOn; }));
+    //eagan is_eagan_matrix
+    addChild(createIndicatorCentered(left, y, "Eagan Matrix", [=]()->const NVGcolor& { return my_module->is_eagan_matrix ? blue_light : yellow_light; }));
+    left += spacing;
     //device_output_state
     addChild(createIndicatorCentered(left, y, "Midi output device", [=]()->const NVGcolor& { return InitStateColor(my_module->device_output_state); }));
     left += spacing;
     // device_input_state
     addChild(createIndicatorCentered(left, y, "Midi input device", [=]()->const NVGcolor& { return InitStateColor(my_module->device_input_state); }));
-    left += spacing;
-    //eagan matrix
-    addChild(createIndicatorCentered(left, y, "Eagan Matrix", [=]()->const NVGcolor& { return my_module->is_eagan_matrix ? blue_light : yellow_light; }));
     left += spacing;
     //system_preset_state
     addChild(createIndicatorCentered(left, y, "System presets", [=]()->const NVGcolor& { return InitStateColor(my_module->system_preset_state); }));
@@ -299,16 +304,18 @@ void Hc1ModuleWidget::createStatusDots()
     addChild(createIndicatorCentered(left, y, "User presets", [=]()->const NVGcolor& { return InitStateColor(my_module->user_preset_state); }));
     left += spacing;
     //apply_favorite_state
-    addChild(createIndicatorCentered(left, y, "Favorites applied", [=]()->const NVGcolor& { return InitStateColor(my_module->apply_favorite_state); }));
+    addChild(createIndicatorCentered(left, y, "Favorites", [=]()->const NVGcolor& { return InitStateColor(my_module->apply_favorite_state); }));
     left += spacing;
     //config_state
-    addChild(createIndicatorCentered(left, y, "Received configuration", [=]()->const NVGcolor& { return InitStateColor(my_module->config_state); }));
+    addChild(createIndicatorCentered(left, y, "Configuration", [=]()->const NVGcolor& { return InitStateColor(my_module->config_state); }));
     left += spacing;
     //saved_preset_state
-    addChild(createIndicatorCentered(left, y, "Set saved preset", [=]()->const NVGcolor& { return InitStateColor(my_module->saved_preset_state); }));
+    addChild(createIndicatorCentered(left, y, "Saved preset", [=]()->const NVGcolor& { return InitStateColor(my_module->saved_preset_state); }));
     left += spacing;
+    //request_updates_state
     addChild(createIndicatorCentered(left, y, "Request updates", [=]()->const NVGcolor& { return InitStateColor(my_module->request_updates_state); }));
     left += spacing;
+    //handshake
     addChild(createIndicatorCentered(left, y, "Heartbeat", [=]()->const NVGcolor& { return InitStateColor(my_module->handshake); }));
 }
 
@@ -460,6 +467,7 @@ void Hc1ModuleWidget::onPresetChanged(const PresetChangedEvent& e)
 {
     auto ver = my_module && my_module->is_eagan_matrix ? my_module->firmware_version : 0;
     firmware_label->text(format_string("v%03.2f", ver/100.f));
+    hardware_label->text(my_module ? HardwareName(my_module->hardware) : "");
 
     favorite->setPreset(my_module->current_preset);
     showCurrentPreset(true);
@@ -472,10 +480,12 @@ void Hc1ModuleWidget::onDeviceChanged(const DeviceChangedEvent& e)
         : format_string("EM device: %s", e.name.c_str()));
 
     device_label->text(e.name.empty() ? "<Eagan Matrix device>" : e.name);
+    hardware_label->text("");
 }
 
 void Hc1ModuleWidget::onDisconnect(const DisconnectEvent& e)
 {
+    hardware_label->text("");
     device_label->text("");
 }
 

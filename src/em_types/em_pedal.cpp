@@ -6,11 +6,11 @@ namespace em_midi {
 std::string ShortPedalAssignment(uint8_t pedalcc)
 {
     switch (pedalcc) {
-    case 7: return "Vol";
+    case 7: return "Vol"; // not in HE menu
     case 8: return "Oct";
     case 9: return "Mono";
     case 10: return "Fine"; // 4..124 = -60..+60 cents 
-    case 11: return "Exp";
+    case 11: return "Exp"; // not in HE menu
     case 12: return "i";
     case 13: return "ii";
     case 14: return "iii";
@@ -42,11 +42,11 @@ std::string ShortPedalAssignment(uint8_t pedalcc)
 std::string LongPedalAssignment(uint8_t pedalcc)
 {
     switch (pedalcc) {
-    case 7: return "Volume";
+    case 7: return "Volume"; // not in HE menu
     case 8: return "Octave shift";
     case 9: return "Mono switch";
     case 10: return "Fine tune"; // 4..124 = -60..+60 cents 
-    case 11: return "Expression";
+    case 11: return "Expression"; // not in HE menu
     case 12: return "i";
     case 13: return "ii";
     case 14: return "iii";

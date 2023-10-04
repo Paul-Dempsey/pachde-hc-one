@@ -30,7 +30,13 @@ struct ColorPort : PortWidget
     NVGcolor getMainColor() { return ring; }
 };
 
-inline ColorPort * createColorPortCentered(float x, float y, int id, const NVGcolor &color, Module * module)
+inline ColorPort * createColorInputCentered(float x, float y, int id, const NVGcolor &color, Module * module)
+{
+    ColorPort * p = createInputCentered<ColorPort>(Vec(x,y), module, id);
+    p->setMainColor(color);
+    return p;
+}
+inline ColorPort * createColorOutputCentered(float x, float y, int id, const NVGcolor &color, Module * module)
 {
     ColorPort * p = createOutputCentered<ColorPort>(Vec(x,y), module, id);
     p->setMainColor(color);

@@ -262,6 +262,7 @@ void Hc1ModuleWidget::appendContextMenu(Menu *menu)
         menu->addChild(new MenuSeparator);
         menu->addChild(createMenuItem("Save presets", "", [=](){ my_module->savePresets(); }, !ready));
         menu->addChild(createMenuItem("Refresh User presets", "", [=](){ my_module->transmitRequestUserPresets(); }));
+        menu->addChild(createMenuItem("Refresh System presets", "", [=](){ my_module->transmitRequestSystemPresets(); }));
     }));
 
     // now right click on system tab

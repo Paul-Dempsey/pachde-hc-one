@@ -21,6 +21,11 @@ ModuleBroker::ModuleBroker()
 {
 }
 
+ModuleBroker::~ModuleBroker()
+{
+    if (my) { delete my; }
+}
+
 int ModuleBroker::Hc1count() {
     return static_cast<int>(my->hc1s.size());
 }

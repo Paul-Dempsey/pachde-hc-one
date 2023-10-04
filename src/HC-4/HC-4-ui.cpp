@@ -28,10 +28,10 @@ Hc4ModuleWidget::Hc4ModuleWidget(Hc4Module * module)
     float y = ROW_1;
     auto port_color = GetStockColor(StockColor::pachde_default_port);
     addChild(createStaticTextLabel<StaticTextLabel>(Vec(7.5f, y -LABEL_VOFFSET), LABEL_WIDTH, "Pedal 1", TextAlignment::Right));
-    addChild(createColorPortCentered(x, y, Hc4O::O_PEDAL1, port_color, module));
+    addChild(createColorOutputCentered(x, y, Hc4O::O_PEDAL1, port_color, module));
     y += ROW_SPREAD;
     addChild(createStaticTextLabel<StaticTextLabel>(Vec(7.5f, y - LABEL_VOFFSET), LABEL_WIDTH, "Pedal 2", TextAlignment::Right));
-    addChild(createColorPortCentered(x, y, Hc4O::O_PEDAL2, port_color, module));
+    addChild(createColorOutputCentered(x, y, Hc4O::O_PEDAL2, port_color, module));
 
 }
 

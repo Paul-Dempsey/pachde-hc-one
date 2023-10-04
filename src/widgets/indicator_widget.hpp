@@ -5,7 +5,7 @@
 #include "tip_widget.hpp"
 
 namespace pachde {
-
+// indicator with callbacks for color and optional fill
 struct IndicatorWidget: TipWidget
 {
     std::function<const NVGcolor& ()> get_color;

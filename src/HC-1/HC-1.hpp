@@ -226,9 +226,14 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, midi::Input, Module
     std::string device_name = "";
 
     // cc handling
+
     uint8_t pedal_fraction = 0;
+
     PedalInfo pedal1 = PedalInfo(0);
     PedalInfo pedal2 = PedalInfo(1);
+    PedalInfo & getPedal(uint8_t id) {
+        return id ? pedal2 : pedal1;
+    }
 
     bool muted = false;
     int64_t notesOn = 0;
@@ -246,6 +251,8 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, midi::Input, Module
     }
     //std::vector<uint8_t> system_data;
     uint16_t firmware_version = 0;
+    uint16_t cvc_version = 0;
+    EM_Hardware hardware = EM_Hardware::Unknown;
     uint8_t middle_c = 60;
     bool reverse_surface;
     Rounding rounding;
@@ -258,7 +265,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, midi::Input, Module
     // cv processing
     const int CV_INTERVAL = 64;
     int check_cv = 0;
-    const float MIDI_RATE = 0.1f;
+    const float MIDI_RATE = 0.05f;
     rack::dsp::Timer midi_timer;
     rack::dsp::SchmittTrigger mute_trigger;
 
@@ -312,7 +319,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, midi::Input, Module
     json_t *dataToJson() override;
     void dataFromJson(json_t *root) override;
     void onRandomize(const RandomizeEvent& e) override;
-    void reboot();
+    void reboot(bool skip_midi = false);
 
     EM_Recirculator recirculatorType() {
         return static_cast<EM_Recirculator>(recirculator & EM_Recirculator::Mask);
@@ -395,18 +402,19 @@ using Hc1lt = Hc1Module::Lights;
 struct Hc1ModuleWidget : ModuleWidget, IPresetHolder, IHandleHcEvents
 {
     Hc1Module* my_module = nullptr;
+    StaticTextLabel* hardware_label = nullptr;
     StaticTextLabel* device_label = nullptr;
     StaticTextLabel* firmware_label = nullptr;
-    std::vector<PresetWidget*> presets;
-    bool have_preset_widgets = false;
     TabBarWidget* tab_bar = nullptr;
     FavoriteWidget* favorite = nullptr;
     PresetTab tab = PresetTab::Favorite;
-    int page = 0;
     SquareButton* page_up = nullptr;
     SquareButton* page_down = nullptr;
     GrayModuleLightWidget * status_light = nullptr;
     EMPicker* em_picker = nullptr;
+    std::vector<PresetWidget*> presets;
+    int page = 0;
+    bool have_preset_widgets = false;
 
     explicit Hc1ModuleWidget(Hc1Module *module);
     virtual ~Hc1ModuleWidget();

@@ -90,9 +90,9 @@ bool Preset::is_same_preset(const LivePreset& other)
         return true;
     }
 
-    if (0 == name.compare(other.name())) {
-        nada();// missing case?
-    }
+    // if (0 == name.compare(other.name())) {
+    //     nada();// missing case?
+    // }
     return false;
 }
 
@@ -102,9 +102,9 @@ bool Preset::is_same_preset(const Preset& other)
         && (bank_lo == other.bank_lo)
         && (number == other.number)
     ) {
-        if (name.compare(other.name)) {
-            nada(); // assert
-        }
+        // if (name.compare(other.name)) {
+        //     assert(false);
+        // }
         return true;
     }
     return false;

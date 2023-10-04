@@ -7,4 +7,6 @@ extern Model* modelHc1;
 extern Model* modelHc2;
 extern Model* modelHc3;
 extern Model* modelHc4;
+extern Model* modelPedal1;
+extern Model* modelPedal2;
 

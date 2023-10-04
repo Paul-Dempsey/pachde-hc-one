@@ -298,13 +298,20 @@ void Hc1Module::dataFromJson(json_t *root)
     tryCachedPresets();
 }
 
-void Hc1Module::reboot()
+void Hc1Module::reboot(bool skip_midi)
 {
+    if (!skip_midi) {
+        midi::Input::reset();
+        midi_output.reset();
+        device_output_state =
+            device_input_state =
+            InitState::Uninitialized;
+    }
     dupe = false;
     device_name = "";
     firmware_version = 0;
-    midi::Input::reset();
-    midi_output.reset();
+    cvc_version = 0;
+    hardware = EM_Hardware::Unknown;
     clearCCValues();
     pedal_fraction = 0;
     pedal1 = PedalInfo(0);
@@ -320,9 +327,7 @@ void Hc1Module::reboot()
     system_presets.clear();
     user_presets.clear();
 
-    device_output_state =
-        device_input_state =
-        system_preset_state = 
+    system_preset_state = 
         duplicate_instance = 
         user_preset_state = 
         apply_favorite_state =

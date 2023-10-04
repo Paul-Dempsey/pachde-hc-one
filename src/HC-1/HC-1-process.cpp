@@ -113,8 +113,9 @@ void Hc1Module::dispatchMidi()
         midi::Message msg;
         auto um = midi_dispatch.shift();
         um.toMidiMessage(msg);
-        midi_output.sendMessage(msg);
+
         ++midi_send_count;
+        midi_output.sendMessage(msg);
     }
 }
 
@@ -191,7 +192,7 @@ void Hc1Module::initOutputDevice()
                 device_name = saved_device_name;
                 midi_output.setDeviceId(id);
                 midi_output.setChannel(-1);
-                heart_time = 5.f;
+                heart_time = 6.f;
                 device_output_state = InitState::Complete;
                 notifyDeviceChanged();
                 saved_device_name = "";
@@ -211,7 +212,7 @@ void Hc1Module::initOutputDevice()
                 midi_output.setDeviceId(id);
                 midi_output.setChannel(-1);
                 device_output_state = InitState::Complete;
-                heart_time = 5.f;
+                heart_time = 6.f;
                 break;
             }
         }
@@ -316,7 +317,7 @@ void Hc1Module::process(const ProcessArgs& args)
     heart_phase += args.sampleTime;
     if (heart_phase >= heart_time) {
         heart_phase -= heart_time;
-        heart_time = 2.1f;
+        heart_time = 1.8f;
 
         if (checkDeviceChange()) return;
         if (initDevices()) return;

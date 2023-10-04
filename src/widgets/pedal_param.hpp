@@ -13,6 +13,7 @@ struct PedalParamQuantity : rack::engine::ParamQuantity
     uint8_t pedal_id = 0; // 0,1 = pedal1,pedal2
     bool enabled = false;
     uint8_t last_cc;
+    ISendMidi * sender = nullptr;
 
     void setEnabled(bool on)
     {
@@ -46,21 +47,20 @@ struct PedalParamQuantity : rack::engine::ParamQuantity
         return PedalCC(getParamValue());
     }
 
-    void sendValue(uint8_t explicit_value = 0)
+    void sendValue()
     {
-        auto to_send = explicit_value > 0 ? explicit_value : paramCC();
+        auto to_send = paramCC();
         last_cc = to_send;
-        if (!enabled) return;
-        auto iSend = dynamic_cast<ISendMidi*>(module);
-        if (!(iSend && iSend->readyToSend())) return;
-        iSend->sendControlChange(EM_SettingsChannel, pedal_id ? EMCC_Pedal2CC : EMCC_Pedal1CC, to_send);
+        if (enabled && sender && sender->readyToSend()) {
+            sender->sendControlChange(EM_SettingsChannel, pedal_id ? EMCC_Pedal2CC : EMCC_Pedal1CC, to_send);
+        }
     }
 
     bool syncValue()
     {
         auto to_send = paramCC();
         if (last_cc != to_send) {
-            sendValue(to_send);
+            sendValue();
             return true;
         }
         return false;
@@ -92,6 +92,7 @@ PPQ * configPedalParam(uint8_t pedal, PedalAssign role, Module* module, int para
 {
     PPQ* q = new PPQ;
     q->module = module;
+    q->sender = dynamic_cast<ISendMidi*>(module);
     q->paramId = paramId;
     q->pedal_id = pedal;
     q->snapEnabled = true;
