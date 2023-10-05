@@ -22,7 +22,7 @@ Modules:
 
 - **[HC-1](HC-1.md)** Fast access to favorite presets, with knobs and CV inputs for the essential controls: Macros and the Recirculator.
 
-- **HC2** Rounding and CC map (more to come).
+- **[HC-2](HC-2)** Rounding, Pedal assignments, and CC maps (more to come).
 
 - **[HC-3](HC-3.md)** Manage a set of Favorites files.
 
