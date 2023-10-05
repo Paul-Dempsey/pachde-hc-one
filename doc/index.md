@@ -26,4 +26,6 @@ Modules:
 
 - **[HC-3](HC-3.md)** Manage a set of Favorites files.
 
+- **[Pedal 1 & Pedal 2](Pedals.md)** Pedal control, virtual pedals, and pedal CV in/out.
+
 ![pachde (#d) logo](Logo.svg)
