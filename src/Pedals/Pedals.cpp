@@ -101,9 +101,10 @@ void PedalCore::syncAssign(Hc1Module * partner)
 void PedalCore::syncValue(Hc1Module * partner)
 {
     auto pq = getParamQuantity(Params::P_PEDAL_VALUE);
-    auto value = static_cast<uint8_t>(pq->getValue());
+    auto value = static_cast<uint8_t>(std::round(pq->getValue()));
     if (value != last_pedal_value) {
         last_pedal_value = value;
+        if (!partner->readyToSend()) return;
         PedalInfo & pedal = partner->getPedal(pedal_id);
         partner->sendControlChange(0, pedal.cc, value);
     }
@@ -113,11 +114,12 @@ void PedalCore::process(const ProcessArgs& args)
 {
     auto partner = getPartner();
     if (!partner) return;
+    if (!partner->readyToSend()) return;
 
     auto pedal = partner->getPedal(pedal_id);
-    getOutput(Outputs::O_PEDAL_VALUE).setVoltage(10.f * pedal.value / 127);
-
-    if (!partner->readyToSend()) return;
+    if (getOutput(Outputs::O_PEDAL_VALUE).isConnected()) {
+        getOutput(Outputs::O_PEDAL_VALUE).setVoltage(10.f * pedal.value / 127);
+    }
 
     if (++check_cv > CV_INTERVAL) {
         check_cv = 0;
