@@ -20,6 +20,7 @@ SOURCES += src/widgets/components.cpp
 SOURCES += src/widgets/port.cpp
 SOURCES += src/widgets/preset_widget.cpp
 SOURCES += src/widgets/small_push.cpp
+SOURCES += src/widgets/vert_slider.cpp
 
 SOURCES += src/HC-1/HC-1.cpp
 SOURCES += src/HC-1/HC-1-draw.cpp

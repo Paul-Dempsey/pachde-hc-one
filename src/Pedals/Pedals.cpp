@@ -92,9 +92,6 @@ void PedalCore::syncAssign(Hc1Module * partner)
         PedalInfo & pedal = partner->getPedal(pedal_id);
         pedal.cc = pq->last_cc;
         partner->notifyPedalChanged(pedal_id);
-        // if (ui_event_sink) {
-        //     ui_event_sink->onPedalChanged(PedalChangedEvent{pedal});
-        // }
     }
 }
 
