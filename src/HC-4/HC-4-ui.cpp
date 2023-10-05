@@ -23,23 +23,13 @@ Hc4ModuleWidget::Hc4ModuleWidget(Hc4Module * module)
     device_label = createStaticTextLabel<StaticTextLabel>(
         Vec(7.f, 21.f), 180.f, "", TextAlignment::Left, 12.f, false, GetStockColor(StockColor::pachde_blue_medium));
     addChild(device_label);
-
-    float x = COL_1;
-    float y = ROW_1;
-    auto port_color = GetStockColor(StockColor::pachde_default_port);
-    addChild(createStaticTextLabel<StaticTextLabel>(Vec(7.5f, y -LABEL_VOFFSET), LABEL_WIDTH, "Pedal 1", TextAlignment::Right));
-    addChild(createColorOutputCentered(x, y, Hc4O::O_PEDAL1, port_color, module));
-    y += ROW_SPREAD;
-    addChild(createStaticTextLabel<StaticTextLabel>(Vec(7.5f, y - LABEL_VOFFSET), LABEL_WIDTH, "Pedal 2", TextAlignment::Right));
-    addChild(createColorOutputCentered(x, y, Hc4O::O_PEDAL2, port_color, module));
-
 }
 
-// Hc1Module* Hc4ModuleWidget::getPartner()
-// {
-//     if (!module) return nullptr;
-//     return my_module->getPartner();
-// }
+Hc1Module* Hc4ModuleWidget::getPartner()
+{
+    if (!module) return nullptr;
+    return my_module->getPartner();
+}
 
 void Hc4ModuleWidget::onDisconnect(const DisconnectEvent& e)
 {

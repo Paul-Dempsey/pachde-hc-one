@@ -5,8 +5,6 @@ namespace pachde {
 Hc4Module::Hc4Module()
 {
     config(Params::NUM_PARAMS, Inputs::NUM_INPUTS, Outputs::NUM_OUTPUTS, Lights::NUM_LIGHTS);
-    configOutput(Outputs::O_PEDAL1, "Pedal 1");
-    configOutput(Outputs::O_PEDAL2, "Pedal 2");
 }
 
 Hc4Module::~Hc4Module()
@@ -32,11 +30,7 @@ Hc1Module* Hc4Module::getPartner()
 
 void Hc4Module::onPedalChanged(const PedalChangedEvent& e)
 {
-    switch (e.pedal.jack) {
-    case 0 : getOutput(O_PEDAL1).setVoltage(e.pedal.value * 10.f / 127.f); break;
-    case 1 : getOutput(O_PEDAL2).setVoltage(e.pedal.value * 10.f / 127.f); break;
-    default: break;
-    }
+
 }
 
 void Hc4Module::onDeviceChanged(const DeviceChangedEvent& e)
@@ -69,8 +63,8 @@ void Hc4Module::process(const ProcessArgs& args)
         check_cv = 0;
         auto partner = getPartner();
         if (partner) {
-            getOutput(Outputs::O_PEDAL1).setVoltage(10.f * partner->pedal1.value / 127);
-            getOutput(Outputs::O_PEDAL2).setVoltage(10.f * partner->pedal2.value / 127);
+            // getOutput(Outputs::O_PEDAL1).setVoltage(10.f * partner->pedal1.value / 127);
+            // getOutput(Outputs::O_PEDAL2).setVoltage(10.f * partner->pedal2.value / 127);
         }
     }
 }

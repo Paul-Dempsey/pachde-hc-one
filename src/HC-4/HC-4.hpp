@@ -23,8 +23,6 @@ struct Hc4Module : Module, IHandleHcEvents
     };
     enum Outputs
     {
-        O_PEDAL1,
-        O_PEDAL2,
         NUM_OUTPUTS
     };
     enum Lights
@@ -70,7 +68,7 @@ struct Hc4ModuleWidget : ModuleWidget, IHandleHcEvents
         }
     }
 
-   // Hc1Module * getPartner();
+   Hc1Module * getPartner();
 
     // IHandleHcEvents
     // void onPresetChanged(const PresetChangedEvent& e) override;
