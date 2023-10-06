@@ -4,11 +4,11 @@
 The Eagan Matrix is the synth engine for a variety of hardware devices.
 This includes the Haken Continuum, Continuu Mini, Eagan Matrix Module, and the Osmose from Expressive E.
 
-**Note** Osmose has known issues when interfacing with external software.
+**Note** — Osmose has known issues when interfacing with external software.
 External changes are not immediately displayed on it's screens.
-Pachde does not own an Osmose or EMM, so any help testing and documenting the issues is welcome.
+Pachde does not own an Osmose or EMM, so any help testing and documenting any issues with these devices is welcome.
 
-It is *not* intended to be a replacement for the Haken Editor.
+HC One is *not* intended to be a replacement for the Haken Editor.
 The intention is to build out a performance companion for the device.
 
 ![HC One modules](HC-1.png)
@@ -22,7 +22,7 @@ Modules:
 
 - **[HC-1](HC-1.md)** Fast access to favorite presets, with knobs and CV inputs for the essential controls: Macros and the Recirculator.
 
-- **[HC-2](HC-2)** Rounding, Pedal assignments, and CC maps (more to come).
+- **[HC-2](HC-2.md)** Rounding, Pedal assignments, and CC maps (more to come).
 
 - **[HC-3](HC-3.md)** Manage a set of Favorites files.
 
