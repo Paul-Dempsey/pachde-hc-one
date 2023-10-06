@@ -23,11 +23,13 @@ Lippold personally has provided generous support by sharing technical details th
 
 ## Modules
 
-- **[HC-1](./docs/HC-1.md)** — Fast access to favorite presets, with knobs and CV for the essential controls: Macros and the Recirculator.
+- **[HC-1](HC-1.md)** Fast access to favorite presets, with knobs and CV inputs for the essential controls: Macros and the Recirculator.
 
-- **HC-2** — Companion to HC-1 for more matrix controls.
+- **[HC-2](HC-2.md)** Rounding, Pedal assignments, and CC maps (more to come).
 
-- **[HC-3](./docs/HC-3.md)** — Pushbuttons to access up to 16 Favorite files.
+- **[HC-3](HC-3.md)** Pushbuttons to access up to 16 Favorite files.
+
+- **[Pedal 1 & Pedal 2](Pedals.md)** Pedal control, virtual pedals, and pedal CV in/out.
 
 ## Building
 
