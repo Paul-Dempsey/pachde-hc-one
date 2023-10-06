@@ -16,6 +16,8 @@ HC-1 was designed for Eagan Matrix firmware version 10.09.
 Earlier or later firmware versions may require changes to HC-1.
 If you have an issue, please open one in the Github Issues or send me an email.
 
+To install the plugin from Github, please see **Install** in the [README](../README.md).
+
 Here is the HC-1 module with it's companions HC-2 and [HC-3](HC-3.md).
 
 ![The HC One modules](HC-1.png)
@@ -23,18 +25,25 @@ Here is the HC-1 module with it's companions HC-2 and [HC-3](HC-3.md).
 While they're shown side-by-side as typical for Rack modules with expanders,
 the HC One modules automatically find each other without having to sit next to each other.
 
-When first loaded, there is a long initialization time to read all user and system presets from the device.
-By default, the presets are cached, so the next time you open the patch, it should be up and running much faster.
+When first loaded, there is a long initialization time (a minute or two) to find the EM device, initialize the MIDI ports, and read all user and system presets from the device.
+By default, the list of presets are saved, so the next time you open the patch, it skips loading the lists from the device and you should be up and running quickly.
 
 You can watch the prograss of the multi-step initialization process with the row of dots on the bottom.
 When everything is connected and working as expected, all the dots are blue, and you can begin playing.
 
 > **Trouble-shooting:** Eagan Matrix devices require a high-quality MIDI connection.
-The HC-1 initialization process can sometimes fail, especially when you have a poor MIDI connection.
-When this happens, you may need to reboot HC-1 from the menu, unplug and re-plug the MIDI connection, or power cycle the device.
-When possible, make sure you're using a connection directly to the computer, and not through a USB hub.
-Even then, you may need to use a different USB port on your computer.
-Be sure to use the MIDI cable that came with your device or another high-quality USB cable.
+> The HC-1 initialization process can sometimes fail, especially when you have a poor MIDI connection.
+> When this happens, you may need to reboot HC-1 from the menu, unplug and re-plug the MIDI connection, or power cycle the device.
+> When possible, make sure you're using a connection directly to the computer, and not through a USB hub.
+> Even then, you may need to use a different USB port on your computer.
+> Be sure to use the MIDI cable that came with your device or another high-quality USB cable.
+>
+> The Haken Editor has a MIDI test feature that you can use to troubleshoot your MIDI connection.
+> If the Haken editor doesn't report a reliable connection, you can try different ports and USB cables until it reports a quality connection.
+>
+> The little green dot that travels across the bottom of the preset list indicates the progress of MIDI messages received from the device.
+> This should move rapidly while initializing the device, and while playing the device.
+> If this stops moving while loading or playing the device, then the MIDI connection has been lost, and you must take steps to recover the connection.
 
 ## A tour of the user interface
 
@@ -214,6 +223,12 @@ Right click on the **System** tab to see the **System menu** for navigation and 
 | **Sort System presets** | **Alphabetically** | (default) Sort system presets alphabetically by name. |
 |  | **by Category** | Sort first by Category, then alphabetically within the category. This is the order that presets are shown on a Continuum. |
 |  | **in System order** | Show system presets in internal System order. This is the numerical order in the Haken Editor "File 2" list, which is mostly but not entirely alphabetical. |
+
+## Technical Information
+
+Input CV is assumed to be Unipolar 0-10v. When a knob is set to relative mode, then the voltage is assumed to be bipolar.
+The voltage is converted to MIDI data to send to the device according to the range supported by the particular control.
+The Macro section (**i** through **vi**) and Volume (EM Post level) support 14-bit MIDI, and the recirculator section is 7-bit MIDI (0-127).
 
 ## Notes
 
