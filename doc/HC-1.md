@@ -6,6 +6,8 @@ All other modules in the plugin are companions for HC-1, and don't do anything w
 HC-1 supports the Haken Continuum and other Haken Audio Eagan Matrix-based devices like the Eagan Matrix Eurorack module (EMM) and the Osmose from Expressive E.
 It is focused on having quick and easy access to presets on the device, favorites, plus CV control of the most essential performance settings, on a compact panel.
 
+If you're new to VCV Rack, make sure to get familiar with it. See [Getting Started](https://vcvrack.com/manual/GettingStarted) in the VCV Rack manual.
+
 HC-1 is not a replacement for the Haken Editor.
 The Haken Editor is still required for managing and editing user presets.
 
@@ -16,7 +18,7 @@ HC-1 was designed for Eagan Matrix firmware version 10.09.
 Earlier or later firmware versions may require changes to HC-1.
 If you have an issue, please open one in the Github Issues or send me an email.
 
-To install the plugin from Github, please see **Install** in the [README](../README.md).
+To install the plugin from Github, please see **Install** in the [README](https://github.com/Paul-Dempsey/pachde-hc-one#installing).
 
 Here is the HC-1 module with it's companions HC-2 and [HC-3](HC-3.md).
 
@@ -125,7 +127,9 @@ next to the knob, indicating which pedal is assigned to that knob.
 - Each Macro, Recirculator, and Volume control can operate independently (with no cable connected to the input jack), with absolute CV control, or combined Knob + CV Relative control.
   Click the **Relative mode** button to toggle between Absolute and Relative mode.
   When a cable is connected, the value of the parameter is either the input value (Absolute mode), or the sum of the Knob position and the CV value (Relative mode).
-  The Relative mode indicator light is lit when the control is in relative mode.
+  Absolute mode takes Unipolar 0-10v signals and Relative mode takes Bipolar signals.
+  The Relative mode indicator light is lit when the control is in relative mode,
+and the track around the knob becomes gold, with an indicator dot showing the effective value.
 
   ![Anatomy of HC-1 controls](knob-anatomy.svg)
 
@@ -233,25 +237,28 @@ The Macro section (**i** through **vi**) and Volume (EM Post level) support 14-b
 ## Notes
 
 - **File usage:** After using this module, you can find a folder of data files that the module saves.
-The folder _Rack user folder_`/pachde-hc-one` contains per-EM-device Favorites, User, and System files in JSON format.
+The folder _Rack user folder_ / `pachde-hc-one` contains per-EM-device Favorites, User, and System files in JSON format.
 It is also the default folder presented for saving and loading favorites files.
-You can, of course, save favorites anywhere you like, but this is the default, per VCV rack convention.
+You can, of course, save favorites anywhere you like, but this is the default per VCV rack conventions.
 
 - **Preset `.mid`:** At this time, this plugin has no support for managing preset .mid files.
 I do have plans to build such functionality, but it may not be in the Rack plugin format.
 
-- **Multiple EM Devices:** My ContinuuMini is back at Haken Audio for repairs, so I haven't been able to test the multiple-EM device scenario.
+- **Multiple EM Devices:** I haven't been able to test the multiple-EM device scenario until Oct 3, 2023 when my replacement Mini arrived.
 
   If you own multiple EM-based devices, you should be able to use an instance of HC-1 for each device in the same Rack patch to control multiple devices.
-  The automatic discovery *should* choose a second (or third) device if there is already an HC-1 bound to the first device. When y Mini comes back from the shop, I'll be able to test the scenario. If you have more than one HC-1 on the same device you'll see a big red error display.
-  You can choose another device from the **EM Device** button in the bottom left. From there, things should remain sorted out, even across new Rack sessions for that patch.
+  The automatic discovery *should* choose a second (or third) device if there is already an HC-1 bound to the first device.
+  If you have more than one HC-1 on the same device you'll see a big red error display.
+  You can choose another device from the **EM Device** button in the bottom left.
+  You may need to reboot the module or reboot rack into the same patch before things begin working smoothly.
+  From there, things should remain sorted out, even across new Rack sessions for that patch.
 
 - **Factory presets:** For beta, there are no Rack module factory presets.
 Please let me know if you have something useful that comes from using Rack module presets.
 Module presets are important to use for HC-3 to save the list for use in other patches.
 
 - **More functionality:** I plan to add expander modules for controlling most other things on the device.
-I am *not* planning to create a complete preset (matrix) editor.
+I am *not* planning to create a preset (matrix) editor.
 That's not really suitable for a VCV rack module and it would require additional proprietary internal information from Haken Audio.
 
   I am interested to hear from you what will be most important controls to include in future HC modules.
