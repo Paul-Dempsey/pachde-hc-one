@@ -1,11 +1,14 @@
 # HC One
 
-HC One is a plugin with modules for working with Haken Audio's Eagan Matrix devices.
+HC One is a VCV Rack plugin with modules for working with Haken Audio's Eagan Matrix devices.
 These include the Haken Continuum, Continuu Mini, and Eagan Matrix Module, and Expressive E's Osmose.
 
-If you're adventurous, grab a development build: [![Build Status](https://github.com/Paul-Dempsey/pachde-hc-one/actions/workflows/build-plugin.yml/badge.svg)](https://github.com/Paul-Dempsey/pachde-hc-one/actions/workflows/build-plugin.yml)
+If you're new to VCV Rack, make sure to get familiar with it.
+See [Getting Started](https://vcvrack.com/manual/GettingStarted) in the VCV Rack manual.
 
-The beta 2 release announced online can be downloaded here: [HC-One 2.0.0-beta2](https://github.com/Paul-Dempsey/pachde-hc-one/releases/tag/v2.0.0-beta2).
+Grab a current build for the latest features and fixes: [![Build Status](https://github.com/Paul-Dempsey/pachde-hc-one/actions/workflows/build-plugin.yml/badge.svg)](https://github.com/Paul-Dempsey/pachde-hc-one/actions/workflows/build-plugin.yml)
+
+The beta 2 release announced online can be downloaded here: [HC-One 2.0.0-beta2](https://github.com/Paul-Dempsey/pachde-hc-one/releases/tag/v2.0.0-beta2). (But I recommend the most recent good build.)
 
 - [Documentation](doc/index.md)
 
@@ -15,6 +18,16 @@ The beta 2 release announced online can be downloaded here: [HC-One 2.0.0-beta2]
   ![Buy pachde a coffee with VenMo](doc/VenMo.png)
 
 Pachde and HC One are not affiliated with or sponsored by Haken Audio.
+
+## Modules
+
+- **[HC-1](./doc/HC-1.md)** Fast access to favorite presets, with knobs and CV inputs for the essential controls: Macros and the Recirculator.
+
+- **[HC-2](./doc/HC-2.md)** Rounding, Pedal assignments, and CC maps (more to come).
+
+- **[HC-3](./doc/HC-3.md)** Pushbuttons to access up to 16 Favorite files.
+
+- **[Pedal 1 & Pedal 2](./doc/Pedals.md)** Pedal control, virtual pedals, and pedal CV in/out.
 
 ## Installing
 
@@ -27,28 +40,21 @@ You'll need to know the Operating System (OS), and Architecture (ARCH) of your R
 - Downloading the *Release* and the *Latest build* are similar. I recommend using the latest build that doesn't show an error, so I'll explain the latter.
 - Click the button to get to the builds: [![Build Status](https://github.com/Paul-Dempsey/pachde-hc-one/actions/workflows/build-plugin.yml/badge.svg)](https://github.com/Paul-Dempsey/pachde-hc-one/actions/workflows/build-plugin.yml).
 - This takes you to the Github **Actions** tab. Once there you'll see a list of builds. The **main** builds are off the main branch, and the **v2.0.0-beta2** is from the beta 2 release build tag. A good build has a circled check mark, and a bad build has a circled x. The title is the comment for the top commit in that build. Click the title for a good build.
-- On the build page, there is a list of Artifacts. Click on the OS-ARCH matching your OS and ARCH noted previously. This should download a zip containing the plugin file.
+- On the build page, there is a list under **Artifacts**. Click on the OS-ARCH matching your OS and ARCH noted previously. This should download a zip containing the plugin file.
 - Rack cannot load the downloaded zip directly, so you must extract the `<plugin name>.vcvplugin` file. (the full name will be something like `pachde-hc-one-2.0.0-beta2-80970a7-win-x64.vcvplugin`).
-How unzipping/extract is done depends on your OS, and what zip management software you have, so I'll let you figure that out ;-).
+How unzipping/extraction is done depends on your OS and what zip management software you have, so I'll let you figure that out ;-).
 - Copy the `.vcvplugin` file to the plugins folder you opened previously.
 - Restart Rack
 
-At this point you should see the HC One modules in your module browser.
+At this point you should see the pachde HC One modules in your module browser.
+Right click anywhere in Rack where there isn't a module to open the module browser.
+Filter by Brand and check **pachde** to see just the pachde modules.
+If you want to find other modules to use (including my other plugin **pachde One**), visit the VCV Rack library.
 
 ## Acknowledgements
 
 Special thanks to Lippold Haken (and the Haken Audio team), for creating the Continuum.
 Lippold personally has provided generous support by sharing technical details that make this software possible.
-
-## Modules
-
-- **[HC-1](HC-1.md)** Fast access to favorite presets, with knobs and CV inputs for the essential controls: Macros and the Recirculator.
-
-- **[HC-2](HC-2.md)** Rounding, Pedal assignments, and CC maps (more to come).
-
-- **[HC-3](HC-3.md)** Pushbuttons to access up to 16 Favorite files.
-
-- **[Pedal 1 & Pedal 2](Pedals.md)** Pedal control, virtual pedals, and pedal CV in/out.
 
 ## Building
 
