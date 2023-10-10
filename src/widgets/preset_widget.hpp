@@ -3,8 +3,9 @@
 #define PRESET_WIDGET_HPP_INCLUDED
 #include "../em_midi.hpp"
 #include "../presets.hpp"
-#include "../text.hpp"
+//#include "../text.hpp"
 #include "tip_widget.hpp"
+#include "label_widget.hpp"
 #include "symbol_widget.hpp"
 
 namespace pachde {

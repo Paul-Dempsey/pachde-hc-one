@@ -7,6 +7,19 @@ namespace pachde {
 
 Hc1Module::Hc1Module()
 {
+    // for (auto id : ::rack::midi::getDriverIds()) {
+    //     auto driver = midi::getDriver(id);
+    //     DebugLog("MIDI Driver %d:%s", id, driver->getName().c_str());
+    //     for (auto did: driver->getInputDeviceIds())
+    //     {
+    //         DebugLog("  in: %d:%s", did, driver->getInputDeviceName(did).c_str());
+    //     }
+    //     for (auto did: driver->getOutputDeviceIds())
+    //     {
+    //         DebugLog("  out: %d:%s", did, driver->getOutputDeviceName(did).c_str());
+    //     }
+    // }
+
     system_presets.reserve(700);
     user_presets.reserve(128);
     config(Params::NUM_PARAMS, Inputs::NUM_INPUTS, Outputs::NUM_OUTPUTS, Lights::NUM_LIGHTS);
@@ -231,7 +244,7 @@ json_t * Hc1Module::dataToJson()
 {
     auto root = json_object();
     json_object_set_new(root, "midi-device", json_stringn(device_name.c_str(), device_name.size()));
-
+    //json_object_set_new(root, "midi-driver", json_stringn(saved_driver_name.c_str(), saved_driver_name.size()));
     json_object_set_new(root, "preset-order", json_integer(static_cast<int>(preset_order)));
     json_object_set_new(root, "preset-tab", json_integer(static_cast<int>(tab)));
     auto ar = json_array();
@@ -244,7 +257,8 @@ json_t * Hc1Module::dataToJson()
         json_object_set_new(root, "preset", current_preset->toJson());
     }
     json_object_set_new(root, "restore-preset", json_boolean(restore_saved_preset));
-    json_object_set_new(root, "cache-presets", json_boolean(cache_presets));
+    json_object_set_new(root, "cache-presets", json_boolean(cache_system_presets));
+    json_object_set_new(root, "cache-user-presets", json_boolean(cache_user_presets));
     json_object_set_new(root, "heartbeat",  json_boolean(heart_beating));
     json_object_set_new(root, "favorites-file", json_stringn(favoritesFile.c_str(), favoritesFile.size()));
     return root;
@@ -289,12 +303,17 @@ void Hc1Module::dataFromJson(json_t *root)
     if (j) {
         saved_device_name = json_string_value(j);
     }
+    // j = json_object_get(root, "midi-driver");
+    // if (j) {
+    //     saved_driver_name = json_string_value(j);
+    // }
     
     j = json_object_get(root, "favorites-file");
     if (j) {
         favoritesFile = json_string_value(j);
     }
-    cache_presets = GetBool(root, "cache-presets", cache_presets);
+    cache_system_presets = GetBool(root, "cache-presets", cache_system_presets);
+    cache_user_presets = GetBool(root, "cache-user-presets", cache_user_presets);
     tryCachedPresets();
 }
 

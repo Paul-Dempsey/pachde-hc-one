@@ -7,6 +7,7 @@
 #include "../module_broker.hpp"
 #include "../plugin.hpp"
 #include "../presets.hpp"
+#include "../widgets/label_widget.hpp"
 #include "../widgets/square_button.hpp"
 
 namespace pachde {

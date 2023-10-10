@@ -60,7 +60,7 @@ void PedalUICore::createUI()
 {
     // device name
     addChild(device_label = createStaticTextLabel<StaticTextLabel>(
-        Vec(3.25f, 21.f), 180.f, "", TextAlignment::Left, 10.f, false, GetStockColor(StockColor::pachde_blue_medium)));
+        Vec(3.25f, 14.f), 180.f, "", TextAlignment::Left, 10.f, false, GetStockColor(StockColor::pachde_blue_medium)));
 
     /// pedal function knob
     float x_center = box.size.x * .5f;

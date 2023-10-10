@@ -4,6 +4,7 @@
 #include "../hc_events.hpp"
 #include "../module_broker.hpp"
 #include "../plugin.hpp"
+#include "../widgets/label_widget.hpp"
 #include "../widgets/symbol_widget.hpp"
 
 namespace pachde {

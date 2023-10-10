@@ -233,30 +233,28 @@ void Hc1ModuleWidget::appendContextMenu(Menu *menu)
         menu->addChild(createMenuItem("Request config", "",  [=](){ my_module->transmitRequestConfiguration(); }));
         menu->addChild(createMenuItem("Reset Midi I/O", "",  [=]() { my_module->resetMidiIO(); }));
         menu->addChild(createMenuItem("Remake QSPI Data", "", [=]() { my_module->sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::remakeSRMahl); }));
-        // menu->addChild(createMenuItem("Reboot device", "", [=]() { 
-        //     my_module->sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::rebootUser);
-        //     my_module->resetMidiIO();
-        //     }));
-//        menu->addChild(createMenuItem("Probe pedals", "", [=]() { my_module->sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::gridToFlash); }));
-
         }));
 
-    // now right click on favorites tab
-    // menu->addChild(createSubmenuItem("Favorites", "", [=](Menu* menu) {
-    //     addFavoritesMenu(menu);
-    // }));
 
     menu->addChild(createSubmenuItem("Presets", "", [=](Menu* menu) {
         menu->addChild(createCheckMenuItem("Restore last preset on startup", "", 
             [=](){ return my_module->restore_saved_preset; },
             [=](){ my_module->restore_saved_preset = !my_module->restore_saved_preset; }
             ));
-        menu->addChild(createCheckMenuItem("Use saved presets", "",
-            [=](){ return my_module->cache_presets; },
+        menu->addChild(createCheckMenuItem("Use saved system presets", "",
+            [=](){ return my_module->cache_system_presets; },
             [=](){
-                my_module->cache_presets = !my_module->cache_presets;
-                if (my_module->cache_presets) {
-                    my_module->savePresets();
+                my_module->cache_system_presets = !my_module->cache_system_presets;
+                if (my_module->cache_system_presets) {
+                    my_module->saveSystemPresets();
+                }
+            }));
+        menu->addChild(createCheckMenuItem("Use saved user presets", "",
+            [=](){ return my_module->cache_user_presets; },
+            [=](){
+                my_module->cache_user_presets = !my_module->cache_user_presets;
+                if (my_module->cache_user_presets) {
+                    my_module->saveUserPresets();
                 }
             }));
         menu->addChild(new MenuSeparator);

@@ -11,9 +11,13 @@ namespace pachde {
 
 std::string format_string(const char *fmt, ...);
 bool alpha_order(const std::string& a, const std::string& b); 
-size_t common_prefix_length(const std::string& alpha, const std::string& beta);
-bool is_EMDevice(const std::string& name);
-std::string FilterDeviceName(std::string text);
+std::size_t common_prefix_length(const std::string& alpha, const std::string& beta);
+std::size_t common_prefix_length_insensitive(const std::string& alpha, const std::string& beta);
+inline bool match_insensitive(const std::string& alpha, const std::string& beta) {
+    return alpha.size() == beta.size()
+        && alpha.size() == common_prefix_length_insensitive(alpha, beta);
+}
+std::string to_lower_case(const std::string& name);
 int randomZeroTo(int size);
 //std::string AbbreviatedName(std::string name);
 std::string TempName(const std::string& suffix);

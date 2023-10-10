@@ -133,7 +133,7 @@ void Hc1ModuleWidget::drawLayer(const DrawArgs& args, int layer)
             text = format_string("... preparing %s ...", my_module->device_name.c_str());
         } else
         if (InitState::Uninitialized == my_module->duplicate_instance) {
-            text = "... checking for duplicate HC-1 ...";
+            text = "... negotiating device assignment ...";
         } else
         if (my_module->is_gathering_presets()) {
             text = format_string("... gathering %s preset %d ...", my_module->in_user_names ? "User" : "System", my_module->in_user_names ? my_module->user_presets.size() : my_module->system_presets.size());

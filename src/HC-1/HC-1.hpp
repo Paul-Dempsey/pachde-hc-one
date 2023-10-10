@@ -12,6 +12,7 @@
 #include "../text.hpp"
 #include "../widgets/em_picker.hpp"
 #include "../widgets/favorite_widget.hpp"
+#include "../widgets/label_widget.hpp"
 #include "../widgets/preset_widget.hpp"
 #include "../widgets/square_button.hpp"
 #include "../widgets/tab_bar.hpp"
@@ -79,7 +80,8 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, midi::Input, Module
     };
     RestoreData * restore_ui_data = nullptr;
 
-    bool cache_presets = true;
+    bool cache_system_presets = true;
+    bool cache_user_presets = false;
     std::shared_ptr<Preset> current_preset = nullptr;
     std::shared_ptr<Preset> saved_preset = nullptr;
     bool restore_saved_preset = true;
@@ -221,9 +223,11 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, midi::Input, Module
     // device management
     int input_device_id = -1;
     int output_device_id = -1;
-
-    std::string saved_device_name = "";
+    //int midi_driver_id = -1;
+    //std::string driver_name = "";
     std::string device_name = "";
+    //std::string saved_driver_name = "";
+    std::string saved_device_name = "";
 
     // cc handling
 

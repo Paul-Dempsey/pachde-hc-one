@@ -9,6 +9,7 @@
 #include "../module_broker.hpp"
 #include "../plugin.hpp"
 #include "../presets.hpp"
+#include "../widgets/label_widget.hpp"
 #include "../widgets/symbol_widget.hpp"
 #include "cc_map_widget.hpp"
 

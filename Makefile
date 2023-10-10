@@ -3,6 +3,7 @@ RACK_DIR ?= ../..
 FLAGS +=
 
 SOURCES += src/colors.cpp
+SOURCES += src/em_device.cpp
 SOURCES += src/em_midi.cpp
 SOURCES += src/em_types/em_pedal.cpp
 SOURCES += src/em_types/em_rounding.cpp

@@ -110,7 +110,7 @@ bool Preset::is_same_preset(const Preset& other)
     return false;
 }
 
-json_t* Preset::Preset::toJson()
+json_t* Preset::toJson()
 {
     json_t* root = json_object();
     json_object_set_new(root, "hi", json_integer(bank_hi));

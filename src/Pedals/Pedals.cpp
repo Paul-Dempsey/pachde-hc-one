@@ -140,5 +140,5 @@ void PedalCore::process(const ProcessArgs& args)
 
 }
 
-Model *modelPedal1 = createModel<pachde::Pedal1Module, pachde::Pedal1UI>("pachde-pedal1");
-Model *modelPedal2 = createModel<pachde::Pedal2Module, pachde::Pedal2UI>("pachde-pedal2");
+Model *modelPedal1 = createModel<pachde::Pedal1Module, pachde::Pedal1UI>("pachde-hc-pedal-1");
+Model *modelPedal2 = createModel<pachde::Pedal2Module, pachde::Pedal2UI>("pachde-hc-pedal-2");

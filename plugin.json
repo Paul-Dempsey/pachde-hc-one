@@ -38,14 +38,14 @@
         "tags": [ "Expander" ]
       },
       {
-        "slug": "pachde-pedal1",
-        "name": "Pedal 1",
+        "slug": "pachde-hc-pedal-1",
+        "name": "HC-Pedal-1",
         "description": "Controller for EM Pedal 1 (HC-1 companion)",
         "tags": [ "Controller", "Expander" ]
       },
       {
-        "slug": "pachde-pedal2",
-        "name": "Pedal 2",
+        "slug": "pachde-hc-pedal-2",
+        "name": "HC-Pedal-2",
         "description": "Controller for EM Pedal 2 (HC-1 companion)",
         "tags": [ "Controller", "Expander" ]
       }

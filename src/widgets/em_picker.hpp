@@ -2,9 +2,10 @@
 #ifndef EM_PICKER_HPP_INCLUDED
 #define EM_PICKER_HPP_INCLUDED
 #include <rack.hpp>
-#include "../misc.hpp"
+#include "../em_device.hpp"
 #include "../plugin.hpp"
 #include "tip_widget.hpp"
+
 using namespace ::rack;
 namespace pachde {
 

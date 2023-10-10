@@ -3,19 +3,26 @@
 namespace pachde {
 
 void Hc1Module::tryCachedPresets() {
-    if (cache_presets) {
+    if (cache_system_presets) {
         loadSystemPresets();
         if (system_presets.empty()) {
             system_preset_state = InitState::Uninitialized;
         }
+    }
+
+    if (cache_user_presets) {
         loadUserPresets();
         if (user_presets.empty()) {
             user_preset_state = InitState::Uninitialized;
         }
-        if (favoritesFile.empty()) {
-            favoritesFromPresets();
-        }
     }
+
+    if (InitState::Complete == system_preset_state 
+        && InitState::Complete == user_preset_state
+        && favoritesFile.empty()) {
+        favoritesFromPresets();
+    }
+
     if (!favoritesFile.empty()) {
         if (system_presets.empty() || user_presets.empty()) {
             apply_favorite_state = InitState::Uninitialized;

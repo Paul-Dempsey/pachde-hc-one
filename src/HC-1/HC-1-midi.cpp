@@ -1,6 +1,7 @@
 #include "HC-1.hpp"
 #include "../module_broker.hpp"
 #include "../widgets/cc_param.hpp"
+#include "../em_device.hpp"
 
 namespace pachde {
 

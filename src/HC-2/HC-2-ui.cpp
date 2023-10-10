@@ -128,7 +128,7 @@ Hc2ModuleWidget::Hc2ModuleWidget(Hc2Module * module)
     setPanel(createPanel(asset::plugin(pluginInstance, "res/HC-2.svg")));
 
     addChild(device_label = createStaticTextLabel<StaticTextLabel>(
-        Vec(7.f, 21.f), 180.f, "", TextAlignment::Left, 10.f, false, GetStockColor(StockColor::pachde_blue_medium)));
+        Vec(7.f, 14.f), 180.f, "", TextAlignment::Left, 10.f, false, GetStockColor(StockColor::pachde_blue_medium)));
 
     createRoundingUI(ROUND_BOX_LEFT, ROUND_BOX_TOP);
     createPedalUI(PEDAL_BOX_LEFT, PEDAL_BOX_TOP);

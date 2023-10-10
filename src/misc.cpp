@@ -2,16 +2,6 @@
 
 namespace pachde {
 
-bool is_EMDevice(const std::string& name)
-{
-    std::string text = name;
-    std::transform(text.begin(), text.end(), text.begin(), [](unsigned char c){ return std::tolower(c); });
-    if (0 == text.compare(0, 8, "continuu", 0, 8)) { return true; } //Continuum <serial> and ContinuuMini <serial>
-    if (0 == text.compare(0, 6, "osmose", 0, 6)) { return true; } // just a guess
-    if (0 == text.compare(0, 5, "eagan", 0, 5)) { return true; } // "EaganMatrix Module" according to the user guide
-    return false;
-}
-
 std::string format_string(const char *fmt, ...)
 {
     const int len = 256;
@@ -44,11 +34,29 @@ bool alpha_order(const std::string& a, const std::string& b)
     return false;
 }
 
-std::size_t common_prefix_length(const std::string& alpha, const std::string& beta) {
+std::string to_lower_case(const std::string& name)
+{
+    std::string text = name;
+    std::transform(text.begin(), text.end(), text.begin(), [](unsigned char c){ return std::tolower(c); });
+    return text;
+}
+
+std::size_t common_prefix_length(const std::string& alpha, const std::string& beta)
+{
     auto a = alpha.cbegin(), ae = alpha.cend();
     auto b = beta.cbegin(), be = beta.cend();
     int common = 0;
     for (; (a < ae && b < be) && (*a == *b); ++a, ++b, ++common) { }
+    return common;
+}
+
+std::size_t common_prefix_length_insensitive(const std::string& alpha, const std::string& beta)
+{
+    auto a = alpha.cbegin(), ae = alpha.cend();
+    auto b = beta.cbegin(), be = beta.cend();
+    int common = 0;
+    for (; (a < ae && b < be) && ((*a == *b) || (std::tolower(*a) == std::tolower(*b)));
+        ++a, ++b, ++common) { }
     return common;
 }
 
@@ -100,25 +108,7 @@ std::string TempName(const std::string& suffix) {
         );
 }
 
-std::string FilterDeviceName(std::string text)
-{
-    #if defined ARCH_WIN
-    if (!text.empty()) {
-        text.erase(text.find_last_not_of("0123456789"));
-    }
-    #endif
 
-    #if defined ARCH_LIN
-    if (!text.empty()) {
-        auto pos = text.find(':');
-        if (std::string::npos != pos) {
-            return text.substr(0, pos);
-        }
-    }
-    #endif
-
-    return text;
-}
 
 const char * InitStateName(InitState state) {
     switch (state) {

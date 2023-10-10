@@ -17,6 +17,7 @@ struct ModuleBroker
     ModuleBroker(const ModuleBroker&) = delete;
 
     static ModuleBroker* get();
+
     void registerHc1(Hc1Module * module);
     void unregisterHc1(Hc1Module * module);
     int Hc1count();
