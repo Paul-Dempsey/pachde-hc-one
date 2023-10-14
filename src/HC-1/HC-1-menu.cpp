@@ -231,10 +231,8 @@ void Hc1ModuleWidget::appendContextMenu(Menu *menu)
             [=](){ my_module->heart_beating = !my_module->heart_beating; }));
         menu->addChild(createMenuItem("One handshake", "",   [=](){ my_module->sendEditorPresent(true); }));
         menu->addChild(createMenuItem("Request config", "",  [=](){ my_module->transmitRequestConfiguration(); }));
-        menu->addChild(createMenuItem("Reset Midi I/O", "",  [=]() { my_module->resetMidiIO(); }));
         menu->addChild(createMenuItem("Remake QSPI Data", "", [=]() { my_module->sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::remakeSRMahl); }));
         }));
-
 
     menu->addChild(createSubmenuItem("Presets", "", [=](Menu* menu) {
         menu->addChild(createCheckMenuItem("Restore last preset on startup", "", 

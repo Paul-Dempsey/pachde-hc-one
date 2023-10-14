@@ -2,6 +2,7 @@
 #ifndef MODULE_BROKER_HPP_INCLUDED
 #define MODULE_BROKER_HPP_INCLUDED
 #include "./HC-1/HC-1.hpp"
+#include "hc_events.hpp"
 // #include "./HC-2/HC-2.hpp"
 // #include "./HC-3/HC-3.hpp"
 
@@ -32,36 +33,19 @@ private:
     ModuleBroker();
 };
 
-struct DeviceAssociation {
-    const std::string device_name;
-    int64_t module_id;
-
-    DeviceAssociation(std::string device, int64_t id)
-    : device_name(device), module_id(id)
-    {}
-
-    static std::vector<DeviceAssociation> getList()
-    {
-        std::vector<DeviceAssociation> list;
-        auto one = ModuleBroker::get();
-        one->scan_while([&](Hc1Module* const& mod){
-            list.push_back(DeviceAssociation{mod->deviceName(), mod->getId()});
-            return true;
-        });
-        return list;
-    }
-};
-
 struct PartnerBinding
 {
     int64_t module_id;
-    std::string device_name;
+    std::string claim;
 
     PartnerBinding() : module_id(-1) {}
 
-    void setDevice(std::string device) { device_name = device; }
+    void setDevice(std::string device_claim) { claim = device_claim; }
     void forgetModule() { module_id = -1; }
-    void forgetDevice() { device_name = ""; }
+    void forgetDevice() { claim = ""; }
+    void onDeviceChanged(const IHandleHcEvents::DeviceChangedEvent& e) {
+        setDevice(e.device ? e.device->info.spec() : "");
+    }
 
     Hc1Module* getPartner()
     {
@@ -87,7 +71,7 @@ struct PartnerBinding
             }
         }
 
-        if (device_name.empty()) {
+        if (claim.empty()) {
             // if only one HC-1, grab it
             partner = one->getSoleHc1();
             if (!partner) {
@@ -100,18 +84,21 @@ struct PartnerBinding
                 });
             }
         } else {
-            // bind by device name
+            // bind by device claim
             one->scan_while([&](Hc1Module* const& mod)->bool {
-                if (mod && mod->deviceName() == this->device_name) {
-                    this->module_id = mod->getId();
+                if (mod 
+                    && mod->connection
+                    && mod->connection->info.spec() == claim) 
+                {
+                    module_id = mod->getId();
                     partner = mod;
                     return false;
                 }
                 return true;
             });
         }
-        if (partner) {
-            device_name = partner->deviceName();
+        if (partner && partner->connection) {
+            claim = partner->connection->info.spec();
         }
         return partner;
     }

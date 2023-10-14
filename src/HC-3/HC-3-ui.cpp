@@ -41,7 +41,7 @@ Hc3ModuleWidget::Hc3ModuleWidget(Hc3Module* module)
 
 void Hc3ModuleWidget::onDeviceChanged(const DeviceChangedEvent& e)
 {
-    device_label->text(e.name);
+    device_label->text(e.device ? e.device->info.friendly(false) : "");
 }
 
 void Hc3ModuleWidget::onDisconnect(const DisconnectEvent& e)
@@ -141,12 +141,12 @@ void Hc3ModuleWidget::appendContextMenu(Menu *menu)
     }, !any || 16 == count));
 
     menu->addChild(new MenuSeparator);
-    menu->addChild(createMenuItem("Refresh HC-1 connection", "", [=]() {
-        auto partner = my_module->getPartner();
-        if (partner) {
-            device_label->text(partner->deviceName());
-        }
-    }));
+    // menu->addChild(createMenuItem("Refresh HC-1 connection", "", [=]() {
+    //     auto partner = my_module->getPartner();
+    //     if (partner) {
+    //         device_label->text(partner->deviceName());
+    //     }
+    // }));
     menu->addChild(createMenuItem("Clear HC-1 Favorite tab", "", [=]() {
             auto partner = my_module->getPartner();
             if (partner) {

@@ -38,7 +38,7 @@ void Hc4ModuleWidget::onDisconnect(const DisconnectEvent& e)
 
 void Hc4ModuleWidget::onDeviceChanged(const DeviceChangedEvent& e)
 {
-    device_label->text(e.name);
+    device_label->text(e.device ? e.device->info.friendly(false) : "");
 }
 
 

@@ -1,181 +1,454 @@
 #include "em_device.hpp"
 #include "misc.hpp"
+#include <unordered_map>
 
-namespace pachde {
+namespace pachde
+{
 
-// make sure to pass filtered name
+bool is_osmose(const std::string& name)
+{
+    if (name.empty()) { return false; }
+    auto text = to_lower_case(name);
+    return std::string::npos != text.find("osmose")
+        && std::string::npos != text.find_first_of('2');
+}
+
 bool is_EMDevice(const std::string& name)
 {
+    if (name.empty()) { return false; }
     auto text = to_lower_case(name);
-    if (0 == text.compare(0, 8, "continuu", 0, 8)) { return true; } //Continuum <serial> and ContinuuMini <serial>
-    if (0 == text.compare(0, 11, "eaganmatrix", 0, 11)) { return true; } // "EaganMatrix Module" according to the user guide
-
-    // osmose varies depending on OS, and must be Osmose port 2
-    if (std::string::npos != text.find("osmose")) {
-// #if defined ARCH_MAC
-//         // osmose port 2
-//         if (0 == text.compare(8, 14, "port 2", 0, 6)) return true;
-// #endif
-// #if defined ARCH_WIN
-//         if (0 == text.compare(0, 8, "midiout2", 0, 8)) return true;
-//         if (0 == text.compare(0, 7, "midiin2", 0, 7)) return true;
-// #endif
-        // should be good enough for both input and output
-        if (std::string::npos != text.find_first_of('2')) return true;
+    // Continuum <serial> and ContinuuMini <serial>
+    if (0 == text.compare(0, 8, "continuu", 0, 8)) {
+        return true;
     }
-    return false;
+    // "EaganMatrix Module"
+    if (0 == text.compare(0, 11, "eaganmatrix", 0, 11)) {
+        return true;
+    }
+    // Osmose varies depending on OS, and must be Osmose port 2
+    return std::string::npos != text.find("osmose")
+        && std::string::npos != text.find_first_of('2');
 }
 
-std::string FilterDeviceName(const std::string& raw)
+#if defined ARCH_MAC
+std::string FilterDeviceName(const std::string &raw) { return raw; }
+#endif
+
+#if defined ARCH_WIN
+std::string FilterDeviceName(const std::string &raw)
 {
+    if (raw.empty()) return raw;
     std::string text = raw;
-
-    #if defined ARCH_WIN
-    if (!text.empty()) {
-        text.erase(text.find_last_not_of("0123456789"));
-    }
-    #endif
-
-    #if defined ARCH_LIN
-    if (!text.empty()) {
-        auto pos = text.find(':');
-        if (std::string::npos != pos) {
-            return text.substr(0, pos);
-        }
-    }
-    #endif
-
+    text.erase(text.find_last_not_of("0123456789"));
     return text;
 }
+#endif
 
-bool ExcludeDriver(const std::string& name)
+#if defined ARCH_LIN
+std::string FilterDeviceName(const std::string &raw)
+{
+    if (raw.empty()) return raw;
+    std::string text = raw;
+    auto pos = text.find(':');
+    if (std::string::npos != pos)
+    {
+        return text.substr(0, pos);
+    }
+    return text;
+}
+#endif
+
+bool ExcludeDriver(const std::string &name)
 {
     auto text = to_lower_case(name);
-    if (0 == text.compare(0, 7, "gamepad", 0, 7)) { return true; }
-    if (0 == text.compare(0, 8, "loopback", 0, 8)) { return true; }
-    if (std::string::npos != text.find("keyboard")) { return true; }
+    if (0 == text.compare(0, 7, "gamepad", 0, 7)) {
+        return true;
+    }
+    if (0 == text.compare(0, 8, "loopback", 0, 8)) {
+        return true;
+    }
+    return std::string::npos != text.find("keyboard");
+}
+
+bool ExcludeDevice(const std::string & name)
+{
+#if defined ARCH_WIN
+    return (name.size() >= 28) && (0 == name.compare(0,28, "Microsoft GS Wavetable Synth", 0, 28));
+#else
     return false;
+#endif
 }
 
-std::string MidiDeviceIdentity::toSpec()
-{
-    if (!ok()) return "";
-    return format_string("%s:%s:%s:%d",
-        MidiDeviceKind::Input == kind ? "in" : "out",
-        driver_name.c_str(),
-        device_name.c_str(),
-        sequence
-    );
-}
+// =============================================================
 
-// spec:
-// (i[n]|o[ut]):<driver>:<device>[:<sequence#>]
-// no spaces allowed except within <driver> or <device>.
-// no leading or trailing spaces allowed around <driver> or <device>.
-bool MidiDeviceIdentity::parse(const std::string& spec)
+bool MidiDeviceConnectionInfo::parse(const std::string & spec)
 {
-    enum class PS { start, nc, uc, t, colon, driver, device, seq, error, end };
     clear();
     if (spec.empty()) return false;
-
-    sequence = 0;
-    PS state = PS::start;
+    int seq = 0;
+    int state = 0;
     for (auto ch: spec) {
-        if (PS::end == state) break;
+        if ('+' == ch) {
+            ++state;
+            continue;
+        }
         switch (state) {
-        case PS::error:
-            clear();
-            return false;
-        case PS::start:
-            switch (ch) {
-            case 'i': case 'I': kind = MidiDeviceKind::Input; state = PS::nc; break;
-            case 'o': case 'O': kind = MidiDeviceKind::Output; state = PS::uc; break;
-            default: state = PS::error; break;
-            }
-            break;
-        case PS::nc: 
-            switch (ch){
-            case 'n': case 'N': state= PS::colon; break;
-            case ':': state = PS::driver; break;
-            default: state = PS::error; break;
-            }
-            break;
-        case PS::uc:
-            switch (ch) {
-            case 'u': case 'U': state= PS::t; break;
-            case ':': state = PS::driver; break;
-            default: state = PS::error; break;
-            }
-            break;
-        case PS::t:
-            switch (ch) {
-            case 't': case 'T': state= PS::colon; break;
-            default: state = PS::error; break;
-            }
-            break;
-        case PS::colon: 
-            state = ':' == ch ? PS::driver : PS::error;
-            break;
-        case PS::driver:
-            if (':' == ch) {
-                state = PS::device;
-            } else {
-                driver_name.push_back(ch);
-            }
-            break;
-        case PS::device:
-            if (':' == ch) {
-                state = PS::seq;
-            } else {
-                device_name.push_back(ch);
-            }
-            break;
-        case PS::seq:
-            if ('*' == ch) {
-                sequence = -1;
-                state = PS::end;
-            } else
-            if (std::isdigit(ch)) {
-                sequence = (10 * sequence) + (ch - '0');
-            } else {
-                state = PS::error;
-            }
-            break;
+            case 0: input_device_name.push_back(ch); break;
+            case 1: output_device_name.push_back(ch); break;
+            case 2: driver_name.push_back(ch); break;
+            case 3:
+                if (std::isdigit(ch)) {
+                    seq = (seq * 10) + (ch - '0');
+                } else {
+                    clear();
+                    return false;
+                }
+                break;
+            default:
+                clear();
+                return false;
         }
     }
-    if (ok()) {
-        return true;
-    } else {
-        clear();
-        return false;
-    }
+    sequence = seq;
+    return true;
 }
 
-bool MidiDevice::instantiate(const std::string& spec)
+std::string MidiDeviceConnectionInfo::spec() const
 {
-    if (!identity.parse(spec)) return false;
-    int occurrence = 0;
+    if (claim.empty()) {
+        auto s = input_device_name;
+        s.push_back('+');
+        s.append(output_device_name);
+        s.push_back('+');
+        s.append(driver_name);
+        s.push_back('+');
+        assert(sequence >= 0);
+        if (sequence < 10) {
+            s.push_back('0' + sequence);
+        } else {
+            s.append(format_string("%d", sequence));
+        }
+        const_cast<MidiDeviceConnectionInfo*>(this)->claim = s;
+    }
+    return claim;
+}
 
-    for (auto id_driver : midi::getDriverIds()) {
+std::string MidiDeviceConnectionInfo::friendly(bool long_name) const
+{
+    std::string result = input_device_name;
+    if (sequence > 0) {
+        result.append(format_string("#%d", sequence));
+    }
+    if (long_name) {
+        if (!output_device_name.empty()) {
+            result.append(" and ");
+            result.append(output_device_name);
+        }
+        if (!driver_name.empty()) {
+            result.append(" on ");
+            result.append(driver_name);
+        }
+    }
+    return result;
+}
+
+// =============================================================
+
+bool MidiDeviceConnection::instantiate(const std::string &spec)
+{
+    clear_ids();
+    if (!info.parse(spec)) {
+        return false;
+    }
+
+    for (auto id_driver : midi::getDriverIds())
+    {
         auto driver = midi::getDriver(id_driver);
-        std::string name = driver->getName();
-        if (match_insensitive(identity.driver(), name)) {
-            bool out = identity.getKind() == MidiDeviceKind::Output;
-            for (auto id_device: out ? driver->getOutputDeviceIds() : driver->getInputDeviceIds()) {
-                std::string name = out ? driver->getOutputDeviceName(id_device) : driver->getInputDeviceName();
-                if (match_insensitive(identity.device(), name)) {
-                    if (identity.nth() == -1 || occurrence == identity.nth()) {
-                        driver_id = id_driver;
-                        device_id = id_device;
-                        return true;
+        std::string driver_name = driver->getName();
+        if (match_insensitive(info.driver(), driver_name)) {
+
+            driver_id = id_driver;
+
+            // find input device id
+            int occurrence = 0;
+            for (auto id_device : driver->getInputDeviceIds())
+            {
+                std::string name = FilterDeviceName(driver->getInputDeviceName(id_device));
+                if (match_insensitive(info.input(), name))
+                {
+                    if (info.nth() <= 0 || occurrence == info.nth())
+                    {
+                        input_device_id = id_device;
+                        break;
                     }
                     ++occurrence;
                 }
             }
+
+            if (input_device_id < 0) return false;
+
+            // find output device id
+            occurrence = 0;
+            for (auto id_device : driver->getOutputDeviceIds())
+            {
+                std::string name = FilterDeviceName(driver->getOutputDeviceName(id_device));
+                if (match_insensitive(info.output(), name))
+                {
+                    if (info.nth() <= 0 || occurrence == info.nth())
+                    {
+                        output_device_id = id_device;
+                        break;
+                    }
+                    ++occurrence;
+                }
+            }
+            return identified();
         }
     }
     return false;
 }
 
+bool matchInOut(const std::string& input, const std::string& output)
+{
+    if (0 == input.compare(output)) return true;
+#if defined ARCH_WIN   
+    if (is_osmose(input)) {
+        return (0 == input.compare(0,7, "MIDIIN2", 0,7)) 
+            && (0 == output.compare(0,8, "MIDIOUT2", 0,8));
+    }
+#endif
+    return false;
+}
 
+std::vector<std::shared_ptr<MidiDeviceConnection>> EnumerateMidiConnections(bool emOnly)
+{
+    std::vector<std::shared_ptr<MidiDeviceConnection>> result;
+    std::map<std::string, int> counts;
+
+    for (auto id_driver : midi::getDriverIds())
+    {
+        auto driver = midi::getDriver(id_driver);
+        if (ExcludeDriver(driver->getName())) {
+            continue;
+        }
+
+        // collect inputs
+        for (auto id_input: driver->getInputDeviceIds()) {
+            auto input_name = FilterDeviceName(driver->getInputDeviceName(id_input));
+            if (emOnly && !is_EMDevice(input_name)) {
+                continue;
+            }
+            auto item = std::make_shared<MidiDeviceConnection>();
+            item->driver_id = id_driver;
+            item->input_device_id = id_input;
+            item->info.driver_name = driver->getName();
+            item->info.input_device_name = input_name;
+            auto r = counts.insert(std::make_pair(input_name, 0));
+            if (!r.second) {
+                r.first->second++;
+            }
+            item->info.sequence = r.first->second;
+            result.push_back(item);
+        }
+
+        // match outputs to inputs
+        counts.clear();
+        for (auto id_out: driver->getOutputDeviceIds()) {
+            auto output_name = FilterDeviceName(driver->getOutputDeviceName(id_out));
+            if (ExcludeDevice(output_name) || (emOnly && !is_EMDevice(output_name))) {
+                continue;
+            }
+            auto r = counts.insert(std::make_pair(output_name, 0));
+            if (!r.second) {
+                r.first->second++;
+            }
+            int seq = r.first->second;
+            auto item = std::find_if(result.begin(), result.end(), [&](std::shared_ptr<MidiDeviceConnection>& item) {
+                return matchInOut(item->info.input_device_name, output_name) &&
+                    item->info.sequence == seq;
+            });
+            if (item != result.end()) {
+                (*item)->output_device_id = id_out;
+                if (output_name != (*item)->info.input_device_name) {
+                    (*item)->info.output_device_name = output_name;
+                }
+            } else {
+                DEBUG("No match for output device %s:%s:%d", driver->getName().c_str(), output_name.c_str(), seq);
+            }
+        }
+    }
+    return result;
+}
+
+// ==== MidiDeviceBroker::Internal =============================
+
+struct MidiDeviceBroker::Internal
+{
+    std::vector<std::shared_ptr<MidiDeviceConnection>> devices;
+    std::map<std::string, int64_t> claims; // spec:module_id
+
+    void clear() {
+        devices.clear();
+        claims.clear();
+    }
+    bool empty() { return devices.empty(); }
+
+    void scan_while(std::function<bool(const std::shared_ptr<MidiDeviceConnection>)> pred) {
+        for (auto d: devices) {
+            if (!pred(d)) break;
+        }
+    }
+
+    std::shared_ptr<MidiDeviceConnection> get_connection(const std::string& claim) const
+    {
+        auto it = std::find_if(devices.cbegin(), devices.cend(),
+            [claim](const std::shared_ptr<MidiDeviceConnection> p) {
+                return 0 == claim.compare(p->info.spec());
+            });
+        return it == devices.cend() ? nullptr : *it;
+    }
+
+    std::shared_ptr<MidiDeviceConnection> get_connection(int key) const
+    {
+        auto it = std::find_if(devices.cbegin(), devices.cend(),
+            [key](const std::shared_ptr<MidiDeviceConnection> p) {
+                return p->unique_key() == key;
+            });
+        return it == devices.cend() ? nullptr : *it;
+    }
+
+    void ensureDevices() {
+        if (devices.empty()) {
+            devices = EnumerateMidiConnections(false);
+        }
+    }
+
+    int64_t get_claimant(const std::string& claim) const {
+        auto r = claims.find(claim);
+        return r != claims.cend() ? r->second : -1;
+    }
+
+    ClaimResult claim(int64_t claimant, const std::string& claim)
+    {
+        if (claim.empty()) return ClaimResult::ArgumentError;
+        ensureDevices();
+        if (empty()) return ClaimResult::NoMidiDevices;
+        if (!get_connection(claim)) {
+            return ClaimResult::NotAvailable;
+        }
+        auto r = claims.insert(std::make_pair(claim, claimant));
+        if (r.second) return ClaimResult::Ok; // inserted, so successfully claimed
+        return r.first->second == claimant 
+            ? ClaimResult::Ok // already claimed by the module, which is fine
+            : ClaimResult::AlreadyClaimed; // claimed by another module
+    }
+
+    std::string claim_new_device(int64_t claimant)
+    {
+        ensureDevices();
+        revoke_claim(claimant); // you only get one at a time
+        if (devices.empty()) return "";
+        
+        for (auto it = devices.cbegin(); it != devices.cend(); ++it) {
+            auto p = *it;
+            if (is_EMDevice(p->info.input_device_name)) {
+                auto claim = p->info.spec();
+                if (-1 == get_claimant(claim)) {
+                    claims.insert(std::make_pair(claim, claimant));
+                    return claim;
+                }
+            }
+        };
+        return "";
+    }
+
+    void revoke_claim(const std::string& claim)
+    {
+        claims.erase(claim);
+    }
+
+    void revoke_claim(int64_t claimant)
+    {
+        auto it = std::find_if(claims.begin(), claims.end(), [claimant](const std::pair<std::string, int64_t>& claim){ return claim.second == claimant; });
+        if (it != claims.end()) {
+            claims.erase(it);
+        }
+    }
+
+};
+
+// ==== MidiDeviceBroker =======================================
+
+MidiDeviceBroker * brokerInstance = nullptr;
+
+MidiDeviceBroker::MidiDeviceBroker() : me(new Internal) {}
+
+MidiDeviceBroker* MidiDeviceBroker::get()
+{
+    if (!brokerInstance) {
+        brokerInstance = new MidiDeviceBroker();
+    }
+    return brokerInstance;
+}
+
+MidiDeviceBroker::~MidiDeviceBroker() {
+    if (me) delete me;
+}
+
+bool MidiDeviceBroker::is_available(const std::string& claim)
+{
+    return  me->get_claimant(claim) == -1;
+}
+
+void MidiDeviceBroker::sync()
+{
+    auto new_devices = EnumerateMidiConnections(false);
+
+    std::set<int> old_keys;
+    for (auto item : me->devices) { old_keys.insert(item->unique_key()); }
+
+    std::set<int> new_keys;
+    for (auto item : new_devices) { new_keys.insert(item->unique_key()); }
+
+    for (auto key: old_keys) {
+        auto it = new_keys.find(key);
+        if (it == new_keys.end()) {
+            auto conn = get_connection(key);
+            auto claim = conn->info.spec();
+            auto mod_id = me->get_claimant(claim);
+            if (-1 != mod_id) {
+                me->revoke_claim(claim);
+                auto mod = APP->engine->getModule(mod_id);
+                auto client = dynamic_cast<IMidiDeviceChange*>(mod);
+                if (client) {
+                    client->onRevokeClaim(claim);
+                }
+            }
+        }
+    }
+    me->devices = new_devices;
+}
+
+// everything else is a forwarder
+MidiDeviceBroker::ClaimResult MidiDeviceBroker::claim_device(int64_t claimant, const std::string& claim) {
+    return me->claim(claimant, claim);
+}
+std::string MidiDeviceBroker::claim_new_device(int64_t claimant) {
+    return me->claim_new_device(claimant);
+}
+void MidiDeviceBroker::revoke_claim(const std::string& claim) {
+    return me->revoke_claim(claim);
+}
+void MidiDeviceBroker::revoke_claim(int64_t claimant) {
+    return me->revoke_claim(claimant);
+}
+std::shared_ptr<MidiDeviceConnection> MidiDeviceBroker::get_connection(const std::string& claim) const {
+    return me->get_connection(claim);
+}
+std::shared_ptr<MidiDeviceConnection> MidiDeviceBroker::get_connection(int key) const {
+    return me->get_connection(key);
+}
+void MidiDeviceBroker::scan_while(std::function<bool(const std::shared_ptr<MidiDeviceConnection>)> pred) const {
+    me->scan_while(pred);
+}
 }

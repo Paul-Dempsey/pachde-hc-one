@@ -2,6 +2,8 @@
 #ifndef MISC_HPP_INCLUDED
 #define MISC_HPP_INCLUDED
 #include <rack.hpp>
+#include <string>
+
 using namespace ::rack;
 namespace pachde {
 
@@ -10,6 +12,7 @@ namespace pachde {
 #endif
 
 std::string format_string(const char *fmt, ...);
+const char * printable(const std::string& s);
 bool alpha_order(const std::string& a, const std::string& b); 
 std::size_t common_prefix_length(const std::string& alpha, const std::string& beta);
 std::size_t common_prefix_length_insensitive(const std::string& alpha, const std::string& beta);
@@ -17,7 +20,11 @@ inline bool match_insensitive(const std::string& alpha, const std::string& beta)
     return alpha.size() == beta.size()
         && alpha.size() == common_prefix_length_insensitive(alpha, beta);
 }
+
 std::string to_lower_case(const std::string& name);
+bool is_safe_file_char(char ch, bool allow_space = true);
+std::string to_file_safe(const std::string& str, bool allow_space = true);
+
 int randomZeroTo(int size);
 //std::string AbbreviatedName(std::string name);
 std::string TempName(const std::string& suffix);

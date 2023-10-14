@@ -3,14 +3,14 @@
 namespace pachde {
 
 void Hc1Module::tryCachedPresets() {
-    if (cache_system_presets) {
+    if (cache_system_presets && hardware != EM_Hardware::Unknown) {
         loadSystemPresets();
         if (system_presets.empty()) {
             system_preset_state = InitState::Uninitialized;
         }
     }
 
-    if (cache_user_presets) {
+    if (cache_user_presets && connection) {
         loadUserPresets();
         if (user_presets.empty()) {
             user_preset_state = InitState::Uninitialized;
@@ -47,14 +47,15 @@ void Hc1Module::setPresetOrder(PresetOrder order)
 
 std::string Hc1Module::userPresetsPath()
 {
-    if (deviceName().empty()) return "";
-    return asset::user(format_string("%s/%s-user.json", pluginInstance->slug.c_str(), deviceName().c_str()));
+    if (!connection) return "";
+    auto conn = to_file_safe(connection->info.spec(), false);
+    return asset::user(format_string("%s/%s-user.json", pluginInstance->slug.c_str(), conn.c_str()));
 }
 
 std::string Hc1Module::systemPresetsPath()
 {
-    if (deviceName().empty()) return "";
-    return asset::user(format_string("%s/%s-system.json", pluginInstance->slug.c_str(), deviceName().c_str()));
+    if (!connection) return "";
+    return asset::user(format_string("%s/%s-system.json", pluginInstance->slug.c_str(), ShortHardwareName(hardware)));
 }
 
 void Hc1Module::saveUserPresets()
@@ -197,7 +198,8 @@ void Hc1Module::favoritesFromPresets()
 
 void Hc1Module::userPresetsToJson(json_t* root)
 {
-    auto device = deviceName();
+    if (!connection) return;
+    auto device = connection->info.spec();
     json_object_set_new(root, "device", json_stringn(device.c_str(), device.size()));
 
     auto jaru = json_array();
@@ -209,8 +211,7 @@ void Hc1Module::userPresetsToJson(json_t* root)
 
 void Hc1Module::systemPresetsToJson(json_t* root)
 {
-    auto device = deviceName();
-    json_object_set_new(root, "device", json_stringn(device.c_str(), device.size()));
+    json_object_set_new(root, "hardware", json_string(ShortHardwareName(hardware)));
 
     auto jars = json_array();
     for (auto preset: system_presets) {
@@ -222,8 +223,9 @@ void Hc1Module::systemPresetsToJson(json_t* root)
 
 std::string Hc1Module::moduleFavoritesPath()
 {
-    if (broken || !is_eagan_matrix) return "";
-    return asset::user(format_string("%s/fav-%s.json", pluginInstance->slug.c_str(), deviceName().c_str()));
+    if (!connection) return "";
+    auto device = to_file_safe(connection->info.spec(), false);
+    return asset::user(format_string("%s/fav-%s.json", pluginInstance->slug.c_str(), device.c_str()));
 }
 
 void Hc1Module::clearFavorites()
@@ -240,8 +242,7 @@ void Hc1Module::clearFavorites()
 json_t* Hc1Module::favoritesToJson()
 {
     json_t* root = json_object();
-    auto device = FilterDeviceName(deviceName());
-    json_object_set_new(root, "device", json_stringn(device.c_str(), device.size()));
+    json_object_set_new(root, "device", json_string(connection ? connection->info.spec().c_str() : ""));
     auto ar = json_array();
     for (auto preset: system_presets) {
         if (preset->favorite) {

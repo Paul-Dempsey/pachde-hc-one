@@ -38,7 +38,7 @@ Hc1Module* Hc3Module::getPartner() {
 
 void Hc3Module::onDeviceChanged(const DeviceChangedEvent& e)
 {
-    partner_binding.setDevice(e.name);
+    partner_binding.onDeviceChanged(e);
     if (ui_event_sink) {
         ui_event_sink->onDeviceChanged(e);
     }
@@ -117,7 +117,7 @@ void Hc3Module::useCurrentFavoriteFile(int id)
 json_t * Hc3Module::dataToJson()
 {
     auto root = json_object();
-    json_object_set_new(root, "device", json_stringn(partner_binding.device_name.c_str(), partner_binding.device_name.size()));
+    json_object_set_new(root, "device", json_string(partner_binding.claim.c_str()));
     if (!files.empty()) {
         auto jar = json_array();
         for (auto f: files) {

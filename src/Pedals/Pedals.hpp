@@ -61,11 +61,13 @@ struct PedalCore : Module, ISendMidi, IHandleHcEvents
     void sendControlChange(uint8_t channel, uint8_t cc, uint8_t value) override;
     bool readyToSend() override;
 
-    void onSampleRateChange() override {
-        control_rate.onSampleRateChanged();
-    }
     void syncAssign(Hc1Module * partner);
     void syncValue(Hc1Module * partner);
+
+    // Module
+    void onSampleRateChange() override { control_rate.onSampleRateChanged(); }
+    json_t * dataToJson() override;
+    void dataFromJson(json_t *root) override;
     void process(const ProcessArgs& args) override;
 };
 
@@ -94,7 +96,6 @@ struct PedalUICore : ModuleWidget, IHandleHcEvents
     // void onRoundingChanged(const RoundingChangedEvent& e) override;
     void onDeviceChanged(const DeviceChangedEvent& e) override;
     void onDisconnect(const DisconnectEvent& e) override;
-
 };
 
 //

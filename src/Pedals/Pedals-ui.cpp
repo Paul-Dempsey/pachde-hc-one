@@ -33,7 +33,7 @@ PedalUICore::PedalUICore(PedalCore* module)
 
 void PedalUICore::onDeviceChanged(const DeviceChangedEvent& e)
 {
-    device_label->text(e.name);
+    device_label->text(e.device ? e.device->info.friendly(false) : "");
 }
 
 void PedalUICore::onPresetChanged(const PresetChangedEvent& e)

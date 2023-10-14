@@ -3,6 +3,7 @@
 #define HC_EVENTS_HPP_INCLUDED
 #include <rack.hpp>
 #include "presets.hpp"
+#include "em_device.hpp"
 #include "em_types.hpp"
 
 namespace pachde {
@@ -30,7 +31,7 @@ struct IHandleHcEvents
     virtual void onRoundingChanged(const RoundingChangedEvent& e) {}
 
     struct DeviceChangedEvent {
-        const std::string &name;
+        const std::shared_ptr<MidiDeviceConnection> device;
     };
     virtual void onDeviceChanged(const DeviceChangedEvent& e) {}
 

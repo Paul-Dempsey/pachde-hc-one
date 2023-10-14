@@ -2,24 +2,12 @@
 #include "../module_broker.hpp"
 #include "../misc.hpp"
 #include "../widgets/cc_param.hpp"
+#include "../em_device.hpp"
 
 namespace pachde {
 
 Hc1Module::Hc1Module()
 {
-    // for (auto id : ::rack::midi::getDriverIds()) {
-    //     auto driver = midi::getDriver(id);
-    //     DebugLog("MIDI Driver %d:%s", id, driver->getName().c_str());
-    //     for (auto did: driver->getInputDeviceIds())
-    //     {
-    //         DebugLog("  in: %d:%s", did, driver->getInputDeviceName(did).c_str());
-    //     }
-    //     for (auto did: driver->getOutputDeviceIds())
-    //     {
-    //         DebugLog("  out: %d:%s", did, driver->getOutputDeviceName(did).c_str());
-    //     }
-    // }
-
     system_presets.reserve(700);
     user_presets.reserve(128);
     config(Params::NUM_PARAMS, Inputs::NUM_INPUTS, Outputs::NUM_OUTPUTS, Lights::NUM_LIGHTS);
@@ -29,11 +17,11 @@ Hc1Module::Hc1Module()
     configCCParam(em_midi::EMCC_iv,  true, this, M4_PARAM, M4_INPUT, M4_REL_PARAM, M4_REL_LIGHT, 0.f, EM_Max14f, EM_Max14f/2.f, "iv");
     configCCParam(em_midi::EMCC_v,   true, this, M5_PARAM, M5_INPUT, M5_REL_PARAM, M5_REL_LIGHT, 0.f, EM_Max14f, EM_Max14f/2.f, "v");
     configCCParam(em_midi::EMCC_vi,  true, this, M6_PARAM, M6_INPUT, M6_REL_PARAM, M6_REL_LIGHT, 0.f, EM_Max14f, EM_Max14f/2.f, "vi");
-    configCCParam(em_midi::EMCC_R1,   false, this, R1_PARAM, R1_INPUT, R1_REL_PARAM, R1_REL_LIGHT, 0.f, 127.f, 64.f, "R1");
-    configCCParam(em_midi::EMCC_R2,   false, this, R2_PARAM, R2_INPUT, R2_REL_PARAM, R2_REL_LIGHT, 0.f, 127.f, 64.f, "R2");
-    configCCParam(em_midi::EMCC_R3,   false, this, R3_PARAM, R3_INPUT, R3_REL_PARAM, R3_REL_LIGHT, 0.f, 127.f, 64.f, "R3");
-    configCCParam(em_midi::EMCC_R4,   false, this, R4_PARAM, R4_INPUT, R4_REL_PARAM, R4_REL_LIGHT, 0.f, 127.f, 64.f, "R4");
-    configCCParam(em_midi::EMCC_RMIX, false, this, RMIX_PARAM, RMIX_INPUT, RMIX_REL_PARAM, RMIX_REL_LIGHT, 0.f, 127.f, 64.f, "Recirculator Mix");
+    configCCParam(em_midi::EMCC_R1,   false, this, R1_PARAM, R1_INPUT, R1_REL_PARAM, R1_REL_LIGHT, 0.f, 127.f, 64.f, "R1", "", 0.f, 0.f);
+    configCCParam(em_midi::EMCC_R2,   false, this, R2_PARAM, R2_INPUT, R2_REL_PARAM, R2_REL_LIGHT, 0.f, 127.f, 64.f, "R2", "", 0.f, 0.f);
+    configCCParam(em_midi::EMCC_R3,   false, this, R3_PARAM, R3_INPUT, R3_REL_PARAM, R3_REL_LIGHT, 0.f, 127.f, 64.f, "R3", "", 0.f, 0.f);
+    configCCParam(em_midi::EMCC_R4,   false, this, R4_PARAM, R4_INPUT, R4_REL_PARAM, R4_REL_LIGHT, 0.f, 127.f, 64.f, "R4", "", 0.f, 0.f);
+    configCCParam(em_midi::EMCC_RMIX, false, this, RMIX_PARAM, RMIX_INPUT, RMIX_REL_PARAM, RMIX_REL_LIGHT, 0.f, 127.f, 64.f, "Recirculator Mix", "", 0.f, 0.f);
     configCCParam(em_midi::EMCC_PostLevel, true, this, VOLUME_PARAM, VOLUME_INPUT, VOLUME_REL_PARAM, VOLUME_REL_LIGHT, 0.f, EM_Max14f, EM_Max14f/2.f, "Post level");
 
     configSwitch(M1_REL_PARAM, 0.f, 1.f, 0.f, "Macro i relative-CV", {"off", "on"});
@@ -75,11 +63,13 @@ Hc1Module::Hc1Module()
     clearCCValues();
 
     ModuleBroker::get()->registerHc1(this);
+    heart_phase = heart_time;
 }
 
 Hc1Module::~Hc1Module()
 {
     notifyDisconnect();
+    MidiDeviceBroker::get()->revoke_claim(Module::getId());
     ModuleBroker::get()->unregisterHc1(this);
     if (restore_ui_data) {
         delete restore_ui_data;
@@ -96,7 +86,7 @@ void Hc1Module::subscribeHcEvents(IHandleHcEvents*client)
     {
         event_subscriptions.push_back(client);
 
-        auto dce = IHandleHcEvents::DeviceChangedEvent{device_name};
+        auto dce = IHandleHcEvents::DeviceChangedEvent{connection};
         client->onDeviceChanged(dce);
 
         auto pce = IHandleHcEvents::PresetChangedEvent{current_preset};
@@ -142,7 +132,7 @@ void Hc1Module::notifyRoundingChanged()
 void Hc1Module::notifyDeviceChanged()
 {
     if (event_subscriptions.empty()) return;
-    auto event = IHandleHcEvents::DeviceChangedEvent{device_name};
+    auto event = IHandleHcEvents::DeviceChangedEvent{connection};
     for (auto client: event_subscriptions) {
         client->onDeviceChanged(event);
     }
@@ -243,8 +233,8 @@ void Hc1Module::onRemove(const RemoveEvent& e)
 json_t * Hc1Module::dataToJson()
 {
     auto root = json_object();
-    json_object_set_new(root, "midi-device", json_stringn(device_name.c_str(), device_name.size()));
-    //json_object_set_new(root, "midi-driver", json_stringn(saved_driver_name.c_str(), saved_driver_name.size()));
+
+    json_object_set_new(root, "midi-device-claim", json_string(device_claim.c_str()));
     json_object_set_new(root, "preset-order", json_integer(static_cast<int>(preset_order)));
     json_object_set_new(root, "preset-tab", json_integer(static_cast<int>(tab)));
     auto ar = json_array();
@@ -260,7 +250,7 @@ json_t * Hc1Module::dataToJson()
     json_object_set_new(root, "cache-presets", json_boolean(cache_system_presets));
     json_object_set_new(root, "cache-user-presets", json_boolean(cache_user_presets));
     json_object_set_new(root, "heartbeat",  json_boolean(heart_beating));
-    json_object_set_new(root, "favorites-file", json_stringn(favoritesFile.c_str(), favoritesFile.size()));
+    json_object_set_new(root, "favorites-file", json_string(favoritesFile.c_str()));
     return root;
 }
 
@@ -299,14 +289,10 @@ void Hc1Module::dataFromJson(json_t *root)
         saved_preset_state = InitState::Complete;
     }
 
-    j = json_object_get(root, "midi-device");
+    j = json_object_get(root, "midi-device-claim");
     if (j) {
-        saved_device_name = json_string_value(j);
+        device_claim = json_string_value(j);
     }
-    // j = json_object_get(root, "midi-driver");
-    // if (j) {
-    //     saved_driver_name = json_string_value(j);
-    // }
     
     j = json_object_get(root, "favorites-file");
     if (j) {
@@ -317,17 +303,15 @@ void Hc1Module::dataFromJson(json_t *root)
     tryCachedPresets();
 }
 
-void Hc1Module::reboot(bool skip_midi)
+void Hc1Module::reboot()
 {
-    if (!skip_midi) {
-        midi::Input::reset();
-        midi_output.reset();
-        device_output_state =
-            device_input_state =
-            InitState::Uninitialized;
-    }
+    connection = nullptr;
     dupe = false;
-    device_name = "";
+    midi::Input::reset();
+    midi_output.reset();
+
+    MidiDeviceBroker::get()->sync();
+
     firmware_version = 0;
     cvc_version = 0;
     hardware = EM_Hardware::Unknown;
@@ -339,30 +323,29 @@ void Hc1Module::reboot(bool skip_midi)
     midi_send_count = 0;
     broken = false;
     broken_idle = 0.f;
-    heart_phase = 0.f;
-    heart_time = 1.0f;
+    heart_phase = heart_time = 1.0f;
     first_beat = false;
     preset0.clear();
     system_presets.clear();
     user_presets.clear();
 
+    device_output_state =
+    device_input_state =
+    device_hello_state =
     system_preset_state = 
-        duplicate_instance = 
-        user_preset_state = 
-        apply_favorite_state =
-        config_state = 
-        request_updates_state = 
-        saved_preset_state =
-        handshake
+    user_preset_state = 
+    apply_favorite_state =
+    config_state = 
+    request_updates_state = 
+    saved_preset_state =
+    handshake
         = InitState::Uninitialized;
 
     in_preset = in_sys_names = in_user_names = false;
 
     notesOn = 0;
     data_stream = -1;
-    //download_message_id = -1;
     recirculator = 0;
-
     notifyDeviceChanged();
 }
 
@@ -383,42 +366,6 @@ void Hc1Module::onRandomize(const RandomizeEvent& e)
     }
     if (rp.empty()) return;
     setPreset(rp[randomZeroTo(rp.size())]);
-}
-
-int Hc1Module::findMatchingInputDevice(const std::string& name)
-{
-    int best_id = -1;
-    std::size_t common = 0;
-    for (auto id: midi::Input::getDeviceIds()) {
-        auto other_name = FilterDeviceName(midi::Input::getDeviceName(id));
-        std::size_t c2 = common_prefix_length(name, other_name);
-        if (c2 == name.size()){
-            best_id = id;
-            break;
-        } else if (c2 > common) {
-            best_id = id;
-            common = c2;
-        }
-    }
-    return best_id;
-}
-
-int Hc1Module::findMatchingOutputDevice(const std::string& name)
-{
-    int best_id = -1;
-    std::size_t common = 0;
-    for (auto id: midi_output.getDeviceIds()) {
-        auto other_name = FilterDeviceName(midi_output.getDeviceName(id));
-        std::size_t c2 = common_prefix_length(name, other_name);
-        if (c2 == name.size()){
-            best_id = id;
-            break;
-        } else if (c2 > common) {
-            best_id = id;
-            common = c2;
-        }
-    }
-    return best_id;
 }
 
 } //pachde

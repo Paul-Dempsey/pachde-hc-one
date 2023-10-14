@@ -5,61 +5,11 @@
 
 namespace pachde {
 
-void Hc1Module::setMidiDevice(int id)
+void Hc1Module::setMidiDevice(const std::string & claim)
 {
-    if (-1 == id) {
-        resetMidiIO();
-        return;
-    }
-    
-    output_device_id = id;
-    midi_output.setDeviceId(id);
-    device_name = FilterDeviceName(midi_output.getDeviceName(id));
-    is_eagan_matrix = is_EMDevice(device_name);
-    int id_in = findMatchingInputDevice(device_name);
-    midi::Input::setDeviceId(id_in);
-    input_device_id = id_in;
-    device_output_state = id == -1 ? InitState::Uninitialized : InitState::Complete;
-    device_input_state = id_in == -1 ? InitState::Uninitialized : InitState::Complete;
-    reboot(true);
-}
-
-void Hc1Module::resetMidiIO()
-{
-    device_name.clear();
-
-    midi_dispatch.clear();
-
-    midi::Input::reset();
-    input_device_id = -1;
-    device_input_state = InitState::Uninitialized;
-
-    midi_output.reset();
-    output_device_id = -1;
-    device_output_state = InitState::Uninitialized;
-
-    dupe = false;
-    duplicate_instance = InitState::Uninitialized;
-
-    notifyDeviceChanged();
-}
-
-void Hc1Module::checkDuplicate()
-{
-    dupe = false;
-    auto one = ModuleBroker::get();
-    if (one->Hc1count() > 1) {
-        one->scan_while([=](const Hc1Module* const m) { 
-            if (m != this
-                && this->output_device_id >= 0 
-                && (this->output_device_id == m->output_device_id)) {
-                dupe = true;
-                return false;
-            }
-            return true;
-        });
-    } 
-    duplicate_instance = InitState::Complete;
+    if (0 == device_claim.compare(claim)) return;
+    device_claim = claim;
+    reboot();
 }
 
 void Hc1Module::queueMidiMessage(uMidiMessage msg)
@@ -69,8 +19,8 @@ void Hc1Module::queueMidiMessage(uMidiMessage msg)
         return;
     }
     if (midi_dispatch.full()) {
-        DebugLog("MIDI Output queue full: resetting MIDI IO");
-        resetMidiIO();
+        DebugLog("MIDI Output queue full: rebooting");
+        reboot();
     } else {
         midi_dispatch.push(msg);
     }
@@ -96,6 +46,19 @@ void Hc1Module::transmitRequestUpdates()
     DebugLog("Request updates");
     request_updates_state = InitState::Complete; // one-shot
     sendControlChange(EM_SettingsChannel, EMCC_Preserve, 1); // bit 1 means request config
+}
+
+void Hc1Module::transmitDeviceHello()
+{
+    DebugLog("Device hello (config)");
+    device_hello_state = InitState::Pending;
+#ifdef VERBOSE_LOG
+    log_midi = true;
+#endif
+    beginPreset(); // force preset
+    sendEditorPresent(false);
+    //sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::gridToFlash); // needed for pedals
+    sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::configToMidi);
 }
 
 void Hc1Module::transmitRequestConfiguration()
@@ -200,7 +163,6 @@ void Hc1Module::sendNoteOff(uint8_t channel, uint8_t note, uint8_t velocity)
 {
     queueMidiMessage(uMidiMessage(MidiStatus_NoteOff|channel, note, velocity));
 }
-
 
 void Hc1Module::setMacroCCValue(int id, uint8_t value)
 {
@@ -459,9 +421,9 @@ void Hc1Module::onChannel16CC(uint8_t cc, uint8_t value)
 
         case EMCC_EditorReply:{
             DebugLog("Editor Reply");
-            // if (InitState::Pending == device_hello_state) {
-            //     device_hello_state = InitState::Complete;
-            // } else
+            if (InitState::Pending == device_hello_state) {
+                device_hello_state = InitState::Complete;
+            } else
             if (InitState::Pending == handshake) {
                 first_beat = true;
                 handshake = InitState::Complete;
@@ -505,7 +467,13 @@ void Hc1Module::onChannel16Message(const midi::Message& msg)
                     saved_preset_state = config_state = InitState::Complete;
                     notifyPresetChanged();
                     notifyPedalsChanged();
-                } else 
+                } else
+                if (deviceHelloPending()) {
+#ifdef VERBOSE_LOG
+                    log_midi = false;
+#endif
+                    device_hello_state = InitState::Complete;
+                } else
                 if (configPending()) {
 #ifdef VERBOSE_LOG
                     log_midi = false;

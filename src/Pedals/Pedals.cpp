@@ -26,6 +26,21 @@ PedalCore::~PedalCore()
     }
 }
 
+json_t * PedalCore::dataToJson()
+{
+    auto root = json_object();
+    json_object_set_new(root, "device", json_string(partner_binding.claim.c_str()));
+    return root;
+}
+
+void PedalCore::dataFromJson(json_t *root)
+{
+    auto j = json_object_get(root, "device");
+    if (j) {
+        partner_binding.setDevice(json_string_value(j));
+    }
+}
+
 Hc1Module* PedalCore::getPartner()
 {
     auto partner = partner_binding.getPartner();
@@ -55,7 +70,7 @@ void PedalCore::onPedalChanged(const PedalChangedEvent& e)
 
 void PedalCore::onDeviceChanged(const DeviceChangedEvent& e)
 {
-    partner_binding.setDevice(e.name);
+    partner_binding.onDeviceChanged(e);
     if (ui_event_sink) {
         ui_event_sink->onDeviceChanged(e);
     }

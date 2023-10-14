@@ -184,7 +184,7 @@ void Hc2ModuleWidget::onRoundingChanged(const RoundingChangedEvent& e)
 
 void Hc2ModuleWidget::onDeviceChanged(const DeviceChangedEvent& e)
 {
-    device_label->text(e.name);
+    device_label->text(e.device ? e.device->info.friendly(false) : "");
 }
 
 void Hc2ModuleWidget::onDisconnect(const DisconnectEvent& e)

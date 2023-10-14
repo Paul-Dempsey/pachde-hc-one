@@ -51,6 +51,8 @@ struct Hc4Module : Module, IHandleHcEvents
     //void onFavoritesFileChanged(const FavoritesFileChangedEvent& e) override;
 
     // Module
+    json_t *dataToJson() override;
+    void dataFromJson(json_t *root) override;
     void process(const ProcessArgs& args) override;
 };
 

@@ -229,9 +229,10 @@ void Hc1ModuleWidget::createTranspose()
 void Hc1ModuleWidget::createMidiSelection()
 {
     em_picker = createWidget<EMPicker>(Vec(7.5f, box.size.y - 16.f));
-    em_picker->describe("Choose Eagan Matrix device");
+    em_picker->describe("Choose MIDI device");
     if (module) {
-        em_picker->setExternals(&my_module->midi_output, my_module);
+        em_picker->setCallback(my_module);
+        em_picker->setConnection(my_module->connection); // probably don't have it yet, but why not?
     }
     addChild(em_picker);
 }
@@ -240,23 +241,23 @@ void Hc1ModuleWidget::createDeviceDisplay()
 {
     auto co = GetStockColor(StockColor::pachde_blue_medium);
     auto y = box.size.y - 12.f;
+    auto center = box.size.x*.5f;
 
     // hardware model
     addChild(hardware_label = createStaticTextLabel<StaticTextLabel>(
-        Vec(box.size.x*.5f - 40.f, y), 80.f, "", TextAlignment::Center, 10.f, false, co));
+        Vec(center -66.5f, y), 50.f, "", 
+        TextAlignment::Right, 10.f, false, co));
 
     // device name
     addChild(device_label = createStaticTextLabel<StaticTextLabel>(
-        Vec(box.size.x*.75f, y), 120.f, "<Eagan Matrix Device>",
-        TextAlignment::Center, 10.f, false, co
+        Vec(center + 16.5f, y), 120.f, "<Eagan Matrix Device>",
+        TextAlignment::Left, 10.f, false, co
         ));
 
     // firmware version
     addChild(firmware_label = createStaticTextLabel<StaticTextLabel>(
         Vec(box.size.x - 60.f,  y), 60.f - 7.5f, "",
         TextAlignment::Right, 10.f, false, co));
-
-
 }
 
 void Hc1ModuleWidget::createTestNote()
@@ -296,6 +297,9 @@ void Hc1ModuleWidget::createStatusDots()
     left += spacing;
     // device_input_state
     addChild(createIndicatorCentered(left, y, "Midi input device", [=]()->const NVGcolor& { return InitStateColor(my_module->device_input_state); }));
+    left += spacing;
+    //device_hello_state
+    addChild(createIndicatorCentered(left, y, "EM device ack", [=]()->const NVGcolor& { return InitStateColor(my_module->device_hello_state); }));
     left += spacing;
     //system_preset_state
     addChild(createIndicatorCentered(left, y, "System presets", [=]()->const NVGcolor& { return InitStateColor(my_module->system_preset_state); }));
@@ -475,12 +479,11 @@ void Hc1ModuleWidget::onPresetChanged(const PresetChangedEvent& e)
 
 void Hc1ModuleWidget::onDeviceChanged(const DeviceChangedEvent& e)
 {
-    em_picker->describe(e.name.empty() 
-        ? "Choose Eagan Matrix device"
-        : format_string("EM device: %s", e.name.c_str()));
-
-    device_label->text(e.name.empty() ? "<Eagan Matrix device>" : e.name);
-    hardware_label->text("");
+    bool have_device = e.device && (-1 != e.device->input_device_id);
+    em_picker->setConnection(e.device);
+    em_picker->describe(have_device ? e.device->info.friendly(true) : "Choose an Eagan Matrix device");
+    device_label->text(have_device ? e.device->info.friendly(false) : "<Eagan Matrix device>");
+    hardware_label->text(""); // blank until we get presetChanged, as it's part of the config
 }
 
 void Hc1ModuleWidget::onDisconnect(const DisconnectEvent& e)

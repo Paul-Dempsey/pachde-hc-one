@@ -245,6 +245,7 @@ enum EM_Hardware
     hw_LightHalfUp, // light action half, UP triple-dsp board
 };
 
+const char * ShortHardwareName(EM_Hardware hw);
 const char * HardwareName(EM_Hardware hw);
 
 // EMCC_Download values

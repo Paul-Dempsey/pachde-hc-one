@@ -10,20 +10,19 @@ using namespace ::rack;
 namespace pachde {
 
 struct ISetDevice {
-    virtual void setMidiDevice(int id) = 0;
+    virtual void setMidiDevice(const std::string& claim) = 0;
 };
 
 struct EMPicker : TipWidget
 {
-    midi::Port* port;
     widget::FramebufferWidget* fb;
     widget::SvgWidget* sw;
     ISetDevice* setter;
+    std::shared_ptr<MidiDeviceConnection> connection;
     EMPicker & operator=(const EMPicker &) = delete;
     EMPicker(const EMPicker&) = delete;
 
-    EMPicker()
-    : port(nullptr), setter(nullptr)
+    EMPicker() : setter(nullptr)
     {
         fb = new widget::FramebufferWidget;
         addChild(fb);
@@ -35,11 +34,12 @@ struct EMPicker : TipWidget
         fb->setDirty(true);
     }
 
-    void setExternals(midi::Port* the_port, ISetDevice * callback) {
-        assert(the_port);
+    void setCallback(ISetDevice * callback) {
         assert(callback);
-        port = the_port;
         setter = callback;
+    }
+    void setConnection(std::shared_ptr<MidiDeviceConnection> conn) {
+        connection = conn;
     }
 
     void onButton(const ButtonEvent& e) override
@@ -53,18 +53,45 @@ struct EMPicker : TipWidget
 
     void appendContextMenu(Menu* menu) override
     {
-        if (!port || !setter) return;
+        if (!setter) return;
+
         menu->addChild(createMenuLabel("Eagan Matrix device"));
         menu->addChild(new MenuSeparator);
-        menu->addChild(createMenuItem("Reset (auto)", "", [=](){ setter->setMidiDevice(-1); }));
-        for (auto id : port->getDeviceIds()) {
-            std::string name = FilterDeviceName(port->getDeviceName(id));
-            if (is_EMDevice(name)) {
-                menu->addChild(createCheckMenuItem(name, "",
-                [=](){ return port->getDeviceId() == id; },
-                [=](){ setter->setMidiDevice(id); }));
+        menu->addChild(createMenuItem("Reset (auto)", "", [=](){ setter->setMidiDevice(""); }));
+        auto broker = MidiDeviceBroker::get();
+        //broker->sync();
+
+        auto current_claim = connection ? connection->info.spec() : "";
+
+        broker->scan_while(
+            [=](const std::shared_ptr<MidiDeviceConnection> conn) {
+                if (is_EMDevice(conn->info.input_device_name)) {
+                    auto item_claim = conn->info.spec();
+                    bool mine = (0 == current_claim.compare(item_claim));
+                    bool unavailable = mine ? false : !broker->is_available(item_claim);
+
+                    menu->addChild(createCheckMenuItem(conn->info.friendly(true), "",
+                        [=](){ return mine; },
+                        [=](){ setter->setMidiDevice(item_claim); }, unavailable));
+                }
+                return true;
             }
-        }
+        );
+        menu->addChild(new MenuSeparator);
+        menu->addChild(createSubmenuItem("Any MIDI device (advanced)", "", [=](Menu * menu){
+            broker->scan_while(
+                [=](const std::shared_ptr<MidiDeviceConnection> conn) {
+                    auto item_claim = conn->info.spec();
+                    bool mine = (0 == current_claim.compare(item_claim));
+                    bool unavailable = mine ? false : !broker->is_available(item_claim);
+
+                    menu->addChild(createCheckMenuItem(conn->info.friendly(true), "",
+                        [=](){ return mine; },
+                        [=](){ setter->setMidiDevice(item_claim); }, unavailable));
+                    return true;
+                }
+            );
+       }));
     }
 };
 

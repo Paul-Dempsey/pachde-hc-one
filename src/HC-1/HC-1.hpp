@@ -24,7 +24,7 @@ namespace pachde {
 #include "../debug_log.hpp"
 const NVGcolor& StatusColor(StatusItem led);
 
-struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, midi::Input, Module
+struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, IMidiDeviceChange, midi::Input, Module
 {
     enum Params
     {
@@ -146,7 +146,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, midi::Input, Module
     bool is_eagan_matrix = false;
     InitState device_output_state   = InitState::Uninitialized;
     InitState device_input_state    = InitState::Uninitialized;
-    InitState duplicate_instance    = InitState::Uninitialized;
+    InitState device_hello_state    = InitState::Uninitialized;
     InitState system_preset_state   = InitState::Uninitialized;
     InitState user_preset_state     = InitState::Uninitialized;
     InitState apply_favorite_state  = InitState::Uninitialized;
@@ -158,14 +158,13 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, midi::Input, Module
     bool hasSystemPresets() { return InitState::Complete == system_preset_state && !system_presets.empty(); }
     bool hasUserPresets() { return InitState::Complete == user_preset_state && !user_presets.empty(); }
     bool hasConfig() { return InitState::Complete == config_state; }
+    bool deviceHelloPending() { return InitState::Pending ==  device_hello_state; }
     bool configPending() { return InitState::Pending == config_state; }
     bool savedPresetPending() { return InitState::Pending == saved_preset_state; }
     bool handshakePending() { return InitState::Pending == handshake; }
 
     void tryCachedPresets();
 
-    int findMatchingInputDevice(const std::string& name);
-    int findMatchingOutputDevice(const std::string& name);
     bool checkDeviceChange();
     void initOutputDevice();
     bool initDevices();
@@ -174,6 +173,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, midi::Input, Module
         return 
                InitState::Pending == device_output_state
             || InitState::Pending == device_input_state
+            || InitState::Pending == device_hello_state
             || InitState::Pending == system_preset_state
             || InitState::Pending == user_preset_state
             || InitState::Pending == apply_favorite_state
@@ -184,14 +184,13 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, midi::Input, Module
         return !broken 
             && InitState::Complete == device_output_state
             && InitState::Complete == device_input_state
-            && InitState::Complete == duplicate_instance
+            && InitState::Complete == device_hello_state
             && InitState::Complete == system_preset_state
             && InitState::Complete == user_preset_state
             && InitState::Complete == apply_favorite_state
             && InitState::Complete == config_state
             && InitState::Complete == saved_preset_state
-            && InitState::Complete == request_updates_state
-            && is_eagan_matrix;
+            && InitState::Complete == request_updates_state;
     }
 
     bool in_preset = false;
@@ -221,13 +220,21 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, midi::Input, Module
     bool heart_beating = true;
 
     // device management
-    int input_device_id = -1;
-    int output_device_id = -1;
-    //int midi_driver_id = -1;
-    //std::string driver_name = "";
-    std::string device_name = "";
-    //std::string saved_driver_name = "";
-    std::string saved_device_name = "";
+    std::shared_ptr<MidiDeviceConnection> connection = nullptr;
+    std::string device_claim;
+
+    // IMidiDeviceChange
+    void onRevokeClaim(const std::string& claim) override
+    {
+        reboot();
+    }
+    // ISetDevice
+    void setMidiDevice(const std::string & claim) override;
+
+    midi::Output midi_output;
+    rack::dsp::RingBuffer<uMidiMessage, 128> midi_dispatch;
+    void queueMidiMessage(uMidiMessage msg);
+    void dispatchMidi();
 
     // cc handling
 
@@ -261,11 +268,6 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, midi::Input, Module
     bool reverse_surface;
     Rounding rounding;
 
-    midi::Output midi_output;
-    rack::dsp::RingBuffer<uMidiMessage, 128> midi_dispatch;
-    void queueMidiMessage(uMidiMessage msg);
-    void dispatchMidi();
-
     // cv processing
     const int CV_INTERVAL = 64;
     int check_cv = 0;
@@ -273,15 +275,11 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, midi::Input, Module
     rack::dsp::Timer midi_timer;
     rack::dsp::SchmittTrigger mute_trigger;
 
-    const std::string& deviceName() { return device_name; }
     bool isEaganMatrix() { return is_eagan_matrix; }
     bool is_gathering_presets() { return system_preset_state == InitState::Pending || user_preset_state == InitState::Pending; }
 
     Hc1Module();
     virtual ~Hc1Module();
-
-    // ISetDevice
-    void setMidiDevice(int id) override;
 
     // IHandleHcEvents subscription and notification
     void subscribeHcEvents(IHandleHcEvents* client);
@@ -323,7 +321,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, midi::Input, Module
     json_t *dataToJson() override;
     void dataFromJson(json_t *root) override;
     void onRandomize(const RandomizeEvent& e) override;
-    void reboot(bool skip_midi = false);
+    void reboot();
 
     EM_Recirculator recirculatorType() {
         return static_cast<EM_Recirculator>(recirculator & EM_Recirculator::Mask);
@@ -371,9 +369,8 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, midi::Input, Module
     void syncStatusLights();
     void syncParam(int paramId);
     void syncParams(float sampleTime);
-    void checkDuplicate();
-    void resetMidiIO();
     void sendResetAllreceivers();
+    void transmitDeviceHello();
     void transmitRequestUpdates();
     void transmitRequestConfiguration();
     void transmitRequestSystemPresets();
@@ -396,7 +393,8 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, midi::Input, Module
     void process(const ProcessArgs& args) override;
 };
 
-// -----------------------------------------------------------------------------------------
+// ==== Hc1ModuleWidget ========================================
+
 const NVGcolor& InitStateColor(InitState state);
 using Hc1p = Hc1Module::Params;
 using Hc1in = Hc1Module::Inputs;

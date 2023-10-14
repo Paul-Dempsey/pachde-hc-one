@@ -2,85 +2,135 @@
 #ifndef EM_DEVICE_HPP_INCLUDED
 #define EM_DEVICE_HPP_INCLUDED
 #include <rack.hpp>
-using namespace ::rack;
+#include <string>
+#include "misc.hpp"
 
+using namespace ::rack;
 namespace pachde {
 
 bool ExcludeDriver(const std::string& driver_name);
 bool is_EMDevice(const std::string& device_name);
 std::string FilterDeviceName(const std::string& text);
 
-enum class MidiDeviceKind : uint8_t {
-    Unknown,
-    Input,
-    Output
-};
-
-struct MidiDeviceIdentity
+struct MidiDeviceConnectionInfo
 {
-    MidiDeviceKind kind;
     std::string driver_name;
-    std::string device_name;
+    std::string input_device_name;
+    std::string output_device_name;
     int sequence;
+    std::string claim;
 
-    explicit MidiDeviceIdentity() : sequence(-2) {}
-
-    MidiDeviceIdentity(const std::string & driver, const std::string & device, int nth = 0)
-    :   kind(MidiDeviceKind::Unknown),
-        driver_name(driver),
-        device_name(device),
-        sequence(nth)
+    explicit MidiDeviceConnectionInfo()
+    : sequence(-1)
     {}
-    
-    bool ok()
-    {
-        return kind != MidiDeviceKind::Unknown
-            && sequence >= -1
-            && !driver_name.empty()
-            && !device_name.empty();
-    }
 
-    void clear()
-    {
-        kind = MidiDeviceKind::Unknown;
+    const std::string & input() const {
+        return input_device_name;
+    }
+    const std::string & output() const {
+        if (output_device_name.empty()) {
+            return input_device_name;
+        }
+        return output_device_name;
+    }
+    const std::string & driver() const {
+        return driver_name;
+    }
+    int nth() const { return sequence; }
+
+    void clear() {
+        claim.clear();
+        driver_name.clear();
+        input_device_name.clear();
+        output_device_name.clear();
         sequence = -1;
-        driver_name = "";
-        device_name = "";
     }
-
-    std::string toSpec();
-    bool parse(const std::string& spec);
-    const std::string& driver() const { return driver_name; }
-    const std::string& device() const { return device_name; }
-    int nth() { return sequence; }
-    MidiDeviceKind getKind() { return kind; }
+    bool ok() const {
+        return sequence >= 0
+            && !input_device_name.empty()
+            && !driver_name.empty();
+    }
+    bool parse(const std::string & spec);
+    std::string spec() const;
+    std::string friendly(bool long_name) const;
 };
 
-struct MidiDevice
+struct MidiDeviceConnection
 {
     int driver_id;
-    int device_id;
-    MidiDeviceIdentity identity;
+    int input_device_id;
+    int output_device_id;
+    MidiDeviceConnectionInfo info;
 
-    MidiDevice()
-    :   driver_id(-1),
-        device_id(-1),
-    {}
-
-    MidiDevice(int driver, int device, MidiDeviceIdentity ident)
-    :   device_id(device),
-        driver_id(driver),
-        identity(ident)
-    {}
-
-    bool instantiate(const std::string& spec);
-
-    bool ok()
-    {
-        return identity.ok()
-            && driver_id >= 0
-            && device_id >= 0;
+    int unique_key() const {
+        return (1 + driver_id)
+            + 10000 * (1 + input_device_id)
+            + 100000 * (1 + output_device_id);
     }
+
+    explicit MidiDeviceConnection()
+    : driver_id(-1), input_device_id(-1), output_device_id(-1)
+    {}
+
+    void clear_ids() {
+        driver_id = input_device_id = output_device_id = -1;
+    }
+
+    bool identified() const {
+        return driver_id >= 0
+            && input_device_id >= 0
+            && output_device_id >= 0;
+    }
+
+    bool instantiate(const std::string &spec);
+};
+
+std::vector<std::shared_ptr<MidiDeviceConnection>> EnumerateMidiConnections(bool emOnly);
+
+// ==== MidiDeviceBroker =======================================
+
+struct IMidiDeviceChange {
+    // claims are revoked when the device is no longer available
+    virtual void onRevokeClaim(const std::string& claim) = 0;
+};
+
+struct MidiDeviceBroker {
+    struct Internal;
+    Internal * me;
+
+    MidiDeviceBroker & operator=(const MidiDeviceBroker &) = delete;
+    MidiDeviceBroker(const MidiDeviceBroker&) = delete;
+
+    static MidiDeviceBroker* get();
+    ~MidiDeviceBroker();
+
+    enum class ClaimResult {
+        ArgumentError = -1,
+        AlreadyClaimed = -2,
+        NotAvailable = -3,
+        NoMidiDevices = -4,
+        Ok = 0
+    };
+
+    // can claim any known bidirectional midi connection
+    ClaimResult claim_device(int64_t claimant, const std::string& claim);
+
+    // always looks for EM device
+    std::string claim_new_device(int64_t claimant_module_id);
+
+    bool is_available(const std::string& claim);
+
+    void revoke_claim(const std::string& claim);
+    void revoke_claim(int64_t claimant_module_id);
+    std::shared_ptr<MidiDeviceConnection> get_connection(const std::string & claim) const;
+    std::shared_ptr<MidiDeviceConnection> get_connection(int key) const;
+    void sync();
+
+    // pred returns false to stop scan
+    void scan_while(std::function<bool(const std::shared_ptr<MidiDeviceConnection>)> pred) const;
+
+private:
+    MidiDeviceBroker();
 };
 
 }

@@ -17,6 +17,21 @@ Hc4Module::~Hc4Module()
     }
 }
 
+json_t * Hc4Module::dataToJson()
+{
+    auto root = json_object();
+    json_object_set_new(root, "device", json_string(partner_binding.claim.c_str()));
+    return root;
+}
+
+void Hc4Module::dataFromJson(json_t *root)
+{
+    auto j = json_object_get(root, "device");
+    if (j) {
+        partner_binding.setDevice(json_string_value(j));
+    }
+}
+
 Hc1Module* Hc4Module::getPartner()
 {
     auto partner = partner_binding.getPartner();
@@ -35,7 +50,7 @@ void Hc4Module::onPedalChanged(const PedalChangedEvent& e)
 
 void Hc4Module::onDeviceChanged(const DeviceChangedEvent& e)
 {
-    partner_binding.setDevice(e.name);
+    partner_binding.setDevice(e.device ? e.device->info.spec() : 0);
     if (ui_event_sink) {
         ui_event_sink->onDeviceChanged(e);
     }
