@@ -10,6 +10,7 @@
 #include "../plugin.hpp"
 #include "../presets.hpp"
 #include "../widgets/label_widget.hpp"
+#include "../widgets/partner_picker.hpp"
 #include "../widgets/symbol_widget.hpp"
 #include "cc_map_widget.hpp"
 
@@ -103,7 +104,7 @@ struct Hc2Module : Module, ISendMidi, IHandleHcEvents
 struct Hc2ModuleWidget : ModuleWidget, IHandleHcEvents
 {
     Hc2Module* my_module = nullptr;
-    StaticTextLabel* device_label = nullptr;
+    PartnerPicker* partner_picker = nullptr;
     DynamicTextLabel* rounding_summary = nullptr;
 
     SymbolTipWidget* pedal1_type = nullptr;

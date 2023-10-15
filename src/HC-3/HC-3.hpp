@@ -8,6 +8,7 @@
 #include "../plugin.hpp"
 #include "../presets.hpp"
 #include "../widgets/label_widget.hpp"
+#include "../widgets/partner_picker.hpp"
 #include "../widgets/square_button.hpp"
 
 namespace pachde {
@@ -66,7 +67,8 @@ struct Hc3ModuleWidget : ModuleWidget, IHandleHcEvents
 {
     Hc3Module* my_module;
     DrawSquareButton drawButton;
-    StaticTextLabel* device_label = nullptr;
+//    StaticTextLabel* device_label = nullptr;
+    PartnerPicker* partner_picker = nullptr;
     bool hacked_lights = false;
 
     explicit Hc3ModuleWidget(Hc3Module* module);

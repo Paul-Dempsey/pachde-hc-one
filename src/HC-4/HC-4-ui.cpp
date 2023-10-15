@@ -18,11 +18,7 @@ Hc4ModuleWidget::Hc4ModuleWidget(Hc4Module * module)
         my_module->ui_event_sink = this;
     }
     setPanel(createPanel(asset::plugin(pluginInstance, "res/HC-4.svg")));
-
-    // device name in title
-    device_label = createStaticTextLabel<StaticTextLabel>(
-        Vec(7.f, 21.f), 180.f, "", TextAlignment::Left, 12.f, false, GetStockColor(StockColor::pachde_blue_medium));
-    addChild(device_label);
+    addChild(partner_picker = createPartnerPicker(7.f, 14.f, 180.f, module ? &module->partner_binding : nullptr));
 }
 
 Hc1Module* Hc4ModuleWidget::getPartner()
@@ -31,14 +27,14 @@ Hc1Module* Hc4ModuleWidget::getPartner()
     return my_module->getPartner();
 }
 
-void Hc4ModuleWidget::onDisconnect(const DisconnectEvent& e)
-{
-    device_label->text("");
-}
-
 void Hc4ModuleWidget::onDeviceChanged(const DeviceChangedEvent& e)
 {
-    device_label->text(e.device ? e.device->info.friendly(false) : "");
+    partner_picker->onDeviceChanged(e);
+}
+
+void Hc4ModuleWidget::onDisconnect(const DisconnectEvent& e)
+{
+    partner_picker->onDisconnect(e);
 }
 
 

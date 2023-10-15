@@ -9,6 +9,7 @@
 #include "../plugin.hpp"
 #include "../presets.hpp"
 #include "../widgets/symbol_widget.hpp"
+#include "../widgets/partner_picker.hpp"
 #include "../widgets/vert_slider.hpp"
 
 using namespace ::rack;
@@ -74,9 +75,9 @@ struct PedalCore : Module, ISendMidi, IHandleHcEvents
 struct PedalUICore : ModuleWidget, IHandleHcEvents
 {
     PedalCore* core_module;
+    PartnerPicker* partner_picker = nullptr;
     SymbolTipWidget* pedal_type = nullptr;
     StaticTextLabel* pedal_assign = nullptr;
-    StaticTextLabel* device_label = nullptr;
     StaticTextLabel* pedal_amount = nullptr;
     VerticalSlider* slider = nullptr;
     uint8_t pedal_id = 0;

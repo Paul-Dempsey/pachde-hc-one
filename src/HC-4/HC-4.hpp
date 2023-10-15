@@ -5,6 +5,7 @@
 #include "../module_broker.hpp"
 #include "../plugin.hpp"
 #include "../widgets/label_widget.hpp"
+#include "../widgets/partner_picker.hpp"
 #include "../widgets/symbol_widget.hpp"
 
 namespace pachde {
@@ -61,7 +62,7 @@ using Hc4O = Hc4Module::Outputs;
 struct Hc4ModuleWidget : ModuleWidget, IHandleHcEvents
 {
     Hc4Module * my_module;
-    StaticTextLabel * device_label = nullptr;
+    PartnerPicker* partner_picker = nullptr;
 
     explicit Hc4ModuleWidget(Hc4Module * module);
 

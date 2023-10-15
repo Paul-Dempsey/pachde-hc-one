@@ -33,7 +33,7 @@ PedalUICore::PedalUICore(PedalCore* module)
 
 void PedalUICore::onDeviceChanged(const DeviceChangedEvent& e)
 {
-    device_label->text(e.device ? e.device->info.friendly(false) : "");
+    partner_picker->onDeviceChanged(e);
 }
 
 void PedalUICore::onPresetChanged(const PresetChangedEvent& e)
@@ -51,16 +51,14 @@ void PedalUICore::onPedalChanged(const PedalChangedEvent& e)
 
 void PedalUICore::onDisconnect(const DisconnectEvent& e)
 {
-    device_label->text("");
+    partner_picker->onDisconnect(e);
 }
 
 constexpr const float JUMP_SPREAD = 50.25f;
 
 void PedalUICore::createUI()
 {
-    // device name
-    addChild(device_label = createStaticTextLabel<StaticTextLabel>(
-        Vec(3.25f, 14.f), 180.f, "", TextAlignment::Left, 10.f, false, GetStockColor(StockColor::pachde_blue_medium)));
+    addChild(partner_picker = createPartnerPicker(7.f, 14.f, 180.f, core_module ? &core_module->partner_binding : nullptr));
 
     /// pedal function knob
     float x_center = box.size.x * .5f;

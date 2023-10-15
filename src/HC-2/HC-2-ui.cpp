@@ -126,9 +126,7 @@ Hc2ModuleWidget::Hc2ModuleWidget(Hc2Module * module)
         my_module->ui_event_sink = this;
     }
     setPanel(createPanel(asset::plugin(pluginInstance, "res/HC-2.svg")));
-
-    addChild(device_label = createStaticTextLabel<StaticTextLabel>(
-        Vec(7.f, 14.f), 180.f, "", TextAlignment::Left, 10.f, false, GetStockColor(StockColor::pachde_blue_medium)));
+    addChild(partner_picker = createPartnerPicker(7.f, 14.f, 180.f, module ? &module->partner_binding : nullptr));
 
     createRoundingUI(ROUND_BOX_LEFT, ROUND_BOX_TOP);
     createPedalUI(PEDAL_BOX_LEFT, PEDAL_BOX_TOP);
@@ -184,12 +182,12 @@ void Hc2ModuleWidget::onRoundingChanged(const RoundingChangedEvent& e)
 
 void Hc2ModuleWidget::onDeviceChanged(const DeviceChangedEvent& e)
 {
-    device_label->text(e.device ? e.device->info.friendly(false) : "");
+    partner_picker->onDeviceChanged(e);
 }
 
 void Hc2ModuleWidget::onDisconnect(const DisconnectEvent& e)
 {
-    device_label->text("");
+    partner_picker->onDisconnect(e);
 }
 
 Hc1Module* Hc2ModuleWidget::getPartner()
@@ -197,40 +195,6 @@ Hc1Module* Hc2ModuleWidget::getPartner()
     if (!my_module) return nullptr;
     return my_module->getPartner();
 }
-
-// NVGcolor ref_line_color = nvgHSLAf(210.f/360.f, .5f, .5f, .5f);
-
-// void drawMap(NVGcontext* vg, uint8_t * map, float x, float y)
-// {
-//     Line (vg, x + 1.25f + 32.f, y, x + 1.25f + 32.f, y + 17.f, ref_line_color, .5f);
-//     Line (vg, x + 1.25f + 64.f, y, x + 1.25f + 64.f, y + 17.f, ref_line_color, .5f);
-//     BoxRect(vg, x, y, 254, 18, RampGray(G_35), .5f);
-//     ++x;
-//     y += 17.f;
-//     for (auto n = 0; n < 127; ++n, ++map, x += 2) {
-//         if (auto v = *map) {
-//             Line(vg, x, y, x, y - v/8.f, RampGray(G_85), 1.6f);
-//         }
-//     }
-// }
-
-// #ifdef SHOW_RCC_REFERENCE
-// std::vector<uint8_t> reference_points = { EMCC_Download };
-// #endif
-
-// void Hc2ModuleWidget::drawCCMap(const DrawArgs& args, Hc1Module * partner)
-// {
-//     assert(partner);
-//     auto x = box.size.x * .5f - 126.5f;
-//     auto y0 = box.size.y - 15.f - 18.f - 18.f; //51
-// #ifdef SHOW_RCC_REFERENCE
-//     for (auto n: reference_points) {
-//         Line (args.vg, x + 1.25f + 2.f*n, y0, x + 1.25f + 2.f*n, y0 - 5.f, GetStockColor(StockColor::Magenta), .75f);
-//     }
-// #endif
-//     drawMap(args.vg, partner->ch0_cc_value, x, y0);
-//     drawMap(args.vg, partner->ch15_cc_value, x, box.size.y - 15.f - 18.f);
-// }
 
 void Hc2ModuleWidget::draw(const DrawArgs& args)
 {
