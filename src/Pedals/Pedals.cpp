@@ -37,20 +37,24 @@ void PedalCore::dataFromJson(json_t *root)
 {
     auto j = json_object_get(root, "device");
     if (j) {
-        partner_binding.setDevice(json_string_value(j));
+        partner_binding.setClaim(json_string_value(j));
     }
 }
 
 Hc1Module* PedalCore::getPartner()
 {
-    auto partner = partner_binding.getPartner();
-    if (partner) {
-        if (!partner_subscribed) {
-            partner->subscribeHcEvents(this);
-            partner_subscribed = true;
-        }
-    }
-    return partner;
+    return getPartnerImpl<PedalCore>(this);
+    // if (!partner_binding.is_bound()) {
+    //     partner_binding.bindPartner(this);
+    // }
+    // auto partner = partner_binding.getPartner();
+    // if (partner) {
+    //     if (!partner_subscribed) {
+    //         partner->subscribeHcEvents(this);
+    //         partner_subscribed = true;
+    //     }
+    // }
+    // return partner;
 }
 
 // IHandleHcEvents
@@ -79,6 +83,7 @@ void PedalCore::onDeviceChanged(const DeviceChangedEvent& e)
 void PedalCore::onDisconnect(const DisconnectEvent& e)
 {
     partner_subscribed = false;
+    partner_binding.forgetModule();
     if (ui_event_sink) {
         ui_event_sink->onDisconnect(e);
     }

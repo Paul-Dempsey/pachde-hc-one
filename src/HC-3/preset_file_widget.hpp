@@ -61,7 +61,7 @@ struct PresetFileWidget : TipWidget
     void onButton(const ButtonEvent& e) override {
         TipWidget::onButton(e);
         if (!my_module) return;
-        if (e.action == GLFW_PRESS && e.button == GLFW_MOUSE_BUTTON_LEFT && (e.mods & RACK_MOD_MASK) == 0) {
+        if ((e.action == GLFW_PRESS) && (e.button == GLFW_MOUSE_BUTTON_LEFT) && (e.mods & RACK_MOD_MASK) == 0) {
             if (isCurrent()) {
                 my_module->openFile(-1);
             } else if (haveFile()) {
@@ -76,9 +76,12 @@ struct PresetFileWidget : TipWidget
         if (isCurrent() && haveFile()) {
             auto vg = args.vg;
             auto font = GetPluginFontSemiBold();
+            nvgSave(vg);
+            nvgScissor(vg, 0.f, 0.f, box.size.x, box.size.y);
             SetTextStyle(vg, font, preset_name_color, 9.f);
             nvgTextAlign(vg, NVG_ALIGN_LEFT);
             nvgText(vg, 18.f, 10.f, getLabel().c_str(), nullptr);
+            nvgRestore(vg);
         }
     }
 
@@ -98,9 +101,12 @@ struct PresetFileWidget : TipWidget
                 FillRect(vg, 16.5f, 0.f, box.size.x, box.size.y, GetStockColor(StockColor::pachde_blue_dark));
             } else {
                 auto font = GetPluginFontRegular();
+                nvgSave(vg);
+                nvgScissor(vg, 0.f, 0.f, box.size.x, box.size.y);
                 SetTextStyle(vg, font, RampGray(G_85), 9.f);
                 nvgTextAlign(vg, NVG_ALIGN_LEFT);
                 nvgText(vg, 18.f, 10.f, getLabel().c_str(), nullptr);
+                nvgRestore(vg);
             }
         }
     }

@@ -68,7 +68,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, IMidiDeviceChange, midi
     std::vector<std::shared_ptr<Preset>> system_presets;
     std::vector<std::shared_ptr<Preset>> favorite_presets;
 
-    std::vector<IHandleHcEvents*> event_subscriptions;
+    std::vector<IHandleHcEvents*> hc_event_subscriptions;
 
     // ui persistence
     PresetTab tab = PresetTab::User;

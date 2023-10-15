@@ -28,19 +28,13 @@ void Hc4Module::dataFromJson(json_t *root)
 {
     auto j = json_object_get(root, "device");
     if (j) {
-        partner_binding.setDevice(json_string_value(j));
+        partner_binding.setClaim(json_string_value(j));
     }
 }
 
 Hc1Module* Hc4Module::getPartner()
 {
-    auto partner = partner_binding.getPartner();
-    if (!partner) return nullptr;
-    if (!partner_subscribed) {
-        partner->subscribeHcEvents(this);
-        partner_subscribed = true;
-    }
-    return partner;
+    return getPartnerImpl<Hc4Module>(this);
 }
 
 void Hc4Module::onPedalChanged(const PedalChangedEvent& e)
@@ -50,7 +44,7 @@ void Hc4Module::onPedalChanged(const PedalChangedEvent& e)
 
 void Hc4Module::onDeviceChanged(const DeviceChangedEvent& e)
 {
-    partner_binding.setDevice(e.device ? e.device->info.spec() : 0);
+    partner_binding.setClaim(e.device ? e.device->info.spec() : 0);
     if (ui_event_sink) {
         ui_event_sink->onDeviceChanged(e);
     }

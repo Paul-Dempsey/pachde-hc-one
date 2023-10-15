@@ -27,13 +27,7 @@ Hc3Module::~Hc3Module()
 }
 
 Hc1Module* Hc3Module::getPartner() {
-    auto partner = partner_binding.getPartner();
-    if (!partner) return nullptr;
-    if (!partner_subscribed) {
-        partner->subscribeHcEvents(this);
-        partner_subscribed = true;
-    }
-    return partner;
+    return getPartnerImpl<Hc3Module>(this);
 }
 
 void Hc3Module::onDeviceChanged(const DeviceChangedEvent& e)
@@ -47,7 +41,7 @@ void Hc3Module::onDeviceChanged(const DeviceChangedEvent& e)
 void Hc3Module::onDisconnect(const DisconnectEvent& e)
 {
     partner_subscribed = false;
-    partner_binding.forgetModule();
+//    partner_binding.forgetModule();
     if (ui_event_sink) {
         ui_event_sink->onDisconnect(e);
     }
@@ -117,7 +111,7 @@ void Hc3Module::useCurrentFavoriteFile(int id)
 json_t * Hc3Module::dataToJson()
 {
     auto root = json_object();
-    json_object_set_new(root, "device", json_string(partner_binding.claim.c_str()));
+    json_object_set_new(root, "device-claim", json_string(partner_binding.claim.c_str()));
     if (!files.empty()) {
         auto jar = json_array();
         for (auto f: files) {
@@ -130,9 +124,9 @@ json_t * Hc3Module::dataToJson()
 
 void Hc3Module::dataFromJson(json_t *root)
 {
-    auto j = json_object_get(root, "device");
+    auto j = json_object_get(root, "device-claim");
     if (j) {
-        partner_binding.setDevice(json_string_value(j));
+        partner_binding.setClaim(json_string_value(j));
     }
     auto jar = json_object_get(root, "fav_files");
     if (jar) {

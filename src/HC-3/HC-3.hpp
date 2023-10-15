@@ -56,8 +56,8 @@ struct Hc3Module : Module, IHandleHcEvents
     void onFavoritesFileChanged(const FavoritesFileChangedEvent& e) override;
 
     void onRandomize() override;
-    json_t *dataToJson() override;
-    void dataFromJson(json_t *root) override;
+    json_t* dataToJson() override;
+    void dataFromJson(json_t* root) override;
     void onReset() override;
     void process(const ProcessArgs& args) override;
 };

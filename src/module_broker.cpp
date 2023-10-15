@@ -36,13 +36,13 @@ Hc1Module*  ModuleBroker::getSoleHc1() {
     return nullptr;
 }
 
-Hc1Module* ModuleBroker::getHc1(std::function<bool (Hc1Module* const&)> pred)
+Hc1Module* ModuleBroker::getHc1(std::function<bool (Hc1Module*)> pred)
 {
     auto item = std::find_if(my->hc1s.cbegin(), my->hc1s.cend(), pred);
     return item == my->hc1s.cend() ? nullptr : *item;
 }
 
-void ModuleBroker::scan_while(std::function<bool(Hc1Module* const&)> pred)
+void ModuleBroker::scan_while(std::function<bool(Hc1Module*)> pred)
 {
     for (auto m: my->hc1s) {
         if (!pred(m)) break;

@@ -81,10 +81,10 @@ Hc1Module::~Hc1Module()
 //
 void Hc1Module::subscribeHcEvents(IHandleHcEvents*client)
 {
-    if (event_subscriptions.empty()
-        || event_subscriptions.cend() == std::find(event_subscriptions.cbegin(), event_subscriptions.cend(), client)) 
+    if (hc_event_subscriptions.empty()
+        || hc_event_subscriptions.cend() == std::find(hc_event_subscriptions.cbegin(), hc_event_subscriptions.cend(), client)) 
     {
-        event_subscriptions.push_back(client);
+        hc_event_subscriptions.push_back(client);
 
         auto dce = IHandleHcEvents::DeviceChangedEvent{connection};
         client->onDeviceChanged(dce);
@@ -98,58 +98,58 @@ void Hc1Module::subscribeHcEvents(IHandleHcEvents*client)
 }
 void Hc1Module::unsubscribeHcEvents(IHandleHcEvents*client)
 {
-    auto it = std::find(event_subscriptions.begin(), event_subscriptions.end(), client);
-    if (it != event_subscriptions.end()) {
-        event_subscriptions.erase(it);
+    auto it = std::find(hc_event_subscriptions.begin(), hc_event_subscriptions.end(), client);
+    if (it != hc_event_subscriptions.end()) {
+        hc_event_subscriptions.erase(it);
     }
 }
 
 void Hc1Module::notifyPedalChanged(uint8_t pedal)
 {
-    if (event_subscriptions.empty()) return;
+    if (hc_event_subscriptions.empty()) return;
     auto event = IHandleHcEvents::PedalChangedEvent{ pedal ? pedal2 : pedal1 };
-    for (auto client: event_subscriptions) {
+    for (auto client: hc_event_subscriptions) {
         client->onPedalChanged(event);
     }
 }
 
 void Hc1Module::notifyPresetChanged()
 {
-    if (event_subscriptions.empty()) return;
+    if (hc_event_subscriptions.empty()) return;
     auto event = IHandleHcEvents::PresetChangedEvent{current_preset};
-    for (auto client: event_subscriptions) {
+    for (auto client: hc_event_subscriptions) {
         client->onPresetChanged(event);
     }
 }
 void Hc1Module::notifyRoundingChanged()
 {
-    if (event_subscriptions.empty()) return;
+    if (hc_event_subscriptions.empty()) return;
     auto event = IHandleHcEvents::RoundingChangedEvent{rounding};
-    for (auto client: event_subscriptions) {
+    for (auto client: hc_event_subscriptions) {
         client->onRoundingChanged(event);
     }
 }
 void Hc1Module::notifyDeviceChanged()
 {
-    if (event_subscriptions.empty()) return;
+    if (hc_event_subscriptions.empty()) return;
     auto event = IHandleHcEvents::DeviceChangedEvent{connection};
-    for (auto client: event_subscriptions) {
+    for (auto client: hc_event_subscriptions) {
         client->onDeviceChanged(event);
     }
 }
 void Hc1Module::notifyDisconnect()
 {
-    if (event_subscriptions.empty()) return;
+    if (hc_event_subscriptions.empty()) return;
     auto event = IHandleHcEvents::DisconnectEvent{};
-    for (auto client: event_subscriptions) {
+    for (auto client: hc_event_subscriptions) {
         client->onDisconnect(event);
     }
 }
 void Hc1Module::notifyFavoritesFileChanged()
 {
-    if (event_subscriptions.empty()) return;
+    if (hc_event_subscriptions.empty()) return;
     auto event = IHandleHcEvents::FavoritesFileChangedEvent{favoritesFile};
-    for (auto client: event_subscriptions) {
+    for (auto client: hc_event_subscriptions) {
         client->onFavoritesFileChanged(event);
     }
 }

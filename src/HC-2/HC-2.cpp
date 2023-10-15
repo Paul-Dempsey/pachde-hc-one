@@ -55,20 +55,13 @@ void Hc2Module::dataFromJson(json_t *root)
 {
     auto j = json_object_get(root, "device");
     if (j) {
-        partner_binding.setDevice(json_string_value(j));
+        partner_binding.setClaim(json_string_value(j));
     }
 }
 
 Hc1Module* Hc2Module::getPartner()
 {
-    auto partner = partner_binding.getPartner();
-    if (partner) {
-        if (!partner_subscribed) {
-            partner->subscribeHcEvents(this);
-            partner_subscribed = true;
-        }
-    }
-    return partner;
+    return getPartnerImpl<Hc2Module>(this);
 }
 
 void Hc2Module::onPedalChanged(const PedalChangedEvent& e)

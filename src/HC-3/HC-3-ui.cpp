@@ -12,7 +12,7 @@ constexpr const float DIVIDER_OFFSET = 5.f;
 
 std::string hc3_sample_data[] = {
     "Experimental", "Strings", "Winds", "Guitars", "Pads", "Leads", "Album 4", "Album 5",
-    "Mon practice", "", "Th Jam", "Blues setlist", "Recital 10/7", "Community Concert 8/21", "" ,"empty"
+    "Mon practice", "", "Th Jam", "Blues setlist", "Recital 6/15", "Community Concert 8/21", "" ,"empty"
 };
 
 Hc3ModuleWidget::Hc3ModuleWidget(Hc3Module* module)
@@ -23,9 +23,9 @@ Hc3ModuleWidget::Hc3ModuleWidget(Hc3Module* module)
         my_module->ui_event_sink = this;
     }
     setPanel(createPanel(asset::plugin(pluginInstance, "res/HC-3.svg")));
-    device_label = createStaticTextLabel<StaticTextLabel>(
-        Vec(7.f, 14.f), 180.f, "", TextAlignment::Left, 12.f, false, GetStockColor(StockColor::pachde_blue_medium));
-    addChild(device_label);
+
+    addChild(device_label = createStaticTextLabel<StaticTextLabel>(
+        Vec(7.f, 14.f), 180.f, "", TextAlignment::Left, 10.f, false, GetStockColor(StockColor::pachde_blue_medium)));
 
     float y = START_ROW;
     float x = 15.f;
@@ -58,7 +58,10 @@ void Hc3ModuleWidget::step()
 {
     ModuleWidget::step();
     if (module && device_label->getText().empty()) {
-        my_module->getPartner();
+        auto partner = my_module->getPartner();
+        if (partner && partner->connection) {
+            device_label->text(partner->connection->info.friendly(false));
+        }
     }
     if (!module && !hacked_lights) {
         // Rack turns every light to full brightness in the module browser
