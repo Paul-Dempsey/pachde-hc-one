@@ -210,20 +210,24 @@ void drawPedalKnobAssignment(NVGcontext * vg, uint8_t ped, const char * text)
     }
 }
 
-void drawPedalAssignment(NVGcontext* vg, float x, float y, char ped_char, uint8_t ped, uint8_t ped_value)
+void Hc1ModuleWidget::drawPedalAssignment(
+    NVGcontext* vg, float x, float y,
+    char ped_char, uint8_t ped, uint8_t ped_value)
 {
-    auto text =  format_string("p%c %s", ped_char, ShortPedalAssignment(ped).c_str());
     nvgTextAlign(vg, NVGalign::NVG_ALIGN_LEFT);
-    nvgText(vg, PRESET_RIGHT + 1.f, y, text.c_str(), nullptr);
-    Line(vg, x, y+1, x, y+1 - (ped_value * 10.f / 255.f), GetStockColor(StockColor::Sea_green_Dark), 1.5f);
+    auto text = format_string("p%c %s", ped_char, ShortPedalAssignment(ped).c_str());
+    nvgText(vg, x, y, text.c_str(), nullptr);
+    y += 3.f;
+    Line(vg, x, y, x + ((ped_value * (box.size.x - x - 3.f)) / 127.f), y,
+        GetStockColor(StockColor::Sea_green_Dark), 2.25f);
 }
 
 void Hc1ModuleWidget::drawPedals(NVGcontext* vg, std::shared_ptr<rack::window::Font> font, bool stockPedals)
 {    
     SetTextStyle(vg, font, RampGray(G_85), 10.f);
     if (stockPedals) {
-        drawPedalAssignment(vg, box.size.x - 3.f, PRESET_BOTTOM - 18.f, '1', 64, 0);
-        drawPedalAssignment(vg, box.size.x - 3.f, PRESET_BOTTOM - 4.5f, '2', 66, 0);
+        drawPedalAssignment(vg, PRESET_RIGHT + 1.f, PRESET_BOTTOM - 19.f, '1', 64, 0);
+        drawPedalAssignment(vg, PRESET_RIGHT + 1.f, PRESET_BOTTOM - 4.5f, '2', 66, 0);
     } else {
         auto ped1 = my_module->pedal1.cc;
         auto ped2 = my_module->pedal2.cc;
@@ -233,8 +237,8 @@ void Hc1ModuleWidget::drawPedals(NVGcontext* vg, std::shared_ptr<rack::window::F
             drawPedalKnobAssignment(vg, ped1, "1");
             drawPedalKnobAssignment(vg, ped2, "2");
         }
-        drawPedalAssignment(vg, box.size.x - 3.f, PRESET_BOTTOM - 18.f, '1', ped1, my_module->pedal1.value);
-        drawPedalAssignment(vg, box.size.x - 3.f, PRESET_BOTTOM - 4.5f, '2', ped2, my_module->pedal2.value);
+        drawPedalAssignment(vg, PRESET_RIGHT + 1.f, PRESET_BOTTOM - 19.f, '1', ped1, my_module->pedal1.value);
+        drawPedalAssignment(vg, PRESET_RIGHT + 1.f, PRESET_BOTTOM - 4.5f, '2', ped2, my_module->pedal2.value);
     }
 }
 

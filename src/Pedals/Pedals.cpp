@@ -9,7 +9,7 @@ PedalCore::PedalCore(uint8_t pedal)
 
     configPedalParam(pedal_id, PedalAssign::Sustain, this, Params::P_PEDAL_ASSIGN);
 
-    auto p = configParam(P_PEDAL_VALUE, 0.f, 127.f, 0.f, format_string("Pedal %d value", pedal_id));
+    auto p = configParam(P_PEDAL_VALUE, 0.f, 127.f, 0.f, format_string("Pedal %d value", 1 + pedal_id));
     p->snapEnabled = true;
 
     configInput(Inputs::I_PEDAL_VALUE, "Pedal");

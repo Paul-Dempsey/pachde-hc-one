@@ -28,7 +28,8 @@ std::string ShortPedalAssignment(uint8_t pedalcc)
     case 26: return "Pre";
     case 27: return "Att"; // not in HE menu
     case 28: return "RIn";
-
+    case 29: return "PJ1"; // not in HE menu
+    case 30: return "PJ2"; // not in HE menu
     case 31: return "Adv";
 
     case 64: return "Sus";
@@ -64,6 +65,8 @@ std::string LongPedalAssignment(uint8_t pedalcc)
     case 26: return "Pre level";
     case 27: return "Attenuation"; // not in HE menu
     case 28: return "Round Initial";
+    case 29: return "Pedal Jack 1"; // not in HE menu
+    case 30: return "Pedal Jack 2"; // not in HE menu
     case 31: return "Preset advance";
     case 64: return "Sustain";
     case 65: return "Round Equal";
@@ -85,6 +88,8 @@ PedalAssign PedalAssignFromCC(uint8_t cc)
     case EMCC_PreLevel:     return PedalAssign::PreLevel;
     case EMCC_PostLevel:    return PedalAssign::PostLevel;
     case EMCC_AudioInLevel: return PedalAssign::AudioInputLevel;
+    //case EMCC_Jack1:        return PedalAssign::Jack1;
+    //case EMCC_Jack2:        return PedalAssign::Jack2;
     //case EMCC_Attenuation:  return PedalAssign::Attenuation;
     case EMCC_Sustain:      return PedalAssign::Sustain;
     case EMCC_Sostenuto:    return PedalAssign::Sostenuto;
@@ -119,6 +124,8 @@ uint8_t PedalCC(PedalAssign assign)
     case PedalAssign::PreLevel:        return EMCC_PreLevel;
     case PedalAssign::PostLevel:       return EMCC_PostLevel;
     case PedalAssign::AudioInputLevel: return EMCC_AudioInLevel;
+    //case PedalAssign::Jack1:           return EMCC_Jack1;
+    //case PedalAssign::Jack2:           return EMCC_Jack2;
     //case PedalAssign::Attenuation:     return EMCC_Attenuation;
     case PedalAssign::Sustain:         return EMCC_Sustain;
     case PedalAssign::Sostenuto:       return EMCC_Sostenuto;

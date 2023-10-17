@@ -175,6 +175,8 @@ struct PedalKnob : SmallBlackKnob
             menu->addChild(createPedalMenuItem(PedalAssign::RoundEqual));
             }));
         menu->addChild(createPedalMenuItem(PedalAssign::FineTune));
+        //menu->addChild(createPedalMenuItem(PedalAssign::Jack1));
+        //menu->addChild(createPedalMenuItem(PedalAssign::Jack2));
 
         menu->addChild(createSubmenuItem("Extensions", "",  [=](Menu * menu) {
             menu->addChild(createPedalMenuItem(PedalAssign::Expression));

@@ -129,8 +129,8 @@ constexpr const uint8_t EMCC_RoundRate 	    = 25;
 constexpr const uint8_t EMCC_PreLevel       = 26;
 constexpr const uint8_t EMCC_Attenuation    = 27;
 constexpr const uint8_t EMCC_RoundInitial   = 28;
-constexpr const uint8_t EMCC_Pedal1         = 29;
-constexpr const uint8_t EMCC_Pedal2         = 30;
+constexpr const uint8_t EMCC_Jack1         = 29;
+constexpr const uint8_t EMCC_Jack2         = 30;
 constexpr const uint8_t EMCC_Advance        = 31; //127 next, 64=next layer
 constexpr const uint8_t EMCC_Category       = 32;
 

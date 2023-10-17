@@ -23,7 +23,8 @@ enum class PedalAssign : uint8_t
     PostLevel,
     AudioInputLevel,
     //Attenuation, // can be set/sent, but does not behave
-
+    // Jack1,
+    // Jack2, // found in BeautifulPursuit, but not sent when configured
     Sustain,
     Sostenuto,
     Sostenuto2,
