@@ -1,4 +1,5 @@
 #include "vert_slider.hpp"
+#include "../misc.hpp"
 
 namespace pachde {
 
@@ -15,14 +16,27 @@ VerticalSlider::VerticalSlider()
 {
     setBackgroundSvg(Svg::load(asset::plugin(pluginInstance, "res/VertSlider_bg.svg")));
     setHandleSvg(Svg::load(asset::plugin(pluginInstance, "res/VertSliderThumb.svg")));
-    setHandlePosCentered(Vec(10.f, 198.f), Vec(10.f, 5.f));
+    setHandlePosCentered(Vec(10.f, 199.f), Vec(10.f, 4.f));
     auto fill = new SliderValueFill(handle);
     fill->box.size = box.size;
     fb->addChildBelow(fill, handle);
     handle->box.pos.y = 198.f;
 }
 
-void VerticalSlider::onHover(const HoverEvent& e) 
+void VerticalSlider::onButton(const ButtonEvent &e)
+{
+    SvgSlider::onButton(e);
+    if (e.action == GLFW_PRESS && e.button == GLFW_MOUSE_BUTTON_LEFT && (e.mods & RACK_MOD_MASK) == 0) {
+        auto pq = getParamQuantity();
+        if (pq) {
+            float v = box.size.y - 2.f - e.pos.y;
+            v = rescale(v, 0.f, box.size.y, pq->getMinValue(), pq->getMaxValue());
+            pq->setValue(v);
+        }
+    }
+}
+
+void VerticalSlider::onHover(const HoverEvent &e)
 {
     SvgSlider::onHover(e);
     e.consume(this);

@@ -20,6 +20,7 @@ struct VerticalSlider : SvgSlider
 
 	VerticalSlider();
 
+    void onButton(const ButtonEvent& e) override;
     void onHover(const HoverEvent& e) override;
     void onEnter(const EnterEvent& e) override;
     void onLeave(const LeaveEvent& e) override ;
