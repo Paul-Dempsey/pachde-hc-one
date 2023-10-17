@@ -20,6 +20,8 @@
 using namespace em_midi;
 namespace pachde {
 
+//#define PERIODIC_DEVICE_CHECK
+//#define CHECK_DEVICE_CHANGE // include CheckDeviceChange
 //#define VERBOSE_LOG
 #include "../debug_log.hpp"
 const NVGcolor& StatusColor(StatusItem led);
@@ -165,9 +167,10 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, IMidiDeviceChange, midi
 
     void tryCachedPresets();
 
+#if defined CHECK_DEVICE_CHANGE
     bool checkDeviceChange();
+#endif
     void initOutputDevice();
-    bool initDevices();
 
     bool anyPending() {
         return 
@@ -196,24 +199,30 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, IMidiDeviceChange, midi
     bool in_preset = false;
     bool in_user_names = false;
     bool in_sys_names = false;
-    bool broken = false;
     bool dupe = false;
+    bool broken = false;
+    float broken_idle = 0.f;
 #ifdef VERBOSE_LOG
     bool log_midi = false;
 #endif
-    float broken_idle = 0.f;
 
     // float init_step_phase = 0.f;
     // float init_step_time = 0.f;
-
     // void begin_init_step(float timeout) {
     //     init_step_phase = 0.f;
     //     init_step_time = timeout;
     // }
+#if defined PERIODIC_DEVICE_CHECK
+    rack::dsp::Timer device_check;
+    bool ping_device = false;
+    bool do_periodic_device_check = true;
+#endif
+    rack::dsp::Timer device_sync;
+    const float DEVICE_SYNC_PERIOD = 8.f;
 
     // heart_beating
     float heart_phase = 0.f;
-    float heart_time = 1.0;
+    float heart_time = 2.0;
     bool first_beat = false;
     bool tick_tock = true;
     NVGcolor ledColor = green_light;
@@ -224,17 +233,18 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, IMidiDeviceChange, midi
     std::string device_claim;
 
     // IMidiDeviceChange
-    void onRevokeClaim(const std::string& claim) override
-    {
-        reboot();
-    }
+    void onRenewClaim() override;
+
     // ISetDevice
     void setMidiDevice(const std::string & claim) override;
-
+    bool in_reboot = false;
+    
     midi::Output midi_output;
     rack::dsp::RingBuffer<uMidiMessage, 128> midi_dispatch;
     void queueMidiMessage(uMidiMessage msg);
     void dispatchMidi();
+    const float MIDI_RATE = 0.05f;
+    rack::dsp::Timer midi_timer;
 
     // cc handling
 
@@ -271,8 +281,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, IMidiDeviceChange, midi
     // cv processing
     const int CV_INTERVAL = 64;
     int check_cv = 0;
-    const float MIDI_RATE = 0.05f;
-    rack::dsp::Timer midi_timer;
+
     rack::dsp::SchmittTrigger mute_trigger;
 
     bool isEaganMatrix() { return is_eagan_matrix; }

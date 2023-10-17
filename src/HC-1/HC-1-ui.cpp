@@ -149,24 +149,6 @@ void Hc1ModuleWidget::createRoundingLEDs()
     addChild(createLight<TinySimpleLight<RedLight>>(Vec(x, y), my_module, Hc1lt::ROUND_RELEASE_LIGHT));
 }
 
-//void createFilterui()
-// {
-//     auto light = createLightCentered<SmallLight<BlueLight>>(Vec(box.size.x -15.f, PRESET_BOTTOM - 24.f), my_module, Hc1Module::Lights::FILTER_LIGHT);
-//     light->baseColors[0] = PORT_VIOLET;
-//     if (my_module) {
-//         my_module->getLight(Hc1Module::Lights::FILTER_LIGHT).setBrightness(my_module->preset_filter.isFiltered() * 1.f);
-//     }
-//     addChild(light);
-//
-//     auto filter = createWidget<SquareButton>(Vec(box.size.x - 23.f, PRESET_BOTTOM - 18.f));
-//     filter->setSymbol(SquareButtonSymbol::Funnel);
-//     filter->onClick([this]() {
-//         if (!my_module) return;
-//         my_module->filter_presets = !my_module->filter_presets;
-//     });
-//     addChild(filter);
-// }
-
 #ifdef TRANSPOSE_BUTTONS
 void Hc1ModuleWidget::createTranspose()
 {
@@ -245,7 +227,7 @@ void Hc1ModuleWidget::createDeviceDisplay()
 
     // hardware model
     addChild(hardware_label = createStaticTextLabel<StaticTextLabel>(
-        Vec(center -66.5f, y), 50.f, "", 
+        Vec(center -66.5f, y), 50.f, "<device model>", 
         TextAlignment::Right, 10.f, false, co));
 
     // device name
@@ -256,13 +238,13 @@ void Hc1ModuleWidget::createDeviceDisplay()
 
     // firmware version
     addChild(firmware_label = createStaticTextLabel<StaticTextLabel>(
-        Vec(box.size.x - 60.f,  y), 60.f - 7.5f, "",
+        Vec(box.size.x - 60.f,  y), 60.f - 7.5f, "v0.0",
         TextAlignment::Right, 10.f, false, co));
 }
 
 void Hc1ModuleWidget::createTestNote()
 {
-    auto pb = createWidgetCentered<SmallPush>(Vec(32.f, box.size.y -8.5f));
+    auto pb = createWidgetCentered<SmallPush>(Vec(31.f, box.size.y -7.5f));
     if (my_module) {
         #ifdef ARCH_MAC
             pb->describe("Send test Note\nCmd+click = Note off");
@@ -284,41 +266,40 @@ void Hc1ModuleWidget::createStatusDots()
 {
     if (!my_module) { return; }
 
-    float left = 48.f;
-    float spacing = 6.25f;
+    float left = STATUS_LEFT;
     float y = box.size.y - 7.5f;
     //notes_on
-    addChild(createIndicatorCentered(41.f, y, "Note", [=]()->const NVGcolor& { return (my_module->notesOn ? purple_light : gray_light); }, [=]()-> bool { return my_module->notesOn; }));
-    //eagan is_eagan_matrix
-    addChild(createIndicatorCentered(left, y, "Eagan Matrix", [=]()->const NVGcolor& { return my_module->is_eagan_matrix ? blue_light : yellow_light; }));
-    left += spacing;
+    addChild(createIndicatorCentered(40.f, y, "Note", [=]()->const NVGcolor& { return (my_module->notesOn ? purple_light : gray_light); }, [=]()-> bool { return my_module->notesOn; }));
+    //is_eagan_matrix
+    addChild(createIndicatorCentered(left, y, "Eagan Matrix", [=]()->const NVGcolor& { return my_module->isEaganMatrix() ? blue_light : yellow_light; }));
+    left += STATUS_SPREAD;
     //device_output_state
     addChild(createIndicatorCentered(left, y, "Midi output device", [=]()->const NVGcolor& { return InitStateColor(my_module->device_output_state); }));
-    left += spacing;
+    left += STATUS_SPREAD;
     // device_input_state
     addChild(createIndicatorCentered(left, y, "Midi input device", [=]()->const NVGcolor& { return InitStateColor(my_module->device_input_state); }));
-    left += spacing;
+    left += STATUS_SPREAD;
     //device_hello_state
     addChild(createIndicatorCentered(left, y, "EM device ack", [=]()->const NVGcolor& { return InitStateColor(my_module->device_hello_state); }));
-    left += spacing;
+    left += STATUS_SPREAD;
     //system_preset_state
     addChild(createIndicatorCentered(left, y, "System presets", [=]()->const NVGcolor& { return InitStateColor(my_module->system_preset_state); }));
-    left += spacing;
+    left += STATUS_SPREAD;
     //user_preset_state
     addChild(createIndicatorCentered(left, y, "User presets", [=]()->const NVGcolor& { return InitStateColor(my_module->user_preset_state); }));
-    left += spacing;
+    left += STATUS_SPREAD;
     //apply_favorite_state
     addChild(createIndicatorCentered(left, y, "Favorites", [=]()->const NVGcolor& { return InitStateColor(my_module->apply_favorite_state); }));
-    left += spacing;
+    left += STATUS_SPREAD;
     //config_state
     addChild(createIndicatorCentered(left, y, "Configuration", [=]()->const NVGcolor& { return InitStateColor(my_module->config_state); }));
-    left += spacing;
+    left += STATUS_SPREAD;
     //saved_preset_state
     addChild(createIndicatorCentered(left, y, "Saved preset", [=]()->const NVGcolor& { return InitStateColor(my_module->saved_preset_state); }));
-    left += spacing;
+    left += STATUS_SPREAD;
     //request_updates_state
     addChild(createIndicatorCentered(left, y, "Request updates", [=]()->const NVGcolor& { return InitStateColor(my_module->request_updates_state); }));
-    left += spacing;
+    left += STATUS_SPREAD;
     //handshake
     addChild(createIndicatorCentered(left, y, "Heartbeat", [=]()->const NVGcolor& { return InitStateColor(my_module->handshake); }));
 }
@@ -469,7 +450,7 @@ void Hc1ModuleWidget::moveFavorite(std::shared_ptr<Preset> preset, FavoriteMove 
 //
 void Hc1ModuleWidget::onPresetChanged(const PresetChangedEvent& e)
 {
-    auto ver = my_module && my_module->is_eagan_matrix ? my_module->firmware_version : 0;
+    auto ver = my_module ? my_module->firmware_version : 0;
     firmware_label->text(format_string("v%03.2f", ver/100.f));
     hardware_label->text(my_module ? HardwareName(my_module->hardware) : "");
 
@@ -484,10 +465,12 @@ void Hc1ModuleWidget::onDeviceChanged(const DeviceChangedEvent& e)
     em_picker->describe(have_device ? e.device->info.friendly(true) : "Choose an Eagan Matrix device");
     device_label->text(have_device ? e.device->info.friendly(false) : "<Eagan Matrix device>");
     hardware_label->text(""); // blank until we get presetChanged, as it's part of the config
+    firmware_label->text(""); // blank until we get presetChanged, as it's part of the config
 }
 
 void Hc1ModuleWidget::onDisconnect(const DisconnectEvent& e)
 {
+    firmware_label->text("");
     hardware_label->text("");
     device_label->text("");
 }

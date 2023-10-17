@@ -76,8 +76,8 @@ struct Hc2Module : Module, ISendMidi, IHandleHcEvents
     void processControls();
 
     // Module
-    void onSampleRateChange() override {
-        control_rate.onSampleRateChanged();
+    void onSampleRateChange(const SampleRateChangeEvent& e) override {
+        control_rate.onSampleRateChanged(e);
     }
     json_t * dataToJson() override;
     void dataFromJson(json_t *root) override;

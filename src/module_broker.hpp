@@ -25,6 +25,7 @@ struct ModuleBroker
     Hc1Module* getSoleHc1();
     Hc1Module* getHc1(std::function<bool(Hc1Module*)> pred);
     Hc1Module* getHc1(int64_t id);
+    Hc1Module* get_primary();
 
     // pred returns false to stop scan
     void scan_while(std::function<bool(Hc1Module*)> pred);

@@ -13,7 +13,7 @@ struct IndicatorWidget: TipWidget
     IndicatorWidget()
     : get_color(nullptr), get_fill(nullptr)
     {
-        box.size.x = box.size.y = 5.f;
+        box.size.x = box.size.y = 4.5f;
     }
 
     void draw(const DrawArgs& args) override

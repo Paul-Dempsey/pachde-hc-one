@@ -82,7 +82,11 @@ struct MidiDeviceConnection
             && output_device_id >= 0;
     }
 
-    bool instantiate(const std::string &spec);
+    bool is_same_connection(std::shared_ptr<MidiDeviceConnection> other) const {
+        return unique_key() == other->unique_key()
+            && 0 == info.spec().compare(other->info.spec());
+    }
+    //bool instantiate(const std::string &spec);
 };
 
 std::vector<std::shared_ptr<MidiDeviceConnection>> EnumerateMidiConnections(bool emOnly);
@@ -90,8 +94,7 @@ std::vector<std::shared_ptr<MidiDeviceConnection>> EnumerateMidiConnections(bool
 // ==== MidiDeviceBroker =======================================
 
 struct IMidiDeviceChange {
-    // claims are revoked when the device is no longer available
-    virtual void onRevokeClaim(const std::string& claim) = 0;
+    virtual void onRenewClaim() = 0;
 };
 
 struct MidiDeviceBroker {

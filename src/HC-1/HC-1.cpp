@@ -251,11 +251,17 @@ json_t * Hc1Module::dataToJson()
     json_object_set_new(root, "cache-user-presets", json_boolean(cache_user_presets));
     json_object_set_new(root, "heartbeat",  json_boolean(heart_beating));
     json_object_set_new(root, "favorites-file", json_string(favoritesFile.c_str()));
+#if defined PERIODIC_DEVICE_CHECK
+    json_object_set_new(root, "device-check", json_boolean(do_periodic_device_check));
+#endif
     return root;
 }
 
 void Hc1Module::dataFromJson(json_t *root)
 {
+#if defined PERIODIC_DEVICE_CHECK
+    do_periodic_device_check  = GetBool(root, "device-check", do_periodic_device_check);
+#endif
     heart_beating = GetBool(root, "heartbeat", heart_beating);
     auto j = json_object_get(root, "preset-tab");
     if (j) {
@@ -305,12 +311,18 @@ void Hc1Module::dataFromJson(json_t *root)
 
 void Hc1Module::reboot()
 {
+    // re-entrancy protection
+    if (in_reboot) return;
+    in_reboot = true;
+
     connection = nullptr;
     dupe = false;
     midi::Input::reset();
     midi_output.reset();
-
-    MidiDeviceBroker::get()->sync();
+#if defined PERIODIC_DEVICE_CHECK
+    ping_device = false;
+#endif
+    MidiDeviceBroker::get()->sync(); // can call reboot, requiring re-entrancy protection
 
     firmware_version = 0;
     cvc_version = 0;
@@ -323,7 +335,7 @@ void Hc1Module::reboot()
     midi_send_count = 0;
     broken = false;
     broken_idle = 0.f;
-    heart_phase = heart_time = 1.0f;
+    heart_phase = heart_time = 2.0f;
     first_beat = false;
     preset0.clear();
     system_presets.clear();
@@ -346,7 +358,11 @@ void Hc1Module::reboot()
     notesOn = 0;
     data_stream = -1;
     recirculator = 0;
+    muted = false;
+
     notifyDeviceChanged();
+
+    in_reboot = false;
 }
 
 void Hc1Module::onRandomize(const RandomizeEvent& e)

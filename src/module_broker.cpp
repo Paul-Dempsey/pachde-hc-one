@@ -55,6 +55,12 @@ Hc1Module* ModuleBroker::getHc1(int64_t id)
     return item == my->hc1s.cend() ? nullptr : *item;
 }
 
+Hc1Module *ModuleBroker::get_primary()
+{
+    if (my->hc1s.empty()) return nullptr;
+    return *my->hc1s.begin();
+}
+
 void ModuleBroker::registerHc1(Hc1Module* module)
 {
     if (my->hc1s.cend() == std::find(my->hc1s.cbegin(), my->hc1s.cend(), module)) {

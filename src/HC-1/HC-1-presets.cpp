@@ -7,6 +7,8 @@ void Hc1Module::tryCachedPresets() {
         loadSystemPresets();
         if (system_presets.empty()) {
             system_preset_state = InitState::Uninitialized;
+        } else {
+            heart_time = .05f; // don't need delay after loading a file
         }
     }
 
@@ -14,6 +16,8 @@ void Hc1Module::tryCachedPresets() {
         loadUserPresets();
         if (user_presets.empty()) {
             user_preset_state = InitState::Uninitialized;
+        } else {
+            heart_time = .05f; // don't need delay after loading a file
         }
     }
 
@@ -54,12 +58,14 @@ std::string Hc1Module::userPresetsPath()
 
 std::string Hc1Module::systemPresetsPath()
 {
-    if (!connection) return "";
+    if (EM_Hardware::Unknown == hardware) return "";
     return asset::user(format_string("%s/%s-system.json", pluginInstance->slug.c_str(), ShortHardwareName(hardware)));
 }
 
 void Hc1Module::saveUserPresets()
 {
+    if (user_presets.empty()) return;
+    if (InitState::Complete != user_preset_state) return;
     auto path = userPresetsPath();
     DebugLog("Saving user presets: %s ", path.c_str());
     if (path.empty()) return;
@@ -74,6 +80,7 @@ void Hc1Module::saveUserPresets()
 	std::string tmpPath = system::join(dir, TempName(".tmp.json"));
 	FILE* file = std::fopen(tmpPath.c_str(), "w");
 	if (!file) {
+    	system::remove(tmpPath);
 		return;
     }
 
@@ -86,6 +93,9 @@ void Hc1Module::saveUserPresets()
 
 void Hc1Module::saveSystemPresets()
 {
+    if (system_presets.empty()) return;
+    if (InitState::Complete != system_preset_state) return;
+
     auto path = systemPresetsPath();
     DebugLog("Saving system presets: %s ", path.c_str());
     if (path.empty()) return;
@@ -99,7 +109,10 @@ void Hc1Module::saveSystemPresets()
 
 	std::string tmpPath = system::join(dir, TempName(".tmp.json"));
 	FILE* file = std::fopen(tmpPath.c_str(), "w");
-	if (!file) { return; }
+	if (!file) {
+    	system::remove(tmpPath);
+        return;
+    }
 
 	json_dumpf(root, file, JSON_INDENT(2));
 	std::fclose(file);
@@ -154,12 +167,11 @@ void Hc1Module::loadSystemPresets()
     if (path.empty()) return;
     
     system_preset_state = InitState::Pending;
-
     system_presets.clear();
 
     FILE* file = std::fopen(path.c_str(), "r");
 	if (!file) {
-        system_preset_state = user_preset_state = InitState::Broken;
+        system_preset_state = InitState::Broken;
 		return;
     }
 	DEFER({std::fclose(file);});
@@ -167,7 +179,7 @@ void Hc1Module::loadSystemPresets()
 	json_error_t error;
 	json_t* root = json_loadf(file, 0, &error);
 	if (!root) {
-        system_preset_state = user_preset_state = InitState::Broken;
+        system_preset_state = InitState::Broken;
 		DebugLog("Invalid JSON at %d:%d %s in %s", error.line, error.column, error.text, path.c_str());
         return;
     }
@@ -198,9 +210,7 @@ void Hc1Module::favoritesFromPresets()
 
 void Hc1Module::userPresetsToJson(json_t* root)
 {
-    if (!connection) return;
-    auto device = connection->info.spec();
-    json_object_set_new(root, "device", json_stringn(device.c_str(), device.size()));
+    json_object_set_new(root, "device", json_string(connection->info.spec().c_str()));
 
     auto jaru = json_array();
     for (auto preset: user_presets) {
@@ -279,6 +289,7 @@ void Hc1Module::writeFavoritesFile(const std::string& path)
 	std::string tmpPath = system::join(dir, TempName(".tmp.json"));
 	FILE* file = std::fopen(tmpPath.c_str(), "w");
 	if (!file) {
+    	system::remove(tmpPath);
 		return;
     }
 

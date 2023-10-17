@@ -154,59 +154,59 @@ std::string MidiDeviceConnectionInfo::friendly(bool long_name) const
 
 // =============================================================
 
-bool MidiDeviceConnection::instantiate(const std::string &spec)
-{
-    clear_ids();
-    if (!info.parse(spec)) {
-        return false;
-    }
-
-    for (auto id_driver : midi::getDriverIds())
-    {
-        auto driver = midi::getDriver(id_driver);
-        std::string driver_name = driver->getName();
-        if (match_insensitive(info.driver(), driver_name)) {
-
-            driver_id = id_driver;
-
-            // find input device id
-            int occurrence = 0;
-            for (auto id_device : driver->getInputDeviceIds())
-            {
-                std::string name = FilterDeviceName(driver->getInputDeviceName(id_device));
-                if (match_insensitive(info.input(), name))
-                {
-                    if (info.nth() <= 0 || occurrence == info.nth())
-                    {
-                        input_device_id = id_device;
-                        break;
-                    }
-                    ++occurrence;
-                }
-            }
-
-            if (input_device_id < 0) return false;
-
-            // find output device id
-            occurrence = 0;
-            for (auto id_device : driver->getOutputDeviceIds())
-            {
-                std::string name = FilterDeviceName(driver->getOutputDeviceName(id_device));
-                if (match_insensitive(info.output(), name))
-                {
-                    if (info.nth() <= 0 || occurrence == info.nth())
-                    {
-                        output_device_id = id_device;
-                        break;
-                    }
-                    ++occurrence;
-                }
-            }
-            return identified();
-        }
-    }
-    return false;
-}
+// bool MidiDeviceConnection::instantiate(const std::string &spec)
+// {
+//     clear_ids();
+//     if (!info.parse(spec)) {
+//         return false;
+//     }
+//
+//     for (auto id_driver : midi::getDriverIds())
+//     {
+//         auto driver = midi::getDriver(id_driver);
+//         std::string driver_name = driver->getName();
+//         if (match_insensitive(info.driver(), driver_name)) {
+//
+//             driver_id = id_driver;
+//
+//             // find input device id
+//             int occurrence = 0;
+//             for (auto id_device : driver->getInputDeviceIds())
+//             {
+//                 std::string name = FilterDeviceName(driver->getInputDeviceName(id_device));
+//                 if (match_insensitive(info.input(), name))
+//                 {
+//                     if (info.nth() <= 0 || occurrence == info.nth())
+//                     {
+//                         input_device_id = id_device;
+//                         break;
+//                     }
+//                     ++occurrence;
+//                 }
+//             }
+//
+//             if (input_device_id < 0) return false;
+//
+//             // find output device id
+//             occurrence = 0;
+//             for (auto id_device : driver->getOutputDeviceIds())
+//             {
+//                 std::string name = FilterDeviceName(driver->getOutputDeviceName(id_device));
+//                 if (match_insensitive(info.output(), name))
+//                 {
+//                     if (info.nth() <= 0 || occurrence == info.nth())
+//                     {
+//                         output_device_id = id_device;
+//                         break;
+//                     }
+//                     ++occurrence;
+//                 }
+//             }
+//             return identified();
+//         }
+//     }
+//     return false;
+// }
 
 bool matchInOut(const std::string& input, const std::string& output)
 {
@@ -272,9 +272,10 @@ std::vector<std::shared_ptr<MidiDeviceConnection>> EnumerateMidiConnections(bool
                 if (output_name != (*item)->info.input_device_name) {
                     (*item)->info.output_device_name = output_name;
                 }
-            } else {
-                DEBUG("No match for output device %s:%s:%d", driver->getName().c_str(), output_name.c_str(), seq);
-            }
+            } 
+            // else {
+            //     DEBUG("No match for output device %s:%s:%d", driver->getName().c_str(), output_name.c_str(), seq);
+            // }
         }
     }
     return result;
@@ -362,6 +363,40 @@ struct MidiDeviceBroker::Internal
         return "";
     }
 
+    void sync()
+    {
+        auto new_devices = EnumerateMidiConnections(false);
+        bool renew = false;
+        if (new_devices.size() == devices.size()) {
+            for (auto incoming : new_devices) {
+                auto it = std::find_if(devices.begin(), devices.end(), [incoming](std::shared_ptr<MidiDeviceConnection> old) {
+                    return old->is_same_connection(incoming);
+                });
+                if (it == devices.cend()) {
+                    renew = true;
+                    break;
+                }
+            }
+        } else {
+            renew = true;
+        }
+        if (!renew) return;
+
+        std::vector<int64_t> claimants;
+        auto bit = std::back_inserter(claimants);
+        for (auto p : claims) {
+            *bit++ = p.second;
+        }
+        claims.clear();
+        devices = new_devices;
+        for (auto mod : claimants) {
+            auto client = dynamic_cast<IMidiDeviceChange*>(APP->engine->getModule(mod));
+            if (client) {
+                client->onRenewClaim();
+            }
+        }
+    }
+
     void revoke_claim(const std::string& claim)
     {
         claims.erase(claim);
@@ -400,36 +435,10 @@ bool MidiDeviceBroker::is_available(const std::string& claim)
     return  me->get_claimant(claim) == -1;
 }
 
-void MidiDeviceBroker::sync()
-{
-    auto new_devices = EnumerateMidiConnections(false);
-
-    std::set<int> old_keys;
-    for (auto item : me->devices) { old_keys.insert(item->unique_key()); }
-
-    std::set<int> new_keys;
-    for (auto item : new_devices) { new_keys.insert(item->unique_key()); }
-
-    for (auto key: old_keys) {
-        auto it = new_keys.find(key);
-        if (it == new_keys.end()) {
-            auto conn = get_connection(key);
-            auto claim = conn->info.spec();
-            auto mod_id = me->get_claimant(claim);
-            if (-1 != mod_id) {
-                me->revoke_claim(claim);
-                auto mod = APP->engine->getModule(mod_id);
-                auto client = dynamic_cast<IMidiDeviceChange*>(mod);
-                if (client) {
-                    client->onRevokeClaim(claim);
-                }
-            }
-        }
-    }
-    me->devices = new_devices;
-}
 
 // everything else is a forwarder
+void MidiDeviceBroker::sync() { me->sync(); }
+
 MidiDeviceBroker::ClaimResult MidiDeviceBroker::claim_device(int64_t claimant, const std::string& claim) {
     return me->claim(claimant, claim);
 }

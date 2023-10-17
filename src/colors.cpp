@@ -391,9 +391,9 @@ void OpenCircle(NVGcontext * vg, float cx, float cy, float r, NVGcolor stroke, f
 void Dot(NVGcontext*vg, float x, float y, const NVGcolor& co, bool filled)
 {
     if (filled) {
-        Circle(vg, x, y, 2.5f, co);
+        Circle(vg, x, y, 2.25f, co);
     } else {
-        OpenCircle(vg, x, y, 2.25f, co, .5f);
+        OpenCircle(vg, x, y, 2.f, co, .5f);
     }
 }
 

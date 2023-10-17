@@ -5,6 +5,41 @@
 
 namespace pachde {
 
+void Hc1Module::onRenewClaim()
+{
+    using CR = MidiDeviceBroker::ClaimResult;
+
+    auto oldConnection = connection;
+    connection = nullptr;
+    int old_output_device_id = midi_output.getDeviceId();
+
+    auto device_broker = MidiDeviceBroker::get();
+    auto r = device_broker->claim_device(Module::getId(), device_claim);
+    switch (r) {
+        case CR::Ok:
+            connection = device_broker->get_connection(device_claim);
+            assert(connection);
+            if (connection->output_device_id != old_output_device_id) {
+                midi_output.reset();
+                midi_dispatch.clear();
+                midi_output.setDeviceId(connection->output_device_id);
+                assert((connection->output_device_id == midi_output.getDeviceId())); // subscribing failed: should handle it?
+                midi_output.setChannel(-1);
+
+                heart_time = 5.f;
+                device_input_state = InitState::Uninitialized;
+                Input::reset();
+            }
+            break;
+        case CR::AlreadyClaimed: 
+        case CR::ArgumentError:
+        case CR::NoMidiDevices:
+        case CR::NotAvailable: // device isn't plugged in
+            reboot();
+            break;
+    }
+}
+
 void Hc1Module::setMidiDevice(const std::string & claim)
 {
     if (0 == device_claim.compare(claim)) return;
@@ -377,7 +412,6 @@ void Hc1Module::onChannel16CC(uint8_t cc, uint8_t value)
                     user_preset_state = broken ? InitState::Broken : InitState::Complete;
                     if (!broken) {
                         std::sort(user_presets.begin(), user_presets.end(), preset_system_order);
-                        heart_time = .1f; // next staep can start quickly
                     }
                     DebugLog("End User presets as %s", InitStateName(user_preset_state));
                     //sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::midiTxFull);
@@ -398,6 +432,7 @@ void Hc1Module::onChannel16CC(uint8_t cc, uint8_t value)
                     }
                     DebugLog("End System presets as %s", InitStateName(system_preset_state));
                     //sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::midiTxFull);
+                    heart_time = 5.f;
                     break;
             }
             break;
@@ -421,9 +456,6 @@ void Hc1Module::onChannel16CC(uint8_t cc, uint8_t value)
 
         case EMCC_EditorReply:{
             DebugLog("Editor Reply");
-            if (InitState::Pending == device_hello_state) {
-                device_hello_state = InitState::Complete;
-            } else
             if (InitState::Pending == handshake) {
                 first_beat = true;
                 handshake = InitState::Complete;
@@ -473,6 +505,9 @@ void Hc1Module::onChannel16Message(const midi::Message& msg)
                     log_midi = false;
 #endif
                     device_hello_state = InitState::Complete;
+                    if (!cache_system_presets || (hardware == EM_Hardware::Unknown)) {
+                        heart_time = 4.f;
+                    }
                 } else
                 if (configPending()) {
 #ifdef VERBOSE_LOG
@@ -686,11 +721,13 @@ void Hc1Module::onMessage(const midi::Message& msg)
         DebugLog("%lld %s", static_cast<long long int>(msg.frame), ToFormattedString(msg).c_str());
     }
 #endif
+#if defined PERIODIC_DEVICE_CHECK
+    device_check.reset();
+#endif
     if (broken && !isLoopbackDetect(msg)) {
         broken_idle = 0.f;
     }
     ++midi_receive_count;
-    //midi_receive_byte_count += msg.bytes.size();
 
     auto channel = msg.getChannel();
     switch (channel) {

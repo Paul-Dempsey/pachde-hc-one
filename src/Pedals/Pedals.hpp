@@ -66,7 +66,7 @@ struct PedalCore : Module, ISendMidi, IHandleHcEvents
     void syncValue(Hc1Module * partner);
 
     // Module
-    void onSampleRateChange() override { control_rate.onSampleRateChanged(); }
+    void onSampleRateChange(const SampleRateChangeEvent& e) override { control_rate.onSampleRateChanged(e); }
     json_t * dataToJson() override;
     void dataFromJson(json_t *root) override;
     void process(const ProcessArgs& args) override;

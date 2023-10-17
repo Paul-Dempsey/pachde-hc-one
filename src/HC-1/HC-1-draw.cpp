@@ -66,43 +66,40 @@ void Hc1ModuleWidget::drawStatusDots(NVGcontext* vg)
 {
     if (my_module) { return; }
 
-    float left = 41.f;
-    float spacing = 6.25f;
+    float left = STATUS_LEFT;
     float y = box.size.y - 7.5f;
 
     // note
-    Dot(vg, 41.f, y, gray_light, false);
-    left += spacing;
-    left += spacing;
+    Dot(vg, 40.f, y, gray_light, false);
 
     auto co = InitStateColor(InitState::Complete);
     //device_output_state
     Dot(vg, left, y, co);
-    left += spacing;
+    left += STATUS_SPREAD;
     // device_input_state
     Dot(vg, left, y, co);
-    left += spacing;
+    left += STATUS_SPREAD;
     //eagan matrix
     Dot(vg, left, y, blue_light);
-    left += spacing;
+    left += STATUS_SPREAD;
     //device_hello_state
     Dot(vg, left, y, blue_light);
-    left += spacing;
+    left += STATUS_SPREAD;
     //system_preset_state
     Dot(vg, left, y, co);
-    left += spacing;
+    left += STATUS_SPREAD;
     //user_preset_state
     Dot(vg, left, y, co);
-    left += spacing;
+    left += STATUS_SPREAD;
     //config_state
     Dot(vg, left, y, co);
-    left += spacing;
+    left += STATUS_SPREAD;
     //saved_preset_state
     Dot(vg, left, y, co);
-    left += spacing;
+    left += STATUS_SPREAD;
     //request_updates_state
     Dot(vg, left, y, co);
-    left += spacing;
+    left += STATUS_SPREAD;
     //handshake
     Dot(vg, left, y, co);
 }
@@ -121,57 +118,62 @@ void Hc1ModuleWidget::drawLayer(const DrawArgs& args, int layer)
 
     SetTextStyle(vg, normal_font, RampGray(G_85), 12.f);
     if (my_module) {
-        if (my_module->dupe) {
-            SetTextStyle(vg, bold_font, GetStockColor(StockColor::Fuchsia), 16.f);
-            text = "[Only one HC-1 per EM]";
-        } else
-        if (my_module->broken) {
-            SetTextStyle(vg, bold_font, GetStockColor(StockColor::Fuchsia), 16.f);
-            text = "[MIDI error - please wait]";
-        } else
-        if (InitState::Uninitialized == my_module->device_output_state) {
-            if (!my_module->device_claim.empty()) {
-                MidiDeviceConnectionInfo info;
-                if (info.parse(my_module->device_claim)) {
-                    text = "looking for ";
-                    text.append(info.input_device_name);
-                    text.append(" ...");
+        if (!my_module->ready()) {
+            if (my_module->dupe) {
+                SetTextStyle(vg, bold_font, GetStockColor(StockColor::Fuchsia), 16.f);
+                text = "[Only one HC-1 per EM]";
+            } else
+            if (my_module->broken) {
+                SetTextStyle(vg, bold_font, GetStockColor(StockColor::Fuchsia), 16.f);
+                text = "[MIDI error - please wait]";
+            } else
+            if (InitState::Uninitialized == my_module->device_output_state) {
+                if (!my_module->device_claim.empty()) {
+                    MidiDeviceConnectionInfo info;
+                    if (info.parse(my_module->device_claim)) {
+                        text = "looking for ";
+                        text.append(info.input_device_name);
+                        text.append(" ...");
+                    }
                 }
-            }
-            if (text.empty()) {
-                text = "looking for an Eagan Matrix device ...";
-            }
-        } else
-        if (InitState::Uninitialized == my_module->device_input_state) {
-            text = format_string("preparing %s ...", 
-                my_module->connection->info.input_device_name.c_str());
-        } else
-        if (InitState::Uninitialized == my_module->device_hello_state || InitState::Pending == my_module->device_hello_state) {
-            text = "waiting for initial EM handshake ..";
-        } else
-        if (my_module->is_gathering_presets()) {
-            text = format_string("gathering %s preset %d ...", 
-                my_module->in_user_names ? "User" : "System", 
-                my_module->in_user_names ? my_module->user_presets.size() : my_module->system_presets.size());
-        } else
-        if (InitState::Uninitialized == my_module->system_preset_state) {
-            text = "preparing system presets ...";
-        } else
-        if (InitState::Uninitialized == my_module->user_preset_state) {
-            text = "preparing user presets ...";
-        } else
-        if (InitState::Uninitialized == my_module->apply_favorite_state) {
-            text = "preparing favorites ...";
-        } else
-        if (InitState::Uninitialized == my_module->config_state 
-            || InitState::Pending == my_module->config_state) {
-            text = "processing preset details ...";
-        } else
-        if (my_module->current_preset) {
-            SetTextStyle(vg, bold_font, preset_name_color, 16.f);
-            text = my_module->current_preset->name;
+                if (text.empty()) {
+                    text = "looking for an Eagan Matrix device ...";
+                }
+            } else
+            if (InitState::Uninitialized == my_module->device_input_state) {
+                text = format_string("preparing %s ...", 
+                    my_module->connection->info.input_device_name.c_str());
+            } else
+            if (InitState::Uninitialized == my_module->device_hello_state) {
+                text = "preparing for initial EM handshake ...";
+            } else
+            if (InitState::Pending == my_module->device_hello_state) {
+                text = "waiting for initial EM handshake ...";
+            } else
+            if (my_module->is_gathering_presets()) {
+                text = format_string("gathering %s preset %d ...", 
+                    my_module->in_user_names ? "User" : "System", 
+                    my_module->in_user_names ? my_module->user_presets.size() : my_module->system_presets.size());
+            } else
+            if (InitState::Uninitialized == my_module->system_preset_state) {
+                text = "preparing for system presets ...";
+            } else
+            if (InitState::Uninitialized == my_module->user_preset_state) {
+                text = "preparing for user presets ...";
+            } else
+            if (InitState::Pending == my_module->apply_favorite_state) {
+                text = "processing favorites ...";
+            } else
+            if (InitState::Pending == my_module->config_state) {
+                text = "processing preset details ...";
+            } 
         } else {
-            text = "";
+            if (my_module->current_preset) {
+                SetTextStyle(vg, bold_font, preset_name_color, 16.f);
+                text = my_module->current_preset->name;
+            } else {
+                text = "<no preset>";
+            }
         }
     } else {
         SetTextStyle(vg, bold_font, preset_name_color, 16.f);

@@ -59,8 +59,6 @@ struct EMPicker : TipWidget
         menu->addChild(new MenuSeparator);
         menu->addChild(createMenuItem("Reset (auto)", "", [=](){ setter->setMidiDevice(""); }));
         auto broker = MidiDeviceBroker::get();
-        //broker->sync();
-
         auto current_claim = connection ? connection->info.spec() : "";
 
         broker->scan_while(

@@ -38,7 +38,7 @@ inline bool in_range_limit(T value, T minimum, T limit) { return minimum <= valu
 bool GetBool(const json_t* root, const char* key, bool default_value);
 float GetFloat(const json_t* root, const char* key, float default_value);
 
-enum class InitState {
+enum class InitState : uint8_t {
     Uninitialized,
     Pending,
     Complete,
@@ -91,16 +91,19 @@ struct RateTrigger
 
     void configure(float rate) {
         rate_ms = rate;
-        onSampleRateChanged();
+        onSampleRateChanged(Module::SampleRateChangeEvent{
+            APP->engine->getSampleRate(),
+            APP->engine->getSampleTime()
+        });
     }
 
     // after reset, fires on next step
     void reset() { steps = step_trigger; }
     void start() { steps = 0; }
 
-    void onSampleRateChanged()
+    void onSampleRateChanged(const Module::SampleRateChangeEvent& e)
     {
-        step_trigger = APP->engine->getSampleRate() * (rate_ms / 1000.0f);
+        step_trigger = e.sampleRate * (rate_ms / 1000.0f);
     }
 
     bool process()

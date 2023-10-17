@@ -226,10 +226,15 @@ void Hc1ModuleWidget::appendContextMenu(Menu *menu)
 
     menu->addChild(createSubmenuItem("Module", "", [=](Menu* menu) {
         menu->addChild(createMenuItem("Reboot HC-1", "",     [=](){ my_module->reboot(); }));
+#if defined PERIODIC_DEVICE_CHECK
+        menu->addChild(createCheckMenuItem("Check device connection on idle", "",
+            [=](){ return my_module->do_periodic_device_check; },
+            [=](){ my_module->do_periodic_device_check = !my_module->do_periodic_device_check; }));
+#endif
         menu->addChild(createCheckMenuItem("Suppress heartbeat handshake", "",
             [=](){ return !my_module->heart_beating; },
             [=](){ my_module->heart_beating = !my_module->heart_beating; }));
-        menu->addChild(createMenuItem("One handshake", "",   [=](){ my_module->sendEditorPresent(true); }));
+        menu->addChild(createMenuItem("One heartbeat handshake (ping)", "",   [=](){ my_module->sendEditorPresent(true); }));
         menu->addChild(createMenuItem("Request config", "",  [=](){ my_module->transmitRequestConfiguration(); }));
         menu->addChild(createMenuItem("Remake QSPI Data", "", [=]() { my_module->sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::remakeSRMahl); }));
         }));

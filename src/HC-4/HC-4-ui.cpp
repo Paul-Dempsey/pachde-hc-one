@@ -3,13 +3,6 @@
 
 namespace pachde {
 
-constexpr const float ROW_1 = 50.f; // center
-constexpr const float COL_1 = 75.f; //center
-constexpr const float OUTPUT_SPREAD = 18.f;
-constexpr const float ROW_SPREAD = 20.f;
-constexpr const float LABEL_VOFFSET = 6.f;
-constexpr const float LABEL_WIDTH = 52.f;
-
 Hc4ModuleWidget::Hc4ModuleWidget(Hc4Module * module)
 : my_module(module)
 {

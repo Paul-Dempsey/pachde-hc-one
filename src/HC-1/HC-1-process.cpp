@@ -119,6 +119,7 @@ void Hc1Module::dispatchMidi()
     }
 }
 
+#if defined CHECK_DEVICE_CHANGE
 bool Hc1Module::checkDeviceChange()
 {
     if (InitState::Complete != device_output_state
@@ -127,13 +128,16 @@ bool Hc1Module::checkDeviceChange()
     }
     // handle device changes
     if (connection) {
-        auto driver = Input::getDriver(); //::midi::getDriver(connection->driver_id);
-        if (!driver) {
+        auto driver = Input::getDriver(); 
+        auto driver2 = ::midi::getDriver(connection->driver_id);
+
+        if (!driver || !driver2) {
             DEBUG("!LOST MIDI DRIVER %s", connection->info.driver_name.c_str());
             reboot();
             return true;
         }
-        auto name = FilterDeviceName(Input::getDeviceName(Input::getDeviceId())); // FilterDeviceName(driver->getInputDeviceName(connection->input_device_id));
+        auto name = FilterDeviceName(Input::getDeviceName(Input::getDeviceId())); 
+        //auto name2 = FilterDeviceName(driver->getInputDeviceName(connection->input_device_id));
         if (name.empty() || (0 != name.compare(connection->info.input()))) {
             DEBUG("!LOST MIDI INPUT %s", connection->info.input().c_str());
             reboot();
@@ -148,6 +152,7 @@ bool Hc1Module::checkDeviceChange()
     }
     return false;
 }
+#endif
 
 void Hc1Module::initOutputDevice()
 {
@@ -164,7 +169,6 @@ void Hc1Module::initOutputDevice()
             case CR::Ok:
                 connection = device_broker->get_connection(device_claim);
                 assert(connection);
-                is_eagan_matrix = is_EMDevice(connection->info.input_device_name);
                 midi_output.setDeviceId(connection->output_device_id);
                 assert((connection->output_device_id == midi_output.getDeviceId())); // subscribing failed: should handle it?
                 midi_output.setChannel(-1);
@@ -192,49 +196,38 @@ void Hc1Module::initOutputDevice()
 
     if (InitState::Complete == device_output_state) {
         assert(connection);
+        is_eagan_matrix = is_EMDevice(connection->info.input_device_name);
         notifyDeviceChanged();
     }
-}
-
-bool Hc1Module::initDevices()
-{
-    switch (device_output_state) {
-    case InitState::Uninitialized:
-        initOutputDevice(); 
-        return true;
-        break;
-
-    case InitState::Complete: break;
-
-    case InitState::Pending:
-    case InitState::Broken:
-    default:
-        assert(false);
-        return true;
-    }
-
-    switch (device_input_state) {
-    case InitState::Uninitialized: {
-        if (InitState::Complete == device_output_state) {
-            midi::Input::setDeviceId(connection->input_device_id);
-            assert((connection->input_device_id == midi::Input::getDeviceId())); // subscribing failed: should handle it?
-            midi::Input::setChannel(-1);
-            device_input_state = InitState::Complete;
-            return true;
-        }
-    } break;
-    case InitState::Complete: return false;
-    case InitState::Pending:
-    case InitState::Broken:
-    default: assert(false); return true;
-    }
-
-    return false;
 }
 
 void Hc1Module::process(const ProcessArgs& args)
 {
     bool is_ready = ready() && !dupe;
+
+#if defined PERIODIC_DEVICE_CHECK
+    device_check.process(args.sampleTime);
+    if (connection) {
+        if (device_check.getTime() > 4.f) {
+            device_check.reset();
+            if (ping_device) {
+                if (anyPending()) {
+                    DEBUG("DEVICE CHECK FAILED FOR %s - rebooting", connection->info.friendly(true).c_str());
+                    reboot();
+                } else {
+                    DebugLog("Device Check OK for %s", connection->info.friendly(true).c_str());
+                    ping_device = false;
+                }
+            } else {
+                if (is_ready) {
+                    DebugLog("Checking device connection for %s", connection->info.friendly(true).c_str());
+                    sendEditorPresent(true);
+                    ping_device = true;
+                }
+            }
+        }
+    }
+#endif
 
     if (++check_cv > CV_INTERVAL) {
         check_cv = 0;
@@ -281,7 +274,6 @@ void Hc1Module::process(const ProcessArgs& args)
         return;
     }
 
-    // beginning of init phase timeout impl, if we need it
     // if (init_step_time > 0.f) {
     //     init_step_phase += args.sampleTime;
     //     if (init_step_phase >= init_step_time) {
@@ -289,56 +281,102 @@ void Hc1Module::process(const ProcessArgs& args)
     //     }
     // }
 
+    // primary hc1 drives device sync
+    if (ready()
+        && (ModuleBroker::get()->get_primary() == this)
+        && (device_sync.process(args.sampleTime) > DEVICE_SYNC_PERIOD)) {
+        device_sync.reset();
+        MidiDeviceBroker::get()->sync();
+    }
 
     heart_phase += args.sampleTime;
     if (heart_phase >= heart_time) {
         heart_phase -= heart_time;
-        heart_time = 1.8f;
+        heart_time = 2.f;
 
-        if (initDevices()) return;
+        if (!anyPending()
+            && (notesOn <= 0)
+            && !in_preset
+            && !dupe
+            ) {
 
-        //if (is_eagan_matrix) {
-            if (!anyPending()
-                && (notesOn <= 0)
-                && !in_preset
-                && !dupe
-                ) {
-                if (checkDeviceChange()) return;
-                if (InitState::Uninitialized == device_hello_state) {
-                    transmitDeviceHello();
-                } else
-                if (InitState::Uninitialized == system_preset_state || InitState::Broken == system_preset_state) {
-                    if (InitState::Broken != system_preset_state) {
-                        tryCachedPresets();
-                    }
-                    if (system_preset_state != InitState::Complete) {
-                        transmitRequestSystemPresets();
-                    }
-                } else 
-                if (InitState::Uninitialized == user_preset_state || InitState::Broken == user_preset_state) {
-                    transmitRequestUserPresets();
-                } else
-                if (InitState::Uninitialized == apply_favorite_state) {
-                    if (favoritesFile.empty()) {
-                        readFavorites();
-                    } else {
-                        readFavoritesFile(favoritesFile, true);
-                    }
-                    apply_favorite_state = InitState::Complete;
-                } else
-                if (InitState::Uninitialized == saved_preset_state) {
-                    sendSavedPreset();
-                } else
-                if (InitState::Uninitialized == config_state) {
-                    transmitRequestConfiguration();
-                } else
-                if (InitState::Uninitialized == request_updates_state) {
-                    transmitRequestUpdates();
-                } else if (heart_beating || !first_beat) {
-                    sendEditorPresent(true);
+            if (InitState::Uninitialized == device_output_state) {
+                initOutputDevice();
+                if (InitState::Complete == device_output_state) {
+                    heart_time = 5.f;
                 }
-           }
-        //} is_eagan_matrix
+                return;
+            }
+
+            if (InitState::Uninitialized == device_input_state) {
+                if (InitState::Complete == device_output_state) {
+                    midi::Input::setDeviceId(connection->input_device_id);
+                    assert((connection->input_device_id == midi::Input::getDeviceId())); // subscribing failed: should handle it?
+                    midi::Input::setChannel(-1);
+                    device_input_state = InitState::Complete;
+                    heart_time = 4.f;
+                }
+                return;
+            }
+
+            if (InitState::Uninitialized == device_hello_state) {
+                transmitDeviceHello();
+                return;
+            }
+
+            if (system_preset_state != InitState::Complete) {
+                if (InitState::Broken != system_preset_state) {
+                    tryCachedPresets();
+                    if (system_preset_state != InitState::Complete) {
+                        heart_time = 4.f;
+                        return;
+                    }
+                }
+                if (system_preset_state != InitState::Complete) {
+                    transmitRequestSystemPresets();
+                }
+                return;
+            }
+
+            if (InitState::Uninitialized == user_preset_state || InitState::Broken == user_preset_state) {
+                transmitRequestUserPresets();
+                return;
+            }
+
+            if (InitState::Uninitialized == apply_favorite_state) {
+                if (favoritesFile.empty()) {
+                    readFavorites();
+                } else {
+                    readFavoritesFile(favoritesFile, true);
+                }
+                apply_favorite_state = InitState::Complete;
+                return;
+            }
+
+            if (InitState::Uninitialized == saved_preset_state) {
+                sendSavedPreset();
+                return;
+            }
+
+            if (InitState::Uninitialized == config_state) {
+                transmitRequestConfiguration();
+                return;
+            }
+
+            if (InitState::Uninitialized == request_updates_state) {
+                transmitRequestUpdates();
+                return;
+            }
+            
+            if (heart_beating || !first_beat) {
+                sendEditorPresent(true);
+                return;
+            }
+
+#if defined CHECK_DEVICE_CHANGE
+            checkDeviceChange();
+#endif
+        }
     }// heart_beating
 } // process
 
