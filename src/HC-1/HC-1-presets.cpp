@@ -2,23 +2,21 @@
 #include "../he_group.hpp"
 namespace pachde {
 
-void Hc1Module::tryCachedPresets() {
+void Hc1Module::tryCachedPresets()
+{
+    cached_preset_state = InitState::Complete;
+
     if (cache_system_presets && hardware != EM_Hardware::Unknown) {
         loadSystemPresets();
-        if (system_presets.empty()) {
-            system_preset_state = InitState::Uninitialized;
-        } else {
-            heart_time = .05f; // don't need delay after loading a file
-        }
     }
-
     if (cache_user_presets && connection) {
         loadUserPresets();
-        if (user_presets.empty()) {
-            user_preset_state = InitState::Uninitialized;
-        } else {
-            heart_time = .05f; // don't need delay after loading a file
-        }
+    }
+    if (system_presets.empty()) {
+        system_preset_state = InitState::Uninitialized;
+    }
+    if (user_presets.empty()) {
+        user_preset_state = InitState::Uninitialized;
     }
 
     if (InitState::Complete == system_preset_state 
@@ -38,6 +36,10 @@ void Hc1Module::tryCachedPresets() {
             }
         }
     }
+    if ((InitState::Complete == system_preset_state)
+        && (InitState::Complete == user_preset_state)) {
+        heart_time = .05;
+    }
 }
 
 void Hc1Module::setPresetOrder(PresetOrder order)
@@ -47,6 +49,10 @@ void Hc1Module::setPresetOrder(PresetOrder order)
         preset_order = order;
         std::sort(system_presets.begin(), system_presets.end(), getPresetSort(preset_order));
     }
+}
+
+std::string Hc1Module::startupConfigPath() {
+    return asset::user(format_string("%s/startup.json", pluginInstance->slug.c_str()));    
 }
 
 std::string Hc1Module::userPresetsPath()
@@ -62,6 +68,89 @@ std::string Hc1Module::systemPresetsPath()
     return asset::user(format_string("%s/%s-system.json", pluginInstance->slug.c_str(), ShortHardwareName(hardware)));
 }
 
+void Hc1Module::saveStartupConfig()
+{
+    auto path = startupConfigPath();
+    if (system::exists(path)) return;
+
+    auto dir = system::getDirectory(path);
+    system::createDirectories(dir);
+
+    std::string tmpPath = system::join(dir, TempName(".tmp.json"));
+    FILE* file = std::fopen(tmpPath.c_str(), "w");
+    if (!file) {
+        system::remove(tmpPath);
+        return;
+    }
+
+    auto root = json_object();
+    if (!root) return;
+	DEFER({json_decref(root);});
+    json_object_set_new(root, "hearbeat-period",   json_real(hearbeat_period));
+    json_object_set_new(root, "post-output-delay", json_real(post_output_delay));
+    json_object_set_new(root, "post-input-delay",  json_real(post_input_delay));
+    json_object_set_new(root, "post-hello-delay",  json_real(post_hello_delay));
+    json_object_set_new(root, "post-system-delay", json_real(post_system_delay));
+    json_object_set_new(root, "post-user-delay",   json_real(post_user_delay));
+    json_object_set_new(root, "post-config-delay", json_real(post_config_delay));
+
+	json_dumpf(root, file, JSON_INDENT(2));
+	std::fclose(file);
+    system::sleep(0.0005);
+	system::remove(path);
+    system::sleep(0.0005);
+	system::rename(tmpPath, path);
+}
+
+void Hc1Module::loadStartupConfig()
+{
+    auto path = startupConfigPath();
+    if (path.empty()) return;
+
+    FILE* file = std::fopen(path.c_str(), "r");
+	if (!file) {
+		return;
+    }
+	DEFER({std::fclose(file);});
+
+	json_error_t error;
+	json_t* root = json_loadf(file, 0, &error);
+	if (!root) {
+		DebugLog("Invalid JSON at %d:%d %s in %s", error.line, error.column, error.text, path.c_str());
+        return;
+    }
+	DEFER({json_decref(root);});
+
+    json_t* j = json_object_get(root, "hearbeat-period");
+    if (j) {
+        hearbeat_period = json_number_value(j);
+    }
+    j = json_object_get(root, "post-output-delay");
+    if (j) {
+        post_output_delay = json_number_value(j);
+    }
+    j = json_object_get(root, "post-input-delay");
+    if (j) {
+        post_input_delay = json_number_value(j);
+    }
+    j = json_object_get(root, "post-hello-delay");
+    if (j) {
+        post_hello_delay = json_number_value(j);
+    }
+    j = json_object_get(root, "post-system-delay");
+    if (j) {
+        post_system_delay = json_number_value(j);
+    }
+    j = json_object_get(root, "post-user-delay");
+    if (j) {
+        post_user_delay = json_number_value(j);
+    }
+    j = json_object_get(root, "post-config-delay");
+    if (j) {
+        post_config_delay = json_number_value(j);
+    }
+}
+
 void Hc1Module::saveUserPresets()
 {
     if (user_presets.empty()) return;
@@ -74,20 +163,21 @@ void Hc1Module::saveUserPresets()
 
     auto root = json_object();
     if (!root) return;
-	DEFER({json_decref(root);});
+    DEFER({json_decref(root);});
     userPresetsToJson(root);
 
-	std::string tmpPath = system::join(dir, TempName(".tmp.json"));
-	FILE* file = std::fopen(tmpPath.c_str(), "w");
-	if (!file) {
-    	system::remove(tmpPath);
-		return;
+    std::string tmpPath = system::join(dir, TempName(".tmp.json"));
+    FILE* file = std::fopen(tmpPath.c_str(), "w");
+    if (!file) {
+        system::remove(tmpPath);
+        return;
     }
 
 	json_dumpf(root, file, JSON_INDENT(2));
 	std::fclose(file);
+    system::sleep(0.0005);
 	system::remove(path);
-    system::sleep(0.0001);
+    system::sleep(0.0005);
 	system::rename(tmpPath, path);
 }
 
@@ -116,8 +206,9 @@ void Hc1Module::saveSystemPresets()
 
 	json_dumpf(root, file, JSON_INDENT(2));
 	std::fclose(file);
+    system::sleep(0.0005);
 	system::remove(path);
-    system::sleep(0.0001);
+    system::sleep(0.0005);
 	system::rename(tmpPath, path);
 }
 
@@ -230,7 +321,6 @@ void Hc1Module::systemPresetsToJson(json_t* root)
     json_object_set_new(root, "system", jars);
 }
 
-
 std::string Hc1Module::moduleFavoritesPath()
 {
     if (!connection) return "";
@@ -295,8 +385,9 @@ void Hc1Module::writeFavoritesFile(const std::string& path)
 
 	json_dumpf(root, file, JSON_INDENT(2));
 	std::fclose(file);
+    system::sleep(0.0005);
 	system::remove(path);
-    system::sleep(0.0001);
+    system::sleep(0.0005);
 	system::rename(tmpPath, path);
 }
 

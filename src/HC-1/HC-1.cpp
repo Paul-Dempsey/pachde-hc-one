@@ -64,6 +64,7 @@ Hc1Module::Hc1Module()
 
     ModuleBroker::get()->registerHc1(this);
     heart_phase = heart_time;
+    loadStartupConfig();
 }
 
 Hc1Module::~Hc1Module()
@@ -232,6 +233,8 @@ void Hc1Module::onRemove(const RemoveEvent& e)
 
 json_t * Hc1Module::dataToJson()
 {
+    saveStartupConfig();
+
     auto root = json_object();
 
     json_object_set_new(root, "midi-device-claim", json_string(device_claim.c_str()));
@@ -306,7 +309,6 @@ void Hc1Module::dataFromJson(json_t *root)
     }
     cache_system_presets = GetBool(root, "cache-presets", cache_system_presets);
     cache_user_presets = GetBool(root, "cache-user-presets", cache_user_presets);
-    tryCachedPresets();
 }
 
 void Hc1Module::reboot()

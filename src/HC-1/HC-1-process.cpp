@@ -292,7 +292,7 @@ void Hc1Module::process(const ProcessArgs& args)
     heart_phase += args.sampleTime;
     if (heart_phase >= heart_time) {
         heart_phase -= heart_time;
-        heart_time = 2.f;
+        heart_time = hearbeat_period;
 
         if (!anyPending()
             && (notesOn <= 0)
@@ -303,7 +303,7 @@ void Hc1Module::process(const ProcessArgs& args)
             if (InitState::Uninitialized == device_output_state) {
                 initOutputDevice();
                 if (InitState::Complete == device_output_state) {
-                    heart_time = 5.f;
+                    heart_time = post_output_delay;
                 }
                 return;
             }
@@ -314,7 +314,7 @@ void Hc1Module::process(const ProcessArgs& args)
                     assert((connection->input_device_id == midi::Input::getDeviceId())); // subscribing failed: should handle it?
                     midi::Input::setChannel(-1);
                     device_input_state = InitState::Complete;
-                    heart_time = 4.f;
+                    heart_time = post_input_delay;
                 }
                 return;
             }
@@ -324,21 +324,21 @@ void Hc1Module::process(const ProcessArgs& args)
                 return;
             }
 
+            if (InitState::Uninitialized == cached_preset_state) {
+                tryCachedPresets();
+                if (system_preset_state != InitState::Complete
+                    || user_preset_state != InitState::Complete) {
+                    heart_time = post_hello_delay;
+                    return;
+                }
+            }
+
             if (system_preset_state != InitState::Complete) {
-                if (InitState::Broken != system_preset_state) {
-                    tryCachedPresets();
-                    if (system_preset_state != InitState::Complete) {
-                        heart_time = 4.f;
-                        return;
-                    }
-                }
-                if (system_preset_state != InitState::Complete) {
-                    transmitRequestSystemPresets();
-                }
+                transmitRequestSystemPresets();
                 return;
             }
 
-            if (InitState::Uninitialized == user_preset_state || InitState::Broken == user_preset_state) {
+            if (user_preset_state != InitState::Complete) {
                 transmitRequestUserPresets();
                 return;
             }

@@ -415,6 +415,7 @@ void Hc1Module::onChannel16CC(uint8_t cc, uint8_t value)
                     }
                     DebugLog("End User presets as %s", InitStateName(user_preset_state));
                     //sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::midiTxFull);
+                    heart_time = post_user_delay;
                     break;
 
                 case EM_DownloadItem::beginSysNames:
@@ -432,7 +433,7 @@ void Hc1Module::onChannel16CC(uint8_t cc, uint8_t value)
                     }
                     DebugLog("End System presets as %s", InitStateName(system_preset_state));
                     //sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::midiTxFull);
-                    heart_time = 5.f;
+                    heart_time = post_system_delay;
                     break;
             }
             break;
@@ -505,9 +506,8 @@ void Hc1Module::onChannel16Message(const midi::Message& msg)
                     log_midi = false;
 #endif
                     device_hello_state = InitState::Complete;
-                    if (!cache_system_presets || (hardware == EM_Hardware::Unknown)) {
-                        heart_time = 4.f;
-                    }
+                    notifyDeviceChanged();
+                    notifyPresetChanged();
                 } else
                 if (configPending()) {
 #ifdef VERBOSE_LOG
@@ -630,11 +630,11 @@ void Hc1Module::onChannelOneCC(uint8_t cc, uint8_t value)
     }
 
     switch (cc) {
-        // case EMCC_Pedal1:
-        //     DEBUG("EMCC_Pedal1 %d", value);
+        // case EMCC_Jack1:
+        //     DEBUG("EMCC_Jack1 %d", value);
         //     break;
-        // case EMCC_Pedal2:
-        //     DEBUG("EMCC_Pedal2 %d", value);
+        // case EMCC_Jack2:
+        //     DEBUG("EMCC_Jack2 %d", value);
         //     break;
         // case MidiCC_Hold:
         //     DEBUG("MidiCC_Hold %d", value);

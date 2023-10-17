@@ -117,9 +117,11 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, IMidiDeviceChange, midi
             hc1->bulk_favoriting = false;
         }
     };
-
+    std::string startupConfigPath();
     std::string userPresetsPath();
     std::string systemPresetsPath();
+    void saveStartupConfig();
+    void loadStartupConfig();
     void saveUserPresets();
     void saveSystemPresets();
     void savePresets();
@@ -149,6 +151,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, IMidiDeviceChange, midi
     InitState device_output_state   = InitState::Uninitialized;
     InitState device_input_state    = InitState::Uninitialized;
     InitState device_hello_state    = InitState::Uninitialized;
+    InitState cached_preset_state   = InitState::Uninitialized;
     InitState system_preset_state   = InitState::Uninitialized;
     InitState user_preset_state     = InitState::Uninitialized;
     InitState apply_favorite_state  = InitState::Uninitialized;
@@ -156,6 +159,14 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, IMidiDeviceChange, midi
     InitState saved_preset_state    = InitState::Uninitialized;
     InitState request_updates_state = InitState::Uninitialized;
     InitState handshake             = InitState::Uninitialized;
+
+    float post_output_delay = 5.f;
+    float post_input_delay  = 4.f;
+    float post_hello_delay  = 2.f;
+    float post_system_delay = 5.f;
+    float post_user_delay   = 3.f;
+    float post_config_delay = 2.f;
+    float hearbeat_period   = 2.f;
 
     bool hasSystemPresets() { return InitState::Complete == system_preset_state && !system_presets.empty(); }
     bool hasUserPresets() { return InitState::Complete == user_preset_state && !user_presets.empty(); }
@@ -472,6 +483,7 @@ struct Hc1ModuleWidget : ModuleWidget, IPresetHolder, IHandleHcEvents
     // HC-1.draw.cpp
     void drawDSP(NVGcontext* vg);
     void drawStatusDots(NVGcontext* vg);
+    void drawPedalAssignment(NVGcontext* vg, float x, float y, char ped_char, uint8_t ped, uint8_t ped_value);
     void drawPedals(NVGcontext* vg, std::shared_ptr<rack::window::Font> font, bool stockPedals);
 
     void onHoverScroll(const HoverScrollEvent& e) override;
