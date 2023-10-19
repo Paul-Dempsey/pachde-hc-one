@@ -167,6 +167,9 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, IMidiDeviceChange, midi
     float post_user_delay   = 3.f;
     float post_config_delay = 2.f;
     float hearbeat_period   = 2.f;
+    int init_midi_rate_limit = 0;
+    void set_init_midi_rate();
+    void restore_midi_rate();
 
     bool hasSystemPresets() { return InitState::Complete == system_preset_state && !system_presets.empty(); }
     bool hasUserPresets() { return InitState::Complete == user_preset_state && !user_presets.empty(); }

@@ -86,6 +86,7 @@ void Hc1Module::saveStartupConfig()
     auto root = json_object();
     if (!root) return;
 	DEFER({json_decref(root);});
+    json_object_set_new(root, "init-midi-rate",    json_integer(init_midi_rate_limit));
     json_object_set_new(root, "hearbeat-period",   json_real(hearbeat_period));
     json_object_set_new(root, "post-output-delay", json_real(post_output_delay));
     json_object_set_new(root, "post-input-delay",  json_real(post_input_delay));
@@ -121,7 +122,14 @@ void Hc1Module::loadStartupConfig()
     }
 	DEFER({json_decref(root);});
 
-    json_t* j = json_object_get(root, "hearbeat-period");
+    auto j = json_object_get(root, "init-midi-rate");
+    if (j) {
+        init_midi_rate_limit = static_cast<int>(json_integer_value(j));
+        if (!in_range(init_midi_rate_limit, 0, 2)) {
+            init_midi_rate_limit = 0;
+        }
+    }
+    j = json_object_get(root, "hearbeat-period");
     if (j) {
         hearbeat_period = json_number_value(j);
     }

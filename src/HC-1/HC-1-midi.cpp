@@ -91,6 +91,7 @@ void Hc1Module::transmitDeviceHello()
     log_midi = true;
 #endif
     beginPreset(); // force preset
+    set_init_midi_rate();
     sendEditorPresent(false);
     //sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::gridToFlash); // needed for pedals
     sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::configToMidi);
@@ -106,10 +107,23 @@ void Hc1Module::transmitRequestConfiguration()
     log_midi = true;
 #endif
     beginPreset(); // force preset
+    set_init_midi_rate();
     sendEditorPresent(false);
     sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::gridToFlash);
-    //sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::gridToFlash);
     sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::configToMidi);
+}
+
+void Hc1Module::set_init_midi_rate() {
+    switch (init_midi_rate_limit) {
+    case 1: sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::midiTxThird); break;
+    case 2: sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::midiTxTweenth); break;
+    default: break;
+    }
+}
+void Hc1Module::restore_midi_rate() {
+    if (init_midi_rate_limit) {
+        sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::midiTxFull);
+    }
 }
 
 void Hc1Module::transmitRequestSystemPresets()
@@ -119,8 +133,7 @@ void Hc1Module::transmitRequestSystemPresets()
     system_presets.clear();
     system_preset_state = InitState::Pending;
     // consider: save/restore EM MIDI routing to disable surface > midi/cvc to avoid interruption while loading
-//    sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::midiTxTweenth);
-//    sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::midiTxThird);
+    set_init_midi_rate();
     sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::sysToMidi);
 }
 
@@ -130,8 +143,8 @@ void Hc1Module::transmitRequestUserPresets()
     clearCCValues();
     user_presets.clear();
     user_preset_state = InitState::Pending;
-    //silence(false);
     // consider: save/restore EM MIDI routing to disable surface > midi/cvc to avoid interruption while loading
+    set_init_midi_rate();
     sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::userToMidi);
 }
 
@@ -145,6 +158,7 @@ void Hc1Module::setPreset(std::shared_ptr<Preset> preset)
     if (!preset) return;
 
     DebugLog("Setting preset [%s]", preset ? preset->describe_short().c_str(): "(none)");
+    set_init_midi_rate();
     sendEditorPresent(false);
     sendControlChange(15, EMCC_Download, EM_DownloadItem::gridToFlash);
 
@@ -161,6 +175,7 @@ void Hc1Module::sendSavedPreset() {
         return;
     }
     DebugLog("Sending saved preset [%s]", saved_preset->name.c_str());
+    set_init_midi_rate();
     sendEditorPresent(false);
     sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::gridToFlash);
 
@@ -173,11 +188,11 @@ void Hc1Module::sendSavedPreset() {
 void Hc1Module::silence(bool reset)
 {
     for (uint8_t channel = 0; channel < 12; ++channel) {
-        sendControlChange(channel, MidiCC_AllSoundOff, 127);
-        sendControlChange(channel, MidiCC_AllNotesOff, 127);
         if (reset) {
             sendControlChange(channel, MidiCC_Reset, 127);
         }
+        sendControlChange(channel, MidiCC_AllSoundOff, 127);
+        sendControlChange(channel, MidiCC_AllNotesOff, 127);
     }
 }
 
@@ -414,7 +429,7 @@ void Hc1Module::onChannel16CC(uint8_t cc, uint8_t value)
                         std::sort(user_presets.begin(), user_presets.end(), preset_system_order);
                     }
                     DebugLog("End User presets as %s", InitStateName(user_preset_state));
-                    //sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::midiTxFull);
+                    restore_midi_rate();
                     heart_time = post_user_delay;
                     break;
 
@@ -432,7 +447,7 @@ void Hc1Module::onChannel16CC(uint8_t cc, uint8_t value)
                         readFavorites();
                     }
                     DebugLog("End System presets as %s", InitStateName(system_preset_state));
-                    //sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::midiTxFull);
+                    restore_midi_rate();
                     heart_time = post_system_delay;
                     break;
             }
@@ -496,6 +511,7 @@ void Hc1Module::onChannel16Message(const midi::Message& msg)
                         DEBUG("Unexpected: saved %s != set: %s", saved_preset->name.c_str(), preset0.name());
                     }
 #endif
+                    restore_midi_rate();
                     current_preset = findDefinedPreset(saved_preset);
                     saved_preset_state = config_state = InitState::Complete;
                     notifyPresetChanged();
@@ -505,6 +521,7 @@ void Hc1Module::onChannel16Message(const midi::Message& msg)
 #ifdef VERBOSE_LOG
                     log_midi = false;
 #endif
+                    restore_midi_rate();
                     device_hello_state = InitState::Complete;
                     notifyDeviceChanged();
                     notifyPresetChanged();
@@ -513,6 +530,7 @@ void Hc1Module::onChannel16Message(const midi::Message& msg)
 #ifdef VERBOSE_LOG
                     log_midi = false;
 #endif
+                    restore_midi_rate();
                     config_state = broken ? InitState::Broken : InitState::Complete;
                     if (!broken) {
                         if (!preset0.name_empty()) {
@@ -533,8 +551,11 @@ void Hc1Module::onChannel16Message(const midi::Message& msg)
                     notifyPresetChanged();
                     notifyPedalsChanged();
                 } else
-                if (!broken && is_gathering_presets()) {
-                    if (!preset0.name_empty()) {
+                if (is_gathering_presets()) {
+                    if (broken) {
+                        restore_midi_rate();
+                    }
+                    if (!broken && !preset0.name_empty()) {
                         std::string name = preset0.name();
                         if ((126 != preset0.bank_hi)
                             && "-" != name
