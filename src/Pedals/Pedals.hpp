@@ -52,7 +52,7 @@ struct PedalCore : Module, ISendMidi, IHandleHcEvents
     virtual ~PedalCore();
 
     // IHandleHcEvents
-    //void onPresetChanged(const PresetChangedEvent& e) override;
+    void onPresetChanged(const PresetChangedEvent& e) override;
     void onPedalChanged(const PedalChangedEvent& e) override;
     //void onRoundingChanged(const RoundingChangedEvent& e) override;
     void onDeviceChanged(const DeviceChangedEvent& e) override;
@@ -92,7 +92,7 @@ struct PedalUICore : ModuleWidget, IHandleHcEvents
     void createUI();
 
     // IHandleHcEvents
-    void onPresetChanged(const PresetChangedEvent& e) override;
+    //void onPresetChanged(const PresetChangedEvent& e) override;
     void onPedalChanged(const PedalChangedEvent& e) override;
     // void onRoundingChanged(const RoundingChangedEvent& e) override;
     void onDeviceChanged(const DeviceChangedEvent& e) override;

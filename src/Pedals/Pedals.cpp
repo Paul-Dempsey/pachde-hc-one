@@ -44,20 +44,18 @@ void PedalCore::dataFromJson(json_t *root)
 Hc1Module* PedalCore::getPartner()
 {
     return getPartnerImpl<PedalCore>(this);
-    // if (!partner_binding.is_bound()) {
-    //     partner_binding.bindPartner(this);
-    // }
-    // auto partner = partner_binding.getPartner();
-    // if (partner) {
-    //     if (!partner_subscribed) {
-    //         partner->subscribeHcEvents(this);
-    //         partner_subscribed = true;
-    //     }
-    // }
-    // return partner;
 }
 
 // IHandleHcEvents
+void PedalCore::onPresetChanged(const PresetChangedEvent &e)
+{
+    static_cast<PedalParamQuantity*>(getParamQuantity(P_PEDAL_ASSIGN))->setEnabled(true);
+    // UI doesn't need it
+    // if (ui_event_sink) {
+    //     ui_event_sink->onPresetChanged(e);
+    // }
+}
+
 void PedalCore::onPedalChanged(const PedalChangedEvent& e)
 {
     if (e.pedal.jack != pedal_id) return;

@@ -36,11 +36,9 @@ void PedalUICore::onDeviceChanged(const DeviceChangedEvent& e)
     partner_picker->onDeviceChanged(e);
 }
 
-void PedalUICore::onPresetChanged(const PresetChangedEvent& e)
-{
-    if (!core_module) { return; }
-    static_cast<PedalParamQuantity*>(core_module->getParamQuantity(PedalCore::P_PEDAL_ASSIGN))->setEnabled(true);
-}
+// void PedalUICore::onPresetChanged(const PresetChangedEvent& e)
+// {
+// }
 
 void PedalUICore::onPedalChanged(const PedalChangedEvent& e)
 {
