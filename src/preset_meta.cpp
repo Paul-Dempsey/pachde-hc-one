@@ -38,7 +38,7 @@ HCCategoryCode::HCCategoryCode()
     data.push_back(std::make_shared<PresetMeta>("CL", PresetGroup::Category, 5, "Classic"));
     data.push_back(std::make_shared<PresetMeta>("OT", PresetGroup::Category, 6, "Other"));
     data.push_back(std::make_shared<PresetMeta>("PE", PresetGroup::Category, 7, "Percussion"));
-    data.push_back(std::make_shared<PresetMeta>("PT", PresetGroup::Category, 8, "Tuned Perc"));
+    data.push_back(std::make_shared<PresetMeta>("PT", PresetGroup::Category, 8, "Tuned Percussion"));
     data.push_back(std::make_shared<PresetMeta>("PR", PresetGroup::Category, 9, "Processor"));
     data.push_back(std::make_shared<PresetMeta>("DO", PresetGroup::Category, 10, "Drone"));
     data.push_back(std::make_shared<PresetMeta>("MD", PresetGroup::Category, 11, "Midi"));
@@ -49,7 +49,7 @@ HCCategoryCode::HCCategoryCode()
     data.push_back(std::make_shared<PresetMeta>("BO", PresetGroup::Type, 2, "Bowed"));
     data.push_back(std::make_shared<PresetMeta>("BR", PresetGroup::Type, 3, "Brass"));
     data.push_back(std::make_shared<PresetMeta>("DP", PresetGroup::Type, 4, "Demo Preset"));
-    data.push_back(std::make_shared<PresetMeta>("EP", PresetGroup::Type, 5, "Elec Piano"));
+    data.push_back(std::make_shared<PresetMeta>("EP", PresetGroup::Type, 5, "Electric Piano"));
     data.push_back(std::make_shared<PresetMeta>("FL", PresetGroup::Type, 6, "Flute"));
     data.push_back(std::make_shared<PresetMeta>("LE", PresetGroup::Type, 7, "Lead"));
     data.push_back(std::make_shared<PresetMeta>("OR", PresetGroup::Type, 8, "Organ"));
@@ -88,7 +88,7 @@ HCCategoryCode::HCCategoryCode()
     data.push_back(std::make_shared<PresetMeta>("NO", PresetGroup::Character, 27, "Noise"));
     data.push_back(std::make_shared<PresetMeta>("RN", PresetGroup::Character, 28, "Random"));
     data.push_back(std::make_shared<PresetMeta>("RV", PresetGroup::Character, 29, "Reverberant"));
-    data.push_back(std::make_shared<PresetMeta>("SD", PresetGroup::Character, 30, "Snd Design"));
+    data.push_back(std::make_shared<PresetMeta>("SD", PresetGroup::Character, 30, "Sound Design"));
     data.push_back(std::make_shared<PresetMeta>("SE", PresetGroup::Character, 31, "Stereo"));
     data.push_back(std::make_shared<PresetMeta>("SH", PresetGroup::Character, 32, "Shaking"));
     data.push_back(std::make_shared<PresetMeta>("SI", PresetGroup::Character, 33, "Simple"));
