@@ -33,19 +33,24 @@ By default, the list of presets are saved, so the next time you open the patch, 
 You can watch the prograss of the multi-step initialization process with the row of dots on the bottom.
 When everything is connected and working as expected, all the dots are blue, and you can begin playing.
 
-> **Trouble-shooting:** Eagan Matrix devices require a high-quality MIDI connection.
-> The HC-1 initialization process can sometimes fail, especially when you have a poor MIDI connection.
-> When this happens, you may need to reboot HC-1 from the menu, unplug and re-plug the MIDI connection, or power cycle the device.
-> When possible, make sure you're using a connection directly to the computer, and not through a USB hub.
-> Even then, you may need to use a different USB port on your computer.
-> Be sure to use the MIDI cable that came with your device or another high-quality USB cable.
->
-> The Haken Editor has a MIDI test feature that you can use to troubleshoot your MIDI connection.
-> If the Haken editor doesn't report a reliable connection, you can try different ports and USB cables until it reports a quality connection.
->
-> The little green dot that travels across the bottom of the preset list indicates the progress of MIDI messages received from the device.
-> This should move rapidly while initializing the device, and while playing the device.
-> If this stops moving while loading or playing the device, then the MIDI connection has been lost, and you must take steps to recover the connection.
+## Troubleshooting
+
+Eagan Matrix devices require a high-quality MIDI connection.
+The HC-1 initialization process can sometimes fail, especially when you have a poor MIDI connection.
+When this happens, you may need to reboot HC-1 from the menu, unplug and re-plug the MIDI connection, or power cycle the device.
+When possible, make sure you're using a connection directly to the computer, and not through a USB hub.
+Even then, you may need to use a different USB port on your computer.
+Be sure to use the MIDI cable that came with your device or another high-quality USB cable.
+
+The Haken Editor has a MIDI test feature that you can use to troubleshoot your MIDI connection.
+If the Haken editor doesn't report a reliable connection, you can try different ports and USB cables until it reports a quality connection.
+
+The little green dot that travels across the bottom of the preset list indicates the progress of MIDI messages received from the device.
+This should move rapidly while initializing the device, and while playing the device.
+If this stops moving while loading or playing the device, then the MIDI connection has been lost, and you must take steps to recover the connection.
+
+If you have trouble with the first-time initialization process, you may need to configure the startup process.
+See [Configuring startup parameters](#configuring-startup-parameters) below.
 
 ## A tour of the user interface
 
@@ -227,6 +232,57 @@ Right click on the **System** tab to see the **System menu** for navigation and 
 | **Sort System presets** | **Alphabetically** | (default) Sort system presets alphabetically by name. |
 |  | **by Category** | Sort first by Category, then alphabetically within the category. This is the order that presets are shown on a Continuum. |
 |  | **in System order** | Show system presets in internal System order. This is the numerical order in the Haken Editor "File 2" list, which is mostly but not entirely alphabetical. |
+
+## Configuring startup parameters
+
+On some commputers, operating systems, and particular EM devices, you may need to configure startup parameters in order to reliably and successfully initialize HC-1.
+
+If you're starting up reliably, you may be able to speed up the startup process by allowing full MIDI transmission rate and shortening delays between phases.
+
+This is a manual process of editing the `startup.json` file created in the user folder for the plugin.
+The plugin user folder is the same folder where cached presets are stored, and it is the default folder for Favorites files.
+
+To find the plugin's user folder:
+
+1. Go to the Rack **Help** menu, and choose **Open user folder**.
+
+   Your operating system's file browser will be opened showing the Rack User folder.
+
+1. Open the `pachde-hc-one` folder.
+
+Once you've found the plugin user folder, open the `startup.json` file in a plain-text editor.
+
+The default `startup.json`` looks like this:
+
+```json
+{
+  "init-midi-rate": 1,
+  "hearbeat-period": 2.0,
+  "post-output-delay": 3.0,
+  "post-input-delay": 3.0,
+  "post-hello-delay": 3.0,
+  "post-system-delay": 4.0,
+  "post-user-delay": 3.0,
+  "post-config-delay": 2.0
+}
+```
+
+The first is an integer in the range 0-2. The rest are floating-point numbers giving a delay in seconds.
+
+These variables configure the initialization process, and the midi transmission rate for the queries that HC-1 sends to the device. In between these requests, and when HC-One is fully initialized, the full transmission rate is used.
+
+| Variable | Value | Description |
+| -- | -- | -- |
+| **init&#x2011;midi&#x2011;rate** | **0**, **1**, or **2** | The midi transmission rate for sending configuration data from the EM device. **0** = full (fastest), **1** = 1/3 full rate, **2** = 1/20 full rate (meant for bluetooth MIDI). The default is **1**.</br> If you have trouble getting the initial connection, set it to a higher number. If you get a good connection, you can usually set this to **0** to get the fastest startup time. |
+| **post&#x2011;output&#x2011;delay**  | seconds | Time between opening the MIDI ouput port, and opening the MIDI input port. |
+| **post&#x2011;input&#x2011;delay**   | seconds | Time betwen opening the midi input port, and sending the initial device query ("hello"). |
+| **post&#x2011;hello&#x2011;delay**   | seconds | Time between the end of the device "hello" and requesting system presets. |
+| **post&#x2011;system&#x2011;delay**  | seconds | Time between the end of gathering system presets and requesting user presets. |
+| **post&#x2011;user&#x2011;delay**    | seconds | Time between the end of gathering user presets, and requesting the initial configuration or restoring the last preset used in the patch. |
+| **post&#x2011;config&#x2011;delay**  | seconds | Time between the end of preset configuration and the first heartbeat.  |
+| **hearbeat&#x2011;period**           | seconds | Time between sending the heartbeat handshake. The heartbeat can be turned off in the module menu. An initial heartbeat is always sent at the end of initialization, and the heartbeats thereafter can be turned off to avoid potential audio glitches. |
+
+The delays allow time for both the device and HC-1 to settle and be ready for the next phase.
 
 ## Technical Information
 
