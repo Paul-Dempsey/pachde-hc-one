@@ -25,14 +25,16 @@ VerticalSlider::VerticalSlider()
 
 void VerticalSlider::onButton(const ButtonEvent &e)
 {
-    SvgSlider::onButton(e);
     if (e.action == GLFW_PRESS && e.button == GLFW_MOUSE_BUTTON_LEFT && (e.mods & RACK_MOD_MASK) == 0) {
+        e.consume(this);
         auto pq = getParamQuantity();
         if (pq) {
             float v = box.size.y - 2.f - e.pos.y;
             v = rescale(v, 0.f, box.size.y, pq->getMinValue(), pq->getMaxValue());
             pq->setValue(v);
         }
+    } else {
+        SvgSlider::onButton(e);
     }
 }
 
