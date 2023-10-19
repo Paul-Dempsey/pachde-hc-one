@@ -35,10 +35,10 @@ struct PartnerPicker : TipWidget, IHandleHcEvents
         device_label->box.size.x = box.size.x;
     }
 
-    void appendContextMenu(Menu* menu) override {
-        // enumerate registered modules
+    // void appendContextMenu(Menu* menu) override {
+    //     // enumerate registered modules
         
-    }
+    // }
 };
 
 template <typename PPW = PartnerPicker>

@@ -319,6 +319,7 @@ void Hc1Module::reboot()
 
     connection = nullptr;
     dupe = false;
+    midi_dispatch.clear();
     midi::Input::reset();
     midi_output.reset();
 #if defined PERIODIC_DEVICE_CHECK

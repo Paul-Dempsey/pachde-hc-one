@@ -8,7 +8,7 @@ std::string format_string(const char *fmt, ...)
     std::string s(len, '\0');
     va_list args;
     va_start(args, fmt);
-    auto r = std::vsnprintf(&(*s.begin()), len, fmt, args);
+    auto r = std::vsnprintf(&s[0], len, fmt, args);
     va_end(args);
     if (r < 0) return "??";
     s.resize(std::min(r, len));

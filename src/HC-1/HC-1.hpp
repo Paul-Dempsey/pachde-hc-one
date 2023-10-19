@@ -160,14 +160,14 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, IMidiDeviceChange, midi
     InitState request_updates_state = InitState::Uninitialized;
     InitState handshake             = InitState::Uninitialized;
 
-    float post_output_delay = 5.f;
-    float post_input_delay  = 4.f;
-    float post_hello_delay  = 2.f;
-    float post_system_delay = 5.f;
+    float post_output_delay = 3.f;
+    float post_input_delay  = 3.f;
+    float post_hello_delay  = 3.f;
+    float post_system_delay = 4.f;
     float post_user_delay   = 3.f;
     float post_config_delay = 2.f;
     float hearbeat_period   = 2.f;
-    int init_midi_rate_limit = 0;
+    int init_midi_rate = 1;
     void set_init_midi_rate();
     void restore_midi_rate();
 
@@ -232,7 +232,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, IMidiDeviceChange, midi
     bool do_periodic_device_check = true;
 #endif
     rack::dsp::Timer device_sync;
-    const float DEVICE_SYNC_PERIOD = 8.f;
+    const float DEVICE_SYNC_PERIOD = 5.f;
 
     // heart_beating
     float heart_phase = 0.f;

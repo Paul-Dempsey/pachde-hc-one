@@ -7,6 +7,7 @@ namespace pachde {
 
 void Hc1Module::onRenewClaim()
 {
+    if (device_claim.empty()) return;
     using CR = MidiDeviceBroker::ClaimResult;
 
     auto oldConnection = connection;
@@ -20,15 +21,18 @@ void Hc1Module::onRenewClaim()
             connection = device_broker->get_connection(device_claim);
             assert(connection);
             if (connection->output_device_id != old_output_device_id) {
-                midi_output.reset();
                 midi_dispatch.clear();
+                midi_output.reset();
                 midi_output.setDeviceId(connection->output_device_id);
                 assert((connection->output_device_id == midi_output.getDeviceId())); // subscribing failed: should handle it?
                 midi_output.setChannel(-1);
 
-                heart_time = 5.f;
                 device_input_state = InitState::Uninitialized;
                 Input::reset();
+                heart_time = post_output_delay;
+                // these should be picked up by input device init
+                //Input::setDeviceId(connection->input_device_id);
+                //Input::setChannel(-1);
             }
             break;
         case CR::AlreadyClaimed: 
@@ -114,14 +118,14 @@ void Hc1Module::transmitRequestConfiguration()
 }
 
 void Hc1Module::set_init_midi_rate() {
-    switch (init_midi_rate_limit) {
+    switch (init_midi_rate) {
     case 1: sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::midiTxThird); break;
     case 2: sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::midiTxTweenth); break;
     default: break;
     }
 }
 void Hc1Module::restore_midi_rate() {
-    if (init_midi_rate_limit) {
+    if (init_midi_rate) {
         sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::midiTxFull);
     }
 }

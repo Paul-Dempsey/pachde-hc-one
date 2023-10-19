@@ -86,7 +86,7 @@ void Hc1Module::saveStartupConfig()
     auto root = json_object();
     if (!root) return;
 	DEFER({json_decref(root);});
-    json_object_set_new(root, "init-midi-rate",    json_integer(init_midi_rate_limit));
+    json_object_set_new(root, "init-midi-rate",    json_integer(init_midi_rate));
     json_object_set_new(root, "hearbeat-period",   json_real(hearbeat_period));
     json_object_set_new(root, "post-output-delay", json_real(post_output_delay));
     json_object_set_new(root, "post-input-delay",  json_real(post_input_delay));
@@ -124,9 +124,9 @@ void Hc1Module::loadStartupConfig()
 
     auto j = json_object_get(root, "init-midi-rate");
     if (j) {
-        init_midi_rate_limit = static_cast<int>(json_integer_value(j));
-        if (!in_range(init_midi_rate_limit, 0, 2)) {
-            init_midi_rate_limit = 0;
+        init_midi_rate = static_cast<int>(json_integer_value(j));
+        if (!in_range(init_midi_rate, 0, 2)) {
+            init_midi_rate = 0;
         }
     }
     j = json_object_get(root, "hearbeat-period");
@@ -214,9 +214,7 @@ void Hc1Module::saveSystemPresets()
 
 	json_dumpf(root, file, JSON_INDENT(2));
 	std::fclose(file);
-    system::sleep(0.0005);
 	system::remove(path);
-    system::sleep(0.0005);
 	system::rename(tmpPath, path);
 }
 
@@ -393,9 +391,7 @@ void Hc1Module::writeFavoritesFile(const std::string& path)
 
 	json_dumpf(root, file, JSON_INDENT(2));
 	std::fclose(file);
-    system::sleep(0.0005);
 	system::remove(path);
-    system::sleep(0.0005);
 	system::rename(tmpPath, path);
 }
 
@@ -403,44 +399,47 @@ bool Hc1Module::readFavoritesFile(const std::string& path, bool fresh)
 {
     if (system_presets.empty()) return false;
     if (path.empty()) return false;
-    FILE* file = std::fopen(path.c_str(), "r");
-	if (!file) {
-		return false;
-    }
-	DEFER({std::fclose(file);});
-	json_error_t error;
-	json_t* root = json_loadf(file, 0, &error);
-	if (!root) {
-		DebugLog("Invalid JSON at %d:%d %s in %s", error.line, error.column, error.text, path.c_str());
-        return false;
-    }
-	DEFER({json_decref(root);});
-    auto bulk = BulkFavoritingMode(this);
-    auto jar = json_object_get(root, "favorites");
-    if (jar) {
-        if (fresh) {
-            clearFavorites();
+
+    { //scope for deferred file close
+        FILE* file = std::fopen(path.c_str(), "r");
+        if (!file) {
+            return false;
         }
-        json_t* jp;
-        size_t index;
-        Preset preset;
-        json_array_foreach(jar, index, jp) {
-            preset.fromJson(jp);
-            if (!user_presets.empty()) {
-                auto it = std::find_if(user_presets.begin(), user_presets.end(), [&preset](std::shared_ptr<Preset>& p) { return p->is_same_preset(preset); });
-                if (it != user_presets.end()) {
-                    addFavorite(*it);
+        DEFER({std::fclose(file);});
+        json_error_t error;
+        json_t* root = json_loadf(file, 0, &error);
+        if (!root) {
+            DebugLog("Invalid JSON at %d:%d %s in %s", error.line, error.column, error.text, path.c_str());
+            return false;
+        }
+        DEFER({json_decref(root);});
+        auto bulk = BulkFavoritingMode(this);
+        auto jar = json_object_get(root, "favorites");
+        if (jar) {
+            if (fresh) {
+                clearFavorites();
+            }
+            json_t* jp;
+            size_t index;
+            Preset preset;
+            json_array_foreach(jar, index, jp) {
+                preset.fromJson(jp);
+                if (!user_presets.empty()) {
+                    auto it = std::find_if(user_presets.begin(), user_presets.end(), [&preset](std::shared_ptr<Preset>& p) { return p->is_same_preset(preset); });
+                    if (it != user_presets.end()) {
+                        addFavorite(*it);
+                    }
+                }
+                if (!system_presets.empty()) {
+                    auto it = std::find_if(system_presets.begin(), system_presets.end(), [&preset](std::shared_ptr<Preset>& p) { return p->is_same_preset(preset); });
+                    if (it != system_presets.end()) {
+                        addFavorite(*it);
+                    }
                 }
             }
-            if (!system_presets.empty()) {
-                auto it = std::find_if(system_presets.begin(), system_presets.end(), [&preset](std::shared_ptr<Preset>& p) { return p->is_same_preset(preset); });
-                if (it != system_presets.end()) {
-                    addFavorite(*it);
-                }
-            }
         }
+        sortFavorites();
     }
-    sortFavorites();
     saveFavorites();
     return true;
 }
