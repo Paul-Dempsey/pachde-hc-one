@@ -4,7 +4,6 @@
 #include "../text.hpp"
 #include "../widgets/cc_param.hpp"
 #include "../widgets/components.hpp"
-#include "../widgets/pedal_param.hpp"
 #include "../widgets/port.hpp"
 #include "../widgets/small_push.hpp"
 #include "../widgets/switch_4.hpp"
@@ -35,11 +34,6 @@ constexpr const float ROUND_KNOB_ROW = 32.5f;
 constexpr const float ROUND_COL1 = ROUND_BOX_HALF - KNOB_RADIUS - 3.f * PAD;
 constexpr const float ROUND_COL2 = ROUND_BOX_HALF + KNOB_RADIUS + 2.f * PAD;
 constexpr const float ROUND_COL3 = ROUND_BOX_WIDTH - KNOB_RADIUS + PAD;
-
-constexpr const float PEDAL_BOX_TOP = 35.f;
-constexpr const float PEDAL_BOX_LEFT = ROUND_BOX_LEFT + ROUND_BOX_WIDTH + 7.5f;
-constexpr const float PEDAL_BOX_WIDTH = 125.f;
-constexpr const float PEDAL_BOX_HEIGHT =ROUND_BOX_HEIGHT;
 
 inline uint8_t GetSmallParamValue(rack::app::ModuleWidget* w, int id, uint8_t default_value = 0) {
     auto p = w->getParam(id);
@@ -97,27 +91,6 @@ void Hc2ModuleWidget::createRoundingUI(float x, float y)
     addChild(rounding_summary);
 }
 
-void Hc2ModuleWidget::createPedalUI(float x, float y)
-{
-    y += PAD;
-    addChild(createStaticTextLabel<StaticTextLabel>(Vec(x + 30.f, y), 30.f, "Pedal 1", TextAlignment::Center));
-    addChild(createStaticTextLabel<StaticTextLabel>(Vec(x + 92.f, y), 30.f, "Pedal 2", TextAlignment::Center));
-
-    x += 7.5;
-    y += 16.f;
-    addChild(pedal1_type = createSymbolWidget<SymbolTipWidget>(x, y + 5.5f, Symbol::NoPedal));
-
-    x += 35.f;
-    addChild(createParamCentered<PedalKnob>(Vec(x, y + 10.f), module, Hc2P::P_PEDAL1));
-    addChild(pedal1_assign = createStaticTextLabel<StaticTextLabel>(Vec(x, y + 24.f), 60.f, "Sustain", TextAlignment::Center, 10.f, true));
-
-    x += 25.f;
-    addChild(pedal2_type = createSymbolWidget<SymbolTipWidget>(x, y + 5.5f, Symbol::NoPedal));
-    x += 35.f;
-    addChild(createParamCentered<PedalKnob>(Vec(x, y + 10.f), module, Hc2P::P_PEDAL2));
-    addChild(pedal2_assign = createStaticTextLabel<StaticTextLabel>(Vec(x, y + 24.f), 60.f, "Sostenuto", TextAlignment::Center, 10.f, true));
-}
-
 Hc2ModuleWidget::Hc2ModuleWidget(Hc2Module * module)
 {
     my_module = module;
@@ -129,50 +102,15 @@ Hc2ModuleWidget::Hc2ModuleWidget(Hc2Module * module)
     addChild(partner_picker = createPartnerPicker(7.f, 14.f, 180.f, module ? &module->partner_binding : nullptr));
 
     createRoundingUI(ROUND_BOX_LEFT, ROUND_BOX_TOP);
-    createPedalUI(PEDAL_BOX_LEFT, PEDAL_BOX_TOP);
 
     auto x = box.size.x * .5f;
     addChild(createCCMap<CCMap>(x, box.size.y - 24.f - 20.f, true, CCMapChannel::One, this));
     addChild(createCCMap<CCMap>(x, box.size.y - 24.f, true, CCMapChannel::Sixteen, this));
 }
 
-SymbolWidget::Symbol SymbolForPedal(PedalType pedal)
-{
-    switch (pedal) {
-    case PedalType::NoPedal: return Symbol::NoPedal;
-    case PedalType::SwitchPedal: return Symbol::SwitchPedal;
-    case PedalType::ExpressionPedal: return Symbol::ExpressionPedal;
-    case PedalType::DamperPedal: return Symbol::DamperPedal;
-    case PedalType::TriValuePedal: return Symbol::TriValuePedal;
-    case PedalType::CVPedal: return Symbol::CVPedal;
-    case PedalType::PotPedal: return Symbol::PotPedal;
-    default:
-        return Symbol::OtherPedal;
-    }
-}
-
 void Hc2ModuleWidget::onPresetChanged(const PresetChangedEvent& e)
 {
-    if (my_module) {
-        static_cast<PedalParamQuantity*>(my_module->getParamQuantity(Hc2P::P_PEDAL1))->setEnabled(true);
-        static_cast<PedalParamQuantity*>(my_module->getParamQuantity(Hc2P::P_PEDAL2))->setEnabled(true);
-    }
     rounding_summary->modified();
-}
-
-void Hc2ModuleWidget::onPedalChanged(const PedalChangedEvent& e)
-{
-    switch (e.pedal.jack) {
-    case 0: 
-        pedal1_type->setSymbol(SymbolForPedal(e.pedal.type)); 
-        pedal1_assign->text(LongPedalAssignment(e.pedal.cc));
-        break;
-    case 1:
-        pedal2_type->setSymbol(SymbolForPedal(e.pedal.type));
-        pedal2_assign->text(LongPedalAssignment(e.pedal.cc));
-        break;
-    default: break;
-    }
 }
 
 void Hc2ModuleWidget::onRoundingChanged(const RoundingChangedEvent& e)
@@ -202,7 +140,6 @@ void Hc2ModuleWidget::draw(const DrawArgs& args)
 
     auto vg = args.vg;
     BoxRect(vg, ROUND_BOX_LEFT, ROUND_BOX_TOP, ROUND_BOX_WIDTH, ROUND_BOX_HEIGHT, RampGray(G_40), 0.5f);
-    BoxRect(vg, PEDAL_BOX_LEFT, PEDAL_BOX_TOP, PEDAL_BOX_WIDTH, PEDAL_BOX_HEIGHT, RampGray(G_40), 0.5f);
 
     //auto partner = getPartner();
     //if (partner) {

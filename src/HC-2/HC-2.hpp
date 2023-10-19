@@ -95,7 +95,7 @@ struct Hc2Module : Module, ISendMidi, IHandleHcEvents
 
     // IHandleHcEvents
     void onPresetChanged(const PresetChangedEvent& e) override;
-    void onPedalChanged(const PedalChangedEvent& e) override;
+    //void onPedalChanged(const PedalChangedEvent& e) override;
     void onRoundingChanged(const RoundingChangedEvent& e) override;
     void onDeviceChanged(const DeviceChangedEvent& e) override;
     void onDisconnect(const DisconnectEvent& e) override;
@@ -107,12 +107,6 @@ struct Hc2ModuleWidget : ModuleWidget, IHandleHcEvents
     PartnerPicker* partner_picker = nullptr;
     DynamicTextLabel* rounding_summary = nullptr;
 
-    SymbolTipWidget* pedal1_type = nullptr;
-    StaticTextLabel* pedal1_assign = nullptr;
-
-    SymbolTipWidget* pedal2_type = nullptr;
-    StaticTextLabel* pedal2_assign = nullptr;
-
     explicit Hc2ModuleWidget(Hc2Module * module);
     virtual ~Hc2ModuleWidget() {
         // if (my_module) {
@@ -121,11 +115,10 @@ struct Hc2ModuleWidget : ModuleWidget, IHandleHcEvents
     }
     Hc1Module* getPartner();
     void createRoundingUI(float x, float y);
-    void createPedalUI(float x, float y);
 
     // IHandleHcEvents
     void onPresetChanged(const PresetChangedEvent& e) override;
-    void onPedalChanged(const PedalChangedEvent& e) override;
+    //void onPedalChanged(const PedalChangedEvent& e) override;
     void onRoundingChanged(const RoundingChangedEvent& e) override;
     void onDeviceChanged(const DeviceChangedEvent& e) override;
     void onDisconnect(const DisconnectEvent& e) override;

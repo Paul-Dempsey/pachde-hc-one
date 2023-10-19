@@ -29,9 +29,6 @@ Hc2Module::Hc2Module()
         });
     configTuningParam(this, P_ROUND_TUNING);
 
-    configPedalParam(0, PedalAssign::Sustain, this, Params::P_PEDAL1);
-    configPedalParam(1, PedalAssign::Sostenuto, this, Params::P_PEDAL2);
-
     //configParam(P_TEST, 0.f, 1.f, .5f, "Test");
 }
 
@@ -62,22 +59,6 @@ void Hc2Module::dataFromJson(json_t *root)
 Hc1Module* Hc2Module::getPartner()
 {
     return getPartnerImpl<Hc2Module>(this);
-}
-
-void Hc2Module::onPedalChanged(const PedalChangedEvent& e)
-{
-    PedalParamQuantity* pq = nullptr;
-    switch (e.pedal.jack) {
-    case 0: pq = static_cast<PedalParamQuantity*>(getParamQuantity((Params::P_PEDAL1))); break;
-    case 1: pq = static_cast<PedalParamQuantity*>(getParamQuantity((Params::P_PEDAL2))); break;
-    default: break;
-    }
-    if (pq) {
-        pq->setAssignSilent(PedalAssignFromCC(e.pedal.cc));
-    }
-    if (ui_event_sink) {
-        ui_event_sink->onPedalChanged(e);
-    }
 }
 
 void Hc2Module::onPresetChanged(const PresetChangedEvent& e)
@@ -202,35 +183,6 @@ void Hc2Module::syncCCParam(int paramId)
 void Hc2Module::processControls()
 {
     if (!control_rate.process()) { return; }
-
-    {
-        Hc1Module * partner = nullptr;
-        auto pq = dynamic_cast<PedalParamQuantity*>(getParamQuantity(Params::P_PEDAL1));
-        assert(pq);
-        if (pq->syncValue()) {
-            partner = getPartner();
-            if (partner) {
-                auto pedal = partner->getPedal(0);
-                pedal.cc = pq->last_cc;
-                if (ui_event_sink) {
-                    ui_event_sink->onPedalChanged(PedalChangedEvent{pedal});
-                }
-            }
-        }
-
-        pq = dynamic_cast<PedalParamQuantity*>(getParamQuantity(Params::P_PEDAL2));
-        assert(pq);
-        if (pq->syncValue()) {
-            if (!partner) { partner = getPartner(); }
-            if (partner) {
-                auto pedal = partner->getPedal(1);
-                pedal.cc = pq->last_cc;
-                if (ui_event_sink) {
-                    ui_event_sink->onPedalChanged(PedalChangedEvent{pedal});
-                }
-            }
-        }
-    }
 
     {
         auto pq = dynamic_cast<CCParamQuantity*>(getParamQuantity(Params::P_ROUND_RATE));
