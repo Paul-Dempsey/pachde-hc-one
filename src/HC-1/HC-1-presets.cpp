@@ -164,7 +164,6 @@ void Hc1Module::saveUserPresets()
     if (user_presets.empty()) return;
     if (InitState::Complete != user_preset_state) return;
     auto path = userPresetsPath();
-    DebugLog("Saving user presets: %s ", path.c_str());
     if (path.empty()) return;
     auto dir = system::getDirectory(path);
     system::createDirectories(dir);
@@ -195,7 +194,6 @@ void Hc1Module::saveSystemPresets()
     if (InitState::Complete != system_preset_state) return;
 
     auto path = systemPresetsPath();
-    DebugLog("Saving system presets: %s ", path.c_str());
     if (path.empty()) return;
     auto dir = system::getDirectory(path);
     system::createDirectories(dir);
@@ -579,11 +577,6 @@ void Hc1Module::moveFavorite(std::shared_ptr<Preset> preset, IPresetHolder::Favo
 
 void Hc1Module::addFavorite(std::shared_ptr<Preset> preset)
 {
-#if defined VERBOSE_LOG
-    if (preset->bank_hi == 126) {
-        DebugLog("Favoriting an edit slot! %s", preset->describe_short().c_str());
-    }
-#endif
     preset->favorite = true;
     if (favorite_presets.empty()) {
         favorite_presets.push_back(preset);

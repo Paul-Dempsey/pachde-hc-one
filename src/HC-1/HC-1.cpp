@@ -90,7 +90,7 @@ Hc1Module::~Hc1Module()
 //
 // IHandleHcEvents notification
 //
-void Hc1Module::subscribeHcEvents(IHandleHcEvents*client)
+void Hc1Module::subscribeHcEvents(IHandleHcEvents* client)
 {
     if (hc_event_subscriptions.empty()
         || hc_event_subscriptions.cend() == std::find(hc_event_subscriptions.cbegin(), hc_event_subscriptions.cend(), client)) 
@@ -107,6 +107,7 @@ void Hc1Module::subscribeHcEvents(IHandleHcEvents*client)
         client->onRoundingChanged(rce);
     }
 }
+
 void Hc1Module::unsubscribeHcEvents(IHandleHcEvents*client)
 {
     auto it = std::find(hc_event_subscriptions.begin(), hc_event_subscriptions.end(), client);
@@ -361,6 +362,7 @@ void Hc1Module::reboot()
 
     in_preset = in_sys_names = in_user_names = false;
 
+    note = 0;
     notesOn = 0;
     data_stream = -1;
     recirculator = 0;

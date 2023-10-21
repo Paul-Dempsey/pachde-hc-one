@@ -166,11 +166,11 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, IMidiDeviceChange, midi
     float post_output_delay = 3.f;
     float post_input_delay  = 3.f;
     float post_hello_delay  = 3.f;
-    float post_system_delay = 4.f;
+    float post_system_delay = 3.f;
     float post_user_delay   = 3.f;
     float post_config_delay = 2.f;
     float hearbeat_period   = 2.f;
-    int init_midi_rate = 1;
+    int init_midi_rate = 0;
     void set_init_midi_rate();
     void restore_midi_rate();
 
