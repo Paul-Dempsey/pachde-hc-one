@@ -116,7 +116,7 @@ HCCategoryCode::HCCategoryCode()
     data.push_back(std::make_shared<PresetMeta>("SS", PresetGroup::Matrix, 16, "SineSpray"));
     data.push_back(std::make_shared<PresetMeta>("WB", PresetGroup::Matrix, 17, "WaveBank"));
     data.push_back(std::make_shared<PresetMeta>("C1", PresetGroup::Setting, 0, "Channel 1"));
-    data.push_back(std::make_shared<PresetMeta>("EM", PresetGroup::Setting, 1, "Ext Midi Clk"));
+    data.push_back(std::make_shared<PresetMeta>("EM", PresetGroup::Setting, 1, "External Midi Clock"));
     data.push_back(std::make_shared<PresetMeta>("MI", PresetGroup::Setting, 2, "Mono Interval"));
     data.push_back(std::make_shared<PresetMeta>("PO", PresetGroup::Setting, 3, "Portamento"));
     data.push_back(std::make_shared<PresetMeta>("RO", PresetGroup::Setting, 4, "Rounding"));

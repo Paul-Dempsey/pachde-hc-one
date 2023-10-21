@@ -614,15 +614,11 @@ void Hc1Module::onNoteOn(uint8_t channel, uint8_t note, uint8_t velocity)
     } else {
         notesOn--;
     }
-    heart_phase = 0;
-    heart_time = 5.f;
 }
 
 void Hc1Module::onNoteOff(uint8_t channel, uint8_t note, uint8_t velocity)
 {
     if (notesOn) { notesOn--; }
-    heart_phase = 0;
-    heart_time = 5.f;
 }
 
 void Hc1Module::onSoundOff()
@@ -739,16 +735,15 @@ bool isLoopbackDetect(const midi::Message& msg) {
     return false;
 }
 
-void Hc1Module::onMessage(const midi::Message& msg)
+void Hc1Module::onMidiMessage(uMidiMessage umsg)
 {
+    auto msg = umsg.toMidiMessage();
 #ifdef VERBOSE_LOG
     if (log_midi) {
-        DebugLog("%lld %s", static_cast<long long int>(msg.frame), ToFormattedString(msg).c_str());
+        DebugLog("%s", ToFormattedString(msg).c_str());
     }
 #endif
-#if defined PERIODIC_DEVICE_CHECK
-    device_check.reset();
-#endif
+
     if (broken && !isLoopbackDetect(msg)) {
         broken_idle = 0.f;
     }
@@ -772,8 +767,6 @@ void Hc1Module::onMessage(const midi::Message& msg)
 
         default:
             switch (GetRawStatus(msg)) {
-                case MidiStatus_CC:
-                    break;
                 case MidiStatus_NoteOff:
                     onNoteOff(channel, msg.bytes[1], msg.bytes[2]);
                     break;
@@ -784,5 +777,77 @@ void Hc1Module::onMessage(const midi::Message& msg)
             break;
     }
 }
+
+void Hc1Module::onMessage(const midi::Message& msg)
+{
+    midi_input_worker->post_message(uMidiMessage(msg));
+}
+
+// ======================================================
+void MidiInputWorker::start()
+{
+    my_thread = std::thread(&MidiInputWorker::run, this);
+}
+
+void MidiInputWorker::post_quit()
+{
+    std::unique_lock<std::mutex> lock(m);
+    stop = true;
+    cv.notify_one();
+}
+
+void MidiInputWorker::pause()
+{
+    std::unique_lock<std::mutex> lock(m);
+    midi_consume.clear();
+    pausing = true;
+    cv.notify_one();
+}
+
+void MidiInputWorker::resume()
+{
+    std::unique_lock<std::mutex> lock(m);
+    pausing = false;
+    cv.notify_one();
+}
+
+void MidiInputWorker::post_message(uMidiMessage msg)
+{
+    if (stop || pausing) return;
+    std::unique_lock<std::mutex> lock(m);
+    midi_consume.push(msg);
+    cv.notify_one();
+    //system::sleep(.000001);
+}
+
+void MidiInputWorker::run() {
+    contextSet(context);
+	system::setThreadName("Midi Input worker");
+    while (1)
+    {
+        {
+            std::unique_lock<std::mutex> lock(m);
+            cv.wait(lock, [this]{ return stop || !midi_consume.empty(); });
+            if (stop) {
+                return;
+            }
+            if (pausing) {
+                continue;
+            }
+        }
+        while (!midi_consume.empty()) {
+            auto msg = midi_consume.shift();
+            if (msg.channel() == 0 || msg.channel() == 15) {
+                hc1->onMidiMessage(msg);
+            } else {
+                if (msg.status() == MidiStatus_NoteOn || msg.status() == MidiStatus_NoteOff) {
+                    hc1->onMidiMessage(msg);
+                }
+            }
+        }
+    }
+}
+
+
 
 }

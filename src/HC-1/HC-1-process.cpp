@@ -129,7 +129,7 @@ bool Hc1Module::checkDeviceChange()
     // handle device changes
     if (connection) {
         auto driver = Input::getDriver(); 
-        auto driver2 = ::midi::getDriver(connection->driver_id);
+        auto driver2 = ::midi::getDriver(connection->driver_id); // TODO: remove dependence on persistent ids (they change)
 
         if (!driver || !driver2) {
             DEBUG("!LOST MIDI DRIVER %s", connection->info.driver_name.c_str());
@@ -205,30 +205,6 @@ void Hc1Module::process(const ProcessArgs& args)
 {
     bool is_ready = ready() && !dupe;
 
-#if defined PERIODIC_DEVICE_CHECK
-    device_check.process(args.sampleTime);
-    if (connection) {
-        if (device_check.getTime() > 4.f) {
-            device_check.reset();
-            if (ping_device) {
-                if (anyPending()) {
-                    DEBUG("DEVICE CHECK FAILED FOR %s - rebooting", connection->info.friendly(true).c_str());
-                    reboot();
-                } else {
-                    DebugLog("Device Check OK for %s", connection->info.friendly(true).c_str());
-                    ping_device = false;
-                }
-            } else {
-                if (is_ready) {
-                    DebugLog("Checking device connection for %s", connection->info.friendly(true).c_str());
-                    sendEditorPresent(true);
-                    ping_device = true;
-                }
-            }
-        }
-    }
-#endif
-
     if (++check_cv > CV_INTERVAL) {
         check_cv = 0;
         if (is_ready) {
@@ -293,12 +269,14 @@ void Hc1Module::process(const ProcessArgs& args)
     if (heart_phase >= heart_time) {
         heart_phase -= heart_time;
         heart_time = hearbeat_period;
-
         if (!anyPending()
-            && (notesOn <= 0)
             && !in_preset
             && !dupe
             ) {
+
+            if (midi_input_worker->pausing) {
+                midi_input_worker->resume();
+            }
 
             if (InitState::Uninitialized == device_output_state) {
                 initOutputDevice();

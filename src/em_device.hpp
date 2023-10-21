@@ -62,12 +62,6 @@ struct MidiDeviceConnection
     int output_device_id;
     MidiDeviceConnectionInfo info;
 
-    int unique_key() const {
-        return (1 + driver_id)
-            + 10000 * (1 + input_device_id)
-            + 100000 * (1 + output_device_id);
-    }
-
     explicit MidiDeviceConnection()
     : driver_id(-1), input_device_id(-1), output_device_id(-1)
     {}
@@ -83,8 +77,7 @@ struct MidiDeviceConnection
     }
 
     bool is_same_connection(std::shared_ptr<MidiDeviceConnection> other) const {
-        return unique_key() == other->unique_key()
-            && 0 == info.spec().compare(other->info.spec());
+        return 0 == info.spec().compare(other->info.spec());
     }
     //bool instantiate(const std::string &spec);
 };
@@ -126,7 +119,6 @@ struct MidiDeviceBroker {
     void revoke_claim(const std::string& claim);
     void revoke_claim(int64_t claimant_module_id);
     std::shared_ptr<MidiDeviceConnection> get_connection(const std::string & claim) const;
-    std::shared_ptr<MidiDeviceConnection> get_connection(int key) const;
     void sync();
 
     // pred returns false to stop scan

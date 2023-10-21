@@ -309,15 +309,6 @@ struct MidiDeviceBroker::Internal
         return it == devices.cend() ? nullptr : *it;
     }
 
-    std::shared_ptr<MidiDeviceConnection> get_connection(int key) const
-    {
-        auto it = std::find_if(devices.cbegin(), devices.cend(),
-            [key](const std::shared_ptr<MidiDeviceConnection> p) {
-                return p->unique_key() == key;
-            });
-        return it == devices.cend() ? nullptr : *it;
-    }
-
     void ensureDevices() {
         if (devices.empty()) {
             devices = EnumerateMidiConnections(false);
@@ -453,9 +444,6 @@ void MidiDeviceBroker::revoke_claim(int64_t claimant) {
 }
 std::shared_ptr<MidiDeviceConnection> MidiDeviceBroker::get_connection(const std::string& claim) const {
     return me->get_connection(claim);
-}
-std::shared_ptr<MidiDeviceConnection> MidiDeviceBroker::get_connection(int key) const {
-    return me->get_connection(key);
 }
 void MidiDeviceBroker::scan_while(std::function<bool(const std::shared_ptr<MidiDeviceConnection>)> pred) const {
     me->scan_while(pred);

@@ -192,6 +192,14 @@ void Hc1ModuleWidget::drawLayer(const DrawArgs& args, int layer)
         cx = PRESET_LEFT + static_cast<float>((my_module->midi_send_count / 15) % 320);
         CircularHalo(vg, cx, y, 2.f, 8.5f, purple_light);
         Circle(vg, cx, y, 1.25f, purple_light);
+
+        // No note display not until we can track bend and pressure
+        // if (my_module->notesOn) {
+        //     y = PRESET_TOP - 16.25f;
+        //     cx = PRESET_LEFT + (my_module->note * 320.f / 128.f);
+        //     CircularHalo(vg, cx, y, 2.f, 8.5f, yellow_light);
+        //     Circle(vg, cx, y, 1.25f, yellow_light);
+        // }
     }
     drawDSP(vg);
 }

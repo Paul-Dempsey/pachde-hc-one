@@ -8,6 +8,9 @@ namespace pachde {
 
 Hc1Module::Hc1Module()
 {
+    midi_input_worker = new MidiInputWorker(this, APP);
+    midi_input_worker->start();
+
     system_presets.reserve(700);
     user_presets.reserve(128);
     config(Params::NUM_PARAMS, Inputs::NUM_INPUTS, Outputs::NUM_OUTPUTS, Lights::NUM_LIGHTS);
@@ -69,6 +72,13 @@ Hc1Module::Hc1Module()
 
 Hc1Module::~Hc1Module()
 {
+    if (midi_input_worker) {
+        midi_input_worker->post_quit();
+        if (midi_input_worker->my_thread.joinable()) {
+            midi_input_worker->my_thread.join();
+        }
+        
+    }
     notifyDisconnect();
     MidiDeviceBroker::get()->revoke_claim(Module::getId());
     ModuleBroker::get()->unregisterHc1(this);
@@ -254,17 +264,11 @@ json_t * Hc1Module::dataToJson()
     json_object_set_new(root, "cache-user-presets", json_boolean(cache_user_presets));
     json_object_set_new(root, "heartbeat",  json_boolean(heart_beating));
     json_object_set_new(root, "favorites-file", json_string(favoritesFile.c_str()));
-#if defined PERIODIC_DEVICE_CHECK
-    json_object_set_new(root, "device-check", json_boolean(do_periodic_device_check));
-#endif
     return root;
 }
 
 void Hc1Module::dataFromJson(json_t *root)
 {
-#if defined PERIODIC_DEVICE_CHECK
-    do_periodic_device_check  = GetBool(root, "device-check", do_periodic_device_check);
-#endif
     heart_beating = GetBool(root, "heartbeat", heart_beating);
     auto j = json_object_get(root, "preset-tab");
     if (j) {
@@ -317,14 +321,13 @@ void Hc1Module::reboot()
     if (in_reboot) return;
     in_reboot = true;
 
+    midi_input_worker->pause();
     connection = nullptr;
     dupe = false;
     midi_dispatch.clear();
     midi::Input::reset();
     midi_output.reset();
-#if defined PERIODIC_DEVICE_CHECK
-    ping_device = false;
-#endif
+
     MidiDeviceBroker::get()->sync(); // can call reboot, requiring re-entrancy protection
 
     firmware_version = 0;

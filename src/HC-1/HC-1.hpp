@@ -1,6 +1,9 @@
 #pragma once
 #ifndef HC_ONE_HPP_INCLUDED
 #define HC_ONE_HPP_INCLUDED
+#include <condition_variable>
+#include <mutex>
+#include <thread>
 #include <stdint.h>
 #include "../colors.hpp"
 #include "../em_midi.hpp"
@@ -20,11 +23,11 @@
 using namespace em_midi;
 namespace pachde {
 
-//#define PERIODIC_DEVICE_CHECK
 //#define CHECK_DEVICE_CHANGE // include CheckDeviceChange
 //#define VERBOSE_LOG
 #include "../debug_log.hpp"
 const NVGcolor& StatusColor(StatusItem led);
+struct MidiInputWorker;
 
 struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, IMidiDeviceChange, midi::Input, Module
 {
@@ -226,11 +229,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, IMidiDeviceChange, midi
     //     init_step_phase = 0.f;
     //     init_step_time = timeout;
     // }
-#if defined PERIODIC_DEVICE_CHECK
-    rack::dsp::Timer device_check;
-    bool ping_device = false;
-    bool do_periodic_device_check = true;
-#endif
+
     rack::dsp::Timer device_sync;
     const float DEVICE_SYNC_PERIOD = 5.f;
 
@@ -252,7 +251,8 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, IMidiDeviceChange, midi
     // ISetDevice
     void setMidiDevice(const std::string & claim) override;
     bool in_reboot = false;
-    
+
+    MidiInputWorker* midi_input_worker{nullptr};
     midi::Output midi_output;
     rack::dsp::RingBuffer<uMidiMessage, 128> midi_dispatch;
     void queueMidiMessage(uMidiMessage msg);
@@ -320,6 +320,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, IMidiDeviceChange, midi
 
     // midi::Input
     void onMessage(const midi::Message& msg) override;
+    void onMidiMessage(uMidiMessage msg);
 
     void paramToDefault(int id) {
         auto pq = getParamQuantity(id);
@@ -501,6 +502,27 @@ struct Hc1ModuleWidget : ModuleWidget, IPresetHolder, IHandleHcEvents
     void addFavoritesMenu(Menu *menu);
     void addSystemMenu(Menu *menu);
     void appendContextMenu(Menu *menu) override;
+};
+
+
+struct MidiInputWorker {
+    bool stop{false};
+    bool pausing{false};
+    rack::dsp::RingBuffer<uMidiMessage, 1024> midi_consume;
+    std::mutex m;
+    std::condition_variable cv;
+    Hc1Module* hc1;
+    rack::Context* context;
+    std::thread my_thread;
+
+    MidiInputWorker(Hc1Module* HC1, rack::Context* rack) : hc1(HC1), context(rack) {}
+
+    void start();
+    void pause();
+    void resume();
+    void post_quit();
+    void post_message(uMidiMessage msg);
+    void run();
 };
 
 }
