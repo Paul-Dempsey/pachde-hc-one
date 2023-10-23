@@ -268,7 +268,7 @@ void Hc1Module::process(const ProcessArgs& args)
     heart_phase += args.sampleTime;
     if (heart_phase >= heart_time) {
         heart_phase -= heart_time;
-        heart_time = hearbeat_period;
+        heart_time = heartbeat_period;
         if (!anyPending()
             && !in_preset
             && !dupe

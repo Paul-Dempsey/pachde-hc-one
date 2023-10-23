@@ -369,7 +369,7 @@ void Hc1Module::reboot()
     muted = false;
 
     notifyDeviceChanged();
-
+    notifyPresetChanged();
     in_reboot = false;
 }
 

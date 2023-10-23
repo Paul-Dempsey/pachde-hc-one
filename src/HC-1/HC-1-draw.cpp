@@ -161,12 +161,21 @@ void Hc1ModuleWidget::drawLayer(const DrawArgs& args, int layer)
             if (InitState::Uninitialized == my_module->user_preset_state) {
                 text = "preparing for user presets ...";
             } else
+            if (InitState::Uninitialized == my_module->apply_favorite_state) {
+                text = "preparing favorites ...";
+            } else
             if (InitState::Pending == my_module->apply_favorite_state) {
                 text = "processing favorites ...";
             } else
+            if (InitState::Uninitialized == my_module->config_state) {
+                text = "preparing current preset ...";
+            } else
             if (InitState::Pending == my_module->config_state) {
                 text = "processing preset details ...";
-            } 
+            } else
+            if (!my_module->ready()) {
+                text = "...";
+            }
         } else {
             if (my_module->current_preset) {
                 SetTextStyle(vg, bold_font, preset_name_color, 16.f);
@@ -281,7 +290,6 @@ void Hc1ModuleWidget::draw(const DrawArgs& args)
         }
 
         drawPedals(vg, font, stock);
-
         // if (module) {
         //     auto t = format_string("%d", my_module->midi_send_count);
         //     RightAlignText(vg, box.size.x - 2.f, box.size.y *.5f, t.c_str(), nullptr);

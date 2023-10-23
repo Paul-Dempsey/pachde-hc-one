@@ -165,7 +165,7 @@ void Hc1Module::setPreset(std::shared_ptr<Preset> preset)
     sendProgramChange(15, preset->number);
 }
 
-void Hc1Module::sendSavedPreset()\
+void Hc1Module::sendSavedPreset()
 {
     if (!saved_preset) {
         saved_preset_state = InitState::Complete;
@@ -468,13 +468,6 @@ void Hc1Module::onChannel16Message(const midi::Message& msg)
     auto status = GetRawStatus(msg);
     assert(status & 0x80);
     switch (status) {
-        case MidiStatus_NoteOff:
-        case MidiStatus_NoteOn:
-            break;
-
-        case MidiStatus_PolyKeyPressure:
-            break;
-
         case MidiStatus_CC:
             onChannel16CC(GetCC(msg), msg.getValue());
             break;
@@ -707,38 +700,42 @@ void Hc1Module::onMidiMessage(uMidiMessage umsg)
         DebugLog("%s", ToFormattedString(msg).c_str());
     }
 #endif
-
-    if (broken && !isLoopbackDetect(msg)) {
+    bool loopbackmsg = !isLoopbackDetect(msg);
+    if (broken && loopbackmsg) {
         broken_idle = 0.f;
     }
+
     ++midi_receive_count;
 
     auto channel = msg.getChannel();
     switch (channel) {
-        case EM_MasterChannel: // 0 (channel 1)
-            onChannelOneMessage(msg);
-            break;
+    case EM_MasterChannel: // 0 (channel 1)
+        onChannelOneMessage(msg);
+        break;
 
-        case EM_KentonChannel: // 13 (channel 14)
-            break;
+    case EM_KentonChannel: // 13 (channel 14)
+        break;
 
-        case EM_MatrixChannel:  // 14 (channel 15)
-            break;
+    case EM_MatrixChannel:  // 14 (channel 15)
+        break;
 
-        case EM_SettingsChannel: // 15 (channel 16)
-            onChannel16Message(msg);
-            break;
+    case EM_SettingsChannel: // 15 (channel 16)
+        onChannel16Message(msg);
+        break;
 
-        default:
-            switch (GetRawStatus(msg)) {
-                case MidiStatus_NoteOff:
-                    onNoteOff(channel, msg.bytes[1], msg.bytes[2]);
-                    break;
-                case MidiStatus_NoteOn:
-                    onNoteOn(channel, msg.bytes[1], msg.bytes[2]);
-                    break;
-            }
+    default:
+        switch (GetRawStatus(msg)) {
+        case MidiStatus_NoteOff:
+            onNoteOff(channel, msg.bytes[1], msg.bytes[2]);
             break;
+        case MidiStatus_NoteOn:
+            onNoteOn(channel, msg.bytes[1], msg.bytes[2]);
+            break;
+        case MidiStatus_ChannelPressure:
+        case MidiStatus_PitchBend:
+            break;
+        }
+        break;
     }
 }
 
@@ -804,8 +801,13 @@ void MidiInputWorker::run() {
             if (msg.channel() == 0 || msg.channel() == 15) {
                 hc1->onMidiMessage(msg);
             } else {
-                if (msg.status() == MidiStatus_NoteOn || msg.status() == MidiStatus_NoteOff) {
-                    hc1->onMidiMessage(msg);
+                switch (msg.status()){
+                    case MidiStatus_NoteOn:
+                    case MidiStatus_NoteOff:
+                    case MidiStatus_ChannelPressure:
+                    case MidiStatus_PitchBend:
+                        hc1->onMidiMessage(msg);
+                        break;
                 }
             }
         }

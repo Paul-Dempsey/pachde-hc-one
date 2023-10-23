@@ -87,7 +87,7 @@ void Hc1Module::saveStartupConfig()
     if (!root) return;
 	DEFER({json_decref(root);});
     json_object_set_new(root, "init-midi-rate",    json_integer(init_midi_rate));
-    json_object_set_new(root, "hearbeat-period",   json_real(hearbeat_period));
+    json_object_set_new(root, "heartbeat-period",   json_real(heartbeat_period));
     json_object_set_new(root, "post-output-delay", json_real(post_output_delay));
     json_object_set_new(root, "post-input-delay",  json_real(post_input_delay));
     json_object_set_new(root, "post-hello-delay",  json_real(post_hello_delay));
@@ -129,9 +129,9 @@ void Hc1Module::loadStartupConfig()
             init_midi_rate = 0;
         }
     }
-    j = json_object_get(root, "hearbeat-period");
+    j = json_object_get(root, "heartbeat-period");
     if (j) {
-        hearbeat_period = json_number_value(j);
+        heartbeat_period = json_number_value(j);
     }
     j = json_object_get(root, "post-output-delay");
     if (j) {
