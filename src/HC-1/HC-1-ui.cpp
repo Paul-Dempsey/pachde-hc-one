@@ -636,6 +636,8 @@ void Hc1ModuleWidget::step()
     ModuleWidget::step();
     if (my_module)
     {
+        tab_bar->setExtra(PresetTab::Favorite, !my_module->favoritesFile.empty());
+
         auto co = (my_module->isEaganMatrix() && !my_module->dupe) ? my_module->ledColor : red_light;
         if (!IS_SAME_COLOR(co, status_light->baseColors[0])) {
             status_light->baseColors[0] = co;

@@ -26,6 +26,7 @@ struct TabBarWidget : OpaqueWidget
     {
         bool selected;
         bool hovered;
+        bool extra;
         std::string title;
         PresetTab kind;
         SymbolWidget * sym;
@@ -34,6 +35,7 @@ struct TabBarWidget : OpaqueWidget
         explicit TTabWidget(const std::string& title, PresetTab tab_kind)
         :   selected(false),
             hovered(false),
+            extra(false),
             title(title),
             kind(tab_kind),
             sym(nullptr),
@@ -95,6 +97,7 @@ struct TabBarWidget : OpaqueWidget
 
             TBase::draw(args);
 
+            auto font = GetPluginFontRegular();
             auto lineco = RampGray(G_30);
             if (selected) {
                 switch (kind) {
@@ -103,6 +106,10 @@ struct TabBarWidget : OpaqueWidget
                     break;
                 case PresetTab::Favorite:
                     FillHeart(vg, 6.5f, 4.f, 6.f, PORT_PINK);
+                    if (this->extra) {
+                        SetTextStyle(vg, font, RampGray(G_90), 9.f);
+                        nvgText(vg, this->box.size.x - 10.f, 9.f, "\u0192", nullptr);
+                    }
                     break;
                 case PresetTab::System:
                     Circle(vg, 6.5f, 6.f, 2.f, preset_name_color);
@@ -114,11 +121,8 @@ struct TabBarWidget : OpaqueWidget
             } else {
                 Line(vg, 0.f, this->box.size.y-.5f, this->box.size.x, this->box.size.y-.5f, lineco, .75f);
             }
-            auto font = GetPluginFontRegular();
-            if (FontOk(font)) {
-                SetTextStyle(vg, font, selected ? preset_name_color : RampGray(G_90), 12.f);
-                CenterText(vg, this->box.size.x * 0.5f, 9.f, title.c_str(), nullptr );
-            }
+            SetTextStyle(vg, font, selected ? preset_name_color : RampGray(G_90), 12.f);
+            CenterText(vg, this->box.size.x * 0.5f, 9.f, title.c_str(), nullptr );
         }
     };
     using TabWidget = TTabWidget<OpaqueWidget>;
@@ -146,6 +150,10 @@ struct TabBarWidget : OpaqueWidget
             tab->setSize(Vec(width, box.size.y));
             x += width;
         }
+    }
+
+    void setExtra(PresetTab which, bool is_extra) {
+        tabs[static_cast<size_t>(which)]->extra = is_extra;
     }
 
     void selectTab(PresetTab select) {
