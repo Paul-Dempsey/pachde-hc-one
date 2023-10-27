@@ -28,6 +28,20 @@ struct VerticalSlider : SvgSlider
     void onHoverScroll(const HoverScrollEvent & e) override;
 };
 
+struct MinMaxSlider : SvgSlider {
+    MinMaxSlider();
+    bool is_min;
+
+    void setMinMax(bool min) { is_min = min; }
+    void makeUi();
+
+    void onButton(const ButtonEvent& e) override;
+    void onHover(const HoverEvent& e) override;
+    void onEnter(const EnterEvent& e) override;
+    void onLeave(const LeaveEvent& e) override ;
+    void onSelectKey(const SelectKeyEvent& e) override;
+    void onHoverScroll(const HoverScrollEvent & e) override;
+};
 
 }
 #endif

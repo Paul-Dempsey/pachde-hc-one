@@ -64,7 +64,16 @@ void PedalUICore::createUI()
     addChild(createParamCentered<PedalKnob>(Vec(x_center, 64.f), module, PedalCore::P_PEDAL_ASSIGN));
 
     // value slider
-    addChild(slider = createParamCentered<VerticalSlider>(Vec(x_center, 190.f), core_module, PedalCore::P_PEDAL_VALUE));
+    addChild(createParamCentered<VerticalSlider>(Vec(x_center + 1.5f, 190.f), core_module, PedalCore::P_PEDAL_VALUE));
+
+    auto s = createParamCentered<MinMaxSlider>(Vec(7.25f, 190.f), core_module, PedalCore::P_PEDAL_MIN);
+    s->setMinMax(true);
+    s->makeUi();
+    addChild(s);
+    s = createParamCentered<MinMaxSlider>(Vec(15.25f, 190.f), core_module, PedalCore::P_PEDAL_MAX);
+    s->setMinMax(false);
+    s->makeUi();
+    addChild(s);
 
     float y = 90;
     // jump buttons

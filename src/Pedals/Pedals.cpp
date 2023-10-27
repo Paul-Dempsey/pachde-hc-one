@@ -11,6 +11,10 @@ PedalCore::PedalCore(uint8_t pedal)
 
     auto p = configParam(P_PEDAL_VALUE, 0.f, 127.f, 0.f, format_string("Pedal %d value", 1 + pedal_id));
     p->snapEnabled = true;
+    p = configParam(P_PEDAL_MIN, 0.f, 127.f, 0.f, format_string("Pedal %d min value", 1 + pedal_id));
+    p->snapEnabled = true;
+    p = configParam(P_PEDAL_MAX, 0.f, 127.f, 127.f, format_string("Pedal %d max value", 1 + pedal_id));
+    p->snapEnabled = true;
 
     configInput(Inputs::I_PEDAL_VALUE, "Pedal");
     configOutput(Outputs::O_PEDAL_VALUE, "Pedal");
@@ -63,7 +67,12 @@ void PedalCore::onPedalChanged(const PedalChangedEvent& e)
         ->setAssignSilent(PedalAssignFromCC(e.pedal.cc));
 
     last_pedal_value = e.pedal.value;
-    getParamQuantity(Params::P_PEDAL_VALUE)->setValue(e.pedal.value);
+    auto pqv = getParamQuantity(Params::P_PEDAL_VALUE);
+    pqv->setValue(e.pedal.value);
+    pqv->minValue = e.pedal.min;
+    pqv->maxValue = e.pedal.max;
+    getParamQuantity(Params::P_PEDAL_MIN)->setValue(e.pedal.min);
+    getParamQuantity(Params::P_PEDAL_MAX)->setValue(e.pedal.max);
 
     if (ui_event_sink) {
         ui_event_sink->onPedalChanged(e);
@@ -115,13 +124,35 @@ void PedalCore::syncAssign(Hc1Module * partner)
 
 void PedalCore::syncValue(Hc1Module * partner)
 {
-    auto pq = getParamQuantity(Params::P_PEDAL_VALUE);
-    auto value = static_cast<uint8_t>(std::round(pq->getValue()));
+    auto pqv = getParamQuantity(Params::P_PEDAL_VALUE);
+    auto value = static_cast<uint8_t>(std::round(pqv->getValue()));
     if (value != last_pedal_value) {
         last_pedal_value = value;
         if (!partner->readyToSend()) return;
         PedalInfo & pedal = partner->getPedal(pedal_id);
         partner->sendControlChange(0, pedal.cc, value);
+    }
+
+    auto pq = getParamQuantity(Params::P_PEDAL_MIN);
+    value = static_cast<uint8_t>(std::round(pq->getValue()));
+    if (value != last_pedal_min) {
+        last_pedal_min = value;
+        pqv->minValue = value;
+        if (!partner->readyToSend()) return;
+        PedalInfo & pedal = partner->getPedal(pedal_id);
+        pedal.min = value;
+        partner->sendControlChange(EM_SettingsChannel, pedal_id ? EMCC_MinPedal2 : EMCC_MinPedal1, value);
+    }
+
+    pq = getParamQuantity(Params::P_PEDAL_MAX);
+    value = static_cast<uint8_t>(std::round(pq->getValue()));
+    if (value != last_pedal_max) {
+        last_pedal_max = value;
+        pqv->maxValue = value;
+        if (!partner->readyToSend()) return;
+        PedalInfo & pedal = partner->getPedal(pedal_id);
+        pedal.max = value;
+        partner->sendControlChange(EM_SettingsChannel, pedal_id ? EMCC_MaxPedal2 : EMCC_MaxPedal1, value);
     }
 }
 

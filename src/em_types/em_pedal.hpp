@@ -93,6 +93,18 @@ struct PedalInfo
         default: assert(false); break;
         }
     }
+
+    void clear()
+    {
+        value = 0;
+        min = 0;
+        max = 127;        
+        switch (jack){
+        case 0: cc = EMCC_Sustain; break;
+        case 1: cc = EMCC_Sostenuto; break;
+        default: assert(false); break;
+        }
+    }
 };
 
 }

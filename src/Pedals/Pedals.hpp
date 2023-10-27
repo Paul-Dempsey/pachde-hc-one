@@ -21,6 +21,8 @@ struct PedalCore : Module, ISendMidi, IHandleHcEvents
     {
         P_PEDAL_ASSIGN,
         P_PEDAL_VALUE,
+        P_PEDAL_MIN,
+        P_PEDAL_MAX,
         NUM_PARAMS,
     };
     enum Inputs
@@ -47,6 +49,8 @@ struct PedalCore : Module, ISendMidi, IHandleHcEvents
     const int CV_INTERVAL = 32;
     int check_cv = 0;
     uint8_t last_pedal_value = 0;
+    uint8_t last_pedal_min = 0;
+    uint8_t last_pedal_max = 127;
     
     explicit PedalCore(uint8_t id);
     virtual ~PedalCore();
@@ -79,7 +83,6 @@ struct PedalUICore : ModuleWidget, IHandleHcEvents
     SymbolTipWidget* pedal_type = nullptr;
     StaticTextLabel* pedal_assign = nullptr;
     StaticTextLabel* pedal_amount = nullptr;
-    VerticalSlider* slider = nullptr;
     uint8_t pedal_id = 0;
 
     explicit PedalUICore(PedalCore* module);
