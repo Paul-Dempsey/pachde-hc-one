@@ -106,21 +106,24 @@ struct TabBarWidget : OpaqueWidget
                     break;
                 case PresetTab::Favorite:
                     FillHeart(vg, 6.5f, 4.f, 6.f, PORT_PINK);
-                    if (this->extra) {
-                        SetTextStyle(vg, font, RampGray(G_90), 9.f);
-                        nvgText(vg, this->box.size.x - 10.f, 9.f, "\u0192", nullptr);
-                    }
                     break;
                 case PresetTab::System:
                     Circle(vg, 6.5f, 6.f, 2.f, preset_name_color);
                     break;
                 }
+
                 Line(vg, .5f, -.5f, this->box.size.x-.5f, -.5f, lineco, .75f); // top
                 Line(vg, .5f, -.5f, .5f, this->box.size.y, lineco, .75f); // left
                 Line(vg, this->box.size.x-.5f, -.5f, this->box.size.x-.5f, this->box.size.y, lineco, .75f); // right
             } else {
                 Line(vg, 0.f, this->box.size.y-.5f, this->box.size.x, this->box.size.y-.5f, lineco, .75f);
             }
+
+            if (PresetTab::Favorite == kind && this->extra) {
+                SetTextStyle(vg, font, RampGray(G_90), 9.f);
+                nvgText(vg, this->box.size.x - 10.f, 9.f, "\u0192", nullptr);
+            }
+
             SetTextStyle(vg, font, selected ? preset_name_color : RampGray(G_90), 12.f);
             CenterText(vg, this->box.size.x * 0.5f, 9.f, title.c_str(), nullptr );
         }
