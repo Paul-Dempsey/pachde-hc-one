@@ -113,13 +113,11 @@ void Hc1Module::transmitDeviceHello()
 
 void Hc1Module::transmitRequestConfiguration()
 {
-    clearCCValues();
-    current_preset = nullptr;
-    config_state = InitState::Pending;
 #ifdef VERBOSE_LOG
     log_midi = true;
 #endif
     beginPreset(); // force preset
+    config_state = InitState::Pending;
     set_init_midi_rate();
     sendEditorPresent(false);
     sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::gridToFlash);
@@ -148,7 +146,7 @@ void Hc1Module::transmitRequestUserPresets()
 
 void Hc1Module::setPreset(std::shared_ptr<Preset> preset)
 {
-    current_preset = nullptr;
+    beginPreset(); // force preset
     notifyPresetChanged();
     notifyPedalsChanged();
 
@@ -156,13 +154,12 @@ void Hc1Module::setPreset(std::shared_ptr<Preset> preset)
     if (!preset) return;
 
     set_init_midi_rate();
-    sendEditorPresent(false);
-    sendControlChange(15, EMCC_Download, EM_DownloadItem::gridToFlash);
-
     config_state = InitState::Pending;
-    sendControlChange(15, MidiCC_BankSelect, preset->bank_hi);
-    sendControlChange(15, EMCC_Category, preset->bank_lo);
-    sendProgramChange(15, preset->number);
+    sendEditorPresent(false);
+    sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::gridToFlash);
+    sendControlChange(EM_SettingsChannel, MidiCC_BankSelect, preset->bank_hi);
+    sendControlChange(EM_SettingsChannel, EMCC_Category, preset->bank_lo);
+    sendProgramChange(EM_SettingsChannel, preset->number);
 }
 
 void Hc1Module::sendSavedPreset()
@@ -172,13 +169,12 @@ void Hc1Module::sendSavedPreset()
         return;
     }
     set_init_midi_rate();
+    saved_preset_state = InitState::Pending;
     sendEditorPresent(false);
     sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::gridToFlash);
-
-    saved_preset_state = InitState::Pending;
-    sendControlChange(15, MidiCC_BankSelect, saved_preset->bank_hi);
-    sendControlChange(15, EMCC_Category, saved_preset->bank_lo);
-    sendProgramChange(15, saved_preset->number);
+    sendControlChange(EM_SettingsChannel, MidiCC_BankSelect, saved_preset->bank_hi);
+    sendControlChange(EM_SettingsChannel, EMCC_Category, saved_preset->bank_lo);
+    sendProgramChange(EM_SettingsChannel, saved_preset->number);
 }
 
 void Hc1Module::silence(bool reset)
@@ -228,11 +224,23 @@ void Hc1Module::setRecirculatorCCValue(int id, uint8_t value)
     }
 }
 
+void Hc1Module::clearPreset()
+{
+    current_preset = nullptr;
+    preset0.clear();
+    clearCCValues();
+
+    rounding.clear();
+    pedal1.clear();
+    pedal2.clear();
+    recirculator = 0;
+    middle_c = 60;
+}
+
 void Hc1Module::beginPreset()
 {
     in_preset = true;
-    preset0.clear();
-    //clearCCValues();
+    clearPreset();
     dsp[2] = dsp[1] = dsp[0] = 0;
 }
 
@@ -496,6 +504,7 @@ void Hc1Module::onChannel16Message(const midi::Message& msg)
                     device_hello_state = InitState::Complete;
                     notifyDeviceChanged();
                     notifyPresetChanged();
+                    notifyPedalsChanged();
                 } else
                 if (configPending()) {
 #ifdef VERBOSE_LOG
@@ -582,7 +591,7 @@ void Hc1Module::onNoteOff(uint8_t channel, uint8_t note, uint8_t velocity)
 void Hc1Module::onSoundOff()
 {
     if (!in_preset) {
-        clearCCValues();
+        current_preset = nullptr;
         beginPreset();
         if (saved_preset_state != InitState::Pending) {
             config_state = InitState::Pending;
@@ -778,7 +787,6 @@ void MidiInputWorker::post_message(uMidiMessage msg)
     std::unique_lock<std::mutex> lock(m);
     midi_consume.push(msg);
     cv.notify_one();
-    //system::sleep(.000001);
 }
 
 void MidiInputWorker::run() {

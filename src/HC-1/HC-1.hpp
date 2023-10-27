@@ -402,6 +402,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, IMidiDeviceChange, midi
     void sendEditorPresent(bool init_handshake);
     void silence(bool reset);
     void beginPreset();
+    void clearPreset();
     void onNoteOn(uint8_t channel, uint8_t note, uint8_t velocity);
     void onNoteOff(uint8_t channel, uint8_t note, uint8_t velocity);
     void setMacroCCValue(int id, uint8_t value);

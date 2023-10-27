@@ -343,6 +343,7 @@ void Hc1Module::process(const ProcessArgs& args)
 
             if (InitState::Uninitialized == request_updates_state) {
                 transmitRequestUpdates();
+                heart_time = 1.f;
                 return;
             }
             

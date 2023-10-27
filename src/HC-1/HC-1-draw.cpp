@@ -168,7 +168,7 @@ void Hc1ModuleWidget::drawLayer(const DrawArgs& args, int layer)
                 text = "processing favorites ...";
             } else
             if (InitState::Uninitialized == my_module->config_state) {
-                text = "preparing current preset ...";
+                text = "preparing configuration ...";
             } else
             if (InitState::Pending == my_module->config_state) {
                 text = "processing preset details ...";
