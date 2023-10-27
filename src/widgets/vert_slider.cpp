@@ -95,7 +95,7 @@ void SliderOnButtonImpl(SvgSlider * self, const rack::widget::Widget::ButtonEven
 }
 
 //const NVGcolor slider_bg = nvgRGB(0x2d, 0x5d, 0x86); //#2d5d86
-const NVGcolor value_bg = nvgRGB(0x8f, 0x7a, 0x25);
+const NVGcolor value_bg = nvgRGB(0x8f, 0x7a, 0x25); //#8f7a25
 
 void VerticalSlider::SliderValueFill::draw(const DrawArgs& args)
 {
