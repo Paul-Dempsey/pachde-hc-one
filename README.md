@@ -6,7 +6,7 @@ These include the Haken Continuum, Continuu Mini, and Eagan Matrix Module, and E
 If you're new to VCV Rack, make sure to get familiar with it.
 See [Getting Started](https://vcvrack.com/manual/GettingStarted) in the VCV Rack manual.
 
-Grab a current build for the latest features and fixes: [![Build Status](https://github.com/Paul-Dempsey/pachde-hc-one/actions/workflows/build-plugin.yml/badge.svg)](https://github.com/Paul-Dempsey/pachde-hc-one/actions/workflows/build-plugin.yml)
+Grab a current build for the latest features and fixes (must be signed into github): [![Build Status](https://github.com/Paul-Dempsey/pachde-hc-one/actions/workflows/build-plugin.yml/badge.svg)](https://github.com/Paul-Dempsey/pachde-hc-one/actions/workflows/build-plugin.yml)
 
 The beta 2 release announced online can be downloaded here: [HC-One 2.0.0-beta2](https://github.com/Paul-Dempsey/pachde-hc-one/releases/tag/v2.0.0-beta2). (But I recommend the most recent good build.)
 
@@ -37,7 +37,10 @@ You'll need to know the Operating System (OS), and Architecture (ARCH) of your R
 
 - In Rack, choose **Help** / **Open user folder**.
 - Inside this folder, you should see a folder named `plugins-OS-ARCH`, where OS is your operating system (`win`, `mac` or `lin`), and ARCH is the CPU architecture of your Rack (`arm64` for Mac M1 or M2, or `x64`). Keep the file browser open so you have the target folder ready. Make a note of the OS and ARCH.
-- Downloading the *Release* and the *Latest build* are similar. I recommend using the latest build that doesn't show an error, so I'll explain the latter.
+- Downloading the *Release* and the *Latest build* are similar.
+  For a Release, you can download the vcvplugin directly, but latest builds are inside a zip file.
+  I recommend using the latest build that doesn't show an error, so I'll explain the latter.
+  Getting a latest build does require that you are signed into github. If you don't have a github account, only Releases are available.
 - Click the button to get to the builds: [![Build Status](https://github.com/Paul-Dempsey/pachde-hc-one/actions/workflows/build-plugin.yml/badge.svg)](https://github.com/Paul-Dempsey/pachde-hc-one/actions/workflows/build-plugin.yml).
 - This takes you to the Github **Actions** tab. Once there you'll see a list of builds. The **main** builds are off the main branch, and the **v2.0.0-beta2** is from the beta 2 release build tag. A good build has a circled check mark, and a bad build has a circled x. The title is the comment for the top commit in that build. Click the title for a good build.
 - On the build page, there is a list under **Artifacts**. Click on the OS-ARCH matching your OS and ARCH noted previously. This should download a zip containing the plugin file.
