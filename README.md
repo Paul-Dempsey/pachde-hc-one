@@ -8,7 +8,7 @@ See [Getting Started](https://vcvrack.com/manual/GettingStarted) in the VCV Rack
 
 Grab a current build for the latest features and fixes (must be signed into github): [![Build Status](https://github.com/Paul-Dempsey/pachde-hc-one/actions/workflows/build-plugin.yml/badge.svg)](https://github.com/Paul-Dempsey/pachde-hc-one/actions/workflows/build-plugin.yml)
 
-The beta 2 release announced online can be downloaded here: [HC-One 2.0.0-beta2](https://github.com/Paul-Dempsey/pachde-hc-one/releases/tag/v2.0.0-beta2). (But I recommend the most recent good build.)
+The beta 3 release announced online can be downloaded here: [HC-One 2.0.0-beta3](https://github.com/Paul-Dempsey/pachde-hc-one/releases/tag/v2.0.0-beta3).
 
 - [Documentation](doc/index.md)
 
