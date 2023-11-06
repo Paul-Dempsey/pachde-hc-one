@@ -11,8 +11,10 @@ PedalCore::PedalCore(uint8_t pedal)
 
     auto p = configParam(P_PEDAL_VALUE, 0.f, 127.f, 0.f, format_string("Pedal %d value", 1 + pedal_id));
     p->snapEnabled = true;
+
     p = configParam(P_PEDAL_MIN, 0.f, 127.f, 0.f, format_string("Pedal %d min value", 1 + pedal_id));
     p->snapEnabled = true;
+    
     p = configParam(P_PEDAL_MAX, 0.f, 127.f, 127.f, format_string("Pedal %d max value", 1 + pedal_id));
     p->snapEnabled = true;
 
@@ -43,6 +45,7 @@ void PedalCore::dataFromJson(json_t *root)
     if (j) {
         partner_binding.setClaim(json_string_value(j));
     }
+    getPartner();
 }
 
 Hc1Module* PedalCore::getPartner()

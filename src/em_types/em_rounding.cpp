@@ -1,6 +1,6 @@
 #include "em_rounding.hpp"
 
-namespace em_midi {
+namespace eagan_matrix {
 using namespace pachde;
 
 std::string describeRoundKind(RoundKind kind)

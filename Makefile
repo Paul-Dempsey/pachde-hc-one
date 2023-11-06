@@ -23,10 +23,14 @@ SOURCES += src/widgets/preset_widget.cpp
 SOURCES += src/widgets/small_push.cpp
 SOURCES += src/widgets/vert_slider.cpp
 
+SOURCES += src/HC-1/midi_input_worker.cpp
+SOURCES += src/HC-1/init_phase.cpp
+
 SOURCES += src/HC-1/HC-1.cpp
 SOURCES += src/HC-1/HC-1-draw.cpp
 SOURCES += src/HC-1/HC-1-menu.cpp
 SOURCES += src/HC-1/HC-1-midi.cpp
+SOURCES += src/HC-1/HC-1-midi-out.cpp
 SOURCES += src/HC-1/HC-1-presets.cpp
 SOURCES += src/HC-1/HC-1-process.cpp
 SOURCES += src/HC-1/HC-1-ui.cpp

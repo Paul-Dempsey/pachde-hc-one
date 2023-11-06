@@ -104,6 +104,72 @@ void Hc1ModuleWidget::drawStatusDots(NVGcontext* vg)
     Dot(vg, left, y, co);
 }
 
+std::string Hc1ModuleWidget::getBannerText(NVGcontext * vg, std::shared_ptr<rack::window::Font> normal, std::shared_ptr<rack::window::Font> bold)
+{
+    if (!my_module) return "";
+
+    if (my_module->ready()) {
+        if (my_module->current_preset) {
+            SetTextStyle(vg, bold, preset_name_color, 16.f);
+            return my_module->current_preset->name;
+        } else {
+            return "<no preset>";
+        }        
+    }
+
+    if (my_module->broken) {
+        SetTextStyle(vg, bold, GetStockColor(StockColor::Fuchsia), 16.f);
+        return "[MIDI error - please wait]";
+    }
+
+    if (my_module->fresh(InitPhase::DeviceOutput)) {
+        if (!my_module->device_claim.empty()) {
+            MidiDeviceConnectionInfo info;
+            if (info.parse(my_module->device_claim)) {
+                std::string text = "looking for ";
+                text.append(info.input_device_name);
+                text.append(" ...");
+                return text;
+            }
+        }
+        return "looking for an Eagan Matrix device ...";
+    }
+    if (my_module->fresh(InitPhase::DeviceInput)) {
+        return format_string("looking for %s input ...", my_module->connection->info.input_device_name.c_str());
+    }
+    if (my_module->fresh(InitPhase::DeviceHello)) {
+        return "pause before initial EM handshake ...";
+    }
+    if (my_module->pending(InitPhase::DeviceHello)) {
+        return "waiting for EM handshake response ...";
+    }
+    auto phase = my_module->get_phase(InitPhase::DeviceConfig);
+    if (phase->fresh()) { return "pausing before EM device configuration ..."; }
+    if (phase->pending()) { return "processing EM device configuration ..."; }
+
+    phase = my_module->get_phase(InitPhase::UserPresets);
+    if (phase->fresh()) { return "pause before requesting User presets ..."; }
+    if (phase->pending()) {
+        return format_string("gathering User preset %d of %d slots...", my_module->user_presets.size(), my_module->slot_count);
+    }
+
+    phase = my_module->get_phase(InitPhase::SystemPresets);
+    if (phase->fresh()) { return "pause before requesting System presets ..."; }
+    if (phase->pending()) {
+        return format_string("gathering System preset %d of %d slots ...", my_module->system_presets.size(), my_module->slot_count);
+    }
+
+    phase = my_module->get_phase(InitPhase::Favorites);
+    if (phase->fresh()) return "preparing favorites ...";
+    if (phase->pending()) return "processing favorites ...";
+
+    phase = my_module->get_phase(InitPhase::PresetConfig);
+    if (phase->fresh()) return "pausing before preset request ...";
+    if (phase->pending()) return "processing preset details ...";
+
+    return "...";
+}
+
 void Hc1ModuleWidget::drawLayer(const DrawArgs& args, int layer)
 {
     ModuleWidget::drawLayer(args, layer);
@@ -114,81 +180,15 @@ void Hc1ModuleWidget::drawLayer(const DrawArgs& args, int layer)
     assert(FontOk(bold_font));
     auto normal_font = GetPluginFontRegular();
     assert(FontOk(normal_font));
-    std::string text;
 
-    SetTextStyle(vg, normal_font, RampGray(G_85), 12.f);
     if (my_module) {
-        if (!my_module->ready()) {
-            if (my_module->dupe) {
-                SetTextStyle(vg, bold_font, GetStockColor(StockColor::Fuchsia), 16.f);
-                text = "[Only one HC-1 per EM]";
-            } else
-            if (my_module->broken) {
-                SetTextStyle(vg, bold_font, GetStockColor(StockColor::Fuchsia), 16.f);
-                text = "[MIDI error - please wait]";
-            } else
-            if (InitState::Uninitialized == my_module->device_output_state) {
-                if (!my_module->device_claim.empty()) {
-                    MidiDeviceConnectionInfo info;
-                    if (info.parse(my_module->device_claim)) {
-                        text = "looking for ";
-                        text.append(info.input_device_name);
-                        text.append(" ...");
-                    }
-                }
-                if (text.empty()) {
-                    text = "looking for an Eagan Matrix device ...";
-                }
-            } else
-            if (InitState::Uninitialized == my_module->device_input_state) {
-                text = format_string("preparing %s ...", 
-                    my_module->connection->info.input_device_name.c_str());
-            } else
-            if (InitState::Uninitialized == my_module->device_hello_state) {
-                text = "preparing for initial EM handshake ...";
-            } else
-            if (InitState::Pending == my_module->device_hello_state) {
-                text = "waiting for initial EM handshake ...";
-            } else
-            if (my_module->is_gathering_presets()) {
-                text = format_string("gathering %s preset %d ...", 
-                    my_module->in_user_names ? "User" : "System", 
-                    my_module->in_user_names ? my_module->user_presets.size() : my_module->system_presets.size());
-            } else
-            if (InitState::Uninitialized == my_module->system_preset_state) {
-                text = "preparing for system presets ...";
-            } else
-            if (InitState::Uninitialized == my_module->user_preset_state) {
-                text = "preparing for user presets ...";
-            } else
-            if (InitState::Uninitialized == my_module->apply_favorite_state) {
-                text = "preparing favorites ...";
-            } else
-            if (InitState::Pending == my_module->apply_favorite_state) {
-                text = "processing favorites ...";
-            } else
-            if (InitState::Uninitialized == my_module->config_state) {
-                text = "preparing configuration ...";
-            } else
-            if (InitState::Pending == my_module->config_state) {
-                text = "processing preset details ...";
-            } else
-            if (!my_module->ready()) {
-                text = "...";
-            }
-        } else {
-            if (my_module->current_preset) {
-                SetTextStyle(vg, bold_font, preset_name_color, 16.f);
-                text = my_module->current_preset->name;
-            } else {
-                text = "<no preset>";
-            }
-        }
+        SetTextStyle(vg, normal_font, RampGray(G_85), 12.f);
+        auto text = getBannerText(vg, normal_font, bold_font);
+        CenterText(vg, box.size.x/2.f, 15.f, text.c_str(), nullptr);
     } else {
         SetTextStyle(vg, bold_font, preset_name_color, 16.f);
-        text = "My Amazing Preset";
+        CenterText(vg, box.size.x/2.f, 15.f, "My Amazing Preset", nullptr);
     }
-    CenterText(vg, box.size.x/2.f, 15.f, text.c_str(), nullptr);
 
     // MIDI animation
     if (my_module) {
@@ -246,16 +246,16 @@ void Hc1ModuleWidget::drawPedals(NVGcontext* vg, std::shared_ptr<rack::window::F
         drawPedalAssignment(vg, PRESET_RIGHT + 1.f, PRESET_BOTTOM - 19.f, '1', 64, 0);
         drawPedalAssignment(vg, PRESET_RIGHT + 1.f, PRESET_BOTTOM - 4.5f, '2', 66, 0);
     } else {
-        auto ped1 = my_module->pedal1.cc;
-        auto ped2 = my_module->pedal2.cc;
+        auto ped1 = my_module->em.pedal1.cc;
+        auto ped2 = my_module->em.pedal2.cc;
         if (ped1 == ped2) {
             drawPedalKnobAssignment(vg, ped1, "1,2");
         } else {
             drawPedalKnobAssignment(vg, ped1, "1");
             drawPedalKnobAssignment(vg, ped2, "2");
         }
-        drawPedalAssignment(vg, PRESET_RIGHT + 1.f, PRESET_BOTTOM - 19.f, '1', ped1, my_module->pedal1.value);
-        drawPedalAssignment(vg, PRESET_RIGHT + 1.f, PRESET_BOTTOM - 4.5f, '2', ped2, my_module->pedal2.value);
+        drawPedalAssignment(vg, PRESET_RIGHT + 1.f, PRESET_BOTTOM - 19.f, '1', ped1, my_module->em.pedal1.value);
+        drawPedalAssignment(vg, PRESET_RIGHT + 1.f, PRESET_BOTTOM - 4.5f, '2', ped2, my_module->em.pedal2.value);
     }
 }
 
@@ -294,10 +294,6 @@ void Hc1ModuleWidget::draw(const DrawArgs& args)
         //     auto t = format_string("%d", my_module->midi_send_count);
         //     RightAlignText(vg, box.size.x - 2.f, box.size.y *.5f, t.c_str(), nullptr);
         // }
-    }
-
-    if (module && my_module->dupe) {
-        BoxRect(vg, 1.f, 1.f, box.size.x-2, box.size.y-2, GetStockColor(StockColor::Orange_red), 1.5f);
     }
 
     drawStatusDots(vg);

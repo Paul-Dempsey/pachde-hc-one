@@ -5,7 +5,8 @@
 #include "../em_midi.hpp"
 #include "../widgets/components.hpp"
 
-namespace em_midi {
+namespace eagan_matrix {
+using namespace em_midi;
 
 std::string ShortPedalAssignment(uint8_t pedalcc);
 std::string LongPedalAssignment(uint8_t pedalcc);

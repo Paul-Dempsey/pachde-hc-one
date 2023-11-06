@@ -3,16 +3,19 @@
 #include "../misc.hpp"
 #include "../widgets/cc_param.hpp"
 #include "../em_device.hpp"
+#include "midi_input_worker.hpp"
 
 namespace pachde {
 
 Hc1Module::Hc1Module()
 {
+    ModuleBroker::get()->registerHc1(this);
     midi_input_worker = new MidiInputWorker(this, APP);
     midi_input_worker->start();
-
+    hc_event_subscriptions.reserve(8);
     system_presets.reserve(700);
     user_presets.reserve(128);
+
     config(Params::NUM_PARAMS, Inputs::NUM_INPUTS, Outputs::NUM_OUTPUTS, Lights::NUM_LIGHTS);
     configCCParam(em_midi::EMCC_i,   true, this, M1_PARAM, M1_INPUT, M1_REL_PARAM, M1_REL_LIGHT, 0.f, EM_Max14f, EM_Max14f/2.f, "i");
     configCCParam(em_midi::EMCC_ii,  true, this, M2_PARAM, M2_INPUT, M2_REL_PARAM, M2_REL_LIGHT, 0.f, EM_Max14f, EM_Max14f/2.f, "ii");
@@ -62,22 +65,25 @@ Hc1Module::Hc1Module()
     configLight(Lights::ROUND_LIGHT, "Rounding");
     configLight(Lights::ROUND_RELEASE_LIGHT, "Round on release");
 
+    configOutput(READY_TRIGGER, "Ready trigger");
+
     getLight(HEART_LIGHT).setBrightness(.8f);
     clearCCValues();
 
-    ModuleBroker::get()->registerHc1(this);
     heart_phase = heart_time;
     loadStartupConfig();
 }
 
 Hc1Module::~Hc1Module()
 {
+    Input::reset();
+    midi_dispatch.clear();
+    midi_output.reset();
     if (midi_input_worker) {
         midi_input_worker->post_quit();
         if (midi_input_worker->my_thread.joinable()) {
             midi_input_worker->my_thread.join();
         }
-        
     }
     notifyDisconnect();
     MidiDeviceBroker::get()->revoke_claim(Module::getId());
@@ -96,15 +102,11 @@ void Hc1Module::subscribeHcEvents(IHandleHcEvents* client)
         || hc_event_subscriptions.cend() == std::find(hc_event_subscriptions.cbegin(), hc_event_subscriptions.cend(), client)) 
     {
         hc_event_subscriptions.push_back(client);
-
-        auto dce = IHandleHcEvents::DeviceChangedEvent{connection};
-        client->onDeviceChanged(dce);
-
-        auto pce = IHandleHcEvents::PresetChangedEvent{current_preset};
-        client->onPresetChanged(pce);
-
-        auto rce = IHandleHcEvents::RoundingChangedEvent{rounding};
-        client->onRoundingChanged(rce);
+        client->onDeviceChanged(IHandleHcEvents::DeviceChangedEvent{connection});
+        client->onPresetChanged(IHandleHcEvents::PresetChangedEvent{current_preset});
+        client->onRoundingChanged(IHandleHcEvents::RoundingChangedEvent{em.rounding});
+        client->onPedalChanged(IHandleHcEvents::PedalChangedEvent{em.pedal1});
+        client->onPedalChanged(IHandleHcEvents::PedalChangedEvent{em.pedal2});
     }
 }
 
@@ -119,7 +121,7 @@ void Hc1Module::unsubscribeHcEvents(IHandleHcEvents*client)
 void Hc1Module::notifyPedalChanged(uint8_t pedal)
 {
     if (hc_event_subscriptions.empty()) return;
-    auto event = IHandleHcEvents::PedalChangedEvent{ pedal ? pedal2 : pedal1 };
+    auto event = IHandleHcEvents::PedalChangedEvent{ pedal ? em.pedal2 : em.pedal1 };
     for (auto client: hc_event_subscriptions) {
         client->onPedalChanged(event);
     }
@@ -136,7 +138,7 @@ void Hc1Module::notifyPresetChanged()
 void Hc1Module::notifyRoundingChanged()
 {
     if (hc_event_subscriptions.empty()) return;
-    auto event = IHandleHcEvents::RoundingChangedEvent{rounding};
+    auto event = IHandleHcEvents::RoundingChangedEvent{em.rounding};
     for (auto client: hc_event_subscriptions) {
         client->onRoundingChanged(event);
     }
@@ -166,7 +168,18 @@ void Hc1Module::notifyFavoritesFileChanged()
     }
 }
 
-void Hc1Module::centerKnobs() {
+void Hc1Module::centerMacroKnobs()
+{
+    paramToDefault(M1_PARAM);
+    paramToDefault(M2_PARAM);
+    paramToDefault(M3_PARAM);
+    paramToDefault(M4_PARAM);
+    paramToDefault(M5_PARAM);
+    paramToDefault(M6_PARAM);
+}
+
+void Hc1Module::centerKnobs()
+{
     paramToDefault(M1_PARAM);
     paramToDefault(M2_PARAM);
     paramToDefault(M3_PARAM);
@@ -181,7 +194,8 @@ void Hc1Module::centerKnobs() {
     paramToDefault(VOLUME_PARAM);
 }
 
-void Hc1Module::zeroKnobs() {
+void Hc1Module::zeroKnobs()
+{
     paramToMin(M1_PARAM);
     paramToMin(M2_PARAM);
     paramToMin(M3_PARAM);
@@ -236,6 +250,9 @@ void Hc1Module::onSave(const SaveEvent& e)
 
 void Hc1Module::onRemove(const RemoveEvent& e)
 {
+    midi_dispatch.clear();
+    silence(true);
+    dispatchMidi();
     notifyDisconnect();
     ModuleBroker::get()->unregisterHc1(this);
     savePresets();
@@ -300,7 +317,7 @@ void Hc1Module::dataFromJson(json_t *root)
     restore_saved_preset = GetBool(root, "restore-preset", restore_saved_preset);
     if (!restore_saved_preset) {
         // pretend it already happened so that it doesn't get scheduled
-        saved_preset_state = InitState::Complete;
+        finish_phase(InitPhase::SavedPreset);
     }
 
     j = json_object_get(root, "midi-device-claim");
@@ -324,49 +341,33 @@ void Hc1Module::reboot()
 
     midi_input_worker->pause();
     connection = nullptr;
-    dupe = false;
     midi_dispatch.clear();
     midi::Input::reset();
     midi_output.reset();
+    RefreshPhases(init_phase);
+    em.clear();
 
-    MidiDeviceBroker::get()->sync(); // can call reboot, requiring re-entrancy protection
-
-    firmware_version = 0;
-    cvc_version = 0;
-    hardware = EM_Hardware::Unknown;
     clearCCValues();
     pedal_fraction = 0;
-    pedal1 = PedalInfo(0);
-    pedal2 = PedalInfo(1);
     midi_receive_count = 0;
     midi_send_count = 0;
     broken = false;
     broken_idle = 0.f;
     heart_phase = heart_time = 2.0f;
     first_beat = false;
+    ready_sent = false;
     preset0.clear();
     system_presets.clear();
     user_presets.clear();
-
-    device_output_state =
-    device_input_state =
-    device_hello_state =
-    system_preset_state = 
-    user_preset_state = 
-    apply_favorite_state =
-    config_state = 
-    request_updates_state = 
-    saved_preset_state =
-    handshake
-        = InitState::Uninitialized;
 
     in_preset = in_sys_names = in_user_names = false;
 
     note = 0;
     notesOn = 0;
     data_stream = -1;
-    recirculator = 0;
     muted = false;
+
+    MidiDeviceBroker::get()->sync(); // can call reboot, requiring re-entrancy protection
 
     notifyDeviceChanged();
     notifyPresetChanged();

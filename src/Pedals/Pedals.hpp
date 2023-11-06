@@ -3,7 +3,7 @@
 #define PEDALS_HPP_INCLUDED
 #include <stdint.h>
 #include "../em_midi.hpp"
-#include "../em_types.hpp"
+#include "../em.hpp"
 #include "../hc_events.hpp"
 #include "../module_broker.hpp"
 #include "../plugin.hpp"

@@ -1,13 +1,10 @@
 #pragma once
 #ifndef HC_ONE_HPP_INCLUDED
 #define HC_ONE_HPP_INCLUDED
-#include <condition_variable>
-#include <mutex>
-#include <thread>
 #include <stdint.h>
 #include "../colors.hpp"
 #include "../em_midi.hpp"
-#include "../em_types.hpp"
+#include "../em.hpp"
 #include "../hc_events.hpp"
 #include "../plugin.hpp"
 #include "../preset_meta.hpp"
@@ -19,11 +16,11 @@
 #include "../widgets/preset_widget.hpp"
 #include "../widgets/square_button.hpp"
 #include "../widgets/tab_bar.hpp"
+#include "init_phase.hpp"
 
-using namespace em_midi;
+using namespace eagan_matrix;
 namespace pachde {
 
-//#define CHECK_DEVICE_CHANGE // include CheckDeviceChange
 //#define VERBOSE_LOG
 #include "../debug_log.hpp"
 const NVGcolor& StatusColor(StatusItem led);
@@ -52,6 +49,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, IMidiDeviceChange, midi
     };
     enum Outputs
     {
+        READY_TRIGGER,
         NUM_OUTPUTS
     };
     enum Lights
@@ -69,6 +67,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, IMidiDeviceChange, midi
     };
 
     LivePreset preset0;
+    int slot_count;
     std::vector<std::shared_ptr<Preset>> user_presets;
     std::vector<std::shared_ptr<Preset>> system_presets;
     std::vector<std::shared_ptr<Preset>> favorite_presets;
@@ -151,77 +150,66 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, IMidiDeviceChange, midi
     }
     
     bool is_eagan_matrix = false;
-    InitState device_output_state   = InitState::Uninitialized;
-    InitState device_input_state    = InitState::Uninitialized;
-    InitState device_hello_state    = InitState::Uninitialized;
-    InitState cached_preset_state   = InitState::Uninitialized;
-    InitState system_preset_state   = InitState::Uninitialized;
-    InitState user_preset_state     = InitState::Uninitialized;
-    InitState apply_favorite_state  = InitState::Uninitialized;
-    InitState config_state          = InitState::Uninitialized;
-    InitState saved_preset_state    = InitState::Uninitialized;
-    InitState request_updates_state = InitState::Uninitialized;
-    InitState handshake             = InitState::Uninitialized;
 
-    float post_output_delay = 3.f;
-    float post_input_delay  = 3.f;
-    float post_hello_delay  = 3.f;
-    float post_system_delay = 3.f;
-    float post_user_delay   = 3.f;
-    float post_config_delay = 2.f;
-    float heartbeat_period  = 5.f;
+    //
+    // initialization phases
+    //
+
+    void advanceInitPhase();
+
+    std::vector<InitPhaseInfo> init_phase = {
+        InitPhaseInfo{InitPhase::DeviceOutput,   InitState::Uninitialized, 4.0f, 0},
+        InitPhaseInfo{InitPhase::DeviceInput,    InitState::Uninitialized, 4.0f, 0},
+        InitPhaseInfo{InitPhase::DeviceHello,    InitState::Uninitialized, 1.0f, 2},
+        InitPhaseInfo{InitPhase::DeviceConfig,   InitState::Uninitialized, 1.0f, 2},
+        InitPhaseInfo{InitPhase::CachedPresets,  InitState::Uninitialized, 0.05f, 0},
+        InitPhaseInfo{InitPhase::UserPresets,    InitState::Uninitialized, 1.0f, 1},
+        InitPhaseInfo{InitPhase::SystemPresets,  InitState::Uninitialized, 1.0f, 2},
+        InitPhaseInfo{InitPhase::Favorites,      InitState::Uninitialized, 0.05f, 0},
+        InitPhaseInfo{InitPhase::SavedPreset,    InitState::Uninitialized, 1.0f, 0},
+        InitPhaseInfo{InitPhase::PresetConfig,   InitState::Uninitialized, 1.0f, 0},
+        InitPhaseInfo{InitPhase::RequestUpdates, InitState::Uninitialized, 0.05f, 0},
+        InitPhaseInfo{InitPhase::Heartbeat,      InitState::Uninitialized, 2.0f, 0},
+    };
+
+    InitPhaseInfo* get_phase(InitPhase phase) { return &init_phase[static_cast<size_t>(phase)]; }
+    InitState phaseState(InitPhase phase) { return get_phase(phase)->state; }
+    float phase_post_delay(InitPhase phase) { return get_phase(phase)->post_delay; }
+
+    void fresh_phase(InitPhase phase)  { get_phase(phase)->state = InitState::Uninitialized; }
+    void pend_phase(InitPhase phase)   { get_phase(phase)->state = InitState::Pending; }
+    void finish_phase(InitPhase phase) { get_phase(phase)->state = InitState::Complete; }
+    void break_phase(InitPhase phase)  { get_phase(phase)->state = InitState::Broken; }
+
+    bool fresh(InitPhase phase) { return get_phase(phase)->fresh(); }
+    bool pending(InitPhase phase) { return get_phase(phase)->pending(); }
+    bool finished(InitPhase phase) { return get_phase(phase)->finished(); }
+    bool broken_phase(InitPhase phase) { return get_phase(phase)->broken(); }
+
+    bool anyPending() { return init_phase.cend() != std::find_if(init_phase.cbegin(), init_phase.cend(), [](const InitPhaseInfo& info){ return InitState::Pending == info.state; }); }
+    bool anyBroken() { return init_phase.cend() != std::find_if(init_phase.cbegin(), init_phase.cend(), [](const InitPhaseInfo& info){ return InitState::Broken == info.state; }); }
+
+    bool allComplete() { return init_phase.cend() == std::find_if(init_phase.cbegin(), init_phase.cend(), [](const InitPhaseInfo& info){ return InitState::Complete != info.state; }); }
+
+    bool is_gathering_presets() { return pending(InitPhase::SystemPresets) || pending(InitPhase::UserPresets); }
+    bool hasSystemPresets() { return finished(InitPhase::SystemPresets) && !system_presets.empty(); }
+    bool hasUserPresets() { return finished(InitPhase::UserPresets) && !user_presets.empty(); }
+
     int init_midi_rate = 0;
-    void set_init_midi_rate();
+    void send_init_midi_rate(int rate);
     void restore_midi_rate();
-
-    bool hasSystemPresets() { return InitState::Complete == system_preset_state && !system_presets.empty(); }
-    bool hasUserPresets() { return InitState::Complete == user_preset_state && !user_presets.empty(); }
-    bool hasConfig() { return InitState::Complete == config_state; }
-    bool deviceHelloPending() { return InitState::Pending ==  device_hello_state; }
-    bool configPending() { return InitState::Pending == config_state; }
-    bool savedPresetPending() { return InitState::Pending == saved_preset_state; }
-    bool handshakePending() { return InitState::Pending == handshake; }
 
     void tryCachedPresets();
 
-#if defined CHECK_DEVICE_CHANGE
-    bool checkDeviceChange();
-#endif
     void initOutputDevice();
 
-    bool anyPending() {
-        return 
-               InitState::Pending == device_output_state
-            || InitState::Pending == device_input_state
-            || InitState::Pending == device_hello_state
-            || InitState::Pending == system_preset_state
-            || InitState::Pending == user_preset_state
-            || InitState::Pending == apply_favorite_state
-            || InitState::Pending == config_state
-            || InitState::Pending == handshake;
-    }
-    bool ready() {
-        return !broken 
-            && InitState::Complete == device_output_state
-            && InitState::Complete == device_input_state
-            && InitState::Complete == device_hello_state
-            && InitState::Complete == system_preset_state
-            && InitState::Complete == user_preset_state
-            && InitState::Complete == apply_favorite_state
-            && InitState::Complete == config_state
-            && InitState::Complete == saved_preset_state
-            && InitState::Complete == request_updates_state;
-    }
+    bool ready() { return !broken && allComplete(); }
 
     bool in_preset = false;
     bool in_user_names = false;
     bool in_sys_names = false;
-    bool dupe = false;
     bool broken = false;
     float broken_idle = 0.f;
-#ifdef VERBOSE_LOG
-    bool log_midi = false;
-#endif
 
     // float init_step_phase = 0.f;
     // float init_step_time = 0.f;
@@ -236,10 +224,12 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, IMidiDeviceChange, midi
     // heart_beating
     float heart_phase = 0.f;
     float heart_time = 2.0;
+    float heartbeat_period = 4.f;
     bool first_beat = false;
+    bool ready_sent = false;
     bool tick_tock = true;
     NVGcolor ledColor = green_light;
-    bool heart_beating = true;
+    bool heart_beating = false;
 
     // device management
     std::shared_ptr<MidiDeviceConnection> connection = nullptr;
@@ -255,7 +245,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, IMidiDeviceChange, midi
     MidiInputWorker* midi_input_worker{nullptr};
     midi::Output midi_output;
     rack::dsp::RingBuffer<uMidiMessage, 128> midi_dispatch;
-    void queueMidiMessage(uMidiMessage msg);
+    void queueMidiOutMessage(uMidiMessage msg);
     void dispatchMidi();
     const float MIDI_RATE = 0.05f;
     rack::dsp::Timer midi_timer;
@@ -263,17 +253,13 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, IMidiDeviceChange, midi
     // cc handling
 
     uint8_t pedal_fraction = 0;
-
-    PedalInfo pedal1 = PedalInfo(0);
-    PedalInfo pedal2 = PedalInfo(1);
     PedalInfo & getPedal(uint8_t id) {
-        return id ? pedal2 : pedal1;
+        return id ? em.pedal2 : em.pedal1;
     }
 
     bool muted = false;
     int64_t notesOn = 0;
     uint8_t note = 0;
-    uint8_t recirculator = 0;
     uint64_t midi_receive_count = 0;
     uint64_t midi_send_count = 0;
     uint8_t dsp[3] {0};
@@ -284,22 +270,17 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, IMidiDeviceChange, midi
         memset(ch0_cc_value, 0, 127); 
         memset(ch15_cc_value, 0, 127);
     }
-    //std::vector<uint8_t> system_data;
-    uint16_t firmware_version = 0;
-    uint16_t cvc_version = 0;
-    EM_Hardware hardware = EM_Hardware::Unknown;
-    uint8_t middle_c = 60;
-    bool reverse_surface;
-    Rounding rounding;
+
+    EaganMatrix em;
 
     // cv processing
     const int CV_INTERVAL = 64;
     int check_cv = 0;
 
     rack::dsp::SchmittTrigger mute_trigger;
+    rack::dsp::PulseGenerator ready_trigger;
 
     bool isEaganMatrix() { return is_eagan_matrix; }
-    bool is_gathering_presets() { return system_preset_state == InitState::Pending || user_preset_state == InitState::Pending; }
 
     Hc1Module();
     virtual ~Hc1Module();
@@ -337,6 +318,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, IMidiDeviceChange, midi
     //     getParam(id).setValue(pq->getMinValue() + (pq->getMaxValue() - pq->getMinValue()) / 2.f);
     // }
     void centerKnobs();
+    void centerMacroKnobs();
     //void defaultKnobs();
     void zeroKnobs();
     void absoluteCV();
@@ -347,17 +329,10 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, IMidiDeviceChange, midi
     void onRandomize(const RandomizeEvent& e) override;
     void reboot();
 
-    EM_Recirculator recirculatorType() {
-        return static_cast<EM_Recirculator>(recirculator & EM_Recirculator::Mask);
-    }
-    bool isExtendRecirculator() { return recirculator & EM_Recirculator::Extend; }
-    const std::string recirculatorName() {
-        return RecirculatorName(recirculatorType());
-    }
-    const std::string recirculatorParameterName(int r) {
-        return RecirculatorParameterName(recirculatorType(), r);
-    }
-    bool isRecirculatorExtend() { return recirculator & EM_Recirculator::Extend; }
+    EM_Recirculator recirculatorType() { return em.recirculator.kind(); }
+    bool isExtendRecirculator() { return em.recirculator.extended(); }
+    const std::string recirculatorName() { return em.recirculator.name(); }
+    const std::string recirculatorParameterName(int r) { return em.recirculator.parameter_name(r); }
     void setRecirculatorCCValue(int id, uint8_t value);
 
     // ISendMidi
@@ -395,11 +370,11 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, IMidiDeviceChange, midi
     void syncParams(float sampleTime);
     void sendResetAllreceivers();
     void transmitDeviceHello();
-    void transmitRequestUpdates();
+    void transmitDeviceConfig();
     void transmitRequestConfiguration();
     void transmitRequestSystemPresets();
     void transmitRequestUserPresets();
-    void sendEditorPresent(bool init_handshake);
+    void sendEditorPresent();
     void silence(bool reset);
     void beginPreset();
     void clearPreset();
@@ -413,6 +388,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, IMidiDeviceChange, midi
     void onChannel16Message(const midi::Message& msg);
     void processCV(int inputId);
     void processAllCV();
+    void processReadyTrigger(bool ready, const ProcessArgs& args);
     void onSave(const SaveEvent& e) override;
     void onRemove(const RemoveEvent& e) override;
     void process(const ProcessArgs& args) override;
@@ -490,6 +466,7 @@ struct Hc1ModuleWidget : ModuleWidget, IPresetHolder, IHandleHcEvents
     void drawStatusDots(NVGcontext* vg);
     void drawPedalAssignment(NVGcontext* vg, float x, float y, char ped_char, uint8_t ped, uint8_t ped_value);
     void drawPedals(NVGcontext* vg, std::shared_ptr<rack::window::Font> font, bool stockPedals);
+    std::string getBannerText(NVGcontext* vg, std::shared_ptr<rack::window::Font> normal, std::shared_ptr<rack::window::Font> bold);
 
     void onHoverScroll(const HoverScrollEvent& e) override;
     void step() override;
@@ -503,27 +480,6 @@ struct Hc1ModuleWidget : ModuleWidget, IPresetHolder, IHandleHcEvents
     void addFavoritesMenu(Menu *menu);
     void addSystemMenu(Menu *menu);
     void appendContextMenu(Menu *menu) override;
-};
-
-
-struct MidiInputWorker {
-    bool stop{false};
-    bool pausing{false};
-    rack::dsp::RingBuffer<uMidiMessage, 1024> midi_consume;
-    std::mutex m;
-    std::condition_variable cv;
-    Hc1Module* hc1;
-    rack::Context* context;
-    std::thread my_thread;
-
-    MidiInputWorker(Hc1Module* HC1, rack::Context* rack) : hc1(HC1), context(rack) {}
-
-    void start();
-    void pause();
-    void resume();
-    void post_quit();
-    void post_message(uMidiMessage msg);
-    void run();
 };
 
 }

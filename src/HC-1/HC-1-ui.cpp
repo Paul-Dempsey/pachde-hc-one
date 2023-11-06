@@ -269,39 +269,57 @@ void Hc1ModuleWidget::createStatusDots()
     float left = STATUS_LEFT;
     float y = box.size.y - 7.5f;
     //notes_on
-    addChild(createIndicatorCentered(40.f, y, "Note", [=]()->const NVGcolor& { return (my_module->notesOn ? purple_light : gray_light); }, [=]()-> bool { return my_module->notesOn; }));
-    //is_eagan_matrix
-    addChild(createIndicatorCentered(left, y, "Eagan Matrix", [=]()->const NVGcolor& { return my_module->isEaganMatrix() ? blue_light : yellow_light; }));
+    addChild(createIndicatorCentered(
+        40.f, y, "Note",
+        [=]() -> const NVGcolor & { return (my_module->notesOn ? purple_light : gray_light); },
+        [=]() -> bool { return my_module->notesOn; }));
+    // is_eagan_matrix
+    addChild(createIndicatorCentered(left, y, "Eagan Matrix",
+        [=]() -> const NVGcolor & { return my_module->isEaganMatrix() ? blue_light : yellow_light; }));
     left += STATUS_SPREAD;
-    //device_output_state
-    addChild(createIndicatorCentered(left, y, "Midi output device", [=]()->const NVGcolor& { return InitStateColor(my_module->device_output_state); }));
+    addChild(createIndicatorCentered(left, y, "Midi output device",
+        [=]() -> const NVGcolor & { return InitStateColor(my_module->phaseState(InitPhase::DeviceOutput)); },
+        [=]() -> std::string { return InitStateName(my_module->phaseState(InitPhase::DeviceOutput)); }));
     left += STATUS_SPREAD;
-    // device_input_state
-    addChild(createIndicatorCentered(left, y, "Midi input device", [=]()->const NVGcolor& { return InitStateColor(my_module->device_input_state); }));
+    addChild(createIndicatorCentered(left, y, "Midi input device",
+        [=]() -> const NVGcolor & { return InitStateColor(my_module->phaseState(InitPhase::DeviceInput)); },
+        [=]() -> std::string { return InitStateName(my_module->phaseState(InitPhase::DeviceInput)); }));
     left += STATUS_SPREAD;
-    //device_hello_state
-    addChild(createIndicatorCentered(left, y, "EM device ack", [=]()->const NVGcolor& { return InitStateColor(my_module->device_hello_state); }));
+    addChild(createIndicatorCentered(left, y, "EM device 'hello'",
+        [=]() -> const NVGcolor & { return InitStateColor(my_module->phaseState(InitPhase::DeviceHello)); },
+        [=]() -> std::string { return InitStateName(my_module->phaseState(InitPhase::DeviceHello)); }));
     left += STATUS_SPREAD;
-    //system_preset_state
-    addChild(createIndicatorCentered(left, y, "System presets", [=]()->const NVGcolor& { return InitStateColor(my_module->system_preset_state); }));
+    addChild(createIndicatorCentered(left, y, "EM device configuration",
+        [=]() -> const NVGcolor & { return InitStateColor(my_module->phaseState(InitPhase::DeviceConfig)); },
+        [=]() -> std::string { return InitStateName(my_module->phaseState(InitPhase::DeviceConfig)); }));
     left += STATUS_SPREAD;
-    //user_preset_state
-    addChild(createIndicatorCentered(left, y, "User presets", [=]()->const NVGcolor& { return InitStateColor(my_module->user_preset_state); }));
+    addChild(createIndicatorCentered(left, y, "User presets",
+        [=]()->const NVGcolor& { return InitStateColor(my_module->phaseState(InitPhase::UserPresets)); },
+        [=]() -> std::string { return InitStateName(my_module->phaseState(InitPhase::UserPresets)); }));
     left += STATUS_SPREAD;
-    //apply_favorite_state
-    addChild(createIndicatorCentered(left, y, "Favorites", [=]()->const NVGcolor& { return InitStateColor(my_module->apply_favorite_state); }));
+    addChild(createIndicatorCentered(left, y, "System presets",
+        [=]()->const NVGcolor& { return InitStateColor(my_module->phaseState(InitPhase::SystemPresets)); },
+        [=]() -> std::string { return InitStateName(my_module->phaseState(InitPhase::SystemPresets)); }));
     left += STATUS_SPREAD;
-    //config_state
-    addChild(createIndicatorCentered(left, y, "Configuration", [=]()->const NVGcolor& { return InitStateColor(my_module->config_state); }));
+    addChild(createIndicatorCentered(left, y, "Favorites",
+        [=]()->const NVGcolor& { return InitStateColor(my_module->phaseState(InitPhase::Favorites)); },
+        [=]() -> std::string { return InitStateName(my_module->phaseState(InitPhase::Favorites)); }));
     left += STATUS_SPREAD;
-    //saved_preset_state
-    addChild(createIndicatorCentered(left, y, "Saved preset", [=]()->const NVGcolor& { return InitStateColor(my_module->saved_preset_state); }));
+    addChild(createIndicatorCentered(left, y, "Configuration",
+        [=]()->const NVGcolor& { return InitStateColor(my_module->phaseState(InitPhase::PresetConfig)); },
+        [=]() -> std::string { return InitStateName(my_module->phaseState(InitPhase::PresetConfig)); }));
     left += STATUS_SPREAD;
-    //request_updates_state
-    addChild(createIndicatorCentered(left, y, "Request updates", [=]()->const NVGcolor& { return InitStateColor(my_module->request_updates_state); }));
+    addChild(createIndicatorCentered(left, y, "Saved preset",
+        [=]()->const NVGcolor& { return InitStateColor(my_module->phaseState(InitPhase::SavedPreset)); },
+        [=]() -> std::string { return InitStateName(my_module->phaseState(InitPhase::SavedPreset)); }));
     left += STATUS_SPREAD;
-    //handshake
-    addChild(createIndicatorCentered(left, y, "Heartbeat", [=]()->const NVGcolor& { return InitStateColor(my_module->handshake); }));
+    addChild(createIndicatorCentered(left, y, "Request updates",
+        [=]()->const NVGcolor& { return InitStateColor(my_module->phaseState(InitPhase::RequestUpdates)); },
+        [=]() -> std::string { return InitStateName(my_module->phaseState(InitPhase::RequestUpdates)); }));
+    left += STATUS_SPREAD;
+    addChild(createIndicatorCentered(left, y, "Heartbeat",
+        [=]()->const NVGcolor& { return InitStateColor(my_module->phaseState(InitPhase::Heartbeat)); },
+        [=]() -> std::string { return InitStateName(my_module->phaseState(InitPhase::Heartbeat)); }));
 }
 
 void Hc1ModuleWidget::createUi()
@@ -324,6 +342,9 @@ void Hc1ModuleWidget::createUi()
     addChild(createInputCentered<ColorPort>(Vec(KNOB_LEFT + 3.f * KNOB_SPREAD - CV_COLUMN_OFFSET, CV_ROW_1), my_module, Hc1in::M4_INPUT));
     addChild(createInputCentered<ColorPort>(Vec(KNOB_LEFT + 4.f * KNOB_SPREAD - CV_COLUMN_OFFSET, CV_ROW_1), my_module, Hc1in::M5_INPUT));
     addChild(createInputCentered<ColorPort>(Vec(KNOB_LEFT + 5.f * KNOB_SPREAD - CV_COLUMN_OFFSET, CV_ROW_1), my_module, Hc1in::M6_INPUT));
+
+    addChild(createStaticTextLabel(Vec(KNOB_LEFT + 6.f * KNOB_SPREAD - CV_COLUMN_OFFSET, CV_ROW_1 - LABEL_OFFSET), 40.f, "Ready", TextAlignment::Center, 9.f));
+    addChild(createColorOutputCentered(KNOB_LEFT + 6.f * KNOB_SPREAD - CV_COLUMN_OFFSET, CV_ROW_1, Hc1out::READY_TRIGGER, GetStockColor(StockColor::pachde_default_port), my_module));
 
     addChild(createInputCentered<ColorPort>(Vec(RKNOB_LEFT                     - CV_COLUMN_OFFSET, CV_ROW_2), my_module, Hc1in::R1_INPUT));
     addChild(createInputCentered<ColorPort>(Vec(RKNOB_LEFT +       KNOB_SPREAD - CV_COLUMN_OFFSET, CV_ROW_2), my_module, Hc1in::R2_INPUT));
@@ -450,10 +471,8 @@ void Hc1ModuleWidget::moveFavorite(std::shared_ptr<Preset> preset, FavoriteMove 
 //
 void Hc1ModuleWidget::onPresetChanged(const PresetChangedEvent& e)
 {
-    auto ver = my_module ? my_module->firmware_version : 0;
-    firmware_label->text(format_string("v%03.2f", ver/100.f));
-    hardware_label->text(my_module ? HardwareName(my_module->hardware) : "");
-
+    firmware_label->text(format_string("v%03.2f", (my_module ? my_module->em.firmware_version : 0)/100.f));
+    hardware_label->text(my_module ? HardwareName(my_module->em.hardware) : "");
     favorite->setPreset(my_module->current_preset);
     showCurrentPreset(true);
 }
@@ -464,8 +483,8 @@ void Hc1ModuleWidget::onDeviceChanged(const DeviceChangedEvent& e)
     em_picker->setConnection(e.device);
     em_picker->describe(have_device ? e.device->info.friendly(true) : "Choose an Eagan Matrix device");
     device_label->text(have_device ? e.device->info.friendly(false) : "<Eagan Matrix device>");
-    hardware_label->text(""); // blank until we get presetChanged, as it's part of the config
-    firmware_label->text(""); // blank until we get presetChanged, as it's part of the config
+    hardware_label->text(my_module ? HardwareName(my_module->em.hardware) : "");
+    firmware_label->text(format_string("v%03.2f", (my_module ? my_module->em.firmware_version : 0)/100.f));
 }
 
 void Hc1ModuleWidget::onDisconnect(const DisconnectEvent& e)
@@ -638,7 +657,7 @@ void Hc1ModuleWidget::step()
     {
         tab_bar->setExtra(PresetTab::Favorite, !my_module->favoritesFile.empty());
 
-        auto co = (my_module->isEaganMatrix() && !my_module->dupe) ? my_module->ledColor : red_light;
+        auto co = (my_module->isEaganMatrix()) ? my_module->ledColor : red_light;
         if (!IS_SAME_COLOR(co, status_light->baseColors[0])) {
             status_light->baseColors[0] = co;
             my_module->getLight(Hc1Module::HEART_LIGHT).setBrightness(1.f);

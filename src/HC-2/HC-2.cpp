@@ -54,6 +54,7 @@ void Hc2Module::dataFromJson(json_t *root)
     if (j) {
         partner_binding.setClaim(json_string_value(j));
     }
+    getPartner();
 }
 
 Hc1Module* Hc2Module::getPartner()
@@ -125,7 +126,7 @@ void Hc2Module::pullRounding(Hc1Module * partner)
 {
     if (!partner) partner = getPartner();
     if (!partner) return;
-    rounding = partner->rounding;
+    rounding = partner->em.rounding;
     getParamQuantity(Params::P_ROUND_KIND)->setValue(static_cast<uint8_t>(rounding.kind));
     getParamQuantity(Params::P_ROUND_INITIAL)->setValue(1.f * rounding.initial);
     getLight(Lights::L_ROUND_INITIAL).setBrightness(1.0f * rounding.initial);
@@ -140,7 +141,7 @@ void Hc2Module::pushRounding(Hc1Module * partner)
 {
     if (!partner) partner = getPartner();
     if (!partner) return;
-    partner->rounding = rounding;
+    partner->em.rounding = rounding;
     if (ui_event_sink) {
         ui_event_sink->onRoundingChanged(RoundingChangedEvent{rounding});
     }
@@ -210,7 +211,7 @@ void Hc2Module::processControls()
             rounding.kind = kind;
             pushRounding();
             auto partner = getPartner();
-            uint8_t rev = partner ? partner->reverse_surface : 0;
+            uint8_t rev = partner ? partner->em.reverse_surface : 0;
             sendControlChange(EM_SettingsChannel, EMCC_Reverse_Rounding, (static_cast<uint8_t>(kind) << 1) | rev);
         }
     }

@@ -3,7 +3,7 @@
 #define EM_TUNING_HPP_INCLUDED
 #include <rack.hpp>
 #include "../misc.hpp"
-namespace em_midi {
+namespace eagan_matrix {
 using namespace ::rack;
 
 enum Tuning : uint8_t {

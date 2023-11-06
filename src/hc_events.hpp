@@ -4,7 +4,7 @@
 #include <rack.hpp>
 #include "presets.hpp"
 #include "em_device.hpp"
-#include "em_types.hpp"
+#include "em.hpp"
 
 namespace pachde {
 
@@ -21,12 +21,12 @@ struct IHandleHcEvents
     virtual void onFavoritesFileChanged(const FavoritesFileChangedEvent& e) {}
 
     struct PedalChangedEvent {
-        const em_midi::PedalInfo & pedal;
+        const eagan_matrix::PedalInfo & pedal;
     };
     virtual void onPedalChanged(const PedalChangedEvent& e) {}
 
     struct RoundingChangedEvent {
-        const em_midi::Rounding rounding;
+        const eagan_matrix::Rounding& rounding;
     };
     virtual void onRoundingChanged(const RoundingChangedEvent& e) {}
 

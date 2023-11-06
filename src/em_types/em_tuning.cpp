@@ -1,6 +1,6 @@
 #include "em_tuning.hpp"
 
-namespace em_midi {
+namespace eagan_matrix {
 using namespace pachde;
 
 Tuning unpackTuning(uint8_t packed)

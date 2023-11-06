@@ -6,7 +6,7 @@
 #include "em_tuning.hpp"
 using namespace ::rack;
 
-namespace em_midi {
+namespace eagan_matrix {
 
 enum class RoundKind : uint8_t {
     Normal,

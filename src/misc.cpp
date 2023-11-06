@@ -159,7 +159,7 @@ std::string TempName(const std::string& suffix) {
 
 const char * InitStateName(InitState state) {
     switch (state) {
-    case InitState::Uninitialized: return "Uninitialized";
+    case InitState::Uninitialized: return "Not started";
     case InitState::Pending: return "Pending";
     case InitState::Complete: return "Complete";
     case InitState::Broken: return "Broken";

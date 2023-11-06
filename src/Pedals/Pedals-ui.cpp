@@ -5,7 +5,7 @@
 
 namespace pachde {
 
-SymbolWidget::Symbol pSymbolForPedal(PedalType pedal)
+SymbolWidget::Symbol SymbolForPedal(PedalType pedal)
 {
     switch (pedal) {
     case PedalType::NoPedal: return Symbol::NoPedal;
@@ -42,7 +42,7 @@ void PedalUICore::onDeviceChanged(const DeviceChangedEvent& e)
 
 void PedalUICore::onPedalChanged(const PedalChangedEvent& e)
 {
-    pedal_type->setSymbol(pSymbolForPedal(e.pedal.type)); 
+    pedal_type->setSymbol(SymbolForPedal(e.pedal.type)); 
     pedal_assign->text(LongPedalAssignment(e.pedal.cc));
     pedal_amount->text(format_string("%d", e.pedal.value));
 }

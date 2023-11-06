@@ -4,41 +4,28 @@ namespace pachde {
 
 void Hc1Module::tryCachedPresets()
 {
-    cached_preset_state = InitState::Complete;
-
-    if (cache_system_presets && hardware != EM_Hardware::Unknown) {
+    if (cache_system_presets && (EM_Hardware::Unknown != em.hardware)) {
         loadSystemPresets();
     }
     if (cache_user_presets && connection) {
         loadUserPresets();
     }
-    if (system_presets.empty()) {
-        system_preset_state = InitState::Uninitialized;
-    }
-    if (user_presets.empty()) {
-        user_preset_state = InitState::Uninitialized;
-    }
+    auto sys = get_phase(InitPhase::SystemPresets);
+    auto usr = get_phase(InitPhase::UserPresets);
 
-    if (InitState::Complete == system_preset_state 
-        && InitState::Complete == user_preset_state
-        && favoritesFile.empty()) {
+    if (sys->finished() && usr->finished() && favoritesFile.empty()) {
         favoritesFromPresets();
-    }
-
-    if (!favoritesFile.empty()) {
+    } else if (!favoritesFile.empty()) {
+        auto phase = get_phase(InitPhase::Favorites);
         if (system_presets.empty() || user_presets.empty()) {
-            apply_favorite_state = InitState::Uninitialized;
+            phase->fresh();
         } else {
             if (readFavoritesFile(favoritesFile, true)) {
-                apply_favorite_state = InitState::Complete;
+               phase->finish();
             } else {
-                apply_favorite_state = InitState::Broken;
+               phase->fail();
             }
         }
-    }
-    if ((InitState::Complete == system_preset_state)
-        && (InitState::Complete == user_preset_state)) {
-        heart_time = .05;
     }
 }
 
@@ -52,7 +39,7 @@ void Hc1Module::setPresetOrder(PresetOrder order)
 }
 
 std::string Hc1Module::startupConfigPath() {
-    return asset::user(format_string("%s/startup.json", pluginInstance->slug.c_str()));    
+    return asset::user(format_string("%s/startup-config.json", pluginInstance->slug.c_str()));    
 }
 
 std::string Hc1Module::userPresetsPath()
@@ -64,8 +51,8 @@ std::string Hc1Module::userPresetsPath()
 
 std::string Hc1Module::systemPresetsPath()
 {
-    if (EM_Hardware::Unknown == hardware) return "";
-    return asset::user(format_string("%s/%s-system.json", pluginInstance->slug.c_str(), ShortHardwareName(hardware)));
+    if (EM_Hardware::Unknown == em.hardware) return "";
+    return asset::user(format_string("%s/%s-system.json", pluginInstance->slug.c_str(), ShortHardwareName(em.hardware)));
 }
 
 void Hc1Module::saveStartupConfig()
@@ -86,14 +73,8 @@ void Hc1Module::saveStartupConfig()
     auto root = json_object();
     if (!root) return;
 	DEFER({json_decref(root);});
-    json_object_set_new(root, "init-midi-rate",    json_integer(init_midi_rate));
-    json_object_set_new(root, "heartbeat-period",   json_real(heartbeat_period));
-    json_object_set_new(root, "post-output-delay", json_real(post_output_delay));
-    json_object_set_new(root, "post-input-delay",  json_real(post_input_delay));
-    json_object_set_new(root, "post-hello-delay",  json_real(post_hello_delay));
-    json_object_set_new(root, "post-system-delay", json_real(post_system_delay));
-    json_object_set_new(root, "post-user-delay",   json_real(post_user_delay));
-    json_object_set_new(root, "post-config-delay", json_real(post_config_delay));
+    json_object_set_new(root, "heartbeat_period", json_real(heartbeat_period));
+    PhasesToJson(root, init_phase);
 
 	json_dumpf(root, file, JSON_INDENT(2));
 	std::fclose(file);
@@ -122,47 +103,16 @@ void Hc1Module::loadStartupConfig()
     }
 	DEFER({json_decref(root);});
 
-    auto j = json_object_get(root, "init-midi-rate");
-    if (j) {
-        init_midi_rate = static_cast<int>(json_integer_value(j));
-        if (!in_range(init_midi_rate, 0, 2)) {
-            init_midi_rate = 0;
-        }
-    }
-    j = json_object_get(root, "heartbeat-period");
-    if (j) {
-        heartbeat_period = json_number_value(j);
-    }
-    j = json_object_get(root, "post-output-delay");
-    if (j) {
-        post_output_delay = json_number_value(j);
-    }
-    j = json_object_get(root, "post-input-delay");
-    if (j) {
-        post_input_delay = json_number_value(j);
-    }
-    j = json_object_get(root, "post-hello-delay");
-    if (j) {
-        post_hello_delay = json_number_value(j);
-    }
-    j = json_object_get(root, "post-system-delay");
-    if (j) {
-        post_system_delay = json_number_value(j);
-    }
-    j = json_object_get(root, "post-user-delay");
-    if (j) {
-        post_user_delay = json_number_value(j);
-    }
-    j = json_object_get(root, "post-config-delay");
-    if (j) {
-        post_config_delay = json_number_value(j);
-    }
+    PhasesFromJson(root, init_phase);
+    auto j = json_object_get(root, "heartbeat_period");
+    if (j) heartbeat_period = json_number_value(j);
+
 }
 
 void Hc1Module::saveUserPresets()
 {
     if (user_presets.empty()) return;
-    if (InitState::Complete != user_preset_state) return;
+    if (!finished(InitPhase::UserPresets)) return;
     auto path = userPresetsPath();
     if (path.empty()) return;
     auto dir = system::getDirectory(path);
@@ -191,7 +141,7 @@ void Hc1Module::saveUserPresets()
 void Hc1Module::saveSystemPresets()
 {
     if (system_presets.empty()) return;
-    if (InitState::Complete != system_preset_state) return;
+    if (!finished(InitPhase::SystemPresets)) return;
 
     auto path = systemPresetsPath();
     if (path.empty()) return;
@@ -226,19 +176,20 @@ void Hc1Module::loadUserPresets()
 {
     auto path = userPresetsPath();
     if (path.empty()) return;
-    user_preset_state = InitState::Pending;
+    auto phase = get_phase(InitPhase::UserPresets);
+    phase->pend();
     user_presets.clear();
 
     FILE* file = std::fopen(path.c_str(), "r");
 	if (!file) {
-        user_preset_state = InitState::Broken;
+        phase->fail();
 		return;
     }
 	DEFER({std::fclose(file);});
 	json_error_t error;
 	json_t* root = json_loadf(file, 0, &error);
 	if (!root) {
-        user_preset_state = InitState::Broken;
+        phase->fail();
 		DebugLog("Invalid JSON at %d:%d %s in %s", error.line, error.column, error.text, path.c_str());
         return;
     }
@@ -253,20 +204,20 @@ void Hc1Module::loadUserPresets()
             user_presets.push_back(preset);
         }
     }
-    user_preset_state = InitState::Complete;
+    phase->finish();
 }
 
 void Hc1Module::loadSystemPresets()
 {
     auto path = systemPresetsPath();
     if (path.empty()) return;
-    
-    system_preset_state = InitState::Pending;
+    auto phase = get_phase(InitPhase::SystemPresets);
+    phase->pend();
     system_presets.clear();
 
     FILE* file = std::fopen(path.c_str(), "r");
 	if (!file) {
-        system_preset_state = InitState::Broken;
+        phase->fail();
 		return;
     }
 	DEFER({std::fclose(file);});
@@ -274,7 +225,7 @@ void Hc1Module::loadSystemPresets()
 	json_error_t error;
 	json_t* root = json_loadf(file, 0, &error);
 	if (!root) {
-        system_preset_state = InitState::Broken;
+        phase->fail();
 		DebugLog("Invalid JSON at %d:%d %s in %s", error.line, error.column, error.text, path.c_str());
         return;
     }
@@ -290,7 +241,7 @@ void Hc1Module::loadSystemPresets()
         }
     }
     std::sort(system_presets.begin(), system_presets.end(), getPresetSort(preset_order));
-    system_preset_state = InitState::Complete;
+    phase->finish();
 }
 
 void Hc1Module::favoritesFromPresets()
@@ -300,7 +251,7 @@ void Hc1Module::favoritesFromPresets()
     std::copy_if(user_presets.cbegin(), user_presets.cend(), back_insert, [](const std::shared_ptr<Preset> & p){ return p->favorite; });
     std::copy_if(system_presets.cbegin(), system_presets.cend(), back_insert, [](const std::shared_ptr<Preset> & p){ return p->favorite; });
     sortFavorites();
-    apply_favorite_state = InitState::Complete;
+    finish_phase(InitPhase::Favorites);
 }
 
 void Hc1Module::userPresetsToJson(json_t* root)
@@ -316,7 +267,7 @@ void Hc1Module::userPresetsToJson(json_t* root)
 
 void Hc1Module::systemPresetsToJson(json_t* root)
 {
-    json_object_set_new(root, "hardware", json_string(ShortHardwareName(hardware)));
+    json_object_set_new(root, "hardware", json_string(ShortHardwareName(em.hardware)));
 
     auto jars = json_array();
     for (auto preset: system_presets) {

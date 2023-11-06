@@ -1,7 +1,7 @@
 #include "em_pedal.hpp"
 #include "../misc.hpp"
 
-namespace em_midi {
+namespace eagan_matrix {
 
 std::string ShortPedalAssignment(uint8_t pedalcc)
 {

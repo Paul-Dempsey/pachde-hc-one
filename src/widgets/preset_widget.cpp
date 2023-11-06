@@ -50,6 +50,7 @@ void PresetWidget::draw(const DrawArgs& args)
 
 void PresetWidget::appendContextMenu(ui::Menu* menu)
 {
+    if (!preset) return;
     menu->addChild(createMenuLabel(preset->name));
     menu->addChild(new MenuSeparator);
     if (preset->favorite) {

@@ -3,7 +3,7 @@
 #define TUNING_UI_HPP_INCLUDED
 #include <rack.hpp>
 #include "HC-2.hpp"
-#include "../em_types.hpp"
+#include "../em.hpp"
 using namespace ::rack;
 namespace pachde {
 //using namespace em_midi;

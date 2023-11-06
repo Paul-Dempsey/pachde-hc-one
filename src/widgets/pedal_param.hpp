@@ -3,7 +3,7 @@
 #define PEDAL_PARAM_HPP_INCLUDED
 #include <rack.hpp>
 #include "components.hpp"
-#include "../em_types.hpp"
+#include "../em.hpp"
 
 namespace pachde {
 using namespace em_midi;

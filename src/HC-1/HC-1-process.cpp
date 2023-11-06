@@ -1,8 +1,24 @@
 #include "HC-1.hpp"
 #include "../module_broker.hpp"
 #include "../widgets/cc_param.hpp"
+#include "midi_input_worker.hpp"
 
 namespace pachde {
+
+void Hc1Module::clearPreset()
+{
+    current_preset = nullptr;
+    preset0.clear();
+    clearCCValues();
+    em.clear();
+}
+
+void Hc1Module::beginPreset()
+{
+    in_preset = true;
+    clearPreset();
+    dsp[2] = dsp[1] = dsp[0] = 0;
+}
 
 void Hc1Module::processCV(int paramId)
 {
@@ -31,11 +47,11 @@ void Hc1Module::processCV(int paramId)
 
 void Hc1Module::syncStatusLights()
 {
-    bool round = rounding.rate > 0;
-    getLight(Lights::ROUND_Y_LIGHT).setBrightness(1.0f * (round && (rounding.kind >= RoundKind::Y)));
-    getLight(Lights::ROUND_INITIAL_LIGHT).setBrightness(1.0f * (rounding.initial));
+    bool round = em.rounding.rate > 0;
+    getLight(Lights::ROUND_Y_LIGHT).setBrightness(1.0f * (round && (em.rounding.kind >= RoundKind::Y)));
+    getLight(Lights::ROUND_INITIAL_LIGHT).setBrightness(1.0f * (em.rounding.initial));
     getLight(Lights::ROUND_LIGHT).setBrightness(1.0f * round);
-    getLight(Lights::ROUND_RELEASE_LIGHT).setBrightness(1.0f * (round && (rounding.kind <= RoundKind::Release)));
+    getLight(Lights::ROUND_RELEASE_LIGHT).setBrightness(1.0f * (round && (em.rounding.kind <= RoundKind::Release)));
 
     // getLight(Lights::TRANSPOSE_UP_LIGHT).setBrightness(1.0 * (middle_c > 60));
     // getLight(Lights::TRANSPOSE_NONE_LIGHT).setBrightness(1.0 * (middle_c == 60));
@@ -57,16 +73,27 @@ void Hc1Module::processAllCV()
     {
         auto pq = getParamQuantity(RECIRC_EXTEND_PARAM);
         bool extended = pq->getValue() > 0.5f;
-        if (extended != isExtendRecirculator()) {
-            if (extended) {
-                recirculator |= EM_Recirculator::Extend;
-            } else {
-                recirculator &= ~EM_Recirculator::Extend;
-            }
-            sendControlChange(EM_SettingsChannel, EMCC_RecirculatorType, recirculator);
+        if (extended != em.recirculator.extended()) {
+            em.recirculator.setExtended(extended);
+            sendControlChange(EM_SettingsChannel, EMCC_RecirculatorType, em.recirculator);
         }
         getLight(Lights::RECIRC_EXTEND_LIGHT).setBrightness(isExtendRecirculator() * 1.0f);
     }
+}
+
+void Hc1Module::processReadyTrigger(bool ready, const ProcessArgs& args)
+{
+
+    bool high = ready_trigger.process(args.sampleTime);
+    if ((ready || first_beat)
+        && getOutput(READY_TRIGGER).isConnected()
+        && !high
+        && !ready_sent
+        ) {
+        ready_trigger.trigger();
+        ready_sent = true;
+    }
+    getOutput(READY_TRIGGER).setVoltage(high * 10.f);
 }
 
 void Hc1Module::syncParam(int paramId)
@@ -102,66 +129,12 @@ void Hc1Module::syncParams(float sampleTime)
     }
 }
 
-void Hc1Module::dispatchMidi()
-{
-#ifdef VERBOSE_LOG
-    if (midi_dispatch.size() > 50) {
-        DEBUG("Large queue: %lld", midi_dispatch.size());
-    }
-#endif
-    while (!midi_dispatch.empty()) {
-        midi::Message msg;
-        auto um = midi_dispatch.shift();
-        um.toMidiMessage(msg);
-
-        ++midi_send_count;
-        midi_output.sendMessage(msg);
-    }
-}
-
-#if defined CHECK_DEVICE_CHANGE
-bool Hc1Module::checkDeviceChange()
-{
-    if (InitState::Complete != device_output_state
-        || InitState::Complete != device_input_state) {
-        return false;
-    }
-    // handle device changes
-    if (connection) {
-        auto driver = Input::getDriver(); 
-        auto driver2 = ::midi::getDriver(connection->driver_id); // TODO: remove dependence on persistent ids (they change)
-
-        if (!driver || !driver2) {
-            DEBUG("!LOST MIDI DRIVER %s", connection->info.driver_name.c_str());
-            reboot();
-            return true;
-        }
-        auto name = FilterDeviceName(Input::getDeviceName(Input::getDeviceId())); 
-        //auto name2 = FilterDeviceName(driver->getInputDeviceName(connection->input_device_id));
-        if (name.empty() || (0 != name.compare(connection->info.input()))) {
-            DEBUG("!LOST MIDI INPUT %s", connection->info.input().c_str());
-            reboot();
-            return true;
-        }
-        name = FilterDeviceName(midi_output.getDeviceName(midi_output.getDeviceId())); // FilterDeviceName(driver->getOutputDeviceName(connection->output_device_id));
-        if (name.empty() || (0 != name.compare(connection->info.output()))) {
-            DEBUG("!LOST MIDI OUTPUT %s", connection->info.output().c_str());
-            reboot();
-            return true;
-        }
-    }
-    return false;
-}
-#endif
-
 void Hc1Module::initOutputDevice()
 {
-    assert(InitState::Uninitialized == device_output_state);
-
     auto device_broker = MidiDeviceBroker::get();
     using CR = MidiDeviceBroker::ClaimResult;
     connection = nullptr;
-
+    bool completed = false;
      // look for persisted name, if any
      if (!device_claim.empty()) {
         auto r = device_broker->claim_device(Module::getId(), device_claim);
@@ -170,13 +143,16 @@ void Hc1Module::initOutputDevice()
                 connection = device_broker->get_connection(device_claim);
                 assert(connection);
                 midi_output.setDeviceId(connection->output_device_id);
-                assert((connection->output_device_id == midi_output.getDeviceId())); // subscribing failed: should handle it?
+                if (connection->output_device_id != midi_output.getDeviceId()) {
+                    // subscribing failed
+                    reboot();
+                    return;
+                }
                 midi_output.setChannel(-1);
-                device_output_state = InitState::Complete;
+                finish_phase(InitPhase::DeviceOutput);
+                completed = true;
                 break;
             case CR::AlreadyClaimed: 
-                dupe = true;
-                break;
             case CR::ArgumentError:
             case CR::NoMidiDevices:
             case CR::NotAvailable: // device isn't plugged in
@@ -188,22 +164,152 @@ void Hc1Module::initOutputDevice()
             connection = device_broker->get_connection(claim);
             device_claim = claim;
             midi_output.setDeviceId(connection->output_device_id);
-            assert((connection->output_device_id == midi_output.getDeviceId())); // subscribing failed: should handle it?
+            if (connection->output_device_id != midi_output.getDeviceId()) {
+                // subscribing failed
+                reboot();
+                return;
+            }
             midi_output.setChannel(-1);
-            device_output_state = InitState::Complete;
+            finish_phase(InitPhase::DeviceOutput);
+            completed = true;
         }
     }
 
-    if (InitState::Complete == device_output_state) {
+    if (completed) {
         assert(connection);
         is_eagan_matrix = is_EMDevice(connection->info.input_device_name);
         notifyDeviceChanged();
     }
 }
 
+void Hc1Module::advanceInitPhase()
+{
+    auto phase = std::find_if(init_phase.begin(), init_phase.end(), 
+        [](const InitPhaseInfo& info) {
+            return info.state != InitState::Complete; 
+        });
+
+    if (init_phase.end() == phase) {
+        restore_midi_rate();
+        return;
+    }
+    if (phase->pending()) return;
+    if (phase->broken()) phase->refresh();
+
+    switch (phase->id) {
+    case InitPhase::None:
+    case InitPhase::Done:
+    default:
+        assert(false);
+        return;
+
+    case InitPhase::DeviceOutput:
+        initOutputDevice();
+        if (phase->finished()) {
+            heart_time = phase->post_delay;
+        }
+        break;
+
+    case InitPhase::DeviceInput:
+        if (finished(InitPhase::DeviceOutput)) {
+            assert(connection);
+            midi::Input::setDeviceId(connection->input_device_id);
+            if (connection->input_device_id != midi::Input::getDeviceId()) {
+                // subscribing failed
+                reboot();
+                return;
+            }
+            midi::Input::setChannel(-1);
+            phase->finish();
+            heart_time = phase->post_delay;
+        }
+        break;
+
+    case InitPhase::DeviceHello:
+        first_beat = false;
+        phase->pend();
+        silence(true);
+        dispatchMidi();
+        send_init_midi_rate(phase->midi_rate);
+        sendEditorPresent();
+        break;
+
+    case InitPhase::DeviceConfig:
+        first_beat = false;
+        phase->pend();
+        send_init_midi_rate(phase->midi_rate);
+        transmitDeviceConfig();
+        break;
+
+    case InitPhase::CachedPresets:
+        tryCachedPresets();
+        phase->finish();
+        if (finished(InitPhase::SystemPresets)
+            && finished(InitPhase::UserPresets)) {
+            heart_time = phase->post_delay;
+        }
+        return;
+
+    case InitPhase::UserPresets:
+        first_beat = false;
+        phase->pend();
+        send_init_midi_rate(phase->midi_rate);
+        transmitRequestUserPresets();
+        return;
+
+    case InitPhase::SystemPresets:
+        first_beat = false;
+        phase->pend();
+        send_init_midi_rate(phase->midi_rate);
+        transmitRequestSystemPresets();
+        return;
+
+    case InitPhase::Favorites:
+        if (favoritesFile.empty()) {
+            readFavorites();
+        } else {
+            readFavoritesFile(favoritesFile, true);
+        }
+        phase->finish();
+        heart_time = phase->post_delay;
+        return;
+
+    case InitPhase::SavedPreset:
+        if (!saved_preset) {
+            phase->finish();
+            return;
+        }
+        first_beat = false;
+        phase->pend();
+        send_init_midi_rate(phase->midi_rate);
+        sendSavedPreset();
+        break;
+
+    case InitPhase::PresetConfig:
+        first_beat = false;
+        phase->pend();
+        send_init_midi_rate(phase->midi_rate);
+        transmitRequestConfiguration();
+        break;
+
+    case InitPhase::RequestUpdates:
+        sendControlChange(EM_SettingsChannel, EMCC_Preserve, 1); // bit 1 means request config
+        phase->finish();
+        heart_time = phase->post_delay;
+       break;
+
+    case InitPhase::Heartbeat:
+        restore_midi_rate();
+        phase->pend();
+        sendEditorPresent();
+        heart_time = phase->post_delay;
+        break;
+    }
+}
+
 void Hc1Module::process(const ProcessArgs& args)
 {
-    bool is_ready = ready() && !dupe;
+    bool is_ready = ready();
 
     if (++check_cv > CV_INTERVAL) {
         check_cv = 0;
@@ -214,6 +320,8 @@ void Hc1Module::process(const ProcessArgs& args)
     }
 
     syncParams(args.sampleTime);
+    
+    processReadyTrigger(is_ready, args);
 
     if (is_ready) {
         // MUTE
@@ -258,7 +366,7 @@ void Hc1Module::process(const ProcessArgs& args)
     // }
 
     // primary hc1 drives device sync
-    if (ready()
+    if (is_ready
         && (ModuleBroker::get()->get_primary() == this)
         && (device_sync.process(args.sampleTime) > DEVICE_SYNC_PERIOD)) {
         device_sync.reset();
@@ -266,95 +374,20 @@ void Hc1Module::process(const ProcessArgs& args)
     }
 
     heart_phase += args.sampleTime;
+
     if (heart_phase >= heart_time) {
         heart_phase -= heart_time;
-        heart_time = heartbeat_period;
-        if (!anyPending()
-            && !in_preset
-            && !dupe
-            ) {
-
+        if (is_ready) {
+            heart_time = heartbeat_period;
+        }
+        if (!anyPending() && !in_preset) {
             if (midi_input_worker->pausing) {
                 midi_input_worker->resume();
             }
-
-            if (InitState::Uninitialized == device_output_state) {
-                initOutputDevice();
-                if (InitState::Complete == device_output_state) {
-                    heart_time = post_output_delay;
-                }
-                return;
+            if (first_beat && heart_beating) {
+                fresh_phase(InitPhase::Heartbeat);
             }
-
-            if (InitState::Uninitialized == device_input_state) {
-                if (InitState::Complete == device_output_state) {
-                    midi::Input::setDeviceId(connection->input_device_id);
-                    assert((connection->input_device_id == midi::Input::getDeviceId())); // subscribing failed: should handle it?
-                    midi::Input::setChannel(-1);
-                    device_input_state = InitState::Complete;
-                    heart_time = post_input_delay;
-                }
-                return;
-            }
-
-            if (InitState::Uninitialized == device_hello_state) {
-                transmitDeviceHello();
-                return;
-            }
-
-            if (InitState::Uninitialized == cached_preset_state) {
-                tryCachedPresets();
-                if (system_preset_state != InitState::Complete
-                    || user_preset_state != InitState::Complete) {
-                    heart_time = post_hello_delay;
-                    return;
-                }
-            }
-
-            if (system_preset_state != InitState::Complete) {
-                transmitRequestSystemPresets();
-                return;
-            }
-
-            if (user_preset_state != InitState::Complete) {
-                transmitRequestUserPresets();
-                return;
-            }
-
-            if (InitState::Uninitialized == apply_favorite_state) {
-                if (favoritesFile.empty()) {
-                    readFavorites();
-                } else {
-                    readFavoritesFile(favoritesFile, true);
-                }
-                apply_favorite_state = InitState::Complete;
-                return;
-            }
-
-            if (InitState::Uninitialized == saved_preset_state) {
-                sendSavedPreset();
-                return;
-            }
-
-            if (InitState::Uninitialized == config_state) {
-                transmitRequestConfiguration();
-                return;
-            }
-
-            if (InitState::Uninitialized == request_updates_state) {
-                transmitRequestUpdates();
-                heart_time = 1.f;
-                return;
-            }
-            
-            if (heart_beating || !first_beat) {
-                sendEditorPresent(true);
-                return;
-            }
-
-#if defined CHECK_DEVICE_CHANGE
-            checkDeviceChange();
-#endif
+            advanceInitPhase();
         }
     }// heart_beating
 } // process

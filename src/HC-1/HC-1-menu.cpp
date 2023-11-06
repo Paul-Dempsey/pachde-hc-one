@@ -38,8 +38,8 @@ void Hc1ModuleWidget::addRecirculator(Menu *menu, EM_Recirculator kind)
     menu->addChild(createCheckMenuItem(RecirculatorName(kind), "", 
          [=](){ return my_module->recirculatorType() == kind; },
          [=](){
-            my_module->recirculator =  kind | EM_Recirculator::Extend;
-            my_module->sendControlChange(EM_SettingsChannel, EMCC_RecirculatorType, my_module->recirculator);
+            my_module->em.recirculator = Recirculator(kind | EM_Recirculator::Extend);
+            my_module->sendControlChange(EM_SettingsChannel, EMCC_RecirculatorType, my_module->em.recirculator);
          }
     ));
 }
@@ -210,6 +210,7 @@ void Hc1ModuleWidget::appendContextMenu(Menu *menu)
     menu->addChild(new MenuSeparator);
     menu->addChild(createSubmenuItem("Knob control", "", [=](Menu* menu) {
         menu->addChild(createMenuItem("Center knobs", "", [=](){ my_module->centerKnobs(); }, !ready));
+        menu->addChild(createMenuItem("Center Macro knobs", "", [=](){ my_module->centerMacroKnobs(); }, !ready));
         menu->addChild(createMenuItem("Zero knobs", "", [=](){ my_module->zeroKnobs(); }, !ready));
         menu->addChild(createMenuItem("Absolute CV", "", [=](){ my_module->absoluteCV(); }, !ready));
         menu->addChild(createMenuItem("Relative CV", "", [=](){ my_module->relativeCV(); }, !ready));
@@ -226,12 +227,15 @@ void Hc1ModuleWidget::appendContextMenu(Menu *menu)
 
     menu->addChild(createSubmenuItem("Module", "", [=](Menu* menu) {
         menu->addChild(createMenuItem("Reboot HC-1", "",     [=](){ my_module->reboot(); }));
-        menu->addChild(createCheckMenuItem("Suppress heartbeat handshake", "",
-            [=](){ return !my_module->heart_beating; },
+        menu->addChild(createCheckMenuItem("Send regular heartbeat handshake", "",
+            [=](){ return my_module->heart_beating; },
             [=](){ my_module->heart_beating = !my_module->heart_beating; }));
-        menu->addChild(createMenuItem("One heartbeat handshake (ping)", "",   [=](){ my_module->sendEditorPresent(true); }));
-        menu->addChild(createMenuItem("Request config", "",  [=](){ my_module->transmitRequestConfiguration(); }));
-        menu->addChild(createMenuItem("Remake QSPI Data", "", [=]() { my_module->sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::remakeSRMahl); }));
+        menu->addChild(createMenuItem("Send one heartbeat handshake (ping)", "",   [=](){ 
+            my_module->fresh_phase(InitPhase::Heartbeat);
+            //my_module->sendEditorPresent();
+        }));
+        menu->addChild(createMenuItem("Remake QSPI Data", "", [=]() {
+            my_module->sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::remakeSRMahl); }));
         }));
 
     menu->addChild(createSubmenuItem("Presets", "", [=](Menu* menu) {
@@ -256,9 +260,16 @@ void Hc1ModuleWidget::appendContextMenu(Menu *menu)
                 }
             }));
         menu->addChild(new MenuSeparator);
-        menu->addChild(createMenuItem("Save presets", "", [=](){ my_module->savePresets(); }, !ready));
-        menu->addChild(createMenuItem("Refresh User presets", "", [=](){ my_module->transmitRequestUserPresets(); }));
-        menu->addChild(createMenuItem("Refresh System presets", "", [=](){ my_module->transmitRequestSystemPresets(); }));
+        //menu->addChild(createMenuItem("Save presets", "", [=](){ my_module->savePresets(); }, !ready));
+        menu->addChild(createMenuItem("Refresh current preset", "",  [=](){ 
+            my_module->fresh_phase(InitPhase::PresetConfig);
+        }));
+        menu->addChild(createMenuItem("Refresh User presets", "", [=](){ 
+            my_module->fresh_phase(InitPhase::UserPresets);
+        }));
+        menu->addChild(createMenuItem("Refresh System presets", "", [=](){ 
+            my_module->fresh_phase(InitPhase::SystemPresets);
+        }));
     }));
 
     // now right click on system tab

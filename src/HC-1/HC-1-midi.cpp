@@ -1,4 +1,5 @@
 #include "HC-1.hpp"
+#include "midi_input_worker.hpp"
 #include "../module_broker.hpp"
 #include "../widgets/cc_param.hpp"
 #include "../em_device.hpp"
@@ -23,13 +24,18 @@ void Hc1Module::onRenewClaim()
             if (connection->output_device_id != old_output_device_id) {
                 midi_dispatch.clear();
                 midi_output.reset();
+                Input::reset();
+                fresh_phase(InitPhase::DeviceInput);
                 midi_output.setDeviceId(connection->output_device_id);
-                assert((connection->output_device_id == midi_output.getDeviceId())); // subscribing failed: should handle it?
+                if (connection->output_device_id != midi_output.getDeviceId()) {
+                    // subscribing failed
+                    midi_output.reset();
+                    fresh_phase(InitPhase::DeviceOutput);
+                    return;
+                }
                 midi_output.setChannel(-1);
 
-                device_input_state = InitState::Uninitialized;
-                Input::reset();
-                heart_time = post_output_delay;
+                heart_time = phase_post_delay(InitPhase::DeviceOutput);
                 // these should be picked up by input device init
                 //Input::setDeviceId(connection->input_device_id);
                 //Input::setChannel(-1);
@@ -47,162 +53,11 @@ void Hc1Module::onRenewClaim()
 void Hc1Module::setMidiDevice(const std::string & claim)
 {
     if (0 == device_claim.compare(claim)) return;
+    if (!device_claim.empty()) {
+        MidiDeviceBroker::get()->revoke_claim(Module::getId());
+    }
     device_claim = claim;
     reboot();
-}
-
-void Hc1Module::queueMidiMessage(uMidiMessage msg)
-{
-    if (dupe) {
-        return;
-    }
-    if (midi_dispatch.full()) {
-        reboot();
-    } else {
-        midi_dispatch.push(msg);
-    }
-}
-
-void Hc1Module::sendControlChange(uint8_t channel, uint8_t cc, uint8_t value)
-{
-    queueMidiMessage(uMidiMessage(MidiStatus_CC|channel, cc, value));
-}
-
-void Hc1Module::sendProgramChange(uint8_t channel, uint8_t program)
-{
-    queueMidiMessage(uMidiMessage(MidiStatus_ProgramChange|channel, program));
-}
-
-void Hc1Module::sendResetAllreceivers()
-{
-    queueMidiMessage(uMidiMessage(0xff));
-}
-
-void Hc1Module::set_init_midi_rate() {
-    switch (init_midi_rate) {
-    case 1: sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::midiTxThird); break;
-    case 2: sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::midiTxTweenth); break;
-    default: break;
-    }
-}
-
-void Hc1Module::restore_midi_rate() {
-    if (init_midi_rate) {
-        sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::midiTxFull);
-    }
-}
-
-void Hc1Module::transmitRequestUpdates()
-{
-    request_updates_state = InitState::Complete; // one-shot
-    sendControlChange(EM_SettingsChannel, EMCC_Preserve, 1); // bit 1 means request config
-}
-
-void Hc1Module::transmitDeviceHello()
-{
-    device_hello_state = InitState::Pending;
-#ifdef VERBOSE_LOG
-    log_midi = true;
-#endif
-    beginPreset(); // force preset
-    set_init_midi_rate();
-    sendEditorPresent(false);
-    //sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::gridToFlash); // needed for pedals
-    sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::configToMidi);
-}
-
-void Hc1Module::transmitRequestConfiguration()
-{
-#ifdef VERBOSE_LOG
-    log_midi = true;
-#endif
-    beginPreset(); // force preset
-    config_state = InitState::Pending;
-    set_init_midi_rate();
-    sendEditorPresent(false);
-    sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::gridToFlash);
-    sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::configToMidi);
-}
-
-void Hc1Module::transmitRequestSystemPresets()
-{
-    clearCCValues();
-    system_presets.clear();
-    system_preset_state = InitState::Pending;
-    // consider: save/restore EM MIDI routing to disable surface > midi/cvc to avoid interruption while loading
-    set_init_midi_rate();
-    sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::sysToMidi);
-}
-
-void Hc1Module::transmitRequestUserPresets()
-{
-    clearCCValues();
-    user_presets.clear();
-    user_preset_state = InitState::Pending;
-    // consider: save/restore EM MIDI routing to disable surface > midi/cvc to avoid interruption while loading
-    set_init_midi_rate();
-    sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::userToMidi);
-}
-
-void Hc1Module::setPreset(std::shared_ptr<Preset> preset)
-{
-    beginPreset(); // force preset
-    notifyPresetChanged();
-    notifyPedalsChanged();
-
-    current_preset = preset;
-    if (!preset) return;
-
-    set_init_midi_rate();
-    config_state = InitState::Pending;
-    sendEditorPresent(false);
-    sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::gridToFlash);
-    sendControlChange(EM_SettingsChannel, MidiCC_BankSelect, preset->bank_hi);
-    sendControlChange(EM_SettingsChannel, EMCC_Category, preset->bank_lo);
-    sendProgramChange(EM_SettingsChannel, preset->number);
-}
-
-void Hc1Module::sendSavedPreset()
-{
-    if (!saved_preset) {
-        saved_preset_state = InitState::Complete;
-        return;
-    }
-    set_init_midi_rate();
-    saved_preset_state = InitState::Pending;
-    sendEditorPresent(false);
-    sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::gridToFlash);
-    sendControlChange(EM_SettingsChannel, MidiCC_BankSelect, saved_preset->bank_hi);
-    sendControlChange(EM_SettingsChannel, EMCC_Category, saved_preset->bank_lo);
-    sendProgramChange(EM_SettingsChannel, saved_preset->number);
-}
-
-void Hc1Module::silence(bool reset)
-{
-    for (uint8_t channel = 0; channel < 12; ++channel) {
-        if (reset) {
-            sendControlChange(channel, MidiCC_Reset, 127);
-        }
-        sendControlChange(channel, MidiCC_AllSoundOff, 127);
-        sendControlChange(channel, MidiCC_AllNotesOff, 127);
-    }
-}
-
-void Hc1Module::sendEditorPresent(bool init_handshake)
-{
-    if (init_handshake) { handshake = InitState::Pending; }
-    sendControlChange(EM_SettingsChannel, EMCC_EditorPresent, tick_tock ? 85 : 42);
-    tick_tock = !tick_tock;
-}
-
-void Hc1Module::sendNoteOn(uint8_t channel, uint8_t note, uint8_t velocity)
-{
-    queueMidiMessage(uMidiMessage(MidiStatus_NoteOn|channel, note, velocity));
-}
-
-void Hc1Module::sendNoteOff(uint8_t channel, uint8_t note, uint8_t velocity)
-{
-    queueMidiMessage(uMidiMessage(MidiStatus_NoteOff|channel, note, velocity));
 }
 
 void Hc1Module::setMacroCCValue(int id, uint8_t value)
@@ -224,26 +79,6 @@ void Hc1Module::setRecirculatorCCValue(int id, uint8_t value)
     }
 }
 
-void Hc1Module::clearPreset()
-{
-    current_preset = nullptr;
-    preset0.clear();
-    clearCCValues();
-
-    rounding.clear();
-    pedal1.clear();
-    pedal2.clear();
-    recirculator = 0;
-    middle_c = 60;
-}
-
-void Hc1Module::beginPreset()
-{
-    in_preset = true;
-    clearPreset();
-    dsp[2] = dsp[1] = dsp[0] = 0;
-}
-
 void Hc1Module::onChannel16CC(uint8_t cc, uint8_t value)
 {
     ch15_cc_value[cc] = value;
@@ -260,12 +95,12 @@ void Hc1Module::onChannel16CC(uint8_t cc, uint8_t value)
 
         case EMCC_PedalType: {
             auto new_p1 = static_cast<PedalType>(value & 0x07);
-            bool p1_change = new_p1 != pedal1.type;
-            pedal1.type = new_p1;
+            bool p1_change = new_p1 != em.pedal1.type;
+            em.pedal1.type = new_p1;
 
             auto new_p2 = static_cast<PedalType>((value >> 3) & 0x07);
-            bool p2_change = new_p2 != pedal2.type;
-            pedal2.type = new_p2;
+            bool p2_change = new_p2 != em.pedal2.type;
+            em.pedal2.type = new_p2;
 
             if (!in_preset) {
                 if (p1_change) notifyPedalChanged(0);
@@ -274,26 +109,26 @@ void Hc1Module::onChannel16CC(uint8_t cc, uint8_t value)
         } break;
 
         case EMCC_MiddleC:
-            middle_c = value;
+            em.middle_c = value;
             break;
 
         case EMCC_TuningGrid: {
             auto new_value = static_cast<Tuning>(value);
-            if (rounding.tuning != new_value) {
-                rounding.tuning = new_value;
+            if (em.rounding.tuning != new_value) {
+                em.rounding.tuning = new_value;
                 notifyRoundingChanged();
             }
         } break;
 
         case EMCC_Pedal1CC:
-            pedal1.cc = value;
+            em.pedal1.cc = value;
             if (!in_preset) {
                 notifyPedalChanged(0);
             }
             break;
 
         case EMCC_Pedal2CC:
-            pedal2.cc = value;
+            em.pedal2.cc = value;
             if (!in_preset) {
                 notifyPedalChanged(0);
             }
@@ -350,64 +185,64 @@ void Hc1Module::onChannel16CC(uint8_t cc, uint8_t value)
         } break;
 
         case EMCC_Reverse_Rounding: {
-            reverse_surface = static_cast<bool>(value & 1);
+            em.reverse_surface = static_cast<bool>(value & 1);
 
             auto kind = static_cast<RoundKind>((value & 0x06) >>1);
-            if (kind != rounding.kind) {
-                rounding.kind = kind;
+            if (kind != em.rounding.kind) {
+                em.rounding.kind = kind;
                 notifyRoundingChanged();
             }
         } break;
 
         case EMCC_RecirculatorType:
-            recirculator = value;
+            em.recirculator = value;
             getParamQuantity(RECIRC_EXTEND_PARAM)->setValue(isExtendRecirculator() * 1.f);
             break;
 
         case EMCC_MinPedal1:
-            pedal1.min = value;
+            em.pedal1.min = value;
             if (!in_preset) {
                 notifyPedalChanged(0);
             }
             break;
         case EMCC_MaxPedal1:
-            pedal1.max = value;
+            em.pedal1.max = value;
             if (!in_preset) {
                 notifyPedalChanged(0);
             }
             break;
         case EMCC_MinPedal2:
-            pedal2.min = value;
+            em.pedal2.min = value;
             if (!in_preset) {
                 notifyPedalChanged(1);
             }
             break;
         case EMCC_MaxPedal2:
-            pedal2.max = value;
+            em.pedal2.max = value;
             if (!in_preset) {
                 notifyPedalChanged(1);
             }
             break;
 
         case EMCC_VersionHigh:
-            firmware_version = value;
+            em.firmware_version = value;
             break;
 
         case EMCC_VersionLow:
-            firmware_version = (firmware_version << 7) | value;
+            em.firmware_version = (em.firmware_version << 7) | value;
             break;
 
         case EMCC_CVCHi_Hardware:
-            cvc_version = static_cast<uint16_t>(value & 0x03) << 14;
-            hardware = static_cast<EM_Hardware>((value & 0x7c) >> 2);
+            em.cvc_version = static_cast<uint16_t>(value & 0x03) << 14;
+            em.hardware = static_cast<EM_Hardware>((value & 0x7c) >> 2);
             break;
 
         case EMCC_CVCMid:
-            cvc_version |= static_cast<uint16_t>(value) << 7;
+            em.cvc_version |= static_cast<uint16_t>(value) << 7;
             break;
 
         case EMCC_CVCLo:
-            cvc_version |= static_cast<uint16_t>(value);
+            em.cvc_version |= static_cast<uint16_t>(value);
             break;
 
         case EMCC_Download:
@@ -417,15 +252,16 @@ void Hc1Module::onChannel16CC(uint8_t cc, uint8_t value)
                     in_user_names = true;
                     break;
 
-                case EM_DownloadItem::endUserNames:
+                case EM_DownloadItem::endUserNames: {
                     in_user_names = false;
-                    user_preset_state = broken ? InitState::Broken : InitState::Complete;
+                    auto phase = get_phase(InitPhase::UserPresets);
+                    phase->state = broken ? InitState::Broken : InitState::Complete;
                     if (!broken) {
                         std::sort(user_presets.begin(), user_presets.end(), preset_system_order);
                     }
                     restore_midi_rate();
-                    heart_time = post_user_delay;
-                    break;
+                    heart_time = phase->post_delay;
+                } break;
 
                 case EM_DownloadItem::beginSysNames:
                     in_sys_names = true;
@@ -433,13 +269,14 @@ void Hc1Module::onChannel16CC(uint8_t cc, uint8_t value)
 
                 case EM_DownloadItem::endSysNames:
                     in_sys_names = false;
-                    system_preset_state = broken ? InitState::Broken : InitState::Complete;
+                    auto phase = get_phase(InitPhase::SystemPresets);
+                    phase->state = broken ? InitState::Broken : InitState::Complete;
                     if (!broken) {
                         std::sort(system_presets.begin(), system_presets.end(), getPresetSort(preset_order));
                         readFavorites();
                     }
                     restore_midi_rate();
-                    heart_time = post_system_delay;
+                    heart_time = phase->post_delay;
                     break;
             }
             break;
@@ -460,10 +297,13 @@ void Hc1Module::onChannel16CC(uint8_t cc, uint8_t value)
             dsp[d] = pct;
         } break;
 
-        case EMCC_EditorReply:{
-            if (InitState::Pending == handshake) {
+        case EMCC_EditorReply: {
+            if (pending(InitPhase::DeviceHello)) {
+                finish_phase(InitPhase::DeviceHello);
+            }
+            if (pending(InitPhase::Heartbeat)) {
                 first_beat = true;
-                handshake = InitState::Complete;
+                finish_phase(InitPhase::Heartbeat);
             } else {
                 //DebugLog("Extra Editor Reply");
             }
@@ -484,7 +324,7 @@ void Hc1Module::onChannel16Message(const midi::Message& msg)
             if (in_preset) {
                 in_preset = false;
                 preset0.number = msg.getNote();
-                if (savedPresetPending()) {
+                if (pending(InitPhase::SavedPreset)) {
 #ifdef VERBOSE_LOG
                     if (0 != saved_preset->name.compare(preset0.name())) {
                         DEBUG("Unexpected: saved %s != set: %s", saved_preset->name.c_str(), preset0.name());
@@ -492,26 +332,25 @@ void Hc1Module::onChannel16Message(const midi::Message& msg)
 #endif
                     restore_midi_rate();
                     current_preset = findDefinedPreset(saved_preset);
-                    saved_preset_state = config_state = InitState::Complete;
+                    finish_phase(InitPhase::SavedPreset);
+                    finish_phase(InitPhase::PresetConfig);
                     notifyPresetChanged();
                     notifyPedalsChanged();
                 } else
-                if (deviceHelloPending()) {
-#ifdef VERBOSE_LOG
-                    log_midi = false;
-#endif
+                if (pending(InitPhase::DeviceConfig)) {
                     restore_midi_rate();
-                    device_hello_state = InitState::Complete;
+                    finish_phase(InitPhase::DeviceConfig);
                     notifyDeviceChanged();
                     notifyPresetChanged();
                     notifyPedalsChanged();
                 } else
-                if (configPending()) {
-#ifdef VERBOSE_LOG
-                    log_midi = false;
-#endif
+                if (pending(InitPhase::PresetConfig)) {
                     restore_midi_rate();
-                    config_state = broken ? InitState::Broken : InitState::Complete;
+                    if (broken) {
+                        break_phase(InitPhase::PresetConfig);
+                    } else {
+                        finish_phase(InitPhase::PresetConfig);
+                    }
                     if (!broken) {
                         if (!preset0.name_empty()) {
                             if (nullptr == current_preset || current_preset->is_same_preset(preset0)) {
@@ -526,6 +365,7 @@ void Hc1Module::onChannel16Message(const midi::Message& msg)
                     if (broken) {
                         restore_midi_rate();
                     }
+                    ++slot_count;
                     if (!broken && !preset0.name_empty()) {
                         std::string name = preset0.name();
                         if ((126 != preset0.bank_hi)
@@ -593,8 +433,8 @@ void Hc1Module::onSoundOff()
     if (!in_preset) {
         current_preset = nullptr;
         beginPreset();
-        if (saved_preset_state != InitState::Pending) {
-            config_state = InitState::Pending;
+        if (!pending(InitPhase::SavedPreset)) {
+            pend_phase(InitPhase::PresetConfig);
         }
     }
 }
@@ -604,13 +444,13 @@ void Hc1Module::onChannelOneCC(uint8_t cc, uint8_t value)
     ch0_cc_value[cc] = value;
 
     // Continuum doesn't send high resolution for pedals
-    if (cc == pedal1.cc) {
-        pedal1.value = value;
+    if (cc == em.pedal1.cc) {
+        em.pedal1.value = value;
         if (!in_preset) {
             notifyPedalChanged(0);
         }
-    } else if (cc == pedal2.cc) {
-        pedal2.value = value;
+    } else if (cc == em.pedal2.cc) {
+        em.pedal2.value = value;
         if (!in_preset) {
             notifyPedalChanged(1);
         }
@@ -647,29 +487,29 @@ void Hc1Module::onChannelOneCC(uint8_t cc, uint8_t value)
         case EMCC_PostLevel: setMacroCCValue(VOLUME_PARAM, value); break;
 
         case EMCC_RoundRate:{
-            if (rounding.rate != value) {
-                rounding.rate = value;
+            if (em.rounding.rate != value) {
+                em.rounding.rate = value;
                 notifyRoundingChanged();
             }
         } break;
 
         case EMCC_RoundInitial: {
             bool new_initial = value; // seems to be 0 or 127
-            if (rounding.initial != new_initial) {
-                rounding.initial = new_initial;
+            if (em.rounding.initial != new_initial) {
+                em.rounding.initial = new_initial;
                 notifyRoundingChanged();
             }
         } break;
 
         case EMCC_RoundEqual: {
-            RoundEqual rq = rounding.equal;
+            RoundEqual rq = em.rounding.equal;
             switch (value) {
             case   0: rq = RoundEqual::Disabled; break;
             case  64: rq = RoundEqual::Enabled; break;
             case 127: rq = RoundEqual::Equal; break;
             }
-            if (rq != rounding.equal) {
-                rounding.equal = rq;
+            if (rq != em.rounding.equal) {
+                em.rounding.equal = rq;
                 notifyRoundingChanged();
             }
         } break;
@@ -752,76 +592,5 @@ void Hc1Module::onMessage(const midi::Message& msg)
 {
     midi_input_worker->post_message(uMidiMessage(msg));
 }
-
-// ======================================================
-void MidiInputWorker::start()
-{
-    my_thread = std::thread(&MidiInputWorker::run, this);
-}
-
-void MidiInputWorker::post_quit()
-{
-    std::unique_lock<std::mutex> lock(m);
-    stop = true;
-    cv.notify_one();
-}
-
-void MidiInputWorker::pause()
-{
-    std::unique_lock<std::mutex> lock(m);
-    midi_consume.clear();
-    pausing = true;
-    cv.notify_one();
-}
-
-void MidiInputWorker::resume()
-{
-    std::unique_lock<std::mutex> lock(m);
-    pausing = false;
-    cv.notify_one();
-}
-
-void MidiInputWorker::post_message(uMidiMessage msg)
-{
-    if (stop || pausing) return;
-    std::unique_lock<std::mutex> lock(m);
-    midi_consume.push(msg);
-    cv.notify_one();
-}
-
-void MidiInputWorker::run() {
-    contextSet(context);
-	system::setThreadName("Midi Input worker");
-    while (1)
-    {
-        {
-            std::unique_lock<std::mutex> lock(m);
-            cv.wait(lock, [this]{ return stop || !midi_consume.empty(); });
-            if (stop) {
-                return;
-            }
-            if (pausing) {
-                continue;
-            }
-        }
-        while (!midi_consume.empty()) {
-            auto msg = midi_consume.shift();
-            if (msg.channel() == 0 || msg.channel() == 15) {
-                hc1->onMidiMessage(msg);
-            } else {
-                switch (msg.status()){
-                    case MidiStatus_NoteOn:
-                    case MidiStatus_NoteOff:
-                    case MidiStatus_ChannelPressure:
-                    case MidiStatus_PitchBend:
-                        hc1->onMidiMessage(msg);
-                        break;
-                }
-            }
-        }
-    }
-}
-
-
 
 }
