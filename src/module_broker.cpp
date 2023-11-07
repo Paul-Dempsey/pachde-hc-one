@@ -6,6 +6,7 @@ ModuleBroker* hcOne = nullptr;
 struct ModuleBroker::Internal
 {
     std::vector<Hc1Module*> hc1s;
+    std::mutex mut;
 };
 
 ModuleBroker* ModuleBroker::get()
@@ -31,9 +32,7 @@ int ModuleBroker::Hc1count() {
 }
 
 Hc1Module*  ModuleBroker::getSoleHc1() {
-    if (my->hc1s.empty()) return nullptr;
-    if (1 == my->hc1s.size()) return *my->hc1s.cbegin();
-    return nullptr;
+    return (my->hc1s.empty() || my->hc1s.size() > 1) ? nullptr : *my->hc1s.cbegin();
 }
 
 Hc1Module* ModuleBroker::getHc1(std::function<bool (Hc1Module*)> pred)
@@ -63,6 +62,7 @@ Hc1Module *ModuleBroker::get_primary()
 
 void ModuleBroker::registerHc1(Hc1Module* module)
 {
+    std::unique_lock<std::mutex> lock(my->mut);
     if (my->hc1s.cend() == std::find(my->hc1s.cbegin(), my->hc1s.cend(), module)) {
         my->hc1s.push_back(module);
     }
@@ -70,6 +70,7 @@ void ModuleBroker::registerHc1(Hc1Module* module)
 
 void ModuleBroker::unregisterHc1(Hc1Module* module)
 {
+    std::unique_lock<std::mutex> lock(my->mut);
     auto item = std::find(my->hc1s.cbegin(), my->hc1s.cend(), module);
     if (item != my->hc1s.cend())
     {
