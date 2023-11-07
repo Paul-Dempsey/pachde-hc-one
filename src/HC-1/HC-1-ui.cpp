@@ -221,7 +221,7 @@ void Hc1ModuleWidget::createMidiSelection()
 
 void Hc1ModuleWidget::createDeviceDisplay()
 {
-    auto co = GetStockColor(StockColor::pachde_blue_medium);
+    auto co = GetStockColor(StockColor::pachde_blue_light);
     auto y = box.size.y - 12.f;
     auto center = box.size.x*.5f;
 

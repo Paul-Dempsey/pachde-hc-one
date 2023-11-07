@@ -76,14 +76,23 @@ Hc1Module::Hc1Module()
 
 Hc1Module::~Hc1Module()
 {
-    Input::reset();
+    Uninit();
+}
+
+void Hc1Module::Uninit()
+{
     midi_dispatch.clear();
+    silence(true);
+    dispatchMidi();
+    Input::reset();
     midi_output.reset();
     if (midi_input_worker) {
         midi_input_worker->post_quit();
         if (midi_input_worker->my_thread.joinable()) {
             midi_input_worker->my_thread.join();
         }
+        delete midi_input_worker;
+        midi_input_worker = nullptr;
     }
     notifyDisconnect();
     MidiDeviceBroker::get()->revoke_claim(Module::getId());
@@ -251,11 +260,8 @@ void Hc1Module::onSave(const SaveEvent& e)
 void Hc1Module::onRemove(const RemoveEvent& e)
 {
     midi_dispatch.clear();
-    silence(true);
-    dispatchMidi();
-    notifyDisconnect();
-    ModuleBroker::get()->unregisterHc1(this);
     savePresets();
+    Uninit();
     Module::onRemove(e);
 }
 

@@ -17,7 +17,7 @@ struct PartnerPicker : TipWidget, IHandleHcEvents
         box.size.x = 100.f;
         box.size.y = 12.f;
         addChild(device_label = createStaticTextLabel<StaticTextLabel>(
-            Vec(0.f, 0.f), 100.f, "", TextAlignment::Left, 10.f, false, GetStockColor(StockColor::pachde_blue_medium)));
+            Vec(0.f, 0.f), 100.f, "", TextAlignment::Left, 10.f, false, GetStockColor(StockColor::pachde_blue_light)));
     }
     void setPartnerBinding(PartnerBinding* binder) { binding = binder; }
 

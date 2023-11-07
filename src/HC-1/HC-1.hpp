@@ -284,7 +284,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, IMidiDeviceChange, midi
 
     Hc1Module();
     virtual ~Hc1Module();
-
+    void Uninit();
     // IHandleHcEvents subscription and notification
     void subscribeHcEvents(IHandleHcEvents* client);
     void unsubscribeHcEvents(IHandleHcEvents* client);
