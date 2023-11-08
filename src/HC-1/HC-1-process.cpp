@@ -182,128 +182,197 @@ void Hc1Module::initOutputDevice()
     }
 }
 
-void Hc1Module::advanceInitPhase()
+void Hc1Module::process_init_phase(const ProcessArgs& args)
 {
-    auto phase = std::find_if(init_phase.begin(), init_phase.end(), 
-        [](const InitPhaseInfo& info) {
-            return info.state != InitState::Complete; 
-        });
-
-    if (init_phase.end() == phase) {
-        restore_midi_rate();
+    InitPhaseInfo * phase = nullptr;
+    if (InitPhase::Done == current_phase) {
+        auto pit = std::find_if(init_phase.begin(), init_phase.end(), 
+            [](const InitPhaseInfo& info) {
+                return info.state != InitState::Complete; 
+            });
+        if (init_phase.end() != pit) {
+            phase_attempt = 0;
+            current_phase = pit->id;
+            phase = &*pit;
+        } else {
+            return;
+        }
+    }
+    if (!phase) {
+        phase = get_phase(current_phase);
+    }
+    if (!phase) {
+        current_phase = InitPhase::DeviceOutput;
+        phase_attempt = 0;
         return;
     }
-    if (phase->pending()) return;
-    if (phase->broken()) phase->refresh();
 
-    switch (phase->id) {
-    case InitPhase::None:
-    case InitPhase::Done:
-    default:
-        assert(false);
+    switch (phase->state) {
+    case InitState::Uninitialized:
+        phase_time = 0.f;
+        break;
+
+    case InitState::Pending:
+        phase_time += args.sampleTime;
+        if ((phase->budget > 0.f) && (phase_time > phase->budget)) {
+            ++phase_attempt;
+            if (phase_attempt > 3) {
+                reboot();
+            } else {
+                switch (phase->midi_rate) {
+                case EMMidiRate::Full: send_init_midi_rate(EMMidiRate::Third); break;
+                case EMMidiRate::Third: send_init_midi_rate(EMMidiRate::Twentieth); break;
+                case EMMidiRate::Twentieth: break;
+                }
+                phase->refresh();
+            }
+        }
         return;
 
-    case InitPhase::DeviceOutput:
-        initOutputDevice();
-        if (phase->finished()) {
-            heart_time = phase->post_delay;
+    case InitState::Broken:
+        switch (phase->midi_rate) {
+        case EMMidiRate::Full: send_init_midi_rate(EMMidiRate::Third); break;
+        case EMMidiRate::Third: send_init_midi_rate(EMMidiRate::Twentieth); break;
+        case EMMidiRate::Twentieth: break;
         }
-        break;
+        phase_attempt = 0;
+        phase->refresh();
+        return;
 
-    case InitPhase::DeviceInput:
-        if (finished(InitPhase::DeviceOutput)) {
-            assert(connection);
-            midi::Input::setDeviceId(connection->input_device_id);
-            if (connection->input_device_id != midi::Input::getDeviceId()) {
-                // subscribing failed
-                reboot();
-                return;
+    case InitState::Complete:
+        restore_midi_rate();
+        if (phase_pause) {
+            phase_time += args.sampleTime;
+            if (phase_time > phase->post_delay) {
+                phase_pause = false;
+                current_phase = NextPhase(current_phase);
+                phase_attempt = 0;
             }
-            midi::Input::setChannel(-1);
-            phase->finish();
-            heart_time = phase->post_delay;
+        } else {
+            if (phase->post_delay > 0.f) {
+                phase_pause = true;
+                phase_time = 0.f;
+            } else {
+                current_phase = NextPhase(current_phase);
+                phase_attempt = 0;
+            }
         }
-        break;
+        return;
+    }
 
-    case InitPhase::DeviceHello:
+    switch (current_phase) {
+    case InitPhase::None: break;
+
+    case InitPhase::DeviceOutput: {
+        initOutputDevice();
+    } break;
+
+    case InitPhase::DeviceInput: {
+        assert(finished(InitPhase::DeviceOutput));
+        assert(connection);
+        midi::Input::setDeviceId(connection->input_device_id);
+        if (connection->input_device_id != midi::Input::getDeviceId()) {
+            // subscribing failed
+            reboot();
+            return;
+        }
+        midi::Input::setChannel(-1);
+        phase->finish();
+    } break;
+
+    case InitPhase::DeviceHello: {
         first_beat = false;
         phase->pend();
         silence(true);
         dispatchMidi();
-        send_init_midi_rate(phase->midi_rate);
+        if (0 == phase_attempt) {
+            send_init_midi_rate(phase->midi_rate);
+        } 
         sendEditorPresent();
-        break;
-
-    case InitPhase::DeviceConfig:
+    } break;
+ 
+    case InitPhase::DeviceConfig: {
         first_beat = false;
         phase->pend();
-        send_init_midi_rate(phase->midi_rate);
-        transmitDeviceConfig();
-        break;
-
-    case InitPhase::CachedPresets:
+        if (0 == phase_attempt) {
+            send_init_midi_rate(phase->midi_rate);
+        } 
+        transmitDeviceConfig();        
+    } break;
+ 
+    case InitPhase::CachedPresets: {
         tryCachedPresets();
         phase->finish();
         if (finished(InitPhase::SystemPresets)
             && finished(InitPhase::UserPresets)) {
-            heart_time = phase->post_delay;
-        }
-        return;
-
-    case InitPhase::UserPresets:
+            current_phase = InitPhase::Favorites;
+         }
+    } break;
+ 
+    case InitPhase::UserPresets: {
         first_beat = false;
         phase->pend();
-        send_init_midi_rate(phase->midi_rate);
+        if (0 == phase_attempt) {
+            send_init_midi_rate(phase->midi_rate);
+        } 
         transmitRequestUserPresets();
-        return;
-
-    case InitPhase::SystemPresets:
+    } break;
+ 
+    case InitPhase::SystemPresets: {
         first_beat = false;
         phase->pend();
-        send_init_midi_rate(phase->midi_rate);
+        if (0 == phase_attempt) {
+            send_init_midi_rate(phase->midi_rate);
+        } 
         transmitRequestSystemPresets();
-        return;
-
-    case InitPhase::Favorites:
+    } break;
+ 
+    case InitPhase::Favorites: {
         if (favoritesFile.empty()) {
             readFavorites();
         } else {
             readFavoritesFile(favoritesFile, true);
         }
         phase->finish();
-        heart_time = phase->post_delay;
-        return;
-
-    case InitPhase::SavedPreset:
+    } break;
+ 
+    case InitPhase::SavedPreset: {
         if (!saved_preset) {
             phase->finish();
             return;
         }
         first_beat = false;
         phase->pend();
-        send_init_midi_rate(phase->midi_rate);
+        if (0 == phase_attempt) {
+            send_init_midi_rate(phase->midi_rate);
+        } 
         sendSavedPreset();
-        break;
-
-    case InitPhase::PresetConfig:
+    } break;
+ 
+    case InitPhase::PresetConfig: {
         first_beat = false;
         phase->pend();
-        send_init_midi_rate(phase->midi_rate);
+        if (0 == phase_attempt) {
+            send_init_midi_rate(phase->midi_rate);
+        } 
         transmitRequestConfiguration();
-        break;
-
-    case InitPhase::RequestUpdates:
+    } break;
+ 
+    case InitPhase::RequestUpdates: {
         sendControlChange(EM_SettingsChannel, EMCC_Preserve, 1); // bit 1 means request config
         phase->finish();
-        heart_time = phase->post_delay;
-       break;
+    } break;
 
-    case InitPhase::Heartbeat:
-        restore_midi_rate();
+    case InitPhase::Heartbeat: {
         phase->pend();
         sendEditorPresent();
-        heart_time = phase->post_delay;
-        break;
+    } break;
+
+    case InitPhase::Done: {
+        phase->finish();
+    } break;
+
+    default: break;
     }
 }
 
@@ -358,13 +427,6 @@ void Hc1Module::process(const ProcessArgs& args)
         return;
     }
 
-    // if (init_step_time > 0.f) {
-    //     init_step_phase += args.sampleTime;
-    //     if (init_step_phase >= init_step_time) {
-    //         // restart step
-    //     }
-    // }
-
     // primary hc1 drives device sync
     if (is_ready
         && (ModuleBroker::get()->get_primary() == this)
@@ -373,8 +435,9 @@ void Hc1Module::process(const ProcessArgs& args)
         MidiDeviceBroker::get()->sync();
     }
 
-    heart_phase += args.sampleTime;
+    process_init_phase(args);
 
+    heart_phase += args.sampleTime;
     if (heart_phase >= heart_time) {
         heart_phase -= heart_time;
         if (is_ready) {
@@ -387,7 +450,6 @@ void Hc1Module::process(const ProcessArgs& args)
             if (first_beat && heart_beating) {
                 fresh_phase(InitPhase::Heartbeat);
             }
-            advanceInitPhase();
         }
     }// heart_beating
 } // process

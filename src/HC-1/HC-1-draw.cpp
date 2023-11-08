@@ -119,54 +119,40 @@ std::string Hc1ModuleWidget::getBannerText(NVGcontext * vg, std::shared_ptr<rack
 
     if (my_module->broken) {
         SetTextStyle(vg, bold, GetStockColor(StockColor::Fuchsia), 16.f);
-        return "[MIDI error - please wait]";
+        return "[Error - please wait]";
     }
 
-    if (my_module->fresh(InitPhase::DeviceOutput)) {
-        if (!my_module->device_claim.empty()) {
-            MidiDeviceConnectionInfo info;
-            if (info.parse(my_module->device_claim)) {
-                std::string text = "looking for ";
-                text.append(info.input_device_name);
-                text.append(" ...");
-                return text;
+    if (my_module->phase_pause) {
+        auto next = NextPhase(my_module->current_phase);
+        return format_string("Pause before %s ...", PhaseName(next));
+    }
+
+    switch (my_module->current_phase) {
+    case InitPhase::None: return "initializing ...";
+    case InitPhase::DeviceOutput:
+            if (!my_module->device_claim.empty()) {
+                MidiDeviceConnectionInfo info;
+                if (info.parse(my_module->device_claim)) {
+                    std::string text = "looking for ";
+                    text.append(info.input_device_name);
+                    text.append(" ...");
+                    return text;
+                }
             }
-        }
-        return "looking for an Eagan Matrix device ...";
+            return "looking for an Eagan Matrix device ...";
+    case InitPhase::DeviceInput: return format_string("looking for %s input ...", my_module->connection->info.input_device_name.c_str());
+    case InitPhase::DeviceHello: return "Waiting for EM handshake response ...";
+    case InitPhase::DeviceConfig: return "Processing EM device configuration ...";
+    case InitPhase::CachedPresets: return "Loading cached presets";
+    case InitPhase::UserPresets: return format_string("Gathering User preset %d of %d slots...", my_module->user_presets.size(), my_module->slot_count);
+    case InitPhase::SystemPresets: return format_string("Gathering System preset %d of %d slots ...", my_module->system_presets.size(), my_module->slot_count);
+    case InitPhase::Favorites: return "Processing favorites ...";
+    case InitPhase::SavedPreset: return "Restoring saved preset";
+    case InitPhase::PresetConfig: return "Processing preset details ...";
+    case InitPhase::RequestUpdates: return "Requesting device updates";
+    case InitPhase::Heartbeat: return "Waiting for EM heartbeat response ...";
+    case InitPhase::Done: return "Ready";
     }
-    if (my_module->fresh(InitPhase::DeviceInput)) {
-        return format_string("looking for %s input ...", my_module->connection->info.input_device_name.c_str());
-    }
-    if (my_module->fresh(InitPhase::DeviceHello)) {
-        return "pause before initial EM handshake ...";
-    }
-    if (my_module->pending(InitPhase::DeviceHello)) {
-        return "waiting for EM handshake response ...";
-    }
-    auto phase = my_module->get_phase(InitPhase::DeviceConfig);
-    if (phase->fresh()) { return "pausing before EM device configuration ..."; }
-    if (phase->pending()) { return "processing EM device configuration ..."; }
-
-    phase = my_module->get_phase(InitPhase::UserPresets);
-    if (phase->fresh()) { return "pause before requesting User presets ..."; }
-    if (phase->pending()) {
-        return format_string("gathering User preset %d of %d slots...", my_module->user_presets.size(), my_module->slot_count);
-    }
-
-    phase = my_module->get_phase(InitPhase::SystemPresets);
-    if (phase->fresh()) { return "pause before requesting System presets ..."; }
-    if (phase->pending()) {
-        return format_string("gathering System preset %d of %d slots ...", my_module->system_presets.size(), my_module->slot_count);
-    }
-
-    phase = my_module->get_phase(InitPhase::Favorites);
-    if (phase->fresh()) return "preparing favorites ...";
-    if (phase->pending()) return "processing favorites ...";
-
-    phase = my_module->get_phase(InitPhase::PresetConfig);
-    if (phase->fresh()) return "pausing before preset request ...";
-    if (phase->pending()) return "processing preset details ...";
-
     return "...";
 }
 

@@ -24,14 +24,29 @@ enum class InitPhase : uint8_t {
     Done
 };
 
+inline uint8_t PhaseIndex(InitPhase phase) { return static_cast<uint8_t>(phase); }
+inline InitPhase NextPhase(InitPhase phase) {
+    if (InitPhase::None == phase) return InitPhase::DeviceOutput;
+    if (InitPhase::Done == phase) return phase;
+    return static_cast<InitPhase>(PhaseIndex(phase) + 1);
+}
+
+enum class EMMidiRate : uint8_t {
+    Full,
+    Third,
+    Twentieth
+};
+
 const char * PhaseLabel(InitPhase phase);
+const char * PhaseName(InitPhase phase);
 
 struct InitPhaseInfo
 {
     InitPhase id;
     InitState state;
+    EMMidiRate midi_rate;
     float post_delay;
-    uint8_t midi_rate;
+    float budget;
 
     bool fresh() { return InitState::Uninitialized == state; }
     bool pending() { return InitState::Pending == state; }

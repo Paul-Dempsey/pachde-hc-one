@@ -99,6 +99,7 @@ void Hc1Module::Uninit()
     ModuleBroker::get()->unregisterHc1(this);
     if (restore_ui_data) {
         delete restore_ui_data;
+        restore_ui_data = nullptr;
     }
 }
 
@@ -267,8 +268,6 @@ void Hc1Module::onRemove(const RemoveEvent& e)
 
 json_t * Hc1Module::dataToJson()
 {
-    saveStartupConfig();
-
     auto root = json_object();
 
     json_object_set_new(root, "midi-device-claim", json_string(device_claim.c_str()));
@@ -293,6 +292,8 @@ json_t * Hc1Module::dataToJson()
 
 void Hc1Module::dataFromJson(json_t *root)
 {
+    saveStartupConfig();
+
     heart_beating = GetBool(root, "heartbeat", heart_beating);
     auto j = json_object_get(root, "preset-tab");
     if (j) {
@@ -351,6 +352,10 @@ void Hc1Module::reboot()
     midi::Input::reset();
     midi_output.reset();
     RefreshPhases(init_phase);
+    phase_time = 0.f;
+    phase_pause = false;
+    phase_attempt = 0;
+    current_phase = InitPhase::None;
     em.clear();
 
     clearCCValues();

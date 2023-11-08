@@ -232,6 +232,7 @@ void Hc1ModuleWidget::appendContextMenu(Menu *menu)
             [=](){ my_module->heart_beating = !my_module->heart_beating; }));
         menu->addChild(createMenuItem("Send one heartbeat handshake (ping)", "",   [=](){ 
             my_module->fresh_phase(InitPhase::Heartbeat);
+            my_module->current_phase = InitPhase::Heartbeat;
             //my_module->sendEditorPresent();
         }));
         menu->addChild(createMenuItem("Remake QSPI Data", "", [=]() {
@@ -263,12 +264,15 @@ void Hc1ModuleWidget::appendContextMenu(Menu *menu)
         //menu->addChild(createMenuItem("Save presets", "", [=](){ my_module->savePresets(); }, !ready));
         menu->addChild(createMenuItem("Refresh current preset", "",  [=](){ 
             my_module->fresh_phase(InitPhase::PresetConfig);
-        }));
+            my_module->current_phase = InitPhase::PresetConfig;
+       }));
         menu->addChild(createMenuItem("Refresh User presets", "", [=](){ 
             my_module->fresh_phase(InitPhase::UserPresets);
+            my_module->current_phase = InitPhase::UserPresets;
         }));
         menu->addChild(createMenuItem("Refresh System presets", "", [=](){ 
             my_module->fresh_phase(InitPhase::SystemPresets);
+            my_module->current_phase = InitPhase::SystemPresets;
         }));
     }));
 

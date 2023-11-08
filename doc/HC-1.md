@@ -35,9 +35,17 @@ When everything is connected and working as expected, all the dots are blue, and
 
 ## Troubleshooting
 
+If you are running on Windows, remember that no other software can open the same MIDI device, unless you have third-party virtual MIDI software or drivers installed.
+SO make sure that you are not running the Haken Editor, a DAW, or other software that already has the device open.
+
+If HC-1 is unable to successfully connect and initialize fully, check that the Haken Editor can connect to the device.
+If the Haken Editor cannot connect, then neither can HC-1.
+
 Eagan Matrix devices require a high-quality MIDI connection.
 The HC-1 initialization process can sometimes fail, especially when you have a poor MIDI connection.
 When this happens, you may need to reboot HC-1 from the menu, unplug and re-plug the MIDI connection, or power cycle the device.
+In some cases on Windows, you may even need to reboot your computer.
+
 When possible, make sure you're using a connection directly to the computer, and not through a USB hub.
 Even then, you may need to use a different USB port on your computer.
 Be sure to use the MIDI cable that came with your device or another high-quality USB cable.
@@ -49,7 +57,7 @@ The little green dot that travels across the bottom of the preset list indicates
 This should move rapidly while initializing the device, and while playing the device.
 If this stops moving while loading or playing the device, then the MIDI connection has been lost, and you must take steps to recover the connection.
 
-If you have trouble with the first-time initialization process, you may need to configure the startup process.
+If you still have trouble with the first-time initialization process, you may need to configure the startup process.
 See [Configuring startup parameters](#configuring-startup-parameters) below.
 
 ## A tour of the user interface
@@ -139,6 +147,8 @@ and the track around the knob becomes gold, with an indicator dot showing the ef
   ![Anatomy of HC-1 controls](knob-anatomy.svg)
 
   There are menu options under **Knob control** to set all controls to Absolute or Relative mode, and to set all knobs to zero or middle position at once.
+
+- The **Ready** output produces a trigger when the EM device is fully initialized and ready to work with.
 
 - The boxed controls are the Eagan Matrix Recirculator.
   The labels change to reflect the current preset's Recirculator type and the appropriate R1-R4 and Recirculator Mix (R5).
@@ -239,7 +249,7 @@ On some commputers, operating systems, and particular EM devices, you may need t
 
 If you're starting up reliably, you may be able to speed up the startup process by allowing full MIDI transmission rate and shortening delays between phases.
 
-This is a manual process of editing the `startup.json` file created in the user folder for the plugin.
+This is a manual process of editing the `startup-config.json` file created in the user folder for the plugin.
 The plugin user folder is the same folder where cached presets are stored, and it is the default folder for Favorites files.
 
 To find the plugin's user folder:
@@ -250,37 +260,91 @@ To find the plugin's user folder:
 
 1. Open the `pachde-hc-one` folder.
 
-Once you've found the plugin user folder, open the `startup.json` file in a plain-text editor.
+Once you've found the plugin user folder, open the `startup-config.json` file in a plain-text editor.
 
-The default `startup.json`` looks like this:
+The default `startup-config.json` looks like this:
 
 ```json
 {
-  "init-midi-rate": 1,
-  "hearbeat-period": 2.0,
-  "post-output-delay": 3.0,
-  "post-input-delay": 3.0,
-  "post-hello-delay": 3.0,
-  "post-system-delay": 4.0,
-  "post-user-delay": 3.0,
-  "post-config-delay": 2.0
+  "heartbeat_period": 4.0,
+  "phase-device-output": {
+    "delay": 4.0,
+    "midi_rate": 0,
+    "budget": 0
+  },
+  "phase-device-input": {
+    "delay": 4.0,
+    "midi_rate": 0,
+    "budget": 0
+  },
+  "phase-device-hello": {
+    "delay": 1.0,
+    "midi_rate": 1,
+    "budget": 2
+  },
+  "phase-device-config": {
+    "delay": 1.0,
+    "midi_rate": 1,
+    "budget": 4
+  },
+  "phase-cached-presets": {
+    "delay": 0.0,
+    "midi_rate": 0,
+    "budget": 0
+  },
+  "phase-user-presets": {
+    "delay": 1.0,
+    "midi_rate": 1,
+    "budget": 12
+  },
+  "phase-system-presets": {
+    "delay": 1.0,
+    "midi_rate": 1,
+    "budget": 25
+  },
+  "phase-favorites": {
+    "delay": 0.0,
+    "midi_rate": 0,
+    "budget": 0
+  },
+  "phase-saved_preset": {
+    "delay": 1.0,
+    "midi_rate": 0,
+    "budget": 4
+  },
+  "phase-preset-config": {
+    "delay": 1.0,
+    "midi_rate": 0,
+    "budget": 4
+  },
+  "phase-request-updates": {
+    "delay": 0.0,
+    "midi_rate": 0,
+    "budget": 0
+  },
+  "phase-heartbeat": {
+    "delay": 2.0,
+    "midi_rate": 0,
+    "budget": 2
+  },
+  "phase-done": {
+    "delay": 0.0,
+    "midi_rate": 0,
+    "budget": 0
+  }
 }
 ```
 
-The first is an integer in the range 0-2. The rest are floating-point numbers giving a delay in seconds.
+This configure the initialization process, and the midi transmission rate for the queries that HC-1 sends to the device.
+In between these requests and when HC-One is fully initialized, the full transmission rate is used.
 
-These variables configure the initialization process, and the midi transmission rate for the queries that HC-1 sends to the device. In between these requests, and when HC-One is fully initialized, the full transmission rate is used.
+For each initialization phase, there are three options:
 
-| Variable | Value | Description |
+| Option | Value | Description |
 | -- | -- | -- |
-| **init&#x2011;midi&#x2011;rate** | **0**, **1**, or **2** | The midi transmission rate for sending configuration data from the EM device. **0** = full (fastest), **1** = 1/3 full rate, **2** = 1/20 full rate (meant for bluetooth MIDI). The default is **1**.</br> If you have trouble getting the initial connection, set it to a higher number. If you get a good connection, you can usually set this to **0** to get the fastest startup time. |
-| **post&#x2011;output&#x2011;delay**  | seconds | Time between opening the MIDI ouput port, and opening the MIDI input port. |
-| **post&#x2011;input&#x2011;delay**   | seconds | Time betwen opening the midi input port, and sending the initial device query ("hello"). |
-| **post&#x2011;hello&#x2011;delay**   | seconds | Time between the end of the device "hello" and requesting system presets. |
-| **post&#x2011;system&#x2011;delay**  | seconds | Time between the end of gathering system presets and requesting user presets. |
-| **post&#x2011;user&#x2011;delay**    | seconds | Time between the end of gathering user presets, and requesting the initial configuration or restoring the last preset used in the patch. |
-| **post&#x2011;config&#x2011;delay**  | seconds | Time between the end of preset configuration and the first heartbeat.  |
-| **hearbeat&#x2011;period**           | seconds | Time between sending the heartbeat handshake. The heartbeat can be turned off in the module menu. An initial heartbeat is always sent at the end of initialization, and the heartbeats thereafter can be turned off to avoid potential audio glitches. |
+| `delay` | float | Seconds to pause after the phase before starting the next phase. |
+| `midi_rate` | 0-2 | Sets the Midi transmission rate for the phase. **0** = full (fastest), **1** = 1/3 full rate, **2** = 1/20 full rate (meant for bluetooth MIDI). |
+| `budget` | float | Seconds allowed for a phase to complete. If the phase is not complete in the alloted time it is retried with a lower MIDI transmission rate. If it fails after a maximum of three attempts, HC-1 is rebooted. |
 
 The delays allow time for both the device and HC-1 to settle and be ready for the next phase.
 

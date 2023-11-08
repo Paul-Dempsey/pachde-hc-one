@@ -155,24 +155,29 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, IMidiDeviceChange, midi
     // initialization phases
     //
 
-    void advanceInitPhase();
+    InitPhase current_phase{InitPhase::None};
+    float phase_time = 0.f;
+    bool phase_pause = false;
+    int phase_attempt = 0;
+    void process_init_phase(const ProcessArgs& args);
 
     std::vector<InitPhaseInfo> init_phase = {
-        InitPhaseInfo{InitPhase::DeviceOutput,   InitState::Uninitialized, 4.0f, 0},
-        InitPhaseInfo{InitPhase::DeviceInput,    InitState::Uninitialized, 4.0f, 0},
-        InitPhaseInfo{InitPhase::DeviceHello,    InitState::Uninitialized, 1.0f, 2},
-        InitPhaseInfo{InitPhase::DeviceConfig,   InitState::Uninitialized, 1.0f, 2},
-        InitPhaseInfo{InitPhase::CachedPresets,  InitState::Uninitialized, 0.05f, 0},
-        InitPhaseInfo{InitPhase::UserPresets,    InitState::Uninitialized, 1.0f, 1},
-        InitPhaseInfo{InitPhase::SystemPresets,  InitState::Uninitialized, 1.0f, 2},
-        InitPhaseInfo{InitPhase::Favorites,      InitState::Uninitialized, 0.05f, 0},
-        InitPhaseInfo{InitPhase::SavedPreset,    InitState::Uninitialized, 1.0f, 0},
-        InitPhaseInfo{InitPhase::PresetConfig,   InitState::Uninitialized, 1.0f, 0},
-        InitPhaseInfo{InitPhase::RequestUpdates, InitState::Uninitialized, 0.05f, 0},
-        InitPhaseInfo{InitPhase::Heartbeat,      InitState::Uninitialized, 2.0f, 0},
+        InitPhaseInfo{InitPhase::DeviceOutput,   InitState::Uninitialized, EMMidiRate::Full,        4.0f,   0.f },
+        InitPhaseInfo{InitPhase::DeviceInput,    InitState::Uninitialized, EMMidiRate::Full,        4.0f,   0.f },
+        InitPhaseInfo{InitPhase::DeviceHello,    InitState::Uninitialized, EMMidiRate::Third,       1.0f,   2.5f },
+        InitPhaseInfo{InitPhase::DeviceConfig,   InitState::Uninitialized, EMMidiRate::Third,       1.0f,   4.f },
+        InitPhaseInfo{InitPhase::CachedPresets,  InitState::Uninitialized, EMMidiRate::Full,        0.f,    0.f },
+        InitPhaseInfo{InitPhase::UserPresets,    InitState::Uninitialized, EMMidiRate::Third,       1.0f,  12.f },
+        InitPhaseInfo{InitPhase::SystemPresets,  InitState::Uninitialized, EMMidiRate::Third,       1.0f,  25.f },
+        InitPhaseInfo{InitPhase::Favorites,      InitState::Uninitialized, EMMidiRate::Full,        0.f,    0.f },
+        InitPhaseInfo{InitPhase::SavedPreset,    InitState::Uninitialized, EMMidiRate::Full,        1.0f,   4.f },
+        InitPhaseInfo{InitPhase::PresetConfig,   InitState::Uninitialized, EMMidiRate::Full,        1.0f,   4.f },
+        InitPhaseInfo{InitPhase::RequestUpdates, InitState::Uninitialized, EMMidiRate::Full,        0.f,    0.f },
+        InitPhaseInfo{InitPhase::Heartbeat,      InitState::Uninitialized, EMMidiRate::Full,        2.0f,   2.f },
+        InitPhaseInfo{InitPhase::Done,           InitState::Uninitialized, EMMidiRate::Full,        0.f,    0.f }
     };
 
-    InitPhaseInfo* get_phase(InitPhase phase) { return &init_phase[static_cast<size_t>(phase)]; }
+    InitPhaseInfo* get_phase(InitPhase phase) { return phase == InitPhase::None ? nullptr : &init_phase[PhaseIndex(phase)]; }
     InitState phaseState(InitPhase phase) { return get_phase(phase)->state; }
     float phase_post_delay(InitPhase phase) { return get_phase(phase)->post_delay; }
 
@@ -195,8 +200,8 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, IMidiDeviceChange, midi
     bool hasSystemPresets() { return finished(InitPhase::SystemPresets) && !system_presets.empty(); }
     bool hasUserPresets() { return finished(InitPhase::UserPresets) && !user_presets.empty(); }
 
-    int init_midi_rate = 0;
-    void send_init_midi_rate(int rate);
+    EMMidiRate init_midi_rate = EMMidiRate::Full;
+    void send_init_midi_rate(EMMidiRate rate);
     void restore_midi_rate();
 
     void tryCachedPresets();
@@ -210,13 +215,6 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, IMidiDeviceChange, midi
     bool in_sys_names = false;
     bool broken = false;
     float broken_idle = 0.f;
-
-    // float init_step_phase = 0.f;
-    // float init_step_time = 0.f;
-    // void begin_init_step(float timeout) {
-    //     init_step_phase = 0.f;
-    //     init_step_time = timeout;
-    // }
 
     rack::dsp::Timer device_sync;
     const float DEVICE_SYNC_PERIOD = 5.f;

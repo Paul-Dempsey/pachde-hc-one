@@ -47,21 +47,21 @@ void Hc1Module::sendResetAllreceivers()
     queueMidiOutMessage(uMidiMessage(0xff));
 }
 
-void Hc1Module::send_init_midi_rate(int rate)
+void Hc1Module::send_init_midi_rate(EMMidiRate rate)
 {
     if (init_midi_rate == rate) return;
     switch (rate) {
-    case 0: sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::midiTxFull); break;
-    case 1: sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::midiTxThird); break;
-    case 2: sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::midiTxTweenth); break;
-    default: break;
+    case EMMidiRate::Full: sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::midiTxFull); break;
+    case EMMidiRate::Third: sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::midiTxThird); break;
+    case EMMidiRate::Twentieth: sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::midiTxTweenth); break;
     }
     init_midi_rate = rate;
 }
 
 void Hc1Module::restore_midi_rate() {
-    if (init_midi_rate) {
+    if (EMMidiRate::Full != init_midi_rate) {
         sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::midiTxFull);
+        init_midi_rate = EMMidiRate::Full;
     }
 }
 

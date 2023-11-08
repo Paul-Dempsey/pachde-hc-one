@@ -26,16 +26,17 @@ void Hc1Module::onRenewClaim()
                 midi_output.reset();
                 Input::reset();
                 fresh_phase(InitPhase::DeviceInput);
+                current_phase = InitPhase::DeviceInput;
                 midi_output.setDeviceId(connection->output_device_id);
                 if (connection->output_device_id != midi_output.getDeviceId()) {
                     // subscribing failed
                     midi_output.reset();
                     fresh_phase(InitPhase::DeviceOutput);
+                    current_phase = InitPhase::DeviceOutput;
                     return;
                 }
                 midi_output.setChannel(-1);
 
-                heart_time = phase_post_delay(InitPhase::DeviceOutput);
                 // these should be picked up by input device init
                 //Input::setDeviceId(connection->input_device_id);
                 //Input::setChannel(-1);
@@ -259,8 +260,6 @@ void Hc1Module::onChannel16CC(uint8_t cc, uint8_t value)
                     if (!broken) {
                         std::sort(user_presets.begin(), user_presets.end(), preset_system_order);
                     }
-                    restore_midi_rate();
-                    heart_time = phase->post_delay;
                 } break;
 
                 case EM_DownloadItem::beginSysNames:
@@ -275,8 +274,6 @@ void Hc1Module::onChannel16CC(uint8_t cc, uint8_t value)
                         std::sort(system_presets.begin(), system_presets.end(), getPresetSort(preset_order));
                         readFavorites();
                     }
-                    restore_midi_rate();
-                    heart_time = phase->post_delay;
                     break;
             }
             break;
@@ -300,8 +297,7 @@ void Hc1Module::onChannel16CC(uint8_t cc, uint8_t value)
         case EMCC_EditorReply: {
             if (pending(InitPhase::DeviceHello)) {
                 finish_phase(InitPhase::DeviceHello);
-            }
-            if (pending(InitPhase::Heartbeat)) {
+            } else if (pending(InitPhase::Heartbeat)) {
                 first_beat = true;
                 finish_phase(InitPhase::Heartbeat);
             } else {
