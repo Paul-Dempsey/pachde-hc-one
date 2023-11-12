@@ -35,12 +35,28 @@ struct Hc2Module : Module, ISendMidi, IHandleHcEvents
 
         P_PEDAL1,
         P_PEDAL2,
+
+        P_COMP_THRESHHOLD,
+        P_COMP_ATTACK,
+        P_COMP_RATIO,
+        P_COMP_MIX,
+        P_COMP_THRESHHOLD_REL,
+        P_COMP_ATTACK_REL,
+        P_COMP_RATIO_REL,
+        P_COMP_MIX_REL,
+
         NUM_PARAMS,
     };
     enum Inputs
     {
         IN_ROUND_RATE,
         IN_ROUND_INITIAL,
+
+        IN_COMP_THRESHHOLD,
+        IN_COMP_ATTACK,
+        IN_COMP_RATIO,
+        IN_COMP_MIX,
+
         NUM_INPUTS
     };
     enum Outputs
@@ -51,9 +67,15 @@ struct Hc2Module : Module, ISendMidi, IHandleHcEvents
     {
         L_ROUND_RATE_REL,
         L_ROUND_INITIAL,
+        L_COMP_THRESHHOLD_REL,
+        L_COMP_ATTACK_REL,
+        L_COMP_RATIO_REL,
+        L_COMP_MIX_REL,
+        L_COMPRESSOR,
         NUM_LIGHTS
     };
     Rounding rounding;
+    Compressor compressor;
 
     IHandleHcEvents * ui_event_sink = nullptr;
     PartnerBinding partner_binding;
@@ -71,8 +93,11 @@ struct Hc2Module : Module, ISendMidi, IHandleHcEvents
 
     void pullRounding(Hc1Module * partner = nullptr);
     void pushRounding(Hc1Module * partner = nullptr);
-    void syncCCParam(int paramId);
+    void pullCompressor(Hc1Module * partner = nullptr);
+    void pushCompressor(Hc1Module * partner = nullptr);
     void processCV(int paramId);
+    void processRoundingControls();
+    void processCompressorControls();
     void processControls();
 
     // Module
@@ -97,6 +122,7 @@ struct Hc2Module : Module, ISendMidi, IHandleHcEvents
     void onPresetChanged(const PresetChangedEvent& e) override;
     //void onPedalChanged(const PedalChangedEvent& e) override;
     void onRoundingChanged(const RoundingChangedEvent& e) override;
+    void onCompressorChanged(const CompressorChangedEvent& e) override;
     void onDeviceChanged(const DeviceChangedEvent& e) override;
     void onDisconnect(const DisconnectEvent& e) override;
 };
@@ -115,6 +141,7 @@ struct Hc2ModuleWidget : ModuleWidget, IHandleHcEvents
     }
     Hc1Module* getPartner();
     void createRoundingUI(float x, float y);
+    void createCompressorUI(float x, float y);
 
     // IHandleHcEvents
     void onPresetChanged(const PresetChangedEvent& e) override;

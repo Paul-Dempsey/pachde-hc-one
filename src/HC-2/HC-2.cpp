@@ -29,7 +29,11 @@ Hc2Module::Hc2Module()
         });
     configTuningParam(this, P_ROUND_TUNING);
 
-    //configParam(P_TEST, 0.f, 1.f, .5f, "Test");
+    configCCParam(EMCC_CompressorThreshhold, false, this, P_COMP_THRESHHOLD, IN_COMP_THRESHHOLD, P_COMP_THRESHHOLD_REL, L_COMP_THRESHHOLD_REL, 0.f, 127.f, 127.f, "Compressor threshhold")->snapEnabled = true;
+    configCCParam(EMCC_CompressorThreshhold, false, this, P_COMP_ATTACK,     IN_COMP_ATTACK,     P_COMP_ATTACK_REL,     L_COMP_ATTACK_REL,     0.f, 127.f,  64.f, "Compressor attack")->snapEnabled = true;
+    configCCParam(EMCC_CompressorThreshhold, false, this, P_COMP_RATIO,      IN_COMP_RATIO,      P_COMP_RATIO_REL,      L_COMP_RATIO_REL,      0.f, 127.f,  64.f, "Compressor ratio")->snapEnabled = true;
+    configCCParam(EMCC_CompressorThreshhold, false, this, P_COMP_MIX,        IN_COMP_MIX,        P_COMP_MIX_REL,        L_COMP_MIX_REL,        0.f, 127.f,   0.f, "Compressor mix")->snapEnabled = true;
+    configLight(L_COMPRESSOR, "Compressor");
 }
 
 Hc2Module::~Hc2Module()
@@ -98,11 +102,40 @@ void Hc2Module::onRoundingChanged(const RoundingChangedEvent& e)
     }
     if (old.equal != rounding.equal) {
         changed = true;
+        // $BUGBUG: why is this commented out?
         //getParamQuantity(Params::P_ROUND_EQUAL)->setValue(rounding.equal);
     }
 
     if (changed && ui_event_sink) {
         ui_event_sink->onRoundingChanged(e);
+    }
+}
+
+void Hc2Module::onCompressorChanged(const CompressorChangedEvent &e)
+{
+    bool changed = false;
+    auto old = compressor;
+    compressor = e.compressor;
+
+    if (old.threshhold != compressor.threshhold) {
+        changed = true;
+        getParamQuantity(Params::P_COMP_THRESHHOLD)->setValue(static_cast<uint8_t>(compressor.threshhold));
+    }
+    if (old.attack != compressor.attack) {
+        changed = true;
+        getParamQuantity(Params::P_COMP_ATTACK)->setValue(static_cast<uint8_t>(compressor.attack));
+    }
+    if (old.ratio != compressor.ratio) {
+        changed = true;
+        getParamQuantity(Params::P_COMP_RATIO)->setValue(static_cast<uint8_t>(compressor.ratio));
+    }
+    if (old.mix != compressor.mix) {
+        changed = true;
+        getParamQuantity(Params::P_COMP_MIX)->setValue(static_cast<uint8_t>(compressor.mix));
+    }
+
+    if (changed && ui_event_sink) {
+        ui_event_sink->onCompressorChanged(e);
     }
 }
 
@@ -147,6 +180,30 @@ void Hc2Module::pushRounding(Hc1Module * partner)
     }
 }
 
+void Hc2Module::pullCompressor(Hc1Module *partner)
+{
+    if (!partner) partner = getPartner();
+    if (!partner) return;
+    compressor = partner->em.compressor;
+    getParamQuantity(Params::P_COMP_THRESHHOLD)->setValue(compressor.threshhold);
+    getParamQuantity(Params::P_COMP_ATTACK)->setValue(compressor.attack);
+    getParamQuantity(Params::P_COMP_RATIO)->setValue(compressor.ratio);
+    getParamQuantity(Params::P_COMP_MIX)->setValue(compressor.mix);
+    if (ui_event_sink) {
+        ui_event_sink->onCompressorChanged(CompressorChangedEvent{compressor});
+    }
+}
+
+void Hc2Module::pushCompressor(Hc1Module *partner)
+{
+    if (!partner) partner = getPartner();
+    if (!partner) return;
+    partner->em.compressor = compressor;
+    if (ui_event_sink) {
+        ui_event_sink->onCompressorChanged(CompressorChangedEvent{compressor});
+    }
+}
+
 void Hc2Module::processCV(int paramId)
 {
     auto pq = dynamic_cast<CCParamQuantity*>(getParamQuantity(paramId));
@@ -173,18 +230,8 @@ void Hc2Module::processCV(int paramId)
     }
 }
 
-void Hc2Module::syncCCParam(int paramId)
+void Hc2Module::processRoundingControls()
 {
-    auto pq = dynamic_cast<CCParamQuantity*>(getParamQuantity(paramId));
-    if (pq) {
-        pq->syncValue();
-    }
-}
-
-void Hc2Module::processControls()
-{
-    if (!control_rate.process()) { return; }
-
     {
         auto pq = dynamic_cast<CCParamQuantity*>(getParamQuantity(Params::P_ROUND_RATE));
         assert(pq);
@@ -227,11 +274,60 @@ void Hc2Module::processControls()
     }
 }
 
+void Hc2Module::processCompressorControls()
+{
+    bool changed = false;
+    auto pq = dynamic_cast<CCParamQuantity*>(getParamQuantity(Params::P_COMP_THRESHHOLD));
+    auto v = pq->valueToSend();
+    if (pq->last_value != v) {
+        compressor.threshhold = v;
+        changed = true;
+        pq->syncValue();
+    }
+    pq = dynamic_cast<CCParamQuantity*>(getParamQuantity(Params::P_COMP_ATTACK));
+    v = pq->valueToSend();
+    if (pq->last_value != v) {
+        compressor.attack = v;
+        changed = true;
+        pq->syncValue();
+    }
+    pq = dynamic_cast<CCParamQuantity*>(getParamQuantity(Params::P_COMP_RATIO));
+    v = pq->valueToSend();
+    if (pq->last_value != v) {
+        compressor.ratio = v;
+        changed = true;
+        pq->syncValue();
+    }
+    pq = dynamic_cast<CCParamQuantity*>(getParamQuantity(Params::P_COMP_MIX));
+    v = pq->valueToSend();
+    if (pq->last_value != v) {
+        compressor.mix = v;
+        changed = true;
+        pq->syncValue();
+    }
+    getLight(Lights::L_COMPRESSOR).setBrightness(static_cast<float>(compressor.mix)/127.f);
+
+    if (changed) {
+        pushCompressor();
+    }
+}
+
+void Hc2Module::processControls()
+{
+    if (!control_rate.process()) { return; }
+    processRoundingControls();
+    processCompressorControls();
+}
+
 void Hc2Module::process(const ProcessArgs& args)
 {
     if (++check_cv > CV_INTERVAL) {
         check_cv = 0;
         processCV(Params::P_ROUND_RATE);
+        processCV(Params::P_COMP_THRESHHOLD);
+        processCV(Params::P_COMP_ATTACK);
+        processCV(Params::P_COMP_RATIO);
+        processCV(Params::P_COMP_MIX);
     }
 
     if (getInput(Inputs::IN_ROUND_INITIAL).isConnected()) {

@@ -145,6 +145,7 @@ void Hc1Module::notifyPresetChanged()
         client->onPresetChanged(event);
     }
 }
+
 void Hc1Module::notifyRoundingChanged()
 {
     if (hc_event_subscriptions.empty()) return;
@@ -153,6 +154,16 @@ void Hc1Module::notifyRoundingChanged()
         client->onRoundingChanged(event);
     }
 }
+
+void Hc1Module::notifyCompressorChanged()
+{
+    if (hc_event_subscriptions.empty()) return;
+    auto event = IHandleHcEvents::CompressorChangedEvent{em.compressor};
+    for (auto client: hc_event_subscriptions) {
+        client->onCompressorChanged(event);
+    }
+}
+
 void Hc1Module::notifyDeviceChanged()
 {
     if (hc_event_subscriptions.empty()) return;
@@ -161,6 +172,7 @@ void Hc1Module::notifyDeviceChanged()
         client->onDeviceChanged(event);
     }
 }
+
 void Hc1Module::notifyDisconnect()
 {
     if (hc_event_subscriptions.empty()) return;

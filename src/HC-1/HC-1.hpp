@@ -293,6 +293,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, IMidiDeviceChange, midi
     }
     void notifyPedalChanged(uint8_t pedal);
     void notifyRoundingChanged();
+    void notifyCompressorChanged();
     void notifyDeviceChanged();
     void notifyDisconnect();
     void notifyFavoritesFileChanged();

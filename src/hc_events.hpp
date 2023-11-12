@@ -30,6 +30,11 @@ struct IHandleHcEvents
     };
     virtual void onRoundingChanged(const RoundingChangedEvent& e) {}
 
+    struct CompressorChangedEvent {
+        const eagan_matrix::Compressor& compressor;
+    };
+    virtual void onCompressorChanged(const CompressorChangedEvent& e) {}
+
     struct DeviceChangedEvent {
         const std::shared_ptr<MidiDeviceConnection> device;
     };

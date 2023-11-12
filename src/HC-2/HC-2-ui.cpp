@@ -1,4 +1,5 @@
 #include "HC-2.hpp"
+#include "HC-2-layout.hpp"
 #include "../colors.hpp"
 #include "../misc.hpp"
 #include "../text.hpp"
@@ -17,23 +18,6 @@ using Hc2P = Hc2Module::Params;
 using Hc2I = Hc2Module::Inputs;
 using Hc2O = Hc2Module::Outputs;
 using Hc2L = Hc2Module::Lights;
-
-constexpr const float PAD = 2.f;
-constexpr const float MORE_PAD = 4.f;
-constexpr const float ROUND_BOX_TOP = 35.f;
-constexpr const float ROUND_BOX_LEFT = 7.5f;
-constexpr const float ROUND_BOX_WIDTH = 105.f;
-constexpr const float ROUND_BOX_HEIGHT = 60.f;
-constexpr const float ROUND_BOX_HALF = 110.f * .5f;
-constexpr const float KNOB_RADIUS = 12.f;
-constexpr const float HALF_KNOB = KNOB_RADIUS *.5f;
-constexpr const float REL_OFFSET = 20.f;
-constexpr const float REL_VOFFSET = 10.f;
-constexpr const float CV_COLUMN_OFFSET = 24.f;
-constexpr const float ROUND_KNOB_ROW = 32.5f;
-constexpr const float ROUND_COL1 = ROUND_BOX_HALF - KNOB_RADIUS - 3.f * PAD;
-constexpr const float ROUND_COL2 = ROUND_BOX_HALF + KNOB_RADIUS + 2.f * PAD;
-constexpr const float ROUND_COL3 = ROUND_BOX_WIDTH - KNOB_RADIUS + PAD;
 
 inline uint8_t GetSmallParamValue(rack::app::ModuleWidget* w, int id, uint8_t default_value = 0) {
     auto p = w->getParam(id);
@@ -91,6 +75,19 @@ void Hc2ModuleWidget::createRoundingUI(float x, float y)
     addChild(rounding_summary);
 }
 
+void Hc2ModuleWidget::createCompressorUI(float x, float y)
+{
+    addChild(createStaticTextLabel<StaticTextLabel>(Vec(x + MORE_PAD, y + PAD), 60.f, "Compressor", TextAlignment::Left));
+
+    addChild(createStaticTextLabel<StaticTextLabel>(Vec(x + COMP_COL1, y + COMP_KNOB_ROW - STATIC_LABEL_OFFSET), 50.f, "Threshhold", TextAlignment::Center));
+    addChild(createModKnob(
+        Vec( x + COMP_COL1, y + COMP_KNOB_ROW), 
+        module, Hc2P::P_COMP_THRESHHOLD, Hc2I::IN_COMP_THRESHHOLD, Hc2P::P_COMP_THRESHHOLD_REL));
+    addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<BlueLight>>>(Vec(x + COMP_COL1 - REL_OFFSET, y + COMP_KNOB_ROW - REL_VOFFSET), my_module, Hc2P::P_COMP_THRESHHOLD_REL, Hc2L::L_COMP_THRESHHOLD_REL));
+    addChild(createInputCentered<ColorPort>(Vec(x + COMP_COL1 - CV_COLUMN_OFFSET, y + COMP_KNOB_ROW + CV_ROW_OFFSET), my_module, Hc2I::IN_COMP_THRESHHOLD));
+
+}
+
 Hc2ModuleWidget::Hc2ModuleWidget(Hc2Module * module)
 {
     my_module = module;
@@ -102,6 +99,7 @@ Hc2ModuleWidget::Hc2ModuleWidget(Hc2Module * module)
     addChild(partner_picker = createPartnerPicker(7.f, 14.f, 180.f, module ? &module->partner_binding : nullptr));
 
     createRoundingUI(ROUND_BOX_LEFT, ROUND_BOX_TOP);
+    createCompressorUI(COMP_BOX_LEFT, COMP_BOX_TOP);
 
     auto x = box.size.x * .5f;
     addChild(createCCMap<CCMap>(x, box.size.y - 24.f - 20.f, true, CCMapChannel::One, this));
@@ -140,11 +138,10 @@ void Hc2ModuleWidget::draw(const DrawArgs& args)
 
     auto vg = args.vg;
     BoxRect(vg, ROUND_BOX_LEFT, ROUND_BOX_TOP, ROUND_BOX_WIDTH, ROUND_BOX_HEIGHT, RampGray(G_40), 0.5f);
+    BoxRect(vg, COMP_BOX_LEFT, COMP_BOX_TOP, COMP_BOX_WIDTH, COMP_BOX_HEIGHT, RampGray(G_40), 0.5f);
 
     //auto partner = getPartner();
     //if (partner) {
-    //    drawCCMap(args, partner);
-
         // system_data
         // auto font = GetPluginFontRegular();
         // SetTextStyle(args.vg, font, RampGray(G_90), 10.f);

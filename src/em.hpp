@@ -2,6 +2,7 @@
 #ifndef EM_HPP_INCLUDED
 #define EM_HPP_INCLUDED
 #include "em_midi.hpp"
+#include "em_types/em_compressor.hpp"
 #include "em_types/em_pedal.hpp"
 #include "em_types/em_recirculator.hpp"
 #include "em_types/em_rounding.hpp"
@@ -17,10 +18,12 @@ struct EaganMatrix
     uint8_t middle_c;
     Rounding rounding;
     Recirculator recirculator;
+    Compressor compressor;
     PedalInfo pedal1;
     PedalInfo pedal2;
     bool reverse_surface;
 
+    // levels (PreLevel/PostLevel/AudioIn/LineOut/HeadphoneOut)
     // convolution
     // preserve
     // routing

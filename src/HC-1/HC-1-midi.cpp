@@ -229,6 +229,34 @@ void Hc1Module::onChannel16CC(uint8_t cc, uint8_t value)
             em.firmware_version = value;
             break;
 
+        case EMCC_CompressorThreshhold:
+            em.compressor.threshhold = value;
+            if (!in_preset) {
+                notifyCompressorChanged();
+            }
+            break;
+
+        case EMCC_CompressorAttack    :
+            em.compressor.attack = value;
+            if (!in_preset) {
+                notifyCompressorChanged();
+            }
+            break;
+
+        case EMCC_CompressorRatio     :
+            em.compressor.ratio = value;
+            if (!in_preset) {
+                notifyCompressorChanged();
+            }
+            break;
+
+        case EMCC_CompressorMix       :
+            em.compressor.mix = value;
+            if (!in_preset) {
+                notifyCompressorChanged();
+            }
+            break;
+
         case EMCC_VersionLow:
             em.firmware_version = (em.firmware_version << 7) | value;
             break;
