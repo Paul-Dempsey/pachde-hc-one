@@ -83,7 +83,6 @@ void Hc1Module::processAllCV()
 
 void Hc1Module::processReadyTrigger(bool ready, const ProcessArgs& args)
 {
-
     bool high = ready_trigger.process(args.sampleTime);
     if ((ready || first_beat)
         && getOutput(READY_TRIGGER).isConnected()
@@ -206,10 +205,15 @@ void Hc1Module::process_init_phase(const ProcessArgs& args)
         phase_attempt = 0;
         return;
     }
-
+    //
+    // phase timing, retry, midi rate
+    //
     switch (phase->state) {
     case InitState::Uninitialized:
         phase_time = 0.f;
+        if (midi_input_worker->pausing) {
+            midi_input_worker->resume();
+        }
         break;
 
     case InitState::Pending:
@@ -260,6 +264,9 @@ void Hc1Module::process_init_phase(const ProcessArgs& args)
         return;
     }
 
+    //
+    // phase initiation
+    //
     switch (current_phase) {
     case InitPhase::None: break;
 
@@ -437,21 +444,6 @@ void Hc1Module::process(const ProcessArgs& args)
 
     process_init_phase(args);
 
-    heart_phase += args.sampleTime;
-    if (heart_phase >= heart_time) {
-        heart_phase -= heart_time;
-        if (is_ready) {
-            heart_time = heartbeat_period;
-        }
-        if (!anyPending() && !in_preset) {
-            if (midi_input_worker->pausing) {
-                midi_input_worker->resume();
-            }
-            if (first_beat && heart_beating) {
-                fresh_phase(InitPhase::Heartbeat);
-            }
-        }
-    }// heart_beating
 } // process
 
 }

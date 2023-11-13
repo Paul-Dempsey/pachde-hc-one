@@ -36,11 +36,11 @@ struct Hc2Module : Module, ISendMidi, IHandleHcEvents
         P_PEDAL1,
         P_PEDAL2,
 
-        P_COMP_THRESHHOLD,
+        P_COMP_THRESHOLD,
         P_COMP_ATTACK,
         P_COMP_RATIO,
         P_COMP_MIX,
-        P_COMP_THRESHHOLD_REL,
+        P_COMP_THRESHOLD_REL,
         P_COMP_ATTACK_REL,
         P_COMP_RATIO_REL,
         P_COMP_MIX_REL,
@@ -52,7 +52,7 @@ struct Hc2Module : Module, ISendMidi, IHandleHcEvents
         IN_ROUND_RATE,
         IN_ROUND_INITIAL,
 
-        IN_COMP_THRESHHOLD,
+        IN_COMP_THRESHOLD,
         IN_COMP_ATTACK,
         IN_COMP_RATIO,
         IN_COMP_MIX,
@@ -67,7 +67,7 @@ struct Hc2Module : Module, ISendMidi, IHandleHcEvents
     {
         L_ROUND_RATE_REL,
         L_ROUND_INITIAL,
-        L_COMP_THRESHHOLD_REL,
+        L_COMP_THRESHOLD_REL,
         L_COMP_ATTACK_REL,
         L_COMP_RATIO_REL,
         L_COMP_MIX_REL,

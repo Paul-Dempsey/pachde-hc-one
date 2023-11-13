@@ -12,14 +12,16 @@ namespace pachde {
 
 Hc2Module::Hc2Module()
 {
+    std::vector<std::string> offon = {"off", "on"};
+
     config(Params::NUM_PARAMS, Inputs::NUM_INPUTS, Outputs::NUM_OUTPUTS, Lights::NUM_LIGHTS);
 
     configInput(Inputs::IN_ROUND_RATE, "Round rate");
 
     auto p = configCCParam(EMCC_RoundRate, false, this, Params::P_ROUND_RATE, Inputs::IN_ROUND_RATE, Params::P_ROUND_RATE_REL, Lights::L_ROUND_RATE_REL, 0.f, 127.f, 0.f, "Round rate");
     p->snapEnabled = true;
-    configSwitch(P_ROUND_RATE_REL, 0.f, 1.f, 0.f, "Round rate CV-relative", {"off", "on"});
-    configSwitch(P_ROUND_INITIAL, 0.f, 1.f, 0.f, "Round initial", {"off", "on"});
+    configSwitch(P_ROUND_RATE_REL, 0.f, 1.f, 0.f, "Round rate CV-relative", offon);
+    configSwitch(P_ROUND_INITIAL, 0.f, 1.f, 0.f, "Round initial", offon);
     configInput(Inputs::IN_ROUND_INITIAL, "Round initial");
     configSwitch(P_ROUND_KIND, 0.f, 3.f, 0.f, "Round type", {
         "Normal",
@@ -29,10 +31,21 @@ Hc2Module::Hc2Module()
         });
     configTuningParam(this, P_ROUND_TUNING);
 
-    configCCParam(EMCC_CompressorThreshhold, false, this, P_COMP_THRESHHOLD, IN_COMP_THRESHHOLD, P_COMP_THRESHHOLD_REL, L_COMP_THRESHHOLD_REL, 0.f, 127.f, 127.f, "Compressor threshhold")->snapEnabled = true;
-    configCCParam(EMCC_CompressorThreshhold, false, this, P_COMP_ATTACK,     IN_COMP_ATTACK,     P_COMP_ATTACK_REL,     L_COMP_ATTACK_REL,     0.f, 127.f,  64.f, "Compressor attack")->snapEnabled = true;
-    configCCParam(EMCC_CompressorThreshhold, false, this, P_COMP_RATIO,      IN_COMP_RATIO,      P_COMP_RATIO_REL,      L_COMP_RATIO_REL,      0.f, 127.f,  64.f, "Compressor ratio")->snapEnabled = true;
-    configCCParam(EMCC_CompressorThreshhold, false, this, P_COMP_MIX,        IN_COMP_MIX,        P_COMP_MIX_REL,        L_COMP_MIX_REL,        0.f, 127.f,   0.f, "Compressor mix")->snapEnabled = true;
+    configCCParam(EMCC_CompressorThreshold, false, this, P_COMP_THRESHOLD, IN_COMP_THRESHOLD, P_COMP_THRESHOLD_REL, L_COMP_THRESHOLD_REL, 0.f, 127.f, 127.f, "Compressor threshold", "%", 0.f, 100.f/127.f)->snapEnabled = true;
+    configCCParam(EMCC_CompressorThreshold, false, this, P_COMP_ATTACK,     IN_COMP_ATTACK,     P_COMP_ATTACK_REL,     L_COMP_ATTACK_REL,     0.f, 127.f,  64.f, "Compressor attack", "%", 0.f, 100.f/127.f)->snapEnabled = true;
+    configCCParam(EMCC_CompressorThreshold, false, this, P_COMP_RATIO,      IN_COMP_RATIO,      P_COMP_RATIO_REL,      L_COMP_RATIO_REL,      0.f, 127.f,  64.f, "Compressor ratio", "%", 0.f, 100.f/127.f)->snapEnabled = true;
+    configCCParam(EMCC_CompressorThreshold, false, this, P_COMP_MIX,        IN_COMP_MIX,        P_COMP_MIX_REL,        L_COMP_MIX_REL,        0.f, 127.f,   0.f, "Compressor mix", "%", 0.f, 100.f/127.f)->snapEnabled = true;
+
+    configInput(IN_COMP_THRESHOLD, "Threshold");
+    configInput(IN_COMP_ATTACK, "Attack");
+    configInput(IN_COMP_RATIO, "Ratio");
+    configInput(IN_COMP_MIX, "Mix");
+
+    configSwitch(P_COMP_THRESHOLD_REL, 0.f, 1.f, 0.f, "Threshold relative CV", offon);
+    configSwitch(P_COMP_ATTACK_REL,    0.f, 1.f, 0.f, "Attack relative CV", offon);
+    configSwitch(P_COMP_RATIO_REL,     0.f, 1.f, 0.f, "Ratio relative CV", offon);
+    configSwitch(P_COMP_MIX_REL,       0.f, 1.f, 0.f, "Mix relative CV", offon);
+
     configLight(L_COMPRESSOR, "Compressor");
 }
 
@@ -117,21 +130,28 @@ void Hc2Module::onCompressorChanged(const CompressorChangedEvent &e)
     auto old = compressor;
     compressor = e.compressor;
 
-    if (old.threshhold != compressor.threshhold) {
+    if (old.threshold != compressor.threshold) {
         changed = true;
-        getParamQuantity(Params::P_COMP_THRESHHOLD)->setValue(static_cast<uint8_t>(compressor.threshhold));
+        auto pq = dynamic_cast<CCParamQuantity*>(getParamQuantity(Params::P_COMP_THRESHOLD));
+        pq->setValueSilent(compressor.threshold);
     }
+
     if (old.attack != compressor.attack) {
         changed = true;
-        getParamQuantity(Params::P_COMP_ATTACK)->setValue(static_cast<uint8_t>(compressor.attack));
+        auto pq = dynamic_cast<CCParamQuantity*>(getParamQuantity(Params::P_COMP_ATTACK));
+        pq->setValueSilent(compressor.attack);
     }
+
     if (old.ratio != compressor.ratio) {
         changed = true;
-        getParamQuantity(Params::P_COMP_RATIO)->setValue(static_cast<uint8_t>(compressor.ratio));
+        auto pq = dynamic_cast<CCParamQuantity*>(getParamQuantity(Params::P_COMP_RATIO));
+        pq->setValueSilent(compressor.ratio);
     }
+
     if (old.mix != compressor.mix) {
         changed = true;
-        getParamQuantity(Params::P_COMP_MIX)->setValue(static_cast<uint8_t>(compressor.mix));
+        auto pq = dynamic_cast<CCParamQuantity*>(getParamQuantity(Params::P_COMP_MIX));
+        pq->setValueSilent(compressor.mix);
     }
 
     if (changed && ui_event_sink) {
@@ -185,7 +205,7 @@ void Hc2Module::pullCompressor(Hc1Module *partner)
     if (!partner) partner = getPartner();
     if (!partner) return;
     compressor = partner->em.compressor;
-    getParamQuantity(Params::P_COMP_THRESHHOLD)->setValue(compressor.threshhold);
+    getParamQuantity(Params::P_COMP_THRESHOLD)->setValue(compressor.threshold);
     getParamQuantity(Params::P_COMP_ATTACK)->setValue(compressor.attack);
     getParamQuantity(Params::P_COMP_RATIO)->setValue(compressor.ratio);
     getParamQuantity(Params::P_COMP_MIX)->setValue(compressor.mix);
@@ -277,10 +297,10 @@ void Hc2Module::processRoundingControls()
 void Hc2Module::processCompressorControls()
 {
     bool changed = false;
-    auto pq = dynamic_cast<CCParamQuantity*>(getParamQuantity(Params::P_COMP_THRESHHOLD));
+    auto pq = dynamic_cast<CCParamQuantity*>(getParamQuantity(Params::P_COMP_THRESHOLD));
     auto v = pq->valueToSend();
     if (pq->last_value != v) {
-        compressor.threshhold = v;
+        compressor.threshold = v;
         changed = true;
         pq->syncValue();
     }
@@ -305,8 +325,6 @@ void Hc2Module::processCompressorControls()
         changed = true;
         pq->syncValue();
     }
-    getLight(Lights::L_COMPRESSOR).setBrightness(static_cast<float>(compressor.mix)/127.f);
-
     if (changed) {
         pushCompressor();
     }
@@ -324,7 +342,7 @@ void Hc2Module::process(const ProcessArgs& args)
     if (++check_cv > CV_INTERVAL) {
         check_cv = 0;
         processCV(Params::P_ROUND_RATE);
-        processCV(Params::P_COMP_THRESHHOLD);
+        processCV(Params::P_COMP_THRESHOLD);
         processCV(Params::P_COMP_ATTACK);
         processCV(Params::P_COMP_RATIO);
         processCV(Params::P_COMP_MIX);
@@ -340,7 +358,7 @@ void Hc2Module::process(const ProcessArgs& args)
         }
     }
     processControls();
-
+    getLight(Lights::L_COMPRESSOR).setBrightness(static_cast<float>(compressor.mix)/127.f);
 }
 
 // ISendMidi

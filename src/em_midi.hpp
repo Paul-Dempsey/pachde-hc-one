@@ -195,7 +195,7 @@ constexpr const uint8_t EMCC_Fraction       = 87; //bend/y/z
 constexpr const uint8_t EMCC_SplitLow       = 88;
 constexpr const uint8_t EMCC_SplitHigh      = 89;
 
-constexpr const uint8_t EMCC_CompressorThreshhold = 90;
+constexpr const uint8_t EMCC_CompressorThreshold  = 90;
 constexpr const uint8_t EMCC_CompressorAttack     = 91;
 constexpr const uint8_t EMCC_CompressorRatio      = 92;
 constexpr const uint8_t EMCC_CompressorMix        = 93;

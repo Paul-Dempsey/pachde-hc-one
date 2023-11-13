@@ -73,7 +73,7 @@ void Hc1Module::saveStartupConfig()
     auto root = json_object();
     if (!root) return;
 	DEFER({json_decref(root);});
-    json_object_set_new(root, "heartbeat_period", json_real(heartbeat_period));
+
     PhasesToJson(root, init_phase);
 
 	json_dumpf(root, file, JSON_INDENT(2));
@@ -104,9 +104,6 @@ void Hc1Module::loadStartupConfig()
 	DEFER({json_decref(root);});
 
     PhasesFromJson(root, init_phase);
-    auto j = json_object_get(root, "heartbeat_period");
-    if (j) heartbeat_period = json_number_value(j);
-
 }
 
 void Hc1Module::saveUserPresets()

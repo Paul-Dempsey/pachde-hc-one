@@ -227,10 +227,7 @@ void Hc1ModuleWidget::appendContextMenu(Menu *menu)
 
     menu->addChild(createSubmenuItem("Module", "", [=](Menu* menu) {
         menu->addChild(createMenuItem("Reboot HC-1", "",     [=](){ my_module->reboot(); }));
-        menu->addChild(createCheckMenuItem("Send regular heartbeat handshake", "",
-            [=](){ return my_module->heart_beating; },
-            [=](){ my_module->heart_beating = !my_module->heart_beating; }));
-        menu->addChild(createMenuItem("Send one heartbeat handshake (ping)", "",   [=](){ 
+        menu->addChild(createMenuItem("Send one handshake (ping)", "",   [=](){ 
             my_module->fresh_phase(InitPhase::Heartbeat);
             my_module->current_phase = InitPhase::Heartbeat;
             //my_module->sendEditorPresent();
@@ -261,7 +258,6 @@ void Hc1ModuleWidget::appendContextMenu(Menu *menu)
                 }
             }));
         menu->addChild(new MenuSeparator);
-        //menu->addChild(createMenuItem("Save presets", "", [=](){ my_module->savePresets(); }, !ready));
         menu->addChild(createMenuItem("Refresh current preset", "",  [=](){ 
             my_module->fresh_phase(InitPhase::PresetConfig);
             my_module->current_phase = InitPhase::PresetConfig;

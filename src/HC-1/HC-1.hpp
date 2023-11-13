@@ -162,19 +162,20 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, IMidiDeviceChange, midi
     void process_init_phase(const ProcessArgs& args);
 
     std::vector<InitPhaseInfo> init_phase = {
-        InitPhaseInfo{InitPhase::DeviceOutput,   InitState::Uninitialized, EMMidiRate::Full,        4.0f,   0.f },
-        InitPhaseInfo{InitPhase::DeviceInput,    InitState::Uninitialized, EMMidiRate::Full,        4.0f,   0.f },
-        InitPhaseInfo{InitPhase::DeviceHello,    InitState::Uninitialized, EMMidiRate::Third,       1.0f,   2.5f },
-        InitPhaseInfo{InitPhase::DeviceConfig,   InitState::Uninitialized, EMMidiRate::Third,       1.0f,   4.f },
-        InitPhaseInfo{InitPhase::CachedPresets,  InitState::Uninitialized, EMMidiRate::Full,        0.f,    0.f },
-        InitPhaseInfo{InitPhase::UserPresets,    InitState::Uninitialized, EMMidiRate::Third,       1.0f,  12.f },
-        InitPhaseInfo{InitPhase::SystemPresets,  InitState::Uninitialized, EMMidiRate::Third,       1.0f,  25.f },
-        InitPhaseInfo{InitPhase::Favorites,      InitState::Uninitialized, EMMidiRate::Full,        0.f,    0.f },
-        InitPhaseInfo{InitPhase::SavedPreset,    InitState::Uninitialized, EMMidiRate::Full,        1.0f,   4.f },
-        InitPhaseInfo{InitPhase::PresetConfig,   InitState::Uninitialized, EMMidiRate::Full,        1.0f,   4.f },
-        InitPhaseInfo{InitPhase::RequestUpdates, InitState::Uninitialized, EMMidiRate::Full,        0.f,    0.f },
-        InitPhaseInfo{InitPhase::Heartbeat,      InitState::Uninitialized, EMMidiRate::Full,        2.0f,   2.f },
-        InitPhaseInfo{InitPhase::Done,           InitState::Uninitialized, EMMidiRate::Full,        0.f,    0.f }
+        //            Phase                      State                     MIDI rate              Post delay  Budget
+        InitPhaseInfo{InitPhase::DeviceOutput,   InitState::Uninitialized, EMMidiRate::Full,      4.0f,       0.f },
+        InitPhaseInfo{InitPhase::DeviceInput,    InitState::Uninitialized, EMMidiRate::Full,      4.0f,       0.f },
+        InitPhaseInfo{InitPhase::DeviceHello,    InitState::Uninitialized, EMMidiRate::Third,     1.0f,       4.f },
+        InitPhaseInfo{InitPhase::DeviceConfig,   InitState::Uninitialized, EMMidiRate::Third,     1.0f,       4.f },
+        InitPhaseInfo{InitPhase::CachedPresets,  InitState::Uninitialized, EMMidiRate::Full,      0.f,        0.f },
+        InitPhaseInfo{InitPhase::UserPresets,    InitState::Uninitialized, EMMidiRate::Third,     1.0f,      12.f },
+        InitPhaseInfo{InitPhase::SystemPresets,  InitState::Uninitialized, EMMidiRate::Twentieth, 1.0f,      25.f },
+        InitPhaseInfo{InitPhase::Favorites,      InitState::Uninitialized, EMMidiRate::Full,      0.f,        0.f },
+        InitPhaseInfo{InitPhase::SavedPreset,    InitState::Uninitialized, EMMidiRate::Full,      1.0f,       4.f },
+        InitPhaseInfo{InitPhase::PresetConfig,   InitState::Uninitialized, EMMidiRate::Full,      1.0f,       4.f },
+        InitPhaseInfo{InitPhase::RequestUpdates, InitState::Uninitialized, EMMidiRate::Full,      0.f,        0.f },
+        InitPhaseInfo{InitPhase::Heartbeat,      InitState::Uninitialized, EMMidiRate::Full,      2.0f,       2.f },
+        InitPhaseInfo{InitPhase::Done,           InitState::Uninitialized, EMMidiRate::Full,      0.f,        0.f }
     };
 
     InitPhaseInfo* get_phase(InitPhase phase) { return phase == InitPhase::None ? nullptr : &init_phase[PhaseIndex(phase)]; }
@@ -219,15 +220,10 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, IMidiDeviceChange, midi
     rack::dsp::Timer device_sync;
     const float DEVICE_SYNC_PERIOD = 5.f;
 
-    // heart_beating
-    float heart_phase = 0.f;
-    float heart_time = 2.0;
-    float heartbeat_period = 4.f;
     bool first_beat = false;
     bool ready_sent = false;
     bool tick_tock = true;
     NVGcolor ledColor = green_light;
-    bool heart_beating = false;
 
     // device management
     std::shared_ptr<MidiDeviceConnection> connection = nullptr;
