@@ -122,7 +122,6 @@ std::string MidiDeviceConnectionInfo::spec() const
         s.push_back('+');
         s.append(driver_name);
         s.push_back('+');
-        assert(sequence >= 0);
         if (sequence < 10) {
             s.push_back('0' + sequence);
         } else {

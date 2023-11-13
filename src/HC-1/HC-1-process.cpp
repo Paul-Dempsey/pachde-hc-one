@@ -140,16 +140,20 @@ void Hc1Module::initOutputDevice()
         switch (r) {
             case CR::Ok:
                 connection = device_broker->get_connection(device_claim);
-                assert(connection);
-                midi_output.setDeviceId(connection->output_device_id);
-                if (connection->output_device_id != midi_output.getDeviceId()) {
-                    // subscribing failed
+                if (connection) {
+                    midi_output.setDeviceId(connection->output_device_id);
+                    if (connection->output_device_id != midi_output.getDeviceId()) {
+                        // subscribing failed
+                        reboot();
+                        return;
+                    }
+                    midi_output.setChannel(-1);
+                    finish_phase(InitPhase::DeviceOutput);
+                    completed = true;
+                } else {
                     reboot();
                     return;
                 }
-                midi_output.setChannel(-1);
-                finish_phase(InitPhase::DeviceOutput);
-                completed = true;
                 break;
             case CR::AlreadyClaimed: 
             case CR::ArgumentError:
@@ -161,16 +165,21 @@ void Hc1Module::initOutputDevice()
         auto claim = device_broker->claim_new_device(Module::getId());
         if (!claim.empty()) {
             connection = device_broker->get_connection(claim);
-            device_claim = claim;
-            midi_output.setDeviceId(connection->output_device_id);
-            if (connection->output_device_id != midi_output.getDeviceId()) {
-                // subscribing failed
+            if (connection) {
+                device_claim = claim;
+                midi_output.setDeviceId(connection->output_device_id);
+                if (connection->output_device_id != midi_output.getDeviceId()) {
+                    // subscribing failed
+                    reboot();
+                    return;
+                }
+                midi_output.setChannel(-1);
+                finish_phase(InitPhase::DeviceOutput);
+                completed = true;
+            } else {
                 reboot();
                 return;
             }
-            midi_output.setChannel(-1);
-            finish_phase(InitPhase::DeviceOutput);
-            completed = true;
         }
     }
 
@@ -275,8 +284,8 @@ void Hc1Module::process_init_phase(const ProcessArgs& args)
     } break;
 
     case InitPhase::DeviceInput: {
-        assert(finished(InitPhase::DeviceOutput));
-        assert(connection);
+        //assert(finished(InitPhase::DeviceOutput));
+        //assert(connection);
         midi::Input::setDeviceId(connection->input_device_id);
         if (connection->input_device_id != midi::Input::getDeviceId()) {
             // subscribing failed
