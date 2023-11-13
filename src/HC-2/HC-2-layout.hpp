@@ -20,11 +20,11 @@ constexpr const float ROUND_COL1 = ROUND_BOX_HALF - KNOB_RADIUS - 3.f * PAD;
 constexpr const float ROUND_COL2 = ROUND_BOX_HALF + KNOB_RADIUS + 2.f * PAD;
 constexpr const float ROUND_COL3 = ROUND_BOX_WIDTH - KNOB_RADIUS + PAD;
 constexpr const float KNOB_SPREAD = 54.25f;
-constexpr const float COMP_BOX_LEFT = 7.5;
-constexpr const float COMP_BOX_TOP = ROUND_BOX_TOP + ROUND_BOX_HEIGHT + 7.5f;
+constexpr const float COMP_BOX_LEFT = ROUND_BOX_LEFT + ROUND_BOX_WIDTH + 7.5;
+constexpr const float COMP_BOX_TOP = ROUND_BOX_TOP;
 constexpr const float COMP_BOX_HEIGHT = 62.5f;
 constexpr const float COMP_BOX_WIDTH = KNOB_SPREAD * 4.f;
 constexpr const float COMP_COL1 = 35.f;
-constexpr const float COMP_KNOB_ROW = 46.f;
+constexpr const float COMP_KNOB_ROW = 44.f;
 
 }

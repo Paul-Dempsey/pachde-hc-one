@@ -117,18 +117,18 @@ From right to left, top to bottom:
 - Below the Rounding Status LEDs, are preset navigation buttons similar to the buttons on the Continuum.
   Clicking the - or + button selects previous or next preset in the list.
   Shift+Click moves by 10 presets.
-  Ctrl+Click (Cmd on Mac) moves in device order, independent of the sorting of the current tab.
+  Ctrl+Click (Cmd on Mac) and Shift+Ctrl+Click moves in device order, independent of the sorting of the current tab.
   This is the same ordering that the buttons on the device use.
 
-- At the bottom of the preset tabs, you can see two tiny lights that move from left to right as MDIDI communications travel between the module and the Egagan Matrix.
+- At the bottom of the preset tabs, you can see two tiny lights that move from left to right as MIDI communications travel between the module and the Eagan Matrix.
   The purple light shows progress of MIDI messages **sent**, and the green light shows the progress of MIDI Messages **received**.
-  These allow you to see when the module loses MIDI communication with the device, which unfortunately can happen through no fault of HC-1.
+  These allow you to see when the module loses MIDI communication with the device, which unfortunately can happen.
 
 - The preset's Pedal assignments are shown to the bottom right of the preset list.
   If a pedal is assigned to a macro or recirculator, you will see a **`1`** or **`2`**
 next to the knob, indicating which pedal is assigned to that knob.
 
-- Below the preset listing are the macro and recirculator controls.
+- Below the preset listings are the macro and recirculator controls.
   When a preset is selected, the preset metadata is parsed, and if it contains Macro labels, these are read and shown.
   If no label is defined for a macro, you see the default Roman numerals.
   Some presets use a macro controller, but do not provide a label.
@@ -137,7 +137,7 @@ next to the knob, indicating which pedal is assigned to that knob.
 - Each Macro, Recirculator, and Volume control can operate independently (with no cable connected to the input jack), with absolute CV control, or combined Knob + CV Relative control.
   Click the **Relative mode** button to toggle between Absolute and Relative mode.
   When a cable is connected, the value of the parameter is either the input value (Absolute mode), or the sum of the Knob position and the CV value (Relative mode).
-  Absolute mode takes Unipolar 0-10v signals and Relative mode takes Bipolar signals.
+  Absolute mode takes Unipolar 0-10v signals and Relative mode takes Bipolar or Unipolar signals.
   The Relative mode indicator light is lit when the control is in relative mode,
 and the track around the knob becomes gold, with an indicator dot showing the effective value.
 
@@ -145,7 +145,9 @@ and the track around the knob becomes gold, with an indicator dot showing the ef
 
   There are menu options under **Knob control** to set all controls to Absolute or Relative mode, and to set all knobs to zero or middle position at once.
 
-- The **Ready** output produces a trigger when the EM device is fully initialized and ready to work with.
+- The **Ready** output jack produces a trigger when the EM device is fully initialized and ready to work with.
+  This is the only CV output produced by HC-1.
+  CV inputs are processed only after the device has reached "Ready".
 
 - The boxed controls are the Eagan Matrix Recirculator.
   The labels change to reflect the current preset's Recirculator type and the appropriate R1-R4 and Recirculator Mix (R5).
@@ -169,20 +171,10 @@ and the track around the knob becomes gold, with an indicator dot showing the ef
     When everything is conencted and working properly, you should see a row of blue indicators.
     When an indicator is orange, it means the corresponding item is in-progress.
 
+    Hover over an indicator to see what item it reflects and its current status.
+
     If the module gets stuck, an indicator may remain orange and you may see the MIDI communication lights stop moving.
     If you see this happen you may need to reset MIDI I/O, reboot the module from the menu, or unplug the Midi or USB or even power cycle your EM device.
-
-    These indicators are:
-
-    1. MIDI output device connection
-    1. MIDI input device connection
-    1. Connected device is a recognized Eagan Matrix, based on the device name
-    1. System presets initialized
-    1. User presets initialized
-    1. Current preset initialized
-    1. Saved preset from previous session is set
-    1. HC-1 has requested the device for updates when presets change
-    1. Device heartbeat status (heartbeat can be disabled int he menu).
 
   - In the middle is the pachde (#d) logo
   - The name of the currently connected EM device, if any
@@ -192,7 +184,14 @@ and the track around the knob becomes gold, with an indicator dot showing the ef
 
 | Menu | Option | Description |
 | -- | -- | -- |
+| **Presets** | **Restore last preset at startup** | Enable to select the last preset selected in HC-1 at startup. Disable to use whatever preset is current on the device. |
+|  | **Use saved system presets** | Turn on to use a cached list of system presets instead of (slowly) re-querying the device at startup. |
+|  | **Use saved user presets** | Turn on to use a cached list of system presets instead of (slowly) re-querying the device at startup. |
+|  | **Refresh current preset** | Request the current preset (edit slot) configuration from the device. |
+|  | **Refresh User presets** | Refresh the list of User presets from the device. Do this after adding or removing new user presets using the Haken Editor, and you have **Use saved presets** turned on. |
+|  | **Refresh System presets** | Refresh the list of System presets from the device. |
 | **Knob control** | **Center knobs** | Set all knobs to center position. |
+|  | **Center Macro knobs** | Center only Macro knobs to center position. |
 |  | **Zero knobs** | Set all knobs (except Volume) to zero position. |
 |  | **Absolute CV** | Set all controls to Absolute CV mode |
 |  | **Relative CV** | Set all controls to Relative CV mode |
@@ -203,14 +202,8 @@ and the track around the knob becomes gold, with an indicator dot showing the ef
 |  | **Delay LPF** | Use delay LPF (low-pass filter) |
 |  | **Delay HPF** | Use Delay HPF (high-pass filter) |
 | **Module** | **Reboot HC-1** | Re-initialize HC1. May be needed if MIDI communication isn't working. This always re-scans all User and System presets from the device. |
-|  | **Suppress heartbeat handshake** | Do not periodically poll the device. You may want to do this because the heartbeat can sometimes cause glitches in the audio output. Without the heartbeat, the DSP usage indicator doesn't work. |
-|  | **One handshake** | Send one heartbeat handshake. When heartbeat is suppressed, use this to take a snapshot of the DSP usage. |
-|  | **Request config** | Request the current preset (edit slot) configuration from the device. |
-|  | **Reset MIDI I/O** | Re-initialize MIDI I/O. |
-| **Presets** | **Restore last preset at startup** | Enable to select the last preset used in HC1 at startup. Disable to use whatever preset is current on the device. |
-|  | **Use saved presets** | Turn on to use a cached list of user and system presets instead of (slowly) re-querying the device at startup. |
-|  | **Save presets** | Force-save the preset lists. |
-|  | **Refresh User presets** | Refresh the list of User presets from the device. Do this after adding or removing new user presets using the Haken Editor, and you have **Use saved presets** turned on. |
+|  | **Send one handshake (ping)** | Send one heartbeat handshake to ping the device. Use this to take a snapshot of the DSP usage. |
+|  | **Remake QSPI data** | Re-initialize QSPI (additive) data. Same functions as in the Haken Editor. |
 
 ## Favorite tab menu
 
@@ -223,10 +216,10 @@ Right click on the **Favorite** tab to see the **Favorite menu**.
 | **Open...** | | Load favorites from a file (`.fav` or `.json`) |
 | **Add from...** | | Append to the current list from a favorites file. |
 | **Import Haken Editor group list** | | Create Favorites from a Haken editor group listing. Presets named in the group file are first matched by name from user presets, then from system presets. The first matching name is used. If a name is not found, it is silently omitted. |
-| **Forget and clear** | | Forget the current favorites file (if any) and empty the list. |
+| **Forget file and clear** | | Forget the current favorites file (if any) and empty the list. |
 | File _name_ | | Shows current favorites file name or `(none)` if no favorites file is open. |
 | **Save as...** | | Save current favorites to a `.fav` or `.json` file, and switch to that file. |
-| **Save copy as...** | | Save current favorites to a new `.fav` or `.json` file, but remain in the current favorites file. |
+| **Save copy as...** | | Save current favorites to a new `.fav` or `.json` file, but remain in the current favorites file. Use this to save a snapshot of the currrent favorites file. |
 | **Clear** | | Empty the current Favorites file.  |
 
 ## System tab menu
