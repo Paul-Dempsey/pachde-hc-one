@@ -58,6 +58,19 @@ struct PresetFileWidget : TipWidget
         pressed = false;
     }
 
+    void onPathDrop(const PathDropEvent& e) override {
+        if (!my_module) {
+            TipWidget::onPathDrop(e);
+            return;
+        }
+        if (!e.paths.empty()) {
+            auto path = *e.paths.cbegin();
+            my_module->files[id] = path;
+            describe(format_string("Open %s", path.c_str()));
+            e.consume(this);
+        }
+    }
+
     void onButton(const ButtonEvent& e) override {
         TipWidget::onButton(e);
         if (!my_module) return;
