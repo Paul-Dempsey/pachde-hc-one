@@ -208,34 +208,6 @@ void Hc1ModuleWidget::appendContextMenu(Menu *menu)
     bool ready = my_module->ready();
 
     menu->addChild(new MenuSeparator);
-    menu->addChild(createSubmenuItem("Knob control", "", [=](Menu* menu) {
-        menu->addChild(createMenuItem("Center knobs", "", [=](){ my_module->centerKnobs(); }, !ready));
-        menu->addChild(createMenuItem("Center Macro knobs", "", [=](){ my_module->centerMacroKnobs(); }, !ready));
-        menu->addChild(createMenuItem("Zero knobs", "", [=](){ my_module->zeroKnobs(); }, !ready));
-        menu->addChild(createMenuItem("Absolute CV", "", [=](){ my_module->absoluteCV(); }, !ready));
-        menu->addChild(createMenuItem("Relative CV", "", [=](){ my_module->relativeCV(); }, !ready));
-    }));
-
-    menu->addChild(createSubmenuItem("Recirculator", "", [=](Menu * menu) {
-        addRecirculator(menu, EM_Recirculator::Reverb);
-        addRecirculator(menu, EM_Recirculator::ModDelay);
-        addRecirculator(menu, EM_Recirculator::SweptEcho);
-        addRecirculator(menu, EM_Recirculator::AnalogEcho);
-        addRecirculator(menu, EM_Recirculator::DigitalEchoLPF);
-        addRecirculator(menu, EM_Recirculator::DigitalEchoHPF);
-    }));
-
-    menu->addChild(createSubmenuItem("Module", "", [=](Menu* menu) {
-        menu->addChild(createMenuItem("Reboot HC-1", "",     [=](){ my_module->reboot(); }));
-        menu->addChild(createMenuItem("Send one handshake (ping)", "",   [=](){ 
-            my_module->fresh_phase(InitPhase::Heartbeat);
-            my_module->current_phase = InitPhase::Heartbeat;
-            //my_module->sendEditorPresent();
-        }));
-        menu->addChild(createMenuItem("Remake QSPI Data", "", [=]() {
-            my_module->sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::remakeSRMahl); }));
-        }));
-
     menu->addChild(createSubmenuItem("Presets", "", [=](Menu* menu) {
         menu->addChild(createCheckMenuItem("Restore last preset on startup", "", 
             [=](){ return my_module->restore_saved_preset; },
@@ -271,6 +243,35 @@ void Hc1ModuleWidget::appendContextMenu(Menu *menu)
             my_module->current_phase = InitPhase::SystemPresets;
         }));
     }));
+
+    menu->addChild(createSubmenuItem("Knob control", "", [=](Menu* menu) {
+        menu->addChild(createMenuItem("Center knobs", "", [=](){ my_module->centerKnobs(); }, !ready));
+        menu->addChild(createMenuItem("Center Macro knobs", "", [=](){ my_module->centerMacroKnobs(); }, !ready));
+        menu->addChild(createMenuItem("Zero knobs", "", [=](){ my_module->zeroKnobs(); }, !ready));
+        menu->addChild(createMenuItem("Absolute CV", "", [=](){ my_module->absoluteCV(); }, !ready));
+        menu->addChild(createMenuItem("Relative CV", "", [=](){ my_module->relativeCV(); }, !ready));
+    }));
+
+    menu->addChild(createSubmenuItem("Recirculator", "", [=](Menu * menu) {
+        addRecirculator(menu, EM_Recirculator::Reverb);
+        addRecirculator(menu, EM_Recirculator::ModDelay);
+        addRecirculator(menu, EM_Recirculator::SweptEcho);
+        addRecirculator(menu, EM_Recirculator::AnalogEcho);
+        addRecirculator(menu, EM_Recirculator::DigitalEchoLPF);
+        addRecirculator(menu, EM_Recirculator::DigitalEchoHPF);
+    }));
+
+    menu->addChild(createSubmenuItem("Module", "", [=](Menu* menu) {
+        menu->addChild(createMenuItem("Reboot HC-1", "",     [=](){ my_module->reboot(); }));
+        menu->addChild(createMenuItem("Send one handshake (ping)", "",   [=](){ 
+            my_module->fresh_phase(InitPhase::Heartbeat);
+            my_module->current_phase = InitPhase::Heartbeat;
+            //my_module->sendEditorPresent();
+        }));
+        menu->addChild(createMenuItem("Remake QSPI Data", "", [=]() {
+            my_module->sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::remakeSRMahl); }));
+        }));
+
 
     // now right click on system tab
     // addSystemMenu(menu);

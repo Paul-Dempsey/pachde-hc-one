@@ -77,7 +77,7 @@ void Hc2ModuleWidget::createRoundingUI(float x, float y)
 
 void Hc2ModuleWidget::createCompressorUI(float x, float y)
 {
-    addChild(createStaticTextLabel<StaticTextLabel>(Vec(x + COMP_BOX_WIDTH*.5f, y), 60.f, "Compressor", TextAlignment::Center));
+    addChild(createStaticTextLabel<StaticTextLabel>(Vec(x + COMP_BOX_WIDTH*.5f, y + PAD), 60.f, "Compressor", TextAlignment::Center));
     addChild(createLightCentered<SmallSimpleLight<BlueLight>>(Vec(x + COMP_COL1 + 3.f * KNOB_SPREAD, y + 8.f), my_module, Hc2L::L_COMPRESSOR));
 
     float cx = x + COMP_COL1;
