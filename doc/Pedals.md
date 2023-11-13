@@ -14,7 +14,7 @@ From top to bottom, left to right:
 
 - (NYI) On the left are controls to set the minimum and maximum values for the pedal.
 
-- The slider is a virtual pedal. Drag the handle to change the pedal value.
+- The slider is a virtual pedal. Drag the handle or click anywhere on the bar to change the pedal value.
   Like all Rack knobs and sliders, hold Ctrl (fine) or Shift (coarse) while dragging to change the speed.
   When the mouse cursor is over the slider, you can roll the mouse wheel to change the value. Hold Shift, then roll to scroll faster.
 

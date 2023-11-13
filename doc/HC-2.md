@@ -1,10 +1,6 @@
 # Module HC-2
 
-HC-2 is a companion to HC-1, offering control of Rounding (including tuning/scale quantization), Pedal assignments, and a live map of MIDI channel 1 and MIDI channel 16 control codes.
-
-Let me know if the HC-2 pedal controls are useful. They are redundant given the complete support for pedals present in the Pedal 1 and Pedal 2 modules.
-
-For more detailed pedal control, see [Pedal 1 and Pedal 2](Pedals.md).
+HC-2 is a companion to HC-1, offering control of Rounding (including tuning/scale quantization), the Compressor, and a live map of MIDI channel 1 and MIDI channel 16 control codes.
 
 ![HC-2 module](HC-2.png)
 

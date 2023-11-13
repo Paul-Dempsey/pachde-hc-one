@@ -20,15 +20,12 @@ If you have an issue, please open one in the Github Issues or send me an email.
 
 To install the plugin from Github, please see **Install** in the [README](https://github.com/Paul-Dempsey/pachde-hc-one#installing).
 
-Here is the HC-1 module with it's companions HC-2 and [HC-3](HC-3.md).
+Here is the HC-1 module:
 
-![The HC One modules](HC-1.png)
-
-While they're shown side-by-side as typical for Rack modules with expanders,
-the HC One modules automatically find each other without having to sit next to each other.
+![The HC-1 module](HC-1.png)
 
 When first loaded, there is a long initialization time (a minute or two) to find the EM device, initialize the MIDI ports, and read all user and system presets from the device.
-By default, the list of presets are saved, so the next time you open the patch, it skips loading the lists from the device and you should be up and running quickly.
+By default, the list of system presets are saved, so the next time you open the patch, it skips loading the list from the device and you should be up and running quickly.
 
 You can watch the prograss of the multi-step initialization process with the row of dots on the bottom.
 When everything is connected and working as expected, all the dots are blue, and you can begin playing.
@@ -36,7 +33,7 @@ When everything is connected and working as expected, all the dots are blue, and
 ## Troubleshooting
 
 If you are running on Windows, remember that no other software can open the same MIDI device, unless you have third-party virtual MIDI software or drivers installed.
-SO make sure that you are not running the Haken Editor, a DAW, or other software that already has the device open.
+So, make sure that you are not running the Haken Editor, a DAW, or other software that has the device open.
 
 If HC-1 is unable to successfully connect and initialize fully, check that the Haken Editor can connect to the device.
 If the Haken Editor cannot connect, then neither can HC-1.
