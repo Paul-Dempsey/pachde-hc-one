@@ -8,7 +8,7 @@ See [Getting Started](https://vcvrack.com/manual/GettingStarted) in the VCV Rack
 
 Grab a current build for the latest features and fixes (must be signed into github): [![Build Status](https://github.com/Paul-Dempsey/pachde-hc-one/actions/workflows/build-plugin.yml/badge.svg)](https://github.com/Paul-Dempsey/pachde-hc-one/actions/workflows/build-plugin.yml)
 
-The beta 3 release announced online can be downloaded here: [HC-One 2.0.0-beta3](https://github.com/Paul-Dempsey/pachde-hc-one/releases/tag/v2.0.0-beta3).
+The beta 4 release announced online can be downloaded here: [HC-One 2.0.0-beta4](https://github.com/Paul-Dempsey/pachde-hc-one/releases/tag/v2.0.0-beta4).
 
 - [Documentation](doc/index.md)
 
@@ -58,6 +58,15 @@ If you want to find other modules to use (including my other plugin **pachde One
 
 Special thanks to Lippold Haken (and the Haken Audio team), for creating the Continuum.
 Lippold personally has provided generous support by sharing technical details that make this software possible.
+
+Beta testers are critical for success and covering the scenarios and hardware out there, and help me fill in the gaps on useful scenarios.
+
+Special thanks to these early adopters:
+
+- Richard Kram
+- António Machado
+
+Let me know how it's going for you, even if you haven't found any issues.
 
 ## Building
 
