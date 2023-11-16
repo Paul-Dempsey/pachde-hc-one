@@ -1,0 +1,3968 @@
+{
+  "hardware": "CMini",
+  "system": [
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 0,
+      "name": "Acrylic Clock",
+      "text": "C=OT_EC_IC_LP_BB_WB"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 1,
+      "name": "Acrylic Clock 2",
+      "text": "C=OT_EC_IC_LP_BB_WB"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 2,
+      "name": "Additive Gnilham",
+      "text": "C=VO_EC_AD"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 3,
+      "name": "Additive Vocal 1",
+      "text": "C=VO_CN_AD"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 4,
+      "name": "Additive Vocal 1 Transform",
+      "text": "C=VO_RV_AD_DS"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 5,
+      "name": "Ambiant Analog",
+      "text": "C=CL_AN_BG_EC_RV_SY_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 6,
+      "name": "Analog ADSR",
+      "text": "C=CL_AN_SY_OS_WB_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 7,
+      "name": "Analog ADSR - Var1",
+      "text": "C=CL_BA_AN_SY_OS_WB"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 8,
+      "name": "Analog Overload",
+      "text": "C=CL_AG_BG_EC_RV_SY_KI_WB"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 9,
+      "name": "Another Big One",
+      "text": "C=CL_AG_BG_RV_SY_KI_OP"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 10,
+      "name": "Anthophila Organ",
+      "text": "C=KY_OR_PA_AC_EN_OS_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 11,
+      "name": "Apiary",
+      "text": "C=KY_OR_BI_DI_EL_EN_WB_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 12,
+      "name": "Around the Periapsis",
+      "text": "C=OT_EC_SE_SY_DV_WB"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 13,
+      "name": "Around the Periapsis Ch1",
+      "text": "C=OT_EC_SE_SY_DV_WB_C1"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 14,
+      "name": "Arpeggiator 4 Step",
+      "text": "C=CL_AI_BI_DI_EC_LP_OP"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 15,
+      "name": "Arpeggiator Resonant",
+      "text": "C=CL_AI_BI_DI_EC_EN_LP_SY_OP"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 16,
+      "name": "Autocille",
+      "text": "C=CL_RV_SY_WA_OS_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 17,
+      "name": "Bacteria",
+      "text": "C=OT_AT_AI_MT_NO_RV_SD_BB_DM"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 18,
+      "name": "Bad Weather",
+      "text": "C=DO"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 19,
+      "name": "Bagpipes",
+      "text": "C=WI_RD_AC_BI_CN_BB_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 20,
+      "name": "Bajaron Light Ship",
+      "text": "C=OT_DI_EC_RV_SY_DS_OS_SB"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 21,
+      "name": "Basic Bowed Spring",
+      "text": "C=UT"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 22,
+      "name": "Basic Jenny",
+      "text": "C=UT"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 23,
+      "name": "Basic Spring Bell",
+      "text": "C=UT",
+      "fav": true,
+      "ord": 0
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 24,
+      "name": "Bass DistoSine",
+      "text": "C=CL_BA_SY_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 25,
+      "name": "Bass Monster",
+      "text": "C=CL_BA_DT_SY_OS_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 26,
+      "name": "Bass Pad",
+      "text": "C=CL_BA_BG_RV_SY_KI"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 27,
+      "name": "Beautiful Pursuit",
+      "text": "C=OT_PL_EC_LP_SR_DS_MM"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 28,
+      "name": "Beautiful Pursuit Ch1",
+      "text": "C=OT_PL_EC_LP_SR_DS_MM_C1"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 29,
+      "name": "Bell Rub",
+      "text": "C=PT_SU_AC_LP_MT_BB_HM"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 30,
+      "name": "Belle Isle",
+      "text": "C=OT_LP_SY_BB_OP_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 31,
+      "name": "Bells in the Fields",
+      "text": "C=PT_SU_EC_IN_MT_RV_SE_KI_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 32,
+      "name": "Bells of Digul",
+      "text": "C=PT_SU_AC_MT_HM_SB"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 33,
+      "name": "BiqBank - Basic",
+      "text": "C=UT"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 34,
+      "name": "BiqGraph - Basic",
+      "text": "C=UT"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 35,
+      "name": "BiqMouth - Basic",
+      "text": "C=UT"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 36,
+      "name": "Bird Echoer",
+      "text": "C=OT_EC_IN_RV_NA_SD_DS_SS"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 37,
+      "name": "Bird Whistler",
+      "text": "C=OT_NA_SD_SS"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 38,
+      "name": "Boson Particles",
+      "text": "C=CL_OR_DI_EC_LP_SY_DS_WB_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 39,
+      "name": "Bouncer",
+      "text": "C=PT_SU_AC_EC_LP_WO_BH_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 40,
+      "name": "Bowed Bells",
+      "text": "C=PT_BO_SU_AC_CN_EC_LP_MT_KI"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 41,
+      "name": "Bowed BiqBank",
+      "text": "C=ST_BO_AC_BB_KI"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 42,
+      "name": "Bowed Double Reed",
+      "text": "C=ST_RS_AC_CN_DY_MO_WA_BB_HM"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 43,
+      "name": "Bowed KinBanjo",
+      "text": "C=ST_BO_DI_MT_SY_DV_KI"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 44,
+      "name": "Bowed Mood",
+      "text": "C=ST_BO_AI_LP_DV_KI"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 45,
+      "name": "Brass Mute",
+      "text": "C=WI_BR_AC_CN_HM_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 46,
+      "name": "Bullroarer",
+      "text": "C=OT_AT_AC_AI_LP_SD_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 48,
+      "name": "Buzzard",
+      "text": "C=OT_DI_EC_RV_SY_BB_OP_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 47,
+      "name": "BuzzStrings",
+      "text": "C=ST_BO_BI_CN_DV_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 68,
+      "name": "Calliope",
+      "text": "C=WI_FL_OR_AC_AI_CN_BB_HM"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 69,
+      "name": "Carbon Marimba",
+      "text": "C=PT_SU_AC_LP_WA_WO_BB"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 70,
+      "name": "Celestial Basin",
+      "text": "C=OT_AT_AI_MT_RV_SD_BB_HM"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 71,
+      "name": "Celestial Following",
+      "text": "C=CL_AN_EC_LP_SY_DS_OS_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 72,
+      "name": "Centrifuge",
+      "text": "C=OT_AT_AI_EC_LP_SD_SE_DV_SS",
+      "fav": true,
+      "ord": 1
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 73,
+      "name": "Chinese Clarinet",
+      "text": "C=WI_RS_AC_AI_CN_HM_WO"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 74,
+      "name": "Choir",
+      "text": "C=VO_PA_SY_BM_DS_WB"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 75,
+      "name": "Choir on Kepler-452b",
+      "text": "C=VO_PA_AI_EV_SY_BB_DS_WB_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 76,
+      "name": "Choir-Ah",
+      "text": "C=VO_PA_SY_BM_DS_WB_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 77,
+      "name": "Chord Generator",
+      "text": "C=CL_CH_OS_SY",
+      "fav": true,
+      "ord": 2
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 78,
+      "name": "Chrono Z",
+      "text": "C=CL_AG_BG_EC_SY_DS_OP_OS_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 79,
+      "name": "Cimbalom - Continuous",
+      "text": "C=ST_SU_AC_CN_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 80,
+      "name": "Cimbalom - Z Pitch",
+      "text": "C=ST_SU_AC_HM"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 81,
+      "name": "Clarinet",
+      "text": "C=WI_RS_AC_CN_WA_BH_WO"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 82,
+      "name": "Clinical Oscillator 1",
+      "text": "C=CL_BR_AN_EC_SY"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 83,
+      "name": "Clinical Oscillator 2",
+      "text": "C=CL_AN_EC_SY"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 84,
+      "name": "Cork the Bottle",
+      "text": "C=OT_AT_DY_EL_SD_DV_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 85,
+      "name": "Countdown",
+      "text": "C=DO"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 86,
+      "name": "Country Resonator",
+      "text": "C=ST_PL_CN_IN_BB_MM"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 87,
+      "name": "Cowell Triangles",
+      "text": "C=OT_DI_EN_EV_LP_SY_SS"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 88,
+      "name": "Cowell Triangles Fund on Y",
+      "text": "C=SY_DI_EN_EV_LP_WB",
+      "fav": true,
+      "ord": 3
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 89,
+      "name": "Creaker",
+      "text": "C=PE_AT_AC_IN_LP_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 90,
+      "name": "CrossMod1",
+      "text": "C=OT_AN_EC_LP_SY_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 91,
+      "name": "CrossMod2",
+      "text": "C=CL_AN_EC_LP_RV_SY"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 92,
+      "name": "CrossMod3",
+      "text": "C=CL_AN_EC_LP_SY"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 93,
+      "name": "Crumb Horn",
+      "text": "C=WI_RD_AC_BI_BB_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 49,
+      "name": "CS80+Ladder",
+      "text": "C=CL_AN_BG_RV_SY_DV_OS_WB_RO",
+      "fav": true,
+      "ord": 4
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 50,
+      "name": "CS80+Ladder II",
+      "text": "C=CL_AN_BG_CH_RV_SY_DV_OS_WB_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 94,
+      "name": "Cumulus",
+      "text": "C=PT_SU_AC_BI_EC_LP_MT_SE_BB_SS_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 51,
+      "name": "CVC 10v Linear Z",
+      "text": "C=CV"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 52,
+      "name": "CVC 10v Square Z",
+      "text": "C=CV"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 53,
+      "name": "CVC 5v C0 Linear Z",
+      "text": "C=CV"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 54,
+      "name": "CVC 5v C0 Square Z",
+      "text": "C=CV"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 55,
+      "name": "CVC 5v C2 Linear Z",
+      "text": "C=CV"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 56,
+      "name": "CVC 5v C2 Square Z",
+      "text": "C=CV"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 57,
+      "name": "CVC 5v C4 Linear Z",
+      "text": "C=CV"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 58,
+      "name": "CVC 5v C4 Square Z",
+      "text": "C=CV"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 59,
+      "name": "CVC Buchla Linear Z",
+      "text": "C=CV"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 60,
+      "name": "CVC Buchla Square Z",
+      "text": "C=CV"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 61,
+      "name": "CVC Four Shape Generators",
+      "text": "C=CV"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 62,
+      "name": "CVC Voyager Linear Z",
+      "text": "C=CV"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 63,
+      "name": "CVC Voyager Square Z",
+      "text": "C=CV"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 64,
+      "name": "CVC Y Shelf Linear Z",
+      "text": "C=CV"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 65,
+      "name": "CVC Y Shelf Square Z",
+      "text": "C=CV"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 95,
+      "name": "Cycle Kalimba",
+      "text": "C=PT_LP_HM"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 96,
+      "name": "Cyncro Ecro",
+      "text": "C=OT_SU_AC_EC_LP_SY_HM_WB"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 66,
+      "name": "CZ Dirt Bass",
+      "text": "C=CL_BA_DY_EL_SY_MM_OJ"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 67,
+      "name": "CZ Dirt Bass - Var1",
+      "text": "C=CL_BA_DY_EL_SY_KI_OJ"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 97,
+      "name": "Dirty Oscillator v2",
+      "text": "C=CL_AI_AN_EC_SY_KI_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 98,
+      "name": "Distant Transmission Choir",
+      "text": "C=VO_AT_PA_RV_SY_AD_DS_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 99,
+      "name": "Distortion Man",
+      "text": "C=CL_AN_BG_DT_EC_SY_DS_OP_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 100,
+      "name": "Dolce Cristallo",
+      "text": "C=PT_BO_SU_AC_IC_IN_MT_BB",
+      "fav": true,
+      "ord": 5
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 101,
+      "name": "Dolce Cristallo Space",
+      "text": "C=PT_BO_SU_EC_IC_MT_RV_BB_DS"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 102,
+      "name": "Double Reed",
+      "text": "C=WI_RD_AC_BI_CN_WA_BB_HM"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 103,
+      "name": "Dripaphone",
+      "text": "C=PT_AC_IN_LP_WO_HM_MM"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 104,
+      "name": "Drum-Machine",
+      "text": "C=DO_AT_SU_LP_SY_DF_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 105,
+      "name": "Drum-Machine Windowed",
+      "text": "C=PE_AT_EC_LP_SE_SY_DF_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 106,
+      "name": "Drum-Set",
+      "text": "C=PE_AT_LY_SY_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 107,
+      "name": "Dual 24",
+      "text": "C=CL_AI_AN_EC_RV_SY_DV_OS_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 108,
+      "name": "Dual Resonators",
+      "text": "C=CL_OR_AN_EC_LP_SE_SY_BB_DS_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 109,
+      "name": "Dual Sinespray",
+      "text": "C=CL_AN_EC_EV_LP_SE_SY_DV_SS",
+      "fav": true,
+      "ord": 6
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 110,
+      "name": "Dual Spectra Voice",
+      "text": "C=VO_CN_SY_BM_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 111,
+      "name": "Dueling BiqBanks",
+      "text": "C=PT_SU_AC_CN_MO_BB"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 112,
+      "name": "Dulcimer Ghost",
+      "text": "C=ST_PL_SU_AI_LP_NO_BB_HM"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 113,
+      "name": "Earthquake",
+      "text": "C=DO"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 114,
+      "name": "Eastern Slider Ch1",
+      "text": "C=ST_PL_AC_BI_EC_SR_BB_DV_OS_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 115,
+      "name": "Echo 8va",
+      "text": "C=CL_AN_EC_SY_DV_OS_SV"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 117,
+      "name": "Echo of a Marimba",
+      "text": "C=PT_SU_AC_EC_LP_SE_WA_WO_HM_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 116,
+      "name": "Echo Star",
+      "text": "C=OT_AN_EC_RV_SY_DV_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 118,
+      "name": "Electric Guitar",
+      "text": "C=ST_PL_AC_SR_BM_DV"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 119,
+      "name": "Electric Guitar Saturated",
+      "text": "C=ST_PL_AG_DT_EC_BM_DV"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 120,
+      "name": "Electric Harpsychord",
+      "text": "C=KY_EP_HM_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 121,
+      "name": "Electric Wazoo",
+      "text": "C=OT_AT_DY_EL_SD_SY_BB_OP_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 123,
+      "name": "Empyrean",
+      "text": "C=WI_RS_AC_WA_OJ_OP_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 124,
+      "name": "Entanglement",
+      "text": "C=OT_AT_AG_BG_EC_EV_RV_SD_DV_OS_WB"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 125,
+      "name": "Exposure Ensemble",
+      "text": "C=OT_AI_EN_SY_DV_OP_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 7,
+      "name": "Falling Brook",
+      "text": "C=OT_AT_AI_IN_LP_NA_SD_MM"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 126,
+      "name": "FDN Crazyness",
+      "text": "C=OT_AT_AG_BG_EL_EV_RV_SD_DM"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 8,
+      "name": "Feedback String",
+      "text": "C=ST_PL_AC_CN"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 9,
+      "name": "Feelings Drone",
+      "text": "C=DO"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 10,
+      "name": "Filter -  The Ladder",
+      "text": "C=UT"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 11,
+      "name": "Flip Tube",
+      "text": "C=WI_AC_AI_AN_EC_LP_BB_BH_DS"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 12,
+      "name": "Fluter",
+      "text": "C=OT_FL_AI_LP_SY_HM"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 127,
+      "name": "FM 1",
+      "text": "C=CL_DI_FM_SY"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 0,
+      "name": "FM 2",
+      "text": "C=CL_DI_FM_SY"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 1,
+      "name": "FM Bells",
+      "text": "C=PT_FM_MT_OS_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 2,
+      "name": "FM DreamPiano",
+      "text": "C=KY_EP_AI_FM_WA_BB_OS_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 3,
+      "name": "FM DreamPiano - Var1",
+      "text": "C=KY_EP_AI_FM_WA_BB_OS_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 4,
+      "name": "FM Trails",
+      "text": "C=CL_SU_EC_FM_LP_RV_SY_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 5,
+      "name": "FOF FixRes",
+      "text": "C=VO_SY_OJ_OP",
+      "fav": true,
+      "ord": 7
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 6,
+      "name": "FOF VariableRes",
+      "text": "C=VO_SY_OP_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 13,
+      "name": "FollowDly",
+      "text": "C=OT_AN_EC_SY_DV_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 14,
+      "name": "Follower",
+      "text": "C=CL_AN_EC_SY_DV_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 15,
+      "name": "Four Point FM",
+      "text": "C=CL_DI_FM_SY"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 16,
+      "name": "Fragaria Fields",
+      "text": "C=WI_FL_AC_AI_EC_LP_WA_MM_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 17,
+      "name": "French Sax",
+      "text": "C=WI_RS_AC_AI_CN_BH_OS_MI_PO"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 18,
+      "name": "Funny Voice",
+      "text": "C=VO_CN_SY_BM_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 19,
+      "name": "GaBuZoMeu",
+      "text": "C=OT_AT_EC_LP_RV_SD_SY_DM_KI"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 20,
+      "name": "Gamelan Spinner",
+      "text": "C=PT_SU_CN_LP_MT_BB_HM_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 21,
+      "name": "Geiger Insects",
+      "text": "C=OT_AT_IN_LP_NA_SD_SE_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 22,
+      "name": "Genie Bottle",
+      "text": "C=PT_AT_SU_BB"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 23,
+      "name": "Ghost Moth",
+      "text": "C=OT_FL_AI_EC_LP_SY_BB"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 24,
+      "name": "Glas Pfeifen",
+      "text": "C=PT_SU_FM_MT_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 25,
+      "name": "Glass Chorus",
+      "text": "C=OT_AI_LP_SY_BB_OP_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 26,
+      "name": "Glass Chorus Reverse",
+      "text": "C=OT_AI_EC_LP_RV_SY_BB_OP_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 27,
+      "name": "Glass Rings",
+      "text": "C=PT_BO_SU_AI_LP_MT_MM_OP"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 28,
+      "name": "Golliclock",
+      "text": "C=OT_AT_CN_DY_LP_SD_SY_BB_OS",
+      "fav": true,
+      "ord": 8
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 29,
+      "name": "GrainSilo Woodwind",
+      "text": "C=WI_RD_AC_AI_CN_HM"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 30,
+      "name": "Grandfather Clock",
+      "text": "C=PT_SU_MT_BH"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 31,
+      "name": "Grinding Stone Calliope",
+      "text": "C=KY_OR_AC_AI_IN_BB_OS_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 32,
+      "name": "Haegum",
+      "text": "C=ST_BO_SY_BM_HM"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 33,
+      "name": "Hal Dreams",
+      "text": "C=DO"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 34,
+      "name": "Hals Meditation",
+      "text": "C=DO",
+      "fav": true,
+      "ord": 9
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 35,
+      "name": "Happy Birthday Ed 20",
+      "text": "C=OT_SY",
+      "fav": true,
+      "ord": 10
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 36,
+      "name": "HarMan - Basic",
+      "text": "C=UT"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 37,
+      "name": "Harman Morph",
+      "text": "C=OT_BR_FL_CN_DY_MO_SY_HM"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 38,
+      "name": "Harmonic Board",
+      "text": "C=OT_AT_CN_SD_SY_C1"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 39,
+      "name": "Harmonic Break",
+      "text": "C=ST_PL_DI_SY_OS_SS"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 40,
+      "name": "Harmonic Looper",
+      "text": "C=OT_DI_EV_LP_SY_HM"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 41,
+      "name": "Harmonic Viol",
+      "text": "C=ST_BO_AC_EC_EV_LP_MO_RV_DS_MM_OP"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 42,
+      "name": "HarmonicSkin",
+      "text": "C=OT_DI_SY_BB_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 43,
+      "name": "Harmonoid Spark",
+      "text": "C=KY_ST_BO_AC_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 44,
+      "name": "Harp",
+      "text": "C=ST_PL_AC_IN_MM_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 45,
+      "name": "Heavenly Corporation Ch1",
+      "text": "C=KY_OR_AC_EC_EL_RV_C1"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 46,
+      "name": "Hoop Lute",
+      "text": "C=ST_PL_AC_IN_BH_OS_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 47,
+      "name": "Hyper Pizz",
+      "text": "C=ST_PL_AC_CN_IN_WA",
+      "fav": true,
+      "ord": 11
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 48,
+      "name": "Ice Calliope",
+      "text": "C=KY_OR_AC_AI_BI_IN_NO_BB_OS_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 49,
+      "name": "Icicles 1",
+      "text": "C=PE_SU_AC_BI_IC_LP_MT_BB_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 50,
+      "name": "Icicles 2",
+      "text": "C=PE_SU_AC_BI_IC_LP_MT_BB_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 51,
+      "name": "Instant Reich",
+      "text": "C=VO_EC_EV_LP_RV_AD_DS"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 52,
+      "name": "Ishango Bone",
+      "text": "C=PT_AT_SU_WO_BB"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 54,
+      "name": "Jaw Stick 1",
+      "text": "C=PE_SU_HM"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 55,
+      "name": "Jaw Stick 2",
+      "text": "C=PE_SU_HM"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 56,
+      "name": "Jaymar Toy Piano",
+      "text": "C=KY_SU_AC_CN_DY_IN_HM_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 57,
+      "name": "Jemonica",
+      "text": "C=WI_RS_AC_BI_CN_MT"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 58,
+      "name": "Jenny Attack",
+      "text": "C=OT_AN_RV_SY_OJ"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 59,
+      "name": "Jenny Dark Acid",
+      "text": "C=OT_AG_LP_SY_OJ_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 60,
+      "name": "Jenny Dark Acid - Var1",
+      "text": "C=OT_AG_LP_SY_OJ_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 61,
+      "name": "Jenny FromTo",
+      "text": "C=OT_AN_EC_SY_KI_OJ_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 62,
+      "name": "Jenny FromTo - Var1",
+      "text": "C=OT_AN_EC_SY_KI_OJ_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 63,
+      "name": "Jenny Loops",
+      "text": "C=OT_AN_DI_LP_SY_OJ_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 64,
+      "name": "Jenny Pulse",
+      "text": "C=CL_SU_AN_EC_LP_RV_SY_OJ"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 65,
+      "name": "Jenny Random",
+      "text": "C=OT_SU_AN_BI_LP_RV_SE_SY_OJ"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 66,
+      "name": "Jenny Shepard Down",
+      "text": "C=OT_CN_EC_RV_SY"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 67,
+      "name": "Jenny Shepard Down - Var1",
+      "text": "C=OT_CN_EC_RV_SY"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 68,
+      "name": "Jenny Shepard Up",
+      "text": "C=OT_CN_EC_RV_SY"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 69,
+      "name": "Jenny Touch Drone",
+      "text": "C=CL_AN_DI_EC_LP_RV_SY_DS_OJ_OS_SV"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 70,
+      "name": "Jenny Trumpet",
+      "text": "C=WI_BR_AC_CN_WA_OJ"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 71,
+      "name": "Jenny Voice",
+      "text": "C=VO_CN_SY_OJ"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 72,
+      "name": "JennyBasic FixRes",
+      "text": "C=UT"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 73,
+      "name": "JennyBasicPad",
+      "text": "C=CL_OR_AI_AN_EC_EN_RV_OJ"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 74,
+      "name": "JennyDo",
+      "text": "C=WI_AT_FL_OJ"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 75,
+      "name": "Jerrys Horn",
+      "text": "C=WI_BR_AG_AI_BI_BB_DS_HM_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 53,
+      "name": "JPR Marimba",
+      "text": "C=PT_SU_MT_WO_BB"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 76,
+      "name": "Juggler",
+      "text": "C=SY_FL_AC_AI_DI_DY_LP_SE_BB_DV_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 77,
+      "name": "Jupiter Mission",
+      "text": "C=ST_AN_EN_SY_WB_RO",
+      "fav": true,
+      "ord": 12
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 78,
+      "name": "Karplus & ModMan",
+      "text": "C=ST_PL_CN_SR_WA_DV_MM"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 79,
+      "name": "Karplus - 1",
+      "text": "C=UT"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 80,
+      "name": "Karplus - 2",
+      "text": "C=UT"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 81,
+      "name": "Karplus - Pipe",
+      "text": "C=UT"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 82,
+      "name": "Kinetic - Bouncing",
+      "text": "C=UT"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 83,
+      "name": "Kinetic - Bowed Spring",
+      "text": "C=UT"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 84,
+      "name": "Kinetic - Bowed Waveguide",
+      "text": "C=UT"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 85,
+      "name": "Kinetic - Clavinet",
+      "text": "C=KY_SU_AC_BI_CN_DY_KI"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 86,
+      "name": "Kinetic - Clavinet - Var1",
+      "text": "C=KY_SU_AC_BI_CN_DY_KI"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 87,
+      "name": "Kinetic - Crackling Noise",
+      "text": "C=UT"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 88,
+      "name": "Kinetic - Dirty Osc",
+      "text": "C=CL_AN_SY_WA"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 89,
+      "name": "Kinetic - Dirty Osc - Var1",
+      "text": "C=CL_AN_EC_SY_WA"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 90,
+      "name": "Kinetic - Filter",
+      "text": "C=UT"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 91,
+      "name": "Kinetic - Kick",
+      "text": "C=PE_AT_SU_SY_KI",
+      "fav": true,
+      "ord": 13
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 92,
+      "name": "Kinetic - Overtones",
+      "text": "C=OT_AT_AG_DI_DT_RV_SE_SY_KI_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 93,
+      "name": "Kinetic - Spring Bell",
+      "text": "C=UT"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 94,
+      "name": "Kinetic - StickSlip Filter",
+      "text": "C=UT"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 95,
+      "name": "Kinetic - Tracker",
+      "text": "C=UT",
+      "fav": true,
+      "ord": 14
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 96,
+      "name": "Kinetic - U-Bass",
+      "text": "C=CL_BA_AN_DY_SY_KI",
+      "fav": true,
+      "ord": 15
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 97,
+      "name": "Kinetic - Vinyl",
+      "text": "C=UT"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 98,
+      "name": "Kinetic - Waveguide",
+      "text": "C=UT"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 99,
+      "name": "Kinetic AnaSeq",
+      "text": "C=CL_AG_AN_EC_LP_SE_SY_KI_WB"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 114,
+      "name": "Kinetic as Filter",
+      "text": "C=UT"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 100,
+      "name": "Kinetic Bowed FDN",
+      "text": "C=OT_AT_DA_EV_RV_SE_SO_DM_KI"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 101,
+      "name": "Kinetic Cabinet",
+      "text": "C=ST_PL_CN_DY_EN_SR_KI_MM_MI_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 102,
+      "name": "Kinetic Contioline",
+      "text": "C=KY_AC_AN_DY_EL_IN_KI"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 103,
+      "name": "Kinetic Disto Analog",
+      "text": "C=OT_AG_BG_BI_DT_EC_RV_SY_KI_WB"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 104,
+      "name": "Kinetic Dragon",
+      "text": "C=OT_AT_AG_DT_RV_SD_DM_KI"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 105,
+      "name": "Kinetic Evil Bell",
+      "text": "C=DO"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 106,
+      "name": "Kinetic Kokyu",
+      "text": "C=ST_BO_AC_CN_IN_BB_KI"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 107,
+      "name": "Kinetic MicroMotor",
+      "text": "C=OT_AT_EC_LP_SY_DM_KI"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 108,
+      "name": "Kinetic Rubber Skin",
+      "text": "C=OT_AT_AG_DT_RN_RV_SE_DM_KI"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 109,
+      "name": "Kinetic SatPad",
+      "text": "C=CL_AN_DT_AG_BG_EN_EV_RV_DS_KI_OS_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 110,
+      "name": "Kinetic Soundboard",
+      "text": "C=ST_PL_MT_RV_SR_SY_KI_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 111,
+      "name": "Kinetic Vinyl",
+      "text": "C=VO_LF_LP_NO_SY_AD_KI"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 112,
+      "name": "Kinetic WG AkouBass",
+      "text": "C=ST_BA_AC_AN_KI_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 113,
+      "name": "Kinetic WG AkouBass - Var1",
+      "text": "C=ST_BA_AC_AN_KI_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 115,
+      "name": "Kinetic-Wavebank Morph",
+      "text": "C=OT_CH_EL_RV_SY_KI_OP_WB"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 116,
+      "name": "Kontakt 1 Mono",
+      "text": "C=MD"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 117,
+      "name": "Kontakt 1 Perform",
+      "text": "C=MD"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 118,
+      "name": "Koto",
+      "text": "C=ST_PL_AC_CN_IN_SR_MM"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 119,
+      "name": "Kyma 1",
+      "text": "C=MD"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 120,
+      "name": "Kyma 2 Round",
+      "text": "C=MD"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 121,
+      "name": "Kyma 3 Initial Round",
+      "text": "C=MD"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 122,
+      "name": "Kyma 4 Release Round",
+      "text": "C=MD"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 123,
+      "name": "Ladder Bass",
+      "text": "C=CL_BA_AN_LP_SY_WB_SV"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 124,
+      "name": "Lain Heart",
+      "text": "C=CL_AN_LP_SY_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 125,
+      "name": "Lap Steel",
+      "text": "C=ST_PL_AC_EC_WA_BB_DS_MI_PO_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 126,
+      "name": "Larynx Horn",
+      "text": "C=VO_SY_BM_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 127,
+      "name": "LegacyDX EP",
+      "text": "C=KY_EP_PA_CN_DI_OS_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 0,
+      "name": "Lisithean Motor",
+      "text": "C=OT_AT_EV_IN_LP_SD_SY_SS"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 1,
+      "name": "Living Pad",
+      "text": "C=CL_AN_BG_EC_EN_EV_RV_SY_OS_WB_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 2,
+      "name": "Lonely Data",
+      "text": "C=OT_AT_DI_IN_LP_SD_SY_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 3,
+      "name": "Lost Beacon",
+      "text": "C=OT_AI_AN_IN_LP_RV_SY_WA"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 4,
+      "name": "Lost Choir",
+      "text": "C=VO_PA_AI_EN_EV_SY_BM_DS_MM_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 5,
+      "name": "M-220",
+      "text": "C=OT_AT_DI_EC_LP_RV_SD_SE_SY"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 11,
+      "name": "Magic Carillon",
+      "text": "C=DO"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 12,
+      "name": "Magic Carillon - Var1",
+      "text": "C=DO"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 13,
+      "name": "Magic Carillon - Var2",
+      "text": "C=DO"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 14,
+      "name": "Mahling 1",
+      "text": "C=VO_AC_AD"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 15,
+      "name": "Mahling 2",
+      "text": "C=VO_AC_AD"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 16,
+      "name": "Mahling 3",
+      "text": "C=VO_AC_AD"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 17,
+      "name": "Major Vision",
+      "text": "C=OT_AN_DA_LP_RV_SY_WB"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 18,
+      "name": "Mantra Voice",
+      "text": "C=VO_EV_SY_BB_BM_DV_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 19,
+      "name": "Maple Key",
+      "text": "C=OT_AT_AI_CN_IN_NA_SD"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 20,
+      "name": "Marlin Perkins 1",
+      "text": "C=PT_SU_CN_IN_WO_BB_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 21,
+      "name": "Marlin Perkins 2",
+      "text": "C=PT_SU_CN_IN_WO_BB_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 22,
+      "name": "Martian Beach",
+      "text": "C=OT_AI_BG_EN_EV_RV_SY"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 23,
+      "name": "Martian Landing Pad",
+      "text": "C=OT_AI_CH_EN_EV_RV_SY_BB_OP"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 41,
+      "name": "mBiraski",
+      "text": "C=PT_SU_CN_IN_MT_MM",
+      "fav": true,
+      "ord": 16
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 42,
+      "name": "mBiraski Ch1",
+      "text": "C=PT_SU_CN_IN_MT_MM_C1",
+      "fav": true,
+      "ord": 17
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 24,
+      "name": "Meccano",
+      "text": "C=OT_AT_BI_CN_DI_DY_LP_RN_SD_SY_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 25,
+      "name": "Mellow Pedal Steel",
+      "text": "C=ST_PL_WA_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 26,
+      "name": "Metal Bar",
+      "text": "C=PT_SU_MT_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 27,
+      "name": "Metal Rainstick",
+      "text": "C=PE_AT_AC_LP_MT_BB_SH"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 28,
+      "name": "Metal Reed",
+      "text": "C=WI_RD_RS_AC_MO_HM"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 29,
+      "name": "Metallic Glass",
+      "text": "C=PT_SU_LP_MT_BH_MM_OS_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 30,
+      "name": "Metallic Pattern Gen",
+      "text": "C=PT_AI_LP_MT_BB"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 31,
+      "name": "MicroDelay PipeWG",
+      "text": "C=WI_FL_AC_AI_CN_BM_DM_OS_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 32,
+      "name": "MicroDelay WaveGuide v1",
+      "text": "C=ST_PL_CN_DM"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 33,
+      "name": "MicroDelay WaveGuide v2",
+      "text": "C=ST_PL_CN_DM"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 34,
+      "name": "MicroDelay WaveGuide v3",
+      "text": "C=ST_PL_CN_DM"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 35,
+      "name": "Miles",
+      "text": "C=WI_BR_AC_AI_CN_MM_OS_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 36,
+      "name": "MilesBird",
+      "text": "C=WI_BR_AC_BI_HM_MM_OS_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 37,
+      "name": "Mini Shepard",
+      "text": "C=OT_AT_CN_EV_LP_SD_SY_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 38,
+      "name": "Mini Shepard Breathing",
+      "text": "C=OT_AT_AI_EV_LP_SD"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 39,
+      "name": "Mini Shepard Resonant",
+      "text": "C=OT_AT_LP_RV_SD_SY_BB_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 41,
+      "name": "Model String Wind",
+      "text": "C=ST_FL_AC_AI_MO_BB"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 40,
+      "name": "ModMan - Pulsed",
+      "text": "C=UT"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 42,
+      "name": "Mojo of FDN",
+      "text": "C=OT_AT_AC_EC_RV_SD_SR_DM"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 43,
+      "name": "Moon Witch",
+      "text": "C=OT_AT_AG_DA_EV_RV_SD_SY_BM_DV_OS_SS"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 44,
+      "name": "Morphing Church Organ",
+      "text": "C=KY_OR_EV_WA"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 45,
+      "name": "Morphing Organ",
+      "text": "C=KY_OR_EV_WA"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 46,
+      "name": "Morphing Reed",
+      "text": "C=WI_RS_BB_DV_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 47,
+      "name": "Morphing Voice",
+      "text": "C=VO_SY_BM_OS_SS"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 48,
+      "name": "Morphing Wavebank Pad 1",
+      "text": "C=OT_DI_MO_SY_OS_WB"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 49,
+      "name": "Morphing Wavebank Pad 2",
+      "text": "C=OT_OR_CH_EV_SY_OS_WB"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 50,
+      "name": "Mountain Slider",
+      "text": "C=ST_PL_AC_CN_SR_BB_DV_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 51,
+      "name": "Mountain Slider Ch1",
+      "text": "C=ST_PL_AC_CN_SR_BB_DV_C1"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 52,
+      "name": "Mouth Sequence Ch1",
+      "text": "C=VO_PL_AI_SY_C1",
+      "fav": true,
+      "ord": 18
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 6,
+      "name": "MPE 04 Voice",
+      "text": "C=MD"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 7,
+      "name": "MPE 06 Voice",
+      "text": "C=MD"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 8,
+      "name": "MPE 08 Voice",
+      "text": "C=MD"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 9,
+      "name": "MPE 12 Voice",
+      "text": "C=MD"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 10,
+      "name": "MPE+ 08 Voice",
+      "text": "C=MD"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 53,
+      "name": "Mr Kyte",
+      "text": "C=OT_AT_AG_LP_SY_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 54,
+      "name": "Music Box Because",
+      "text": "C=KY_SU_AC_CN_DY_IN_MT_MM"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 55,
+      "name": "Music Box Because Ch1",
+      "text": "C=KY_SU_AC_AI_BI_CN_EC_IN_RV_BB_MM_OS",
+      "fav": true,
+      "ord": 19
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 56,
+      "name": "Music Box Bells",
+      "text": "C=KY_SU_AC_CL_DY_IN_MT_MM"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 57,
+      "name": "Musica Minima",
+      "text": "C=KY_SU_AC_BI_CN_DY_IN_SO_BB_HM_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 58,
+      "name": "Mutable Bowl",
+      "text": "C=PT_SU_AC_MT_BH"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 59,
+      "name": "Mutable Bowl.9",
+      "text": "C=PT_SU_AC_MT_BH",
+      "fav": true,
+      "ord": 20
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 60,
+      "name": "Mutate Looper",
+      "text": "C=OT_AI_EC_LP_SY_DV_OS",
+      "fav": true,
+      "ord": 21
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 64,
+      "name": "Natural Law",
+      "text": "C=OT_OR_AN_CH_EC_LP_SY_OS_WB_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 61,
+      "name": "NFS Train 900",
+      "text": "C=CL_AN_DI_EC_LP_LY_SE_SY_KI_OP_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 62,
+      "name": "NGoni",
+      "text": "C=ST_PL_AC_CN_SR_BB_MM_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 63,
+      "name": "NGoni - Kinetic",
+      "text": "C=ST_PL_AC_CN_SR_DV_KI_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 65,
+      "name": "Noise - Out of Phase",
+      "text": "C=UT"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 66,
+      "name": "Noise - Pink",
+      "text": "C=UT"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 68,
+      "name": "Noise - White at -35 RMS",
+      "text": "C=UT"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 67,
+      "name": "Noise - White Stereo",
+      "text": "C=UT"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 69,
+      "name": "Noisy Old Oscillator",
+      "text": "C=CL_AN_LF_NO_SY_KI_OP_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 70,
+      "name": "Northern Lights",
+      "text": "C=ST_BO_AC_EV_IC_IN_LP_SY",
+      "fav": true,
+      "ord": 22
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 71,
+      "name": "Notch Lightning",
+      "text": "C=CL_AN_BI_DI_SE_SY_DV_OS_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 72,
+      "name": "Octavator",
+      "text": "C=OT_DI_EC_RV_SY_DS_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 73,
+      "name": "Octave Phases",
+      "text": "C=OT_DA_EC_EV_LP_RV_SY_BB_OS_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 74,
+      "name": "Old Pad Machine",
+      "text": "C=KY_OR_AN_EN_EV_SY_BB_DS_OP_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 75,
+      "name": "Omnisphere 1 Perform",
+      "text": "C=MD"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 76,
+      "name": "Omnisphere 2 Round",
+      "text": "C=MD"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 77,
+      "name": "Omnisphere 3 Initial Round",
+      "text": "C=MD"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 78,
+      "name": "Omnisphere 4 Semitone",
+      "text": "C=MD"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 79,
+      "name": "Omnisphere 5 Mono",
+      "text": "C=MD"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 80,
+      "name": "Orchester",
+      "text": "C=OT_AI_BG_EN_EV_SY_BB_HM_OP_OS_WB_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 81,
+      "name": "Organo Espressivo",
+      "text": "C=KY_OR_EL_OS_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 82,
+      "name": "Organzilla",
+      "text": "C=KY_SY_OR_AG_AN_BG_BI_RV_WB_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 83,
+      "name": "Osc - A440 at -35",
+      "text": "C=UT"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 84,
+      "name": "Osc - Formula Delay",
+      "text": "C=UT"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 85,
+      "name": "Osc - Pitch via Z",
+      "text": "C=UT"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 86,
+      "name": "Osc - Random Pitch",
+      "text": "C=UT"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 87,
+      "name": "Osc - Sine Wave",
+      "text": "C=UT"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 88,
+      "name": "Osc - Subtractive Synth",
+      "text": "C=UT"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 89,
+      "name": "Osc - Waveshaping",
+      "text": "C=UT"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 90,
+      "name": "OvertoneBar",
+      "text": "C=PT_AI_IC_IN_MT_NO_SY_BB_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 92,
+      "name": "Overtones",
+      "text": "C=OT_AT_AG_NO_SD_SY_DV_KI_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 91,
+      "name": "OvertoneWind",
+      "text": "C=WI_AI_NO_SY_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 95,
+      "name": "Pad Tie",
+      "text": "C=OT_OR_PA_EV_SY_BB_OS_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 97,
+      "name": "Panpipe Loops",
+      "text": "C=WI_AI_EC_LP_RV_BB"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 96,
+      "name": "PanPipe Solo",
+      "text": "C=WI_FL_AI_CN_NO_DM_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 98,
+      "name": "Patville",
+      "text": "C=OT_PA_AN_EC_EN_SY_WA_OS_WB_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 93,
+      "name": "PCS Dandelion",
+      "text": "C=OT_BI_EC_EV_IC_SY_OP_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 94,
+      "name": "PCS Fixed",
+      "text": "C=KY_OR_AN_DY_EL_OJ_OS_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 99,
+      "name": "Phase Controled ModMan",
+      "text": "C=OT_DI_EV_LF_RV_SY_MM_OJ_OP"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 100,
+      "name": "Philco Chromatic",
+      "text": "C=OT_AT_CN_DY_EL_SD_SY_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 101,
+      "name": "Pinched FM",
+      "text": "C=OT_BI_DT_EL_SY"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 102,
+      "name": "Ping Pong",
+      "text": "C=OT_AN_DY_LP_SE_SY_DV_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 103,
+      "name": "Pipedreams",
+      "text": "C=WI_FL_AC_AI_EC_LP_RV_SY_BH_OP_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 104,
+      "name": "Plane Tiv Organ",
+      "text": "C=KY_OR_AN_CN_EL_OS_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 105,
+      "name": "Pleasantness",
+      "text": "C=CL_PA_EC_EV_SY_DV_OS_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 106,
+      "name": "Plinklies",
+      "text": "C=PT_SU_AC_IN_LP_MT_BB"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 107,
+      "name": "Pluck Tine",
+      "text": "C=PT_SU_AC_MT"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 108,
+      "name": "Plucked Soup Can",
+      "text": "C=ST_PL_AC_CN_HM"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 109,
+      "name": "Plutonium",
+      "text": "C=CL_AN_EC_LP_SE_SY_WB_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 110,
+      "name": "Polychromatic",
+      "text": "C=OT_CH_SY_WA_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 111,
+      "name": "Portable Reed",
+      "text": "C=KY_RD_AC_CN_DY_IN"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 112,
+      "name": "Positiv Organ",
+      "text": "C=KY_OR_AC_AI_CN_DY_BB_OS_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 113,
+      "name": "Pterodactyl",
+      "text": "C=OT_AT_AG_SD_SY_HM_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 114,
+      "name": "Pulsar",
+      "text": "C=PT_AC_EC_LP_RV_BB_DV"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 115,
+      "name": "Pulse",
+      "text": "C=OT_AT_DI_EV_FM_LP_SY_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 116,
+      "name": "Pusher",
+      "text": "C=ST_PL_SY_BB_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 117,
+      "name": "Quaverer",
+      "text": "C=KY_OR_CN_EL_IN_RO",
+      "fav": true,
+      "ord": 23
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 118,
+      "name": "Random Fun",
+      "text": "C=OT_AT_EC_EV_LP_RN_SD_SY_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 119,
+      "name": "Random Texture",
+      "text": "C=OT_AT_AI_EC_RN_RV_SD_BB_BM_DV_OP_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 120,
+      "name": "Random Trigger",
+      "text": "C=OT_AT_AC_EC_RN_RV_SD_SE_BB"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 121,
+      "name": "Razor Loops",
+      "text": "C=OT_DI_EL_EV_LP_MT_SD_DV"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 122,
+      "name": "Remembrance Bells",
+      "text": "C=PT_SU_AC_EC_MT_RV_DS_HM",
+      "fav": true,
+      "ord": 24
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 123,
+      "name": "Resizable Guitar",
+      "text": "C=ST_PL_AC_EC_SR_BB_MI_PO_RO",
+      "fav": true,
+      "ord": 25
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 124,
+      "name": "Resodynamic",
+      "text": "C=ST_PL_AC_HM_OS_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 125,
+      "name": "Resonant Drum 1",
+      "text": "C=PE_AT_SU_AI_NO_WO_BB"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 126,
+      "name": "Resonant Drum 2",
+      "text": "C=PE_AT_SU_MT_BB"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 127,
+      "name": "Rhythm And Bass",
+      "text": "C=ST_BA_AC_MM_SV"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 0,
+      "name": "Ring Mod - Basic",
+      "text": "C=UT"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 1,
+      "name": "Ring Mod - Voice",
+      "text": "C=VO_LP_SY_OS_WB"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 2,
+      "name": "Ring Mod - Voice - Var1",
+      "text": "C=VO_LP_SY_OS_WB",
+      "fav": true,
+      "ord": 26
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 3,
+      "name": "Ring Mod - Voice 1",
+      "text": "C=VO_LP_SY_OS_WB"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 4,
+      "name": "Ring Mod - Voice 2",
+      "text": "C=VO_LP_SY_OS_WB"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 5,
+      "name": "Roller",
+      "text": "C=DO"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 6,
+      "name": "Rosetta Alarm",
+      "text": "C=DO"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 7,
+      "name": "Rosin Oscillator",
+      "text": "C=OT_AI_RV_SY"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 8,
+      "name": "Roto String",
+      "text": "C=ST_BO_AC_AI_LP_NO"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 9,
+      "name": "Rub",
+      "text": "C=ST_BO_AC_BI_CN_SR_BB_OP"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 10,
+      "name": "Rub String",
+      "text": "C=ST_PL_AC_CN_SR_BB_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 11,
+      "name": "Rubber Band Stars",
+      "text": "C=OT_EV_LP_SD_HM"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 12,
+      "name": "Sawz",
+      "text": "C=CL_PA_AI_BG_EC_EN_SE_DS_OP_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 13,
+      "name": "Saxmosis",
+      "text": "C=WI_RS_AC_AI_CN_HM"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 14,
+      "name": "Scratching FDN",
+      "text": "C=OT_AT_AC_RV_SD_SR_DM"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 15,
+      "name": "Seasons Ch1",
+      "text": "C=OT_PA_AN_BI_EC_EV_SY_DF_OS_WB_C1"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 16,
+      "name": "Sequencer 1 Ch1",
+      "text": "C=OT_LP_LY_SY_EM_OS_WB_C1"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 17,
+      "name": "Shimmer",
+      "text": "C=OT_PA_AI_CH_EV_LP_RV_SE_SY_BB_DS_OP"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 18,
+      "name": "Should I Stay or Should I Go",
+      "text": "C=VO_CN_AD"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 20,
+      "name": "SiloString Pizz",
+      "text": "C=ST_PL_AC_CN_HM_MI_PO"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 21,
+      "name": "Silver Mirror",
+      "text": "C=ST_PL_EV_RV_HM_OS_MI_PO_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 23,
+      "name": "Simple and Nice",
+      "text": "C=OT_AN_EC_SY_WA_DS_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 22,
+      "name": "Simple Organ",
+      "text": "C=KY_OR_CN_EL_OS_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 24,
+      "name": "Sine Chaser",
+      "text": "C=CL_AN_CN_EC_SY_DS_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 25,
+      "name": "Sine Kalimba",
+      "text": "C=PT_SU_AC_IN_MT_HM_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 26,
+      "name": "Sine2Sax",
+      "text": "C=WI_RS_AC_CN_BB_SB_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 27,
+      "name": "SineBank - Basic",
+      "text": "C=UT"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 28,
+      "name": "SineBank FM String",
+      "text": "C=ST_BI_CN_FM_SY_OS_SB"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 29,
+      "name": "SineBank Horn",
+      "text": "C=WI_BR_AC_FM_SB"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 30,
+      "name": "SinePhases",
+      "text": "C=OT_LP_SY_WA"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 31,
+      "name": "SineSpray - Basic",
+      "text": "C=UT"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 32,
+      "name": "SineSpray Rain",
+      "text": "C=DO"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 33,
+      "name": "SineSpray Rain via Surface",
+      "text": "C=OT_AT_AG_IN_LP_NA_NO_RN_SD_SS"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 34,
+      "name": "Sineysitus",
+      "text": "C=CL_OR_AN_LP_SY_WA_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 35,
+      "name": "Singing Bamboo",
+      "text": "C=ST_PL_AC_WO_BB_HM_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 36,
+      "name": "Singing Bamboo 2",
+      "text": "C=ST_PL_AC_WO_BB_HM_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 37,
+      "name": "Singing Noise",
+      "text": "C=OT_AI_NO_SY_BB_HM_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 38,
+      "name": "Singing Oscillators",
+      "text": "C=VO_PA_AI_SY_BM_DS_OS_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 39,
+      "name": "Single Reed",
+      "text": "C=WI_RS_AC_WA_WO_BB_HM"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 40,
+      "name": "Sinseong-ri",
+      "text": "C=ST_PL_CN_IN_LP_SO_SR_MM"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 19,
+      "name": "SiTan",
+      "text": "C=ST_BO_SU_BI_CN_SY_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 41,
+      "name": "Slide Wind",
+      "text": "C=WI_FL_AC_AI_WA"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 42,
+      "name": "Slide Wind EM",
+      "text": "C=WI_FL_AC_AI_WA_BH_OS",
+      "fav": true,
+      "ord": 27
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 43,
+      "name": "SlideyPizz",
+      "text": "C=ST_BO_PL_AC_CN_IN_HM"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 44,
+      "name": "Slip Zen",
+      "text": "C=OT_PL_AC_CN_EC_IN_LY_WA_BB_DS"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 45,
+      "name": "Slow Evolver",
+      "text": "C=OT_OR_AN_CN_EL_EV_LP_SY_DS_WB"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 46,
+      "name": "Small Cloud Gamelan",
+      "text": "C=PT_BO_SU_AC_MT_RV_MM_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 47,
+      "name": "Small Steel",
+      "text": "C=ST_PL_AC_CN_SR_BB_MI_PO_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 48,
+      "name": "Snap Bass",
+      "text": "C=ST_BA_AC_CN_HM"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 49,
+      "name": "Snap String",
+      "text": "C=ST_PL_AC_MT_HM_MI_PO_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 50,
+      "name": "Sonogram",
+      "text": "C=OT_AT_LP_NO_SD_SE_SS"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 51,
+      "name": "Soprano Recorder",
+      "text": "C=WI_FL_AC_AI_CN_BB_BH_DM_OS_PO_SV"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 52,
+      "name": "Soundboard",
+      "text": "C=OT_AT_AC_AG_RV_DM_SD"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 53,
+      "name": "Space",
+      "text": "C=OT_AI_CH_LP_RV_SE_SY_BB_DS"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 54,
+      "name": "Space Async",
+      "text": "C=OT_AI_CH_EC_LP_SE_SY_BB_DS"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 55,
+      "name": "Space Flute",
+      "text": "C=WI_FL_AI_EC_IN_LP_MT_SO_WA_BH_DV"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 56,
+      "name": "Space Jaw",
+      "text": "C=_DI_EL_LP_DV_SS"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 57,
+      "name": "Spectral Marimba",
+      "text": "C=PT_SU_AC_IN_SO_BB_HM_RO",
+      "fav": true,
+      "ord": 28
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 58,
+      "name": "Spectrum with MidiClock",
+      "text": "C=OT_EC_LP_RV_SY_DV_EM_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 59,
+      "name": "Spiccato Tremolo Dual",
+      "text": "C=ST_BO_AC_CN_EN_LP_SE_MM"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 60,
+      "name": "Spiccato Tremolo Single",
+      "text": "C=ST_BO_AC_CN_LP_SE_MM",
+      "fav": true,
+      "ord": 29
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 61,
+      "name": "Spinning Duet",
+      "text": "C=_FL_AC_EC_EV_LP_HM"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 62,
+      "name": "Spinning Metal Rings",
+      "text": "C=PT_CN_EV_IC_LP_MT_HM"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 63,
+      "name": "Spinning Oboe",
+      "text": "C=WI_RD_EC_EV_LP_WA_HM"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 64,
+      "name": "Spiritus Subteranne",
+      "text": "C=OT_PA_AI_NO_BH_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 65,
+      "name": "Spit Tube",
+      "text": "C=WI_FL_AI_LP_NO_RN_BB_DV"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 66,
+      "name": "Splat",
+      "text": "C=DO"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 67,
+      "name": "Spring Shimming Bell",
+      "text": "C=PT_SU_IN_LP_SO_KI_OS_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 68,
+      "name": "Sputnik's Dream",
+      "text": "C=OT_AT_DI_EC_LP_SD_SY_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 69,
+      "name": "Square Bass",
+      "text": "C=CL_BA_AN_DY_SY_WB_SV"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 70,
+      "name": "Square FM",
+      "text": "C=CL_RS_AN_FM_SY_WA_OS",
+      "fav": true,
+      "ord": 30
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 71,
+      "name": "Squaresville",
+      "text": "C=CL_PA_EC_EN_EV_SY_WB_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 72,
+      "name": "Squeaky Balloon String",
+      "text": "C=ST_BO_AC_CN_SR_BB_KI",
+      "fav": true,
+      "ord": 31
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 73,
+      "name": "Steel Pan Kalimba",
+      "text": "C=PT_SU_MT_HM",
+      "fav": true,
+      "ord": 32
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 74,
+      "name": "Stellar Bowls",
+      "text": "C=ST_BO_PL_AC_MT_HM"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 75,
+      "name": "Strummed Gtr 3HRSolo",
+      "text": "C=ST_PL_AC_CN_SR_DV_OS_TA"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 76,
+      "name": "Strummed Gtr Rythm T 950",
+      "text": "C=ST_PL_AC_CN_EL_SR_DV_OS_TA"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 77,
+      "name": "Sub-Harmonic Generator",
+      "text": "C=OT_CH_RV_SY_WA_OS_WB_PO_SV"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 78,
+      "name": "Submit Job to Mainframe",
+      "text": "C=OT_AT_DI_DY_RN_SD_SY_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 79,
+      "name": "SuperWave",
+      "text": "C=OT_BG_EV_SY_WA_DV_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 80,
+      "name": "Sweet Triangle",
+      "text": "C=OT_EV_IN_SY_WB"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 81,
+      "name": "Swept Delay",
+      "text": "C=OT_BG_EV_RV_SY_DV_OS_SV"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 82,
+      "name": "Swirl",
+      "text": "C=OT_AT_DY_LP_SD_DV_OS",
+      "fav": true,
+      "ord": 33
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 83,
+      "name": "Sympathetica",
+      "text": "C=PT_AT_MT_HM_MM"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 84,
+      "name": "Sympathy String",
+      "text": "C=ST_BO_PL_AC_EV_SY_BB_DV_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 85,
+      "name": "Synchronous Orbits",
+      "text": "C=ST_AC_EC_LP_RV_SR_WA_BB_HM_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 86,
+      "name": "Synth Brass",
+      "text": "C=CL_BR_AN_CN_SY_OS",
+      "fav": true,
+      "ord": 34
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 87,
+      "name": "Synth Lead 1",
+      "text": "C=CL_AN_EC_SY_DV_OS_PO_SV"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 88,
+      "name": "Synth Lead 2",
+      "text": "C=CL_AN_CH_SY_OS_WB_PO_SV"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 89,
+      "name": "Synth Lead 3",
+      "text": "C=CL_CH_EC_RV_SE_SY_DS_WB"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 90,
+      "name": "Synth Lead 4",
+      "text": "C=CL_AN_CN_EC_SY_DF_OS_PO_SV"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 91,
+      "name": "Synth Lead 5",
+      "text": "C=CL_AN_BI_EC_SY_OS_WB_PO_SV"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 92,
+      "name": "Synth Lead 6",
+      "text": "C=CL_AI_EC_NO_SY_DS_OS_PO_SV"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 93,
+      "name": "Synthetic Cathedral",
+      "text": "C=OT_AI_BG_EC_EN_SE_SY_DS_OP_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 94,
+      "name": "Tap Sitar",
+      "text": "C=ST_PL_AC_CN_RV_HM_RO",
+      "fav": true,
+      "ord": 35
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 95,
+      "name": "Tapestry",
+      "text": "C=ST_BO_AC_CN_EC_RV_DS_MM"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 96,
+      "name": "Tesla Coil",
+      "text": "C=OT_AT_AG_EL_NO_SD_DV_OS",
+      "fav": true,
+      "ord": 36
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 97,
+      "name": "Tesla's Dream",
+      "text": "C=OT_NO_SD_SE_SY_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 98,
+      "name": "The Long Goodbye",
+      "text": "C=OT_DI_EC_EV_LP_SY_BB_DF_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 99,
+      "name": "The Slow Descent",
+      "text": "C=OT_BG_EV_LP_RV_SD_SY_OS_WB"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 100,
+      "name": "The Touch Guitar",
+      "text": "C=ST_PL_AC_EC_IN_RV_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 101,
+      "name": "The Wind on Callisto",
+      "text": "C=OT_AT_AI_BG_NA_NO_RV_SD_WA"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 102,
+      "name": "Three Cycles",
+      "text": "C=OT_EV_LP_SY_DV_OS_SS"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 103,
+      "name": "Three Saws",
+      "text": "C=CL_PA_BG_EN_SY_DS_OS_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 104,
+      "name": "Three Sines",
+      "text": "C=OT_OR_PA_AN_CN_EC_LP_SY_WA_DV_OS_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 105,
+      "name": "Throat Battle",
+      "text": "C=DO"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 106,
+      "name": "Through the Photodiode",
+      "text": "C=OT_PA_AI_EV_IN_LP_SY_AD_OS_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 107,
+      "name": "Tibetan Throat Stick",
+      "text": "C=VO_CN_LP_SY_BM_DV_HM_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 108,
+      "name": "Tick Bodies",
+      "text": "C=OT_EC_LP_SE_BB"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 109,
+      "name": "Tick Tube",
+      "text": "C=PT_SU_CN_DY_LP_BB"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 110,
+      "name": "Timbre Morph",
+      "text": "C=PT_RD_SU_AC_MO"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 111,
+      "name": "Tin Whistle",
+      "text": "C=WI_FL_CN_BH_DM_OS_PO_SV"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 112,
+      "name": "Tine",
+      "text": "C=KY_EP_AC_CN_DY_EL_IN_BH_HM"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 113,
+      "name": "Touch Voice T",
+      "text": "C=VO_RV_TA"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 114,
+      "name": "Transistor",
+      "text": "C=OT_OR_AN_BI_EL_LF_NO_SY_DV_HM_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 115,
+      "name": "Transporter",
+      "text": "C=OT_AT_CH_DY_EV_SD_SE_SY_WB"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 116,
+      "name": "Tremolo Resonator",
+      "text": "C=PT_SU_IC_LP_MT_RV_BB_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 117,
+      "name": "TriMod",
+      "text": "C=OT_DI_FM_LP_SY_BB_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 118,
+      "name": "Tubular Bells",
+      "text": "C=PT_SU_AC_MT_RV_BB"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 119,
+      "name": "Tunable Tanpura",
+      "text": "C=ST_PL_AC_CN_RV_HM_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 120,
+      "name": "Two Chords",
+      "text": "C=DO"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 121,
+      "name": "Two Handed Voice",
+      "text": "C=VO_AC_SY_BB_BM_OS_SP"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 122,
+      "name": "TwoOneDrone",
+      "text": "C=DO"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 123,
+      "name": "Uki Bells",
+      "text": "C=PT_SU_AC_CN_IN_HM_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 124,
+      "name": "Uki Pizz 1",
+      "text": "C=ST_PL_AC_CN_IN_HM_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 125,
+      "name": "Uki Pizz 2",
+      "text": "C=ST_PL_AC_CN_IN_HM_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 126,
+      "name": "Uki Pizz w Snap",
+      "text": "C=ST_PL_AC_CN_IN_HM_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 127,
+      "name": "Unanswered Question",
+      "text": "C=OT_AT_AI_MT_NO_RV_SD_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 0,
+      "name": "Unstable Wave",
+      "text": "C=OT_PA_AI_BI_EC_LF_NO_SY_DS_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 1,
+      "name": "VBrass 1",
+      "text": "C=WI_BR_AC_BI_CN_SY_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 2,
+      "name": "VBrass 2",
+      "text": "C=WI_BR_AC_BI_CN_SY_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 3,
+      "name": "Venusian Beach",
+      "text": "C=OT_PA_AI_EV_LP_SY_BB_OP_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 4,
+      "name": "Victrola",
+      "text": "C=OT_IN_LF_LP_NO_RV_SD_SY_BB_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 5,
+      "name": "Victrola 2",
+      "text": "C=OT_IN_LF_LP_NO_RV_SD_SY_BB_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 6,
+      "name": "Vintage Electro",
+      "text": "C=KY_OR_BI_EL_OP_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 7,
+      "name": "Vln Vla Cel Bass 1",
+      "text": "C=ST_BO_AC_CN_BB_HM"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 8,
+      "name": "Vln Vla Cel Bass 2",
+      "text": "C=ST_BO_AC_CN_BB_HM"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 9,
+      "name": "Vln Vla Cel Bass 2 Ch1",
+      "text": "C=ST_BO_AC_CN_BB_HM_C1"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 10,
+      "name": "Vln Vla Cel Bass 3",
+      "text": "C=ST_BO_AC_CN_BB_HM"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 11,
+      "name": "Vln Vla Cel Bass 4",
+      "text": "C=ST_BO_AC_CN_BB_HM"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 12,
+      "name": "Vln Vla Cel Bass Bridge",
+      "text": "C=ST_BO_AC_CN_BB_HM"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 13,
+      "name": "VlnVlaVlcCbFull",
+      "text": "C=ST_BO_AC_CN_EN_HM_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 14,
+      "name": "VlnVlaVlcCbPlus",
+      "text": "C=ST_BO_AC_EN_RV_DS_HM_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 15,
+      "name": "Vocalise",
+      "text": "C=VO_CN_SY_BM_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 16,
+      "name": "Vocalized Buzzard",
+      "text": "C=VO_BG_EV_SY_BB_BM_OP_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 17,
+      "name": "Voice Jumper",
+      "text": "C=CL_AN_LP_SY_BB_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 18,
+      "name": "Voice of the Woods",
+      "text": "C=OT_AT_AG_BG_EV_RV_SD_SY_BB_DV_SS"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 19,
+      "name": "Vowel",
+      "text": "C=VO_CN_SY_BM_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 20,
+      "name": "Voyager",
+      "text": "C=OT_BI_EV_SY_DS_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 21,
+      "name": "Waterphone Strings",
+      "text": "C=ST_PA_LP_SY_DV_OS_RO",
+      "fav": true,
+      "ord": 37
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 22,
+      "name": "Waterphonie",
+      "text": "C=OT_AT_BI_MT_RV_SD_DM_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 23,
+      "name": "WaveBank - Basic",
+      "text": "C=UT",
+      "fav": true,
+      "ord": 38
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 24,
+      "name": "WaveShaped",
+      "text": "C=OT_AG_DT_EC_RV_SY_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 25,
+      "name": "Whirligigs",
+      "text": "C=OT_OR_PA_AI_EC_IC_LP_SY_WA_BH_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 26,
+      "name": "Wind",
+      "text": "C=WI_FL_AI_CN"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 27,
+      "name": "Wind Beach",
+      "text": "C=OT_AT_DY_NA_NO_SD_BB"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 28,
+      "name": "Wind Drum",
+      "text": "C=PE_AT_SU_AI_NO_BM_MM"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 29,
+      "name": "Windtube Air Reed",
+      "text": "C=WI_FL_AC_AI_CN_BH_HM_SP"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 30,
+      "name": "Windtube Double Reed",
+      "text": "C=WI_RD_AC_CN_BH_HM_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 31,
+      "name": "Windtube Single Reed",
+      "text": "C=WI_RS_AC_AI_CN_WO_BB_HM_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 32,
+      "name": "Winter Skipping Pond",
+      "text": "C=OT_EC_IC_LP_SD_SY_BB_DS"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 33,
+      "name": "Wobble Plate",
+      "text": "C=OT_AT_MT_RV_SD_DV_OP"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 34,
+      "name": "Woodwind",
+      "text": "C=WI_RS_AC_AI_CN_WO_BH"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 43,
+      "name": "xpStrings",
+      "text": "C=ST_BO_AC_CN_BB_HM"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 35,
+      "name": "ZawiFlute8",
+      "text": "C=WI_BR_FL_AI_LY_SY_BB_HM_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 36,
+      "name": "Zazipad",
+      "text": "C=OT_PA_AI_EC_EN_NO_RV_SY_OP_OS_WB_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 37,
+      "name": "Zipper",
+      "text": "C=OT_AT_CN_DY_NA_SD_SR_KI"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 38,
+      "name": "Zuie",
+      "text": "C=PT_SU_CN_LP_MT_HM_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 39,
+      "name": "Zwei Baende",
+      "text": "C=CL_AN_SY_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 40,
+      "name": "Zwei Baende with Noise",
+      "text": "C=CL_AN_SY_BB_OS"
+    }
+  ]
+}

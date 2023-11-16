@@ -1,0 +1,3708 @@
+{
+  "hardware": "Osmose",
+  "system": [
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 0,
+      "name": "abyss lands",
+      "text": "C=CL_PA_DA_EC_RV_LY_EV"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 1,
+      "name": "acid bass",
+      "text": "C=CL_BA_DT_AG_AN_SE_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 2,
+      "name": "acouskop",
+      "text": "C=CL_BA_AC_FM_DT_SH"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 3,
+      "name": "acuitar",
+      "text": "C=ST_PL_AC_PO"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 4,
+      "name": "aerials",
+      "text": "C=CL_KY_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 5,
+      "name": "after the rain",
+      "text": "C=OT_PA_AC_NO_DP"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 6,
+      "name": "alacloud",
+      "text": "C=PT_SU_AC_EC_LP_PA"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 7,
+      "name": "alenvers",
+      "text": "C=CL_PA_FM_LP_SE"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 8,
+      "name": "algo call",
+      "text": "C=CL_PA_FM_SE"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 9,
+      "name": "altersaw",
+      "text": "C=CL_LE_KY_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 10,
+      "name": "ambiant analog 1",
+      "text": "C=KY_AN_BG_EC_RV_SY_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 11,
+      "name": "analog adsr",
+      "text": "C=KY_AN_SY_OS_WB_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 12,
+      "name": "analog scream",
+      "text": "C=CL_KY_BG_DT_AG_AN_SE_WA_DV_OS_WB_NO"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 13,
+      "name": "anareed",
+      "text": "C=WI_RS_AC_AN_PO"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 14,
+      "name": "anatolianpad",
+      "text": "C=CL_PA_AN_CH"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 15,
+      "name": "another big one",
+      "text": "C=CL_AG_BG_RV_SY_PA_OP_DP"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 16,
+      "name": "anthophila organ",
+      "text": "C=KY_OR_PA_AC_EN_OS_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 17,
+      "name": "aplassian",
+      "text": "C=ST_PL_AC_EL"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 18,
+      "name": "aqueous feel",
+      "text": "C=KY_AI_BI_CN_DI"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 19,
+      "name": "arcadiaPan",
+      "text": "C=WI_FL_AC"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 20,
+      "name": "archer",
+      "text": "C=ST_BO_AC"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 21,
+      "name": "astral titans",
+      "text": "C=CL_PA_FM_DT_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 22,
+      "name": "azure key",
+      "text": "C=KY_SI_SO_BI_CN_DI"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 23,
+      "name": "babrass",
+      "text": "C=WI_BR_AC"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 24,
+      "name": "bacteria",
+      "text": "C=OT_AT_AI_MT_NO_RV_SD_BB_DM"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 25,
+      "name": "badratios bell",
+      "text": "C=PT_SD_AT_FM"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 26,
+      "name": "balafun",
+      "text": "C=PT_SU_AC_WO"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 27,
+      "name": "balloon from hanoi",
+      "text": "C=ST_PL_AC_CN_SR_BB_KI"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 28,
+      "name": "bandrive paradise",
+      "text": "C=CL_LE_AN_DT"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 29,
+      "name": "banjoy",
+      "text": "C=ST_PL_AC_SH"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 30,
+      "name": "bansuri",
+      "text": "C=WI_FL_AC_SO_WO_DP"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 31,
+      "name": "bass distosine",
+      "text": "C=CL_BA_SY_OS_AC"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 32,
+      "name": "bass monster",
+      "text": "C=CL_BA_DT_SY_OS_RO_AN_PO"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 33,
+      "name": "bass pad",
+      "text": "C=CL_PA_AN_DT_AG"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 34,
+      "name": "bazambar",
+      "text": "C=ST_PL_AC_SH_HM_MM"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 35,
+      "name": "bazikey",
+      "text": "C=KY_EP_AN_SI"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 36,
+      "name": "bella fm",
+      "text": "C=PT_SU_KY_FM_BI_SR_MD"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 37,
+      "name": "bells of digul",
+      "text": "C=PT_SU_AC_MT_HM_SB"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 38,
+      "name": "beny's territory",
+      "text": "C=CL_PA_AC_LY"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 39,
+      "name": "beyond felt",
+      "text": "C=KY_EP_SR_SH_AC"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 40,
+      "name": "biquide hang",
+      "text": "C=PT_SU_MT_DP"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 41,
+      "name": "biquide harp",
+      "text": "C=ST_PL_AC_SO_CN"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 42,
+      "name": "biquide steel",
+      "text": "C=PT_SU_AC_MT"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 43,
+      "name": "biquige bell",
+      "text": "C=PT_SU_AC_MT"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 44,
+      "name": "bird whistler",
+      "text": "C=OT_NA_SD_SS"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 45,
+      "name": "bits organ",
+      "text": "C=KY_OR_BI_AN_SR"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 46,
+      "name": "blasiz",
+      "text": "C=CL_LE_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 47,
+      "name": "bleached organ",
+      "text": "C=KY_OR_SE_FM_WO_SI"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 48,
+      "name": "blipkrieg",
+      "text": "C=OT_SD_LF_FM_AT_DI"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 49,
+      "name": "bouncing spray",
+      "text": "C=PT_SU_AC_EC_LP_MT_BH_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 50,
+      "name": "bowedsymphfm",
+      "text": "C=KY_AC_FM_CN_SH_SE_SO"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 51,
+      "name": "bowreal lights",
+      "text": "C=ST_BO_AC_LY_RV_DP"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 52,
+      "name": "brass fm",
+      "text": "C=WI_BR_AC_FM_PO"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 53,
+      "name": "brass fm2",
+      "text": "C=WI_BR_AC_FM_DP_PO"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 54,
+      "name": "brass fm3",
+      "text": "C=WI_BR_AC_MD_PO"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 55,
+      "name": "brassimple",
+      "text": "C=CL_BR_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 56,
+      "name": "brasswind",
+      "text": "C=WI_BR_FL_AC_PO"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 57,
+      "name": "brassy",
+      "text": "C=WI_BR_AC"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 58,
+      "name": "brave fields",
+      "text": "C=CL_PA_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 59,
+      "name": "bright organ",
+      "text": "C=KY_OR_AC_FM"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 60,
+      "name": "brightbank",
+      "text": "C=PT_SU_AC_SH"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 61,
+      "name": "canyon steel",
+      "text": "C=ST_PL_AC_SO_PO_EC"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 62,
+      "name": "carbon marimba",
+      "text": "C=PT_SU_AC_LP_WA_WO_BB_MD"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 63,
+      "name": "carifem",
+      "text": "C=CL_PA_LP_FM"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 64,
+      "name": "celestial",
+      "text": "C=PT_SU_AC"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 65,
+      "name": "celestial basin",
+      "text": "C=OT_AT_AI_MT_RV_SD_BB_HM"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 66,
+      "name": "cellove",
+      "text": "C=ST_BO_AC_PO"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 67,
+      "name": "cellovir",
+      "text": "C=ST_BO_AC"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 68,
+      "name": "chamber mellobow",
+      "text": "C=ST_BO_AC_EN_LF_SE"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 69,
+      "name": "chamber strings",
+      "text": "C=ST_BO_AC_CN_EN_HM_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 70,
+      "name": "cherie fm",
+      "text": "C=CL_LE_FM"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 71,
+      "name": "chick s lead",
+      "text": "C=CL_LE_AN_PO_SO_CN_WA_DV_OS_WB_DP"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 72,
+      "name": "choir",
+      "text": "C=VO_PA_SY_BM_DS_WB"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 73,
+      "name": "choir additive",
+      "text": "C=VO_CN_AD_PA_CL"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 74,
+      "name": "chordead",
+      "text": "C=CL_BA_CH_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 75,
+      "name": "churchorgan",
+      "text": "C=KY_OR_AC"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 76,
+      "name": "claribreath",
+      "text": "C=WI_RD_AC_NO_AT_PO"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 77,
+      "name": "clarinet",
+      "text": "C=WI_RS_AC_CN_WA_BH_WO"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 78,
+      "name": "classicana key",
+      "text": "C=KY_AN_SI"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 79,
+      "name": "classicana lead",
+      "text": "C=CL_LE_AN_SI_EC"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 80,
+      "name": "classipad",
+      "text": "C=CL_PA_AN_EN_SI"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 81,
+      "name": "clavi 1",
+      "text": "C=KY_DP_EP_EL"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 82,
+      "name": "clavichord",
+      "text": "C=KY_SU_AC_CN_BB"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 83,
+      "name": "clavicorda",
+      "text": "C=KY_DI_FM_SH_SE"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 84,
+      "name": "clawha",
+      "text": "C=KY_EP_EL"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 85,
+      "name": "clings",
+      "text": "C=PT_SU_MT_AC_SE_IN_SH_DP"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 86,
+      "name": "cold lead",
+      "text": "C=CL_LE_NO_SI_AN_SE_WA_OS_DP"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 87,
+      "name": "column of eternity",
+      "text": "C=CL_PA_SE_FM_SI_CN"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 88,
+      "name": "copey",
+      "text": "C=KY_EP_EL"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 89,
+      "name": "copper club",
+      "text": "C=CL_KY_LE_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 90,
+      "name": "coridor",
+      "text": "C=CL_PA_FM_RV_DP"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 91,
+      "name": "cork the bottle",
+      "text": "C=OT_AT_DY_EL_SD_DV_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 92,
+      "name": "cosmic blues",
+      "text": "C=WI_BR_AC_PO"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 93,
+      "name": "cp eight",
+      "text": "C=KY_EP_EL"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 94,
+      "name": "crackling things",
+      "text": "C=OT_SD_AT"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 95,
+      "name": "creaker",
+      "text": "C=OT_SD_AT_AC_IN_LP_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 96,
+      "name": "crossmod",
+      "text": "C=CL_PA_FM_SE"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 97,
+      "name": "crossynthar",
+      "text": "C=ST_PL_AC"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 98,
+      "name": "crystal harmonics",
+      "text": "C=PT_SU_AC_AI_SH"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 99,
+      "name": "cs80+ladder",
+      "text": "C=CL_KY_PA_AN_BG_RV_SY_DV_OS_WB_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 100,
+      "name": "cs80+ladder II",
+      "text": "C=CL_PA_AN_CH"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 101,
+      "name": "cumulus",
+      "text": "C=PT_SU_AC_BI_EC_LP_MT_SE_BB_SS_RO_DP"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 102,
+      "name": "cvc 1 voice",
+      "text": "C=UT"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 103,
+      "name": "cvc 2 voices",
+      "text": "C=UT"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 104,
+      "name": "cvc 4 voices",
+      "text": "C=UT"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 105,
+      "name": "cycle and duty",
+      "text": "C=CL_PA_AN_SE"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 106,
+      "name": "dabka 2022",
+      "text": "C=CL_LE_RD_DI_AC"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 107,
+      "name": "declanche",
+      "text": "C=KY_FM_LP"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 108,
+      "name": "deep corners",
+      "text": "C=CL_AN_BA_CH"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 109,
+      "name": "delight lead",
+      "text": "C=CL_LE_AN_SI_EC"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 110,
+      "name": "deven",
+      "text": "C=KY_EP_EL"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 111,
+      "name": "dfm",
+      "text": "C=KY_SE_FM"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 112,
+      "name": "dirt acid",
+      "text": "C=CL_BA_AN_DT"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 113,
+      "name": "dirty osc pad",
+      "text": "C=CL_AI_EV_EC_SY_KI_PA_LF_RN"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 114,
+      "name": "disco dawn",
+      "text": "C=CL_KY_AN_SI_IN_DY"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 115,
+      "name": "distortion guitar",
+      "text": "C=ST_PL_AC_MM_SV_DP_PO"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 116,
+      "name": "dolce cristallo",
+      "text": "C=PT_SU_AC_IC_IN_MT_BB"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 117,
+      "name": "double reed",
+      "text": "C=WI_RD_AC_BI_CN_WA_BB_HM"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 118,
+      "name": "double saw",
+      "text": "C=KY_AN_SI_CH"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 119,
+      "name": "doubleslap",
+      "text": "C=CL_BA_AC_SH_WO_WA"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 120,
+      "name": "duocello",
+      "text": "C=ST_BO_PO_AC"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 121,
+      "name": "dx1",
+      "text": "C=KY_FM"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 122,
+      "name": "dx2",
+      "text": "C=KY_FM"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 123,
+      "name": "dx3",
+      "text": "C=KY_FM"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 124,
+      "name": "dx4",
+      "text": "C=KY_FM"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 125,
+      "name": "dxim",
+      "text": "C=KY_FM"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 126,
+      "name": "ebosin",
+      "text": "C=ST_PA_BO_AC_EN_LY"
+    },
+    {
+      "hi": 127,
+      "lo": 0,
+      "num": 127,
+      "name": "edgy fm",
+      "text": "C=CL_BA_FM"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 0,
+      "name": "efferie",
+      "text": "C=KY_FM_SR"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 1,
+      "name": "efmope",
+      "text": "C=KY_BI_SI_FM"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 2,
+      "name": "eightiki",
+      "text": "C=KY_AN_FM"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 3,
+      "name": "eighty neon",
+      "text": "C=CL_BA_AN_MD_DP"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 4,
+      "name": "ekeynox",
+      "text": "C=KY_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 5,
+      "name": "electric bass 1",
+      "text": "C=ST_BA_AC_EL"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 6,
+      "name": "electric bass 2",
+      "text": "C=ST_BA_AC_EL"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 7,
+      "name": "electric keys 1",
+      "text": "C=KY_EP_EL_DP"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 8,
+      "name": "electric keys 5",
+      "text": "C=KY_EP_EL"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 9,
+      "name": "electric keys 6",
+      "text": "C=KY_EP_EL_CN"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 10,
+      "name": "electric wazoo",
+      "text": "C=OT_AT_DY_EL_SD_SY_BB_OP_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 11,
+      "name": "electrical bacher",
+      "text": "C=CL_SU_KY_OT_AC_DA_RV_MT_SE"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 12,
+      "name": "ellis guitar",
+      "text": "C=ST_PL_AC"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 13,
+      "name": "elsynkey",
+      "text": "C=KY_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 14,
+      "name": "emancikey",
+      "text": "C=KY_AN_MD"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 15,
+      "name": "empty",
+      "text": "C=UT"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 16,
+      "name": "empyrean",
+      "text": "C=WI_RS_AC_WA_OJ_OP_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 17,
+      "name": "entanglement",
+      "text": "C=OT_AT_AG_BG_EC_EV_RV_SD_DV_OS_WB"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 18,
+      "name": "envinkin",
+      "text": "C=KY_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 19,
+      "name": "envinkon",
+      "text": "C=KY_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 20,
+      "name": "epiano1",
+      "text": "C=KY_EP_EL"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 21,
+      "name": "epiarom",
+      "text": "C=KY_EP_FM"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 22,
+      "name": "erumi",
+      "text": "C=ST_BO_AC"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 23,
+      "name": "essendar",
+      "text": "C=CL_LE_EC_SI_SO_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 24,
+      "name": "etalophone",
+      "text": "C=PT_SU_AC"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 25,
+      "name": "etherry",
+      "text": "C=KY_AC_SU_DP"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 26,
+      "name": "etines mk1",
+      "text": "C=KY_EP_EL_AC"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 27,
+      "name": "expluck",
+      "text": "C=ST_PL_SH_AC"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 28,
+      "name": "fancy brass",
+      "text": "C=CL_BR_CH_EN_LP_BI_SE_WB_OS_KY_DP"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 29,
+      "name": "fat model d",
+      "text": "C=CL_BA_AN_NO_BG_WA_PO_DV_OS_WB"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 30,
+      "name": "fdn crazyness",
+      "text": "C=OT_AT_AG_BG_EL_EV_RV_SD_DM_PO"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 31,
+      "name": "feleaz",
+      "text": "C=KY_FM_SI_SE"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 32,
+      "name": "feltgrains",
+      "text": "C=PT_SU_NO_WO_AC_AI_BB_BH_SH"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 33,
+      "name": "fleme",
+      "text": "C=KY_FM"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 34,
+      "name": "flip tube",
+      "text": "C=WI_AC_AI_EC_LP_BB_BH_DS"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 35,
+      "name": "floppy disk lands",
+      "text": "C=OT_PA_RN_LF_FM_SE_NO"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 36,
+      "name": "flunkly",
+      "text": "C=CL_BA_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 37,
+      "name": "flute transverse",
+      "text": "C=WI_FL_AC_AI_CN_BB_HM"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 38,
+      "name": "flutimut",
+      "text": "C=WI_FL_RS_FM_AC"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 39,
+      "name": "fm 2612",
+      "text": "C=CL_PA_FM"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 40,
+      "name": "fm basic 4-ops",
+      "text": "C=KY_FM_BI_SR"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 41,
+      "name": "fm brassypoly",
+      "text": "C=CL_BR_EN_FM_SO_DI_CN_SE"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 42,
+      "name": "fm clav 1",
+      "text": "C=KY_EP_FM"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 43,
+      "name": "fm darkness",
+      "text": "C=CL_BA_DA_BG_EN_FM_NO_AG_DI_DY_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 44,
+      "name": "fm doublebass",
+      "text": "C=CL_BA_FM_CN_PO"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 45,
+      "name": "fm dreampiano",
+      "text": "C=KY_AI_FM_WA_BB_OS_RO_DP_SR"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 46,
+      "name": "fm glacier",
+      "text": "C=PT_SU_EC_FM_RV_BI_CN_DI_IC_MT_OS_DV"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 47,
+      "name": "fm hang perc",
+      "text": "C=PT_SU_FM_NO_WO_DI_OS_DS"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 48,
+      "name": "fm piano1 ",
+      "text": "C=KY_EP_BI_FM"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 49,
+      "name": "fm reed",
+      "text": "C=WI_RD_AC_PO_FM"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 50,
+      "name": "fm slapman",
+      "text": "C=CL_BA_FM_BI_DI_MT_SE_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 51,
+      "name": "fmwood&strings",
+      "text": "C=KY_ST_AC_MT"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 52,
+      "name": "fof variableRes",
+      "text": "C=KY_VO_SY_OP_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 53,
+      "name": "foming",
+      "text": "C=KY_BI_FM"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 54,
+      "name": "forgotten animal",
+      "text": "C=CL_BA_FM_AN_PO"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 55,
+      "name": "forty eight db",
+      "text": "C=CL_BA_AN_DT"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 56,
+      "name": "fourad",
+      "text": "C=CL_BA_AN_DT"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 57,
+      "name": "fretless bass",
+      "text": "C=ST_BA_AC_DP_PO"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 58,
+      "name": "fruku",
+      "text": "C=ST_PL_AC"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 59,
+      "name": "fukuel",
+      "text": "C=PT_SU_AC_MT_SH"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 60,
+      "name": "funky lead",
+      "text": "C=CL_LE_AN_SI"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 61,
+      "name": "futazz",
+      "text": "C=KY_CL_BR_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 62,
+      "name": "futur engine",
+      "text": "C=OT_SD_DI"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 63,
+      "name": "gabber 21",
+      "text": "C=CL_LE_DI_AG"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 64,
+      "name": "game invader",
+      "text": "C=KY_SH_LF_DI"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 65,
+      "name": "gamelan spinner",
+      "text": "C=PT_SU_CN_LP_MT_BB_HM_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 66,
+      "name": "geiger insects",
+      "text": "C=OT_AT_IN_LP_NA_SD_SE_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 67,
+      "name": "ghabla",
+      "text": "C=PE_AC"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 68,
+      "name": "ghost voice",
+      "text": "C=CL_LE_LF_VO_DP_PO"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 69,
+      "name": "gimmirez",
+      "text": "C=KY_AN_BR"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 70,
+      "name": "gowind",
+      "text": "C=WI_FL_AC_CN"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 71,
+      "name": "graceful integrated",
+      "text": "C=KY_SO_SI_AN_FM"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 72,
+      "name": "grains pluck",
+      "text": "C=ST_PL_MT_AC"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 73,
+      "name": "grandfather clock",
+      "text": "C=PT_SU_MT_BH"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 74,
+      "name": "grandma's garden",
+      "text": "C=CL_PA_WO_LF_EV_LY"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 75,
+      "name": "granu osc",
+      "text": "C=CL_PA_FM_LP_SE"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 76,
+      "name": "grittysaw",
+      "text": "C=CL_BA_AN_DT"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 77,
+      "name": "grubbead",
+      "text": "C=CL_LE_DT_AG_FM"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 78,
+      "name": "gypsy kinetar",
+      "text": "C=ST_PL_AC_SH"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 79,
+      "name": "hammers brushed",
+      "text": "C=KY_EP_AC_SO_SH"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 80,
+      "name": "hantpad",
+      "text": "C=CL_PA_DA_DP"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 81,
+      "name": "harmbrass",
+      "text": "C=WI_BR_AC_PO"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 82,
+      "name": "harmod",
+      "text": "C=ST_BO_AC_PO"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 83,
+      "name": "harmolick",
+      "text": "C=ST_PL_AC_MT_PO"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 84,
+      "name": "harpsichord",
+      "text": "C=KY_SU_AC_CN_BB"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 85,
+      "name": "harpsytron",
+      "text": "C=KY_FM_EL_DY"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 86,
+      "name": "hollowrez",
+      "text": "C=CL_BA_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 87,
+      "name": "hoovasquare",
+      "text": "C=CL_LE_AN_SI_DP"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 88,
+      "name": "horn ytorink",
+      "text": "C=WI_BR_AC_WA"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 89,
+      "name": "howling sines",
+      "text": "C=OT_SD_DA_AT"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 90,
+      "name": "hp tales",
+      "text": "C=KY_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 91,
+      "name": "hybrid harp",
+      "text": "C=ST_PL_AC_SO_FM_DP"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 92,
+      "name": "hybrid strings 1",
+      "text": "C=ST_BO_PA_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 93,
+      "name": "hybrid strings 2",
+      "text": "C=CL_PA_LF_NO_AN_ST_BO"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 94,
+      "name": "hybrid strings 3",
+      "text": "C=ST_BO_AN_AC"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 95,
+      "name": "hyoshigi",
+      "text": "C=PE_AC_AT"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 96,
+      "name": "ikia",
+      "text": "C=KY_FM_LP"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 97,
+      "name": "insert coins",
+      "text": "C=KY_LE_LP_BI_EC"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 98,
+      "name": "interkin",
+      "text": "C=CL_PA_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 99,
+      "name": "ishango bone",
+      "text": "C=PE_AT_WO_BB_DP"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 100,
+      "name": "iziki",
+      "text": "C=KY_EP_AN_FM_SI_CN"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 101,
+      "name": "jaymar toy piano",
+      "text": "C=KY_SU_AC_CN_DY_IN_HM_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 102,
+      "name": "jenny choir",
+      "text": "C=CL_PA_EN_VO"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 103,
+      "name": "jenny fm",
+      "text": "C=CL_PA_FM_LP_SE"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 104,
+      "name": "jenny pulse",
+      "text": "C=CL_SU_AN_EC_LP_RV_SY_OJ"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 105,
+      "name": "jennybrass",
+      "text": "C=WI_BR_AC_FM_PO"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 106,
+      "name": "jentenot",
+      "text": "C=CL_LE_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 107,
+      "name": "juknow that bass",
+      "text": "C=CL_BA_BG_SI_SO_AN_CN_SE_OS_WB"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 108,
+      "name": "julia",
+      "text": "C=CL_LE_AN_SI"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 109,
+      "name": "jumpare",
+      "text": "C=CL_KY_LP_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 110,
+      "name": "june sunset",
+      "text": "C=KY_AN_MD_DP"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 111,
+      "name": "jupinard",
+      "text": "C=CL_KY_AN_SI_IN_DY"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 112,
+      "name": "jupipad",
+      "text": "C=AN_CL_PA"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 113,
+      "name": "jx10 1b",
+      "text": "C=KY_AN_SO_KI_OJ"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 114,
+      "name": "kaitof",
+      "text": "C=PE_AC_NO"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 115,
+      "name": "kakey",
+      "text": "C=KY_EP_EL"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 116,
+      "name": "karkup",
+      "text": "C=ST_PL_AC_DM_SH"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 117,
+      "name": "karplus & modMan",
+      "text": "C=ST_PL_CN_SR_WA_DV_MM"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 118,
+      "name": "kick bass slide",
+      "text": "C=PE_BA_AN_SI_PO_DT"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 119,
+      "name": "kinaflap",
+      "text": "C=KY_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 120,
+      "name": "kinafun",
+      "text": "C=CL_KY_AN_LP"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 121,
+      "name": "kinespeech",
+      "text": "C=CL_BA_AN_VO"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 122,
+      "name": "kinetic analog",
+      "text": "C=KY_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 123,
+      "name": "kinetic anaseq",
+      "text": "C=CL_AG_AN_EC_LP_SE_SY_KI_WB"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 124,
+      "name": "kinetic bowed fdn",
+      "text": "C=OT_AT_DA_EV_RV_SE_SD_DM_KI"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 125,
+      "name": "kinetic dragon",
+      "text": "C=OT_AT_AG_DT_RV_SD_DM_KI"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 126,
+      "name": "kinetic micromotor",
+      "text": "C=OT_AT_EC_LP_SY_DM_KI_SD"
+    },
+    {
+      "hi": 127,
+      "lo": 1,
+      "num": 127,
+      "name": "kinetic overtones",
+      "text": "C=OT_AT_AG_DI_DT_RV_SE_SY_KI_SD_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 0,
+      "name": "kinetic satpad",
+      "text": "C=CL_AN_DT_AG_BG_EN_EV_RV_DS_KI_OS_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 1,
+      "name": "kinetic soundboard",
+      "text": "C=ST_PL_MT_RV_SH_SY_KI_OS_AC"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 2,
+      "name": "klavunk",
+      "text": "C=KY_EP_EL_CN"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 3,
+      "name": "koto",
+      "text": "C=ST_PL_AC_CN_IN_SR_MM_DP"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 4,
+      "name": "labello",
+      "text": "C=PT_SU_FM_AC"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 5,
+      "name": "lacous bass",
+      "text": "C=ST_BA_AC_PO"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 6,
+      "name": "ladagcer",
+      "text": "C=KY_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 7,
+      "name": "ladder bass",
+      "text": "C=CL_BA_AN_LP_SY_WB_SV"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 8,
+      "name": "lalalead",
+      "text": "C=CL_LE_AN_PO"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 9,
+      "name": "lamellas",
+      "text": "C=PT_SU_AC_MT_SR"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 10,
+      "name": "lampadaire",
+      "text": "C=CL_PA_AN_LF"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 11,
+      "name": "larekin",
+      "text": "C=CL_PA_AN_LF"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 12,
+      "name": "larekin 2",
+      "text": "C=CL_PA_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 13,
+      "name": "lavaya",
+      "text": "C=KY_FM"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 14,
+      "name": "leadio",
+      "text": "C=CL_LE_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 15,
+      "name": "legacy dx ep",
+      "text": "C=KY_EP_CN_DI_OS_RO_MD"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 16,
+      "name": "libellule",
+      "text": "C=PT_SU_AC_FM_SR"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 17,
+      "name": "lighthouse",
+      "text": "C=CL_LE_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 18,
+      "name": "lililead",
+      "text": "C=CL_LE_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 19,
+      "name": "lilly",
+      "text": "C=KY_SO_FM_AC_SE"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 20,
+      "name": "lino",
+      "text": "C=KY_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 21,
+      "name": "lips steel",
+      "text": "C=ST_PL_AC_PO"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 22,
+      "name": "living pad",
+      "text": "C=CL_PA_AN_WB_LP_EV"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 23,
+      "name": "lonely data",
+      "text": "C=OT_AT_DI_IN_LP_SD_SY_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 24,
+      "name": "lonely square",
+      "text": "C=CL_LE_RV_AN_SI"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 25,
+      "name": "lost beacon",
+      "text": "C=OT_KY_AI_AN_IN_LP_RV_SY_WA"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 26,
+      "name": "lost choir",
+      "text": "C=VO_PA_AI_EN_EV_SY_BM_DS_MM_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 27,
+      "name": "lost ensemble",
+      "text": "C=BO_ST_AC_AN_RV_DP"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 28,
+      "name": "lost operator",
+      "text": "C=CL_PA_FM"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 29,
+      "name": "lytiny",
+      "text": "C=PT_SU_AC_DP_SH"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 30,
+      "name": "magic pluck",
+      "text": "C=KY_SU_AC_SH_BI_AI_LY"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 31,
+      "name": "main square",
+      "text": "C=CL_LE_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 32,
+      "name": "malabel",
+      "text": "C=PT_SU_AC_MM_SR_SH"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 33,
+      "name": "malgo",
+      "text": "C=FM_CL_PA"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 34,
+      "name": "marie s birds",
+      "text": "C=OT_SD_AC_FM"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 35,
+      "name": "marlin perkins 1",
+      "text": "C=PE_CN_IN_WO_BB_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 36,
+      "name": "marombox",
+      "text": "C=PT_SU_AC_SH"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 37,
+      "name": "martine",
+      "text": "C=PT_EP_AC_SR"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 38,
+      "name": "mattalo",
+      "text": "C=PT_SU_AC_MT"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 39,
+      "name": "mbiraski",
+      "text": "C=PT_SU_CN_IN_MT_MM"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 40,
+      "name": "metarmonix",
+      "text": "C=PE_AC_MT_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 41,
+      "name": "microdelay pipeWG",
+      "text": "C=WI_FL_AC_AI_CN_BM_DM_OS_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 42,
+      "name": "mild kisses",
+      "text": "C=ST_PL_AC_SO_PO_DP"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 43,
+      "name": "minimando",
+      "text": "C=ST_PL_AC_SR"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 44,
+      "name": "minor de fond",
+      "text": "C=CL_LE_AN_CH"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 45,
+      "name": "model string wind",
+      "text": "C=ST_FL_AC_AI_MO_BB_DP"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 46,
+      "name": "modowel",
+      "text": "C=OT_PA_VO_SE_SO"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 47,
+      "name": "mojo of fdn",
+      "text": "C=OT_AT_AC_EC_RV_SD_SR_DM"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 48,
+      "name": "montine",
+      "text": "C=KY_AC"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 49,
+      "name": "moving slate",
+      "text": "C=CL_PA_SE"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 50,
+      "name": "munsplen",
+      "text": "C=AN_CL_PA_DP"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 51,
+      "name": "music box bells",
+      "text": "C=SU_AC_CL_DY_IN_MT_MM"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 52,
+      "name": "mystaring",
+      "text": "C=OT_SD_AT_DA_FM"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 53,
+      "name": "nails on metal",
+      "text": "C=OT_SD_SH_AC"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 54,
+      "name": "nband",
+      "text": "C=KY_NO_AI"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 55,
+      "name": "neon key",
+      "text": "C=KY_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 56,
+      "name": "neon key dreams",
+      "text": "C=KY_AN_LF_CH"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 57,
+      "name": "ngoni",
+      "text": "C=ST_PL_AC_CN_SR_BB_MM_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 58,
+      "name": "night bass",
+      "text": "C=CL_BA_AN_PO"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 59,
+      "name": "nimbus",
+      "text": "C=PT_SU_AC_AI_EC_LP"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 60,
+      "name": "nofiad",
+      "text": "C=OT_PA_EV_LY_LF"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 61,
+      "name": "noisyman",
+      "text": "C=PT_ST_BO_AC"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 62,
+      "name": "noisypad",
+      "text": "C=ST_BO_AC_NO"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 63,
+      "name": "noisything",
+      "text": "C=ST_AC_SU"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 64,
+      "name": "nostalgia",
+      "text": "C=CL_LE_AN_LF_DP"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 65,
+      "name": "notenstrum",
+      "text": "C=KY_AN_SR"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 66,
+      "name": "notiseq",
+      "text": "C=CL_PA_FM_LP_CH"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 67,
+      "name": "numens strings",
+      "text": "C=ST_BO_AC"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 68,
+      "name": "nynx",
+      "text": "C=CL_PA_FM_LP_SE"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 69,
+      "name": "oblivion",
+      "text": "C=ST_BO_EN_LF_SE_LY_EV_PA"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 70,
+      "name": "oboreed",
+      "text": "C=WI_RD_PO_AC_FM"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 71,
+      "name": "ocean triggs",
+      "text": "C=PT_SU_AC_EC_LP_MT_BH_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 72,
+      "name": "ocherry",
+      "text": "C=ST_PL_KY_AC_FM"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 73,
+      "name": "octalive drum",
+      "text": "C=PE_AC_AT_LY_MT"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 74,
+      "name": "octecho",
+      "text": "C=KY_AN_EC"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 75,
+      "name": "old pad machine",
+      "text": "C=KY_OR_AN_EN_EV_SY_BB_DS_OP_RO_LF"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 76,
+      "name": "op offset",
+      "text": "C=CL_PA_FM_LP_SE"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 77,
+      "name": "op repeat",
+      "text": "C=KY_LP_FM_SE"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 78,
+      "name": "op2bell",
+      "text": "C=PT_SU_FM_SR"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 79,
+      "name": "opead",
+      "text": "C=CL_LE_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 80,
+      "name": "opeal",
+      "text": "C=CL"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 81,
+      "name": "opikey",
+      "text": "C=KY_EP_FM"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 82,
+      "name": "organ 1",
+      "text": "C=KY_OR"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 83,
+      "name": "organ 2",
+      "text": "C=KY_OR"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 84,
+      "name": "organ 3",
+      "text": "C=KY_OR"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 85,
+      "name": "organ 4",
+      "text": "C=KY_OR_EL"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 86,
+      "name": "organ barbar",
+      "text": "C=KY_OR"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 87,
+      "name": "organ voxy",
+      "text": "C=KY_OR"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 88,
+      "name": "organo WereYouThere",
+      "text": "C=KY_OR_EL_OS_RO_RV"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 89,
+      "name": "os2dx",
+      "text": "C=KY_FM"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 90,
+      "name": "osc dcf",
+      "text": "C=KY_AN_SI"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 91,
+      "name": "osc five",
+      "text": "C=KY_AN_SI_BR_SE"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 92,
+      "name": "outspoken",
+      "text": "C=CL_BA_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 93,
+      "name": "pad 101",
+      "text": "C=CL_PA_AI_CH_EC_SI_NO_BI_CN_IC_SE_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 94,
+      "name": "pad awan",
+      "text": "C=SI_CL_PA_MD"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 95,
+      "name": "padding time",
+      "text": "C=CL_PA_EN_DS_KI_OS_SE_WA_CN_AN_SO"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 96,
+      "name": "padorama",
+      "text": "C=CL_PA_LY"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 97,
+      "name": "padorgan",
+      "text": "C=CL_OR_PA_LF_SE"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 98,
+      "name": "pajestric",
+      "text": "C=ST_BO_LY"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 99,
+      "name": "paliakey",
+      "text": "C=KY_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 100,
+      "name": "panpipe solo",
+      "text": "C=WI_FL_AI_CN_NO_DM_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 101,
+      "name": "paperheart",
+      "text": "C=KY_AC_SH_DP"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 102,
+      "name": "paris texas",
+      "text": "C=ST_PL_AC_MT"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 103,
+      "name": "patacalbas",
+      "text": "C=PE_AC"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 104,
+      "name": "pcs Dandelion",
+      "text": "C=OT_BI_EC_EV_IC_SY_OP_OS_BO_PO"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 105,
+      "name": "perseus supernova",
+      "text": "C=CL_PA_BG_AN_RV"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 106,
+      "name": "petit carillon",
+      "text": "C=PT_SU_AC_SH_MT"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 107,
+      "name": "phase machine",
+      "text": "C=CL_EN_BI_PA_SE_DP"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 108,
+      "name": "pickope",
+      "text": "C=CL_LE_AN_PO"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 109,
+      "name": "piercing bass",
+      "text": "C=CL_BA_BG_DA_AG_DI_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 110,
+      "name": "pine strummer",
+      "text": "C=ST_PL_AC_SH"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 111,
+      "name": "pinkphone",
+      "text": "C=PT_SU_AC"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 112,
+      "name": "pipopi",
+      "text": "C=WI_FL_AC_PO"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 113,
+      "name": "pitchoune",
+      "text": "C=KY_CL_AN_LP"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 114,
+      "name": "pl-bass",
+      "text": "C=CL_BA_DY_AN_WA"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 115,
+      "name": "plastigorien",
+      "text": "C=OT_PA_VO"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 116,
+      "name": "plinklies",
+      "text": "C=PT_SU_AC_IN_LP_MT_BB"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 117,
+      "name": "pluckead",
+      "text": "C=CL_LE_AN_SI_CN_PO"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 118,
+      "name": "pluckeon",
+      "text": "C=KY_LF_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 119,
+      "name": "podracer",
+      "text": "C=OT_SD_DI_PO"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 120,
+      "name": "polys20",
+      "text": "C=KY_AN_DT"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 121,
+      "name": "polysynthetix",
+      "text": "C=CL_KY_BG_EN_CH_AN_WA_OS_WB_DV"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 122,
+      "name": "potendu",
+      "text": "C=PE_AC_AT_WO"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 123,
+      "name": "pressow",
+      "text": "C=ST_PL_BO_AC"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 124,
+      "name": "psy squelches",
+      "text": "C=OT_SD_AG_FM_AT"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 125,
+      "name": "pulse pluck",
+      "text": "C=KY_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 126,
+      "name": "pulzz",
+      "text": "C=CL_BA_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 2,
+      "num": 127,
+      "name": "pusher",
+      "text": "C=ST_PL_SY_BB_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 0,
+      "name": "pxlize",
+      "text": "C=CL_KY_DS_FM_BI_DI_LY_SE_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 1,
+      "name": "quiet carriers",
+      "text": "C=CL_PA_FM"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 2,
+      "name": "radioactive zone",
+      "text": "C=OT_SD_FM_AN_DA_SE"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 3,
+      "name": "random trigger",
+      "text": "C=OT_AT_AC_EC_RN_RV_SD_SE_BB"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 4,
+      "name": "rateanis",
+      "text": "C=SE_AN_CL_PA"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 5,
+      "name": "reesotto",
+      "text": "C=CL_BA_AG_DI"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 6,
+      "name": "reesy rider",
+      "text": "C=CL_BA_AG_AN_SE_DT"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 7,
+      "name": "releasy",
+      "text": "C=PT_SU_AC_FM_SH"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 8,
+      "name": "ren keyboard",
+      "text": "C=KY_SU_EP_AC_IN_EC_HM_OJ"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 9,
+      "name": "replicants dreams",
+      "text": "C=CL_KY_PA_FM_AN_DP_RV"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 10,
+      "name": "resizable guitar",
+      "text": "C=ST_PL_AC_EC_SR_BB_MI_PO_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 11,
+      "name": "reso nable",
+      "text": "C=CL_PA_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 12,
+      "name": "resonant drum 1",
+      "text": "C=PE_AT_AI_NO_WO_BB_DP"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 13,
+      "name": "rewind time",
+      "text": "C=CL_PA_LF_EV_EC_LP_CH"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 14,
+      "name": "ringad",
+      "text": "C=CL_PA_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 15,
+      "name": "ringmod harmonica",
+      "text": "C=WI_RD_AC_DT"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 16,
+      "name": "riseandbe",
+      "text": "C=KY_AN_SI_SO_BI_DI_SE_DV_OS_WB"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 17,
+      "name": "rising pad",
+      "text": "C=CL_PA_CH_SI_AN_EV_DV_OS_WB"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 18,
+      "name": "roto string",
+      "text": "C=ST_BO_AC_AI_LP_NO"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 19,
+      "name": "rusty bass",
+      "text": "C=CL_BA_FM_DA_SO_DI_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 20,
+      "name": "rusty square",
+      "text": "C=CL_BA_AN_DT"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 21,
+      "name": "sawVI",
+      "text": "C=KY_AN_SI"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 22,
+      "name": "saxoon",
+      "text": "C=WI_RS_AC_NO_RV_AT"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 23,
+      "name": "scarlet",
+      "text": "C=KY_AN_WA"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 24,
+      "name": "scie tard",
+      "text": "C=ST_PL_BO_AC_PO"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 25,
+      "name": "scratching fdn",
+      "text": "C=OT_AT_AC_RV_SD_SH_DM"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 26,
+      "name": "sentimental mood",
+      "text": "C=WI_RS_AC_AI_CN_WO_BH"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 27,
+      "name": "seventies lead",
+      "text": "C=CL_LE_EC_PO_AN_WA_WB_OS_DV_DP"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 28,
+      "name": "shakepad",
+      "text": "C=ST_SU_AC_SH"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 29,
+      "name": "shpad1",
+      "text": "C=CL_PA_AN_FM_LP_RN_SE"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 30,
+      "name": "simple anakey1",
+      "text": "C=KY_AN_SI"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 31,
+      "name": "simple anakey2",
+      "text": "C=KY_AN_SI"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 32,
+      "name": "simple anakey4",
+      "text": "C=KY_AN_SI"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 33,
+      "name": "simple fm 2 ops",
+      "text": "C=FM_KY"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 34,
+      "name": "simple fmkey",
+      "text": "C=KY_FM_SI"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 35,
+      "name": "simple lead even",
+      "text": "C=CL_LE_AN_PO_SI"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 36,
+      "name": "simple lead odd",
+      "text": "C=CL_LE_AN_SI_PO"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 37,
+      "name": "simple saw pad",
+      "text": "C=CL_PA_AN_SE"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 38,
+      "name": "simple square pad",
+      "text": "C=CL_PA_AN_SI"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 39,
+      "name": "simpledecay",
+      "text": "C=CL_BA_AN_DT"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 40,
+      "name": "simplephasemod",
+      "text": "C=KY_FM_SI_SH"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 41,
+      "name": "simplerez",
+      "text": "C=CL_BA_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 42,
+      "name": "sinefeel",
+      "text": "C=PT_SU_FM"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 43,
+      "name": "sinespray pad",
+      "text": "C=CL_PA_DI"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 44,
+      "name": "skoto",
+      "text": "C=ST_PL_AC"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 45,
+      "name": "slappinperc",
+      "text": "C=PE_AC_WO_AT"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 46,
+      "name": "smeeb",
+      "text": "C=CL_LE_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 47,
+      "name": "smooth mouth",
+      "text": "C=WI_BR_AC_VO"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 48,
+      "name": "smooth operator",
+      "text": "C=ST_BA_AC_FM"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 49,
+      "name": "solid square",
+      "text": "C=CL_BA_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 50,
+      "name": "solima",
+      "text": "C=CL_PA_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 51,
+      "name": "sonogram",
+      "text": "C=OT_AT_LP_NO_SD_SE_SS"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 52,
+      "name": "soprano recorder",
+      "text": "C=WI_FL_AC_AI_CN_BB_BH_DM_OS_PO_SV"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 53,
+      "name": "soulfm",
+      "text": "C=KY_FM_SI"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 54,
+      "name": "soundboard",
+      "text": "C=OT_AT_AC_AG_RV_DM"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 55,
+      "name": "souvenirs",
+      "text": "C=CL_PA_NO_VO_LF_EV_LY"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 56,
+      "name": "space flammenco",
+      "text": "C=ST_PL_AC_SH"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 57,
+      "name": "spracher",
+      "text": "C=KY_FM"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 58,
+      "name": "spring shimming bell",
+      "text": "C=PT_SU_IN_LP_SO_KI_OS_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 59,
+      "name": "squaluk",
+      "text": "C=KY_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 60,
+      "name": "squarynights",
+      "text": "C=KY_AC_FM_CN_SH_SE_SO"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 61,
+      "name": "squazodia",
+      "text": "C=KY_LP_AN_LF"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 62,
+      "name": "squeakysine",
+      "text": "C=KY_SR_DP"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 63,
+      "name": "st-rum dx",
+      "text": "C=KY_SR_FM"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 64,
+      "name": "stadium candy",
+      "text": "C=KY_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 65,
+      "name": "stadoor",
+      "text": "C=CL_LE_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 66,
+      "name": "stellaris",
+      "text": "C=CL_PA_AN_EC_RV_DT"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 67,
+      "name": "sterelead",
+      "text": "C=CL_LE_AN_SI_SE_LP"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 68,
+      "name": "steroids",
+      "text": "C=CL_BA_NO_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 69,
+      "name": "stormy weather",
+      "text": "C=OT_SD_NO_AT"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 70,
+      "name": "street pluck",
+      "text": "C=KY_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 71,
+      "name": "strings machine",
+      "text": "C=ST_PA_AN_SE_EN"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 72,
+      "name": "strings machine 2",
+      "text": "C=ST_PA_AN_EN_SE"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 73,
+      "name": "stringtroen",
+      "text": "C=ST_BO_AC"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 74,
+      "name": "sub bass 1",
+      "text": "C=CL_BA_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 75,
+      "name": "subway",
+      "text": "C=CL_BA_AN_CN_DA_SI_FM"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 76,
+      "name": "sweethrice",
+      "text": "C=ST_PL_AC_SH"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 77,
+      "name": "syncat",
+      "text": "C=CL_BA_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 78,
+      "name": "synclit",
+      "text": "C=CL_LE_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 79,
+      "name": "tabec",
+      "text": "C=WI_FL_AC_PO"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 80,
+      "name": "tablast",
+      "text": "C=PE_AC_AT"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 81,
+      "name": "tales of feathers",
+      "text": "C=ST_PL_AC_AI_BI_CN_SO_DP"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 82,
+      "name": "talking kine",
+      "text": "C=KY_AN_VO"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 83,
+      "name": "tap sitar",
+      "text": "C=ST_PL_AC_CN_RV_HM_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 84,
+      "name": "tape melody",
+      "text": "C=CL_KY_AN_WA_AI_SO_SI_CN_DV_OS_LF"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 85,
+      "name": "taste of June",
+      "text": "C=DV_WB_OS_CL_PA_CH_EN_SO_AN_SE_WA"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 86,
+      "name": "tender stuck",
+      "text": "C=PT_SU_AC_SO"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 87,
+      "name": "terjintro",
+      "text": "C=KY_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 88,
+      "name": "testbench",
+      "text": "C=UT"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 89,
+      "name": "th x",
+      "text": "C=OT_SD_SE_EN"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 90,
+      "name": "the touch guitar",
+      "text": "C=ST_PL_AC_EC_IN_RV_RO_DP"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 91,
+      "name": "theo s bicycles",
+      "text": "C=OT_SD_MT"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 92,
+      "name": "thick organ",
+      "text": "C=KY_OR_SI_SO_DI_DY"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 93,
+      "name": "thoria",
+      "text": "C=PT_SU_AC_NO"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 94,
+      "name": "three waves",
+      "text": "C=CL_PA_BG_EN_SY_DS_OS_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 95,
+      "name": "thrilla bass",
+      "text": "C=CL_BA_AN_DY"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 96,
+      "name": "tin whistle",
+      "text": "C=WI_FL_CN_BH_DM_OS_PO_SV_DP"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 97,
+      "name": "tine",
+      "text": "C=KY_EP_AC_CN_DY_EL_IN_BH_HM"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 98,
+      "name": "tinolin",
+      "text": "C=PT_EP_FM_AC"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 99,
+      "name": "tiny wish",
+      "text": "C=CL_LE_AN_PO"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 100,
+      "name": "tinytine",
+      "text": "C=PT_SU_FM"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 101,
+      "name": "trepizcato",
+      "text": "C=ST_BO_AC"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 102,
+      "name": "trumpey",
+      "text": "C=KY_AN_BR"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 103,
+      "name": "tubular bell",
+      "text": "C=PT_SU_FM"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 104,
+      "name": "twelve strings",
+      "text": "C=ST_PL_AC_SR"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 105,
+      "name": "twobanks",
+      "text": "C=CL_PA_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 106,
+      "name": "twozing",
+      "text": "C=PE_AC_MT_AT"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 107,
+      "name": "uki pizz 1",
+      "text": "C=ST_PL_AC_CN_IN_HM_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 108,
+      "name": "under the weather",
+      "text": "C=CL_PA_DA_DT_LF"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 109,
+      "name": "underwater",
+      "text": "C=PT_SU_AC_DA_DP"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 110,
+      "name": "unstable sum",
+      "text": "C=CL_PA_LF_NO_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 111,
+      "name": "upibanks",
+      "text": "C=KY_AC_EP"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 112,
+      "name": "utopia",
+      "text": "C=KY_NO_SR"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 113,
+      "name": "vbrass 1",
+      "text": "C=WI_BR_AC_BI_CN_SY_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 114,
+      "name": "velsquare",
+      "text": "C=CL_BA_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 115,
+      "name": "versaille",
+      "text": "C=KY_AN_AC"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 116,
+      "name": "versailles brass",
+      "text": "C=CL_OS_BR_BG_EN_SI_SO_AN_WA_KY"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 117,
+      "name": "vibrim",
+      "text": "C=PT_SU_AC_SI"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 118,
+      "name": "vinkeilyd",
+      "text": "C=KY_AN_LF_DP"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 119,
+      "name": "vintage wide bass",
+      "text": "C=CL_BA_BG_DA_WB_OS_DV_PO_SO_AN_WA_SE"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 120,
+      "name": "viollaggio",
+      "text": "C=ST_BO_AC"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 121,
+      "name": "violloiv",
+      "text": "C=ST_BO_AC_EC_HM"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 122,
+      "name": "vln vla cel bass 2",
+      "text": "C=ST_BO_AC_CN_BB_HM_MD_DP"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 123,
+      "name": "vocalise",
+      "text": "C=VO_CN_SY_BM_OS_BR"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 124,
+      "name": "vorgaphone",
+      "text": "C=KY_OR"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 125,
+      "name": "walking blues",
+      "text": "C=ST_BA_AC"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 126,
+      "name": "walking elephants",
+      "text": "C=WI_BR_AC_WA_WO"
+    },
+    {
+      "hi": 127,
+      "lo": 3,
+      "num": 127,
+      "name": "wallface",
+      "text": "C=CL_BA_DI_FM_DP_PO"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 0,
+      "name": "wardrum",
+      "text": "C=PE_BG_AC_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 1,
+      "name": "waterphonie",
+      "text": "C=OT_AT_BI_MT_RV_SD_DM_OS_DP"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 2,
+      "name": "wet feeling",
+      "text": "C=OT_SD_AT_EC_RV_SH"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 3,
+      "name": "whorus",
+      "text": "C=KY_AN"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 4,
+      "name": "windotron",
+      "text": "C=KY_FL_AC_SO_WO_SE_FM"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 5,
+      "name": "windtube double reed",
+      "text": "C=WI_RD_AC_CN_BH_HM_OS"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 6,
+      "name": "woodorgan",
+      "text": "C=KY_OR_WO_WA_SO"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 7,
+      "name": "woodwind",
+      "text": "C=WI_RS_AC_AI_CN_WO_BH"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 8,
+      "name": "woodybox",
+      "text": "C=PT_SU_AC_WO_SR_DP"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 9,
+      "name": "wopluk",
+      "text": "C=ST_PL_AC_FM"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 10,
+      "name": "wow soul chords",
+      "text": "C=KY_SO_SI_AN_BR"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 11,
+      "name": "xpressive saw",
+      "text": "C=CL_LE_DV_WB_OS_IN_AI_PO_RV_SO_CN"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 12,
+      "name": "yfm",
+      "text": "C=KY_FM_LP_SE"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 13,
+      "name": "yokobue",
+      "text": "C=WI_FL_AC_WO"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 14,
+      "name": "zapzap",
+      "text": "C=OT_SD_AN_LP_AT"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 15,
+      "name": "zazipad",
+      "text": "C=OT_PA_AI_EC_EN_NO_RV_SY_OP_OS_WB_RO"
+    },
+    {
+      "hi": 127,
+      "lo": 4,
+      "num": 16,
+      "name": "zenpercs",
+      "text": "C=PT_SU_AC_IN_SO_KI_BB"
+    }
+  ]
+}
