@@ -8,7 +8,7 @@ See [Getting Started](https://vcvrack.com/manual/GettingStarted) in the VCV Rack
 
 Grab a current build for the latest features and fixes (must be signed into github): [![Build Status](https://github.com/Paul-Dempsey/pachde-hc-one/actions/workflows/build-plugin.yml/badge.svg)](https://github.com/Paul-Dempsey/pachde-hc-one/actions/workflows/build-plugin.yml)
 
-The beta 4 release announced online can be downloaded here: [HC-One 2.0.0-beta4](https://github.com/Paul-Dempsey/pachde-hc-one/releases/tag/v2.0.0-beta4).
+The beta 5 release announced online can be downloaded here: [HC-One 2.0.0-beta5](https://github.com/Paul-Dempsey/pachde-hc-one/releases/tag/v2.0.0-beta5).
 
 - [Documentation](doc/index.md)
 
@@ -23,7 +23,7 @@ Pachde and HC One are not affiliated with or sponsored by Haken Audio.
 
 - **[HC-1](./doc/HC-1.md)** Fast access to favorite presets, with knobs and CV inputs for the essential controls: Macros and the Recirculator.
 
-- **[HC-2](./doc/HC-2.md)** Rounding, Pedal assignments, and CC maps (more to come).
+- **[HC-2](./doc/HC-2.md)** Rounding, Compressor, TiltEQ, and CC maps (more to come).
 
 - **[HC-3](./doc/HC-3.md)** Pushbuttons to access up to 16 Favorite files.
 
