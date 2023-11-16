@@ -347,21 +347,20 @@ The Macro section (**i** through **vi**) and Volume (EM Post level) support 14-b
 ## Notes
 
 - **File usage:** After using this module, you can find a folder of data files that the module saves.
-The folder _Rack user folder_ / `pachde-hc-one` contains per-EM-device Favorites, User, and System files in JSON format.
+The folder _Rack user folder_ / `pachde-hc-one` contains `startup-config.json`, per-EM-device Favorites, User, and System files in JSON format.
 It is also the default folder presented for saving and loading favorites files.
 You can, of course, save favorites anywhere you like, but this is the default per VCV rack conventions.
+
+  To find the Rack user folder, choose **Help** / **Open user folder** in VCV Rack.
 
 - **Preset `.mid`:** At this time, this plugin has no support for managing preset .mid files.
 I do have plans to build such functionality, but it may not be in the Rack plugin format.
 
-- **Multiple EM Devices:** I haven't been able to test the multiple-EM device scenario until Oct 3, 2023 when my replacement Mini arrived.
+- **Multiple EM Devices:** 
 
-  If you own multiple EM-based devices, you should be able to use an instance of HC-1 for each device in the same Rack patch to control multiple devices.
-  The automatic discovery *should* choose a second (or third) device if there is already an HC-1 bound to the first device.
-  If you have more than one HC-1 on the same device you'll see a big red error display.
+  If you own multiple EM-based devices, you can use an instance of HC-1 for each device in the same Rack patch to control multiple devices.
+  The automatic discovery chooses a second (or third) device if there is already an HC-1 bound to the first device.
   You can choose another device from the **EM Device** button in the bottom left.
-  You may need to reboot the module or reboot rack into the same patch before things begin working smoothly.
-  From there, things should remain sorted out, even across new Rack sessions for that patch.
 
 - **Factory presets:** For beta, there are no Rack module factory presets.
 Please let me know if you have something useful that comes from using Rack module presets.

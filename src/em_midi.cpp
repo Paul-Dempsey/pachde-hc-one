@@ -377,6 +377,26 @@ const char * RecirculatorParameterName(EM_Recirculator r_type, int r)
     return "?!!?";
 }
 
+const char * HardwarePresetClass(EM_Hardware hw)
+{
+    switch (hw) {
+    default:
+    case EM_Hardware::Unknown:        return "Unknown";
+    case EM_Hardware::hw_LightFull:   
+    case EM_Hardware::hw_LightHalf:   
+    case EM_Hardware::hw_ClassicFull: 
+    case EM_Hardware::hw_ClassicHalf:
+    case EM_Hardware::hw_Slim22:
+    case EM_Hardware::hw_Slim46:
+    case EM_Hardware::hw_Slim70:
+    case EM_Hardware::hw_LightFullUp:
+    case EM_Hardware::hw_LightHalfUp: return "Continuum";
+    case EM_Hardware::hw_Mini:        return "CMini";
+    case EM_Hardware::hw_Osmose49:    return "Osmose";
+    case EM_Hardware::hw_EMM:         return "EMM";
+    }
+}
+
 const char * ShortHardwareName(EM_Hardware hw)
 {
     switch (hw) {

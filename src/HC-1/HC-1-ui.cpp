@@ -699,9 +699,9 @@ void Hc1ModuleWidget::step()
                 }
                 break;
             case PresetTab::Favorite:
-                if (!have_preset_widgets && (my_module->hasSystemPresets() && my_module->hasUserPresets())) {
+                if (!have_preset_widgets && my_module->hasFavorites()) {
                     populatePresetWidgets();
-                } else if (have_preset_widgets && !(my_module->hasSystemPresets() || my_module->hasUserPresets())) {
+                } else if (have_preset_widgets && !my_module->hasFavorites()) {
                     clearPresetWidgets();
                 }
                 break;

@@ -118,8 +118,6 @@ json_t* Preset::toJson()
     json_object_set_new(root, "num", json_integer(number));
     json_object_set_new(root, "name", json_stringn(name.c_str(), name.size()));
     json_object_set_new(root, "text", json_stringn(text.c_str(), text.size()));
-    json_object_set_new(root, "fav", json_boolean(favorite));
-    json_object_set_new(root, "ord", json_integer(favorite_order));
     return root;
 }
 
@@ -144,13 +142,6 @@ void Preset::fromJson(const json_t* root)
     j = json_object_get(root, "text");
     if (j) {
         text = json_string_value(j);
-    }
-    favorite = GetBool(root, "fav", false);
-    j = json_object_get(root, "ord");
-    if (j) {
-        favorite_order = json_integer_value(j);
-    } else {
-        favorite_order = -1;
     }
 }
 

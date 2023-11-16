@@ -4,28 +4,11 @@ namespace pachde {
 
 void Hc1Module::tryCachedPresets()
 {
-    if (cache_system_presets && (EM_Hardware::Unknown != em.hardware)) {
+    if (EM_Hardware::Unknown != em.hardware) {
         loadSystemPresets();
     }
     if (cache_user_presets && connection) {
         loadUserPresets();
-    }
-    auto sys = get_phase(InitPhase::SystemPresets);
-    auto usr = get_phase(InitPhase::UserPresets);
-
-    if (sys->finished() && usr->finished() && favoritesFile.empty()) {
-        favoritesFromPresets();
-    } else if (!favoritesFile.empty()) {
-        auto phase = get_phase(InitPhase::Favorites);
-        if (system_presets.empty() || user_presets.empty()) {
-            phase->fresh();
-        } else {
-            if (readFavoritesFile(favoritesFile, true)) {
-               phase->finish();
-            } else {
-               phase->fail();
-            }
-        }
     }
 }
 
@@ -49,10 +32,16 @@ std::string Hc1Module::userPresetsPath()
     return asset::user(format_string("%s/%s-user.json", pluginInstance->slug.c_str(), conn.c_str()));
 }
 
+std::string Hc1Module::systemPresetsResPath()
+{
+    if (EM_Hardware::Unknown == em.hardware) return "";
+    return asset::plugin(pluginInstance, format_string("res/sys/%s-system.json", HardwarePresetClass(em.hardware)));
+}
+
 std::string Hc1Module::systemPresetsPath()
 {
     if (EM_Hardware::Unknown == em.hardware) return "";
-    return asset::user(format_string("%s/%s-system.json", pluginInstance->slug.c_str(), ShortHardwareName(em.hardware)));
+    return asset::user(format_string("%s/%s-system.json", pluginInstance->slug.c_str(), HardwarePresetClass(em.hardware)));
 }
 
 void Hc1Module::saveStartupConfig()
@@ -208,6 +197,13 @@ void Hc1Module::loadSystemPresets()
 {
     auto path = systemPresetsPath();
     if (path.empty()) return;
+    if (!system::exists(path)) {
+        path = systemPresetsResPath();
+        if (path.empty()) return;
+    }
+    if (!system::exists(path)) {
+        return;
+    }
     auto phase = get_phase(InitPhase::SystemPresets);
     phase->pend();
     system_presets.clear();
@@ -241,16 +237,6 @@ void Hc1Module::loadSystemPresets()
     phase->finish();
 }
 
-void Hc1Module::favoritesFromPresets()
-{
-    favorite_presets.clear();
-    auto back_insert = std::back_inserter(favorite_presets);
-    std::copy_if(user_presets.cbegin(), user_presets.cend(), back_insert, [](const std::shared_ptr<Preset> & p){ return p->favorite; });
-    std::copy_if(system_presets.cbegin(), system_presets.cend(), back_insert, [](const std::shared_ptr<Preset> & p){ return p->favorite; });
-    sortFavorites();
-    finish_phase(InitPhase::Favorites);
-}
-
 void Hc1Module::userPresetsToJson(json_t* root)
 {
     json_object_set_new(root, "device", json_string(connection->info.spec().c_str()));
@@ -264,7 +250,7 @@ void Hc1Module::userPresetsToJson(json_t* root)
 
 void Hc1Module::systemPresetsToJson(json_t* root)
 {
-    json_object_set_new(root, "hardware", json_string(ShortHardwareName(em.hardware)));
+    json_object_set_new(root, "hardware", json_string(HardwarePresetClass(em.hardware)));
 
     auto jars = json_array();
     for (auto preset: system_presets) {
@@ -276,8 +262,7 @@ void Hc1Module::systemPresetsToJson(json_t* root)
 std::string Hc1Module::moduleFavoritesPath()
 {
     if (!connection) return "";
-    auto device = to_file_safe(connection->info.spec(), false);
-    return asset::user(format_string("%s/fav-%s.json", pluginInstance->slug.c_str(), device.c_str()));
+    return asset::user(format_string("%s/%s-favorite.json", pluginInstance->slug.c_str(), HardwarePresetClass(em.hardware)));
 }
 
 void Hc1Module::clearFavorites()
@@ -294,7 +279,7 @@ void Hc1Module::clearFavorites()
 json_t* Hc1Module::favoritesToJson()
 {
     json_t* root = json_object();
-    json_object_set_new(root, "device", json_string(connection ? connection->info.spec().c_str() : ""));
+    json_object_set_new(root, "device", json_string(HardwarePresetClass(em.hardware)));
     auto ar = json_array();
     for (auto preset: system_presets) {
         if (preset->favorite) {
@@ -464,15 +449,6 @@ std::shared_ptr<Preset> Hc1Module::findDefinedPreset(std::shared_ptr<Preset> pre
     return nullptr;
 }
 
-void Hc1Module::readFavorites()
-{
-    if (system_presets.empty()) return;
-    if (!favorite_presets.empty()) return;
-    auto path = moduleFavoritesPath();
-    readFavoritesFile(path, true);
-}
-
-
 void Hc1Module::sortFavorites(PresetOrder order)
 {
     std::sort(favorite_presets.begin(), favorite_presets.end(), getPresetSort(order));
@@ -521,6 +497,7 @@ void Hc1Module::moveFavorite(std::shared_ptr<Preset> preset, IPresetHolder::Favo
         break;
     }
     sortFavorites();
+    saveFavorites();
 }
 
 void Hc1Module::addFavorite(std::shared_ptr<Preset> preset)

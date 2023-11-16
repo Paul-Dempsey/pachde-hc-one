@@ -45,6 +45,13 @@ struct Hc2Module : Module, ISendMidi, IHandleHcEvents
         P_COMP_RATIO_REL,
         P_COMP_MIX_REL,
 
+        P_TEQ_TILT,
+        P_TEQ_FREQ,
+        P_TEQ_MIX,
+        P_TEQ_TILT_REL,
+        P_TEQ_FREQ_REL,
+        P_TEQ_MIX_REL,
+
         NUM_PARAMS,
     };
     enum Inputs
@@ -57,6 +64,10 @@ struct Hc2Module : Module, ISendMidi, IHandleHcEvents
         IN_COMP_RATIO,
         IN_COMP_MIX,
 
+        IN_TEQ_TILT,
+        IN_TEQ_FREQ,
+        IN_TEQ_MIX,
+
         NUM_INPUTS
     };
     enum Outputs
@@ -67,15 +78,26 @@ struct Hc2Module : Module, ISendMidi, IHandleHcEvents
     {
         L_ROUND_RATE_REL,
         L_ROUND_INITIAL,
+
         L_COMP_THRESHOLD_REL,
         L_COMP_ATTACK_REL,
         L_COMP_RATIO_REL,
         L_COMP_MIX_REL,
+
         L_COMPRESSOR,
+
+        L_TEQ_TILT_REL,
+        L_TEQ_FREQ_REL,
+        L_TEQ_MIX_REL,
+
+        L_TEQ,
+
         NUM_LIGHTS
     };
+
     Rounding rounding;
     Compressor compressor;
+    TiltEq tilt_eq;
 
     IHandleHcEvents * ui_event_sink = nullptr;
     PartnerBinding partner_binding;
@@ -95,9 +117,13 @@ struct Hc2Module : Module, ISendMidi, IHandleHcEvents
     void pushRounding(Hc1Module * partner = nullptr);
     void pullCompressor(Hc1Module * partner = nullptr);
     void pushCompressor(Hc1Module * partner = nullptr);
+    void pullTiltEq(Hc1Module * partner = nullptr);
+    void pushTiltEq(Hc1Module * partner = nullptr);
+
     void processCV(int paramId);
     void processRoundingControls();
     void processCompressorControls();
+    void processTiltEqControls();
     void processControls();
 
     // Module
@@ -123,6 +149,7 @@ struct Hc2Module : Module, ISendMidi, IHandleHcEvents
     //void onPedalChanged(const PedalChangedEvent& e) override;
     void onRoundingChanged(const RoundingChangedEvent& e) override;
     void onCompressorChanged(const CompressorChangedEvent& e) override;
+    void onTiltEqChanged(const TiltEqChangedEvent& e) override;
     void onDeviceChanged(const DeviceChangedEvent& e) override;
     void onDisconnect(const DisconnectEvent& e) override;
 };
@@ -142,6 +169,7 @@ struct Hc2ModuleWidget : ModuleWidget, IHandleHcEvents
     Hc1Module* getPartner();
     void createRoundingUI(float x, float y);
     void createCompressorUI(float x, float y);
+    void createTiltEqUI(float x, float y);
 
     // IHandleHcEvents
     void onPresetChanged(const PresetChangedEvent& e) override;

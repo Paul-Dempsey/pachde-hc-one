@@ -213,14 +213,6 @@ void Hc1ModuleWidget::appendContextMenu(Menu *menu)
             [=](){ return my_module->restore_saved_preset; },
             [=](){ my_module->restore_saved_preset = !my_module->restore_saved_preset; }
             ));
-        menu->addChild(createCheckMenuItem("Use saved system presets", "",
-            [=](){ return my_module->cache_system_presets; },
-            [=](){
-                my_module->cache_system_presets = !my_module->cache_system_presets;
-                if (my_module->cache_system_presets) {
-                    my_module->saveSystemPresets();
-                }
-            }));
         menu->addChild(createCheckMenuItem("Use saved user presets", "",
             [=](){ return my_module->cache_user_presets; },
             [=](){

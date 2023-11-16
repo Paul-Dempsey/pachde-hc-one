@@ -35,6 +35,11 @@ struct IHandleHcEvents
     };
     virtual void onCompressorChanged(const CompressorChangedEvent& e) {}
 
+    struct TiltEqChangedEvent {
+        const eagan_matrix::TiltEq& tilt_eq;
+    };
+    virtual void onTiltEqChanged(const TiltEqChangedEvent& e) {}
+
     struct DeviceChangedEvent {
         const std::shared_ptr<MidiDeviceConnection> device;
     };

@@ -117,21 +117,27 @@ void Hc1Module::onChannel16CC(uint8_t cc, uint8_t value)
             auto new_value = static_cast<Tuning>(value);
             if (em.rounding.tuning != new_value) {
                 em.rounding.tuning = new_value;
-                notifyRoundingChanged();
+                if (!in_preset) {
+                    notifyRoundingChanged();
+                }
             }
         } break;
 
         case EMCC_Pedal1CC:
-            em.pedal1.cc = value;
-            if (!in_preset) {
-                notifyPedalChanged(0);
+            if (value != em.pedal1.cc) {
+                em.pedal1.cc = value;
+                if (!in_preset) {
+                    notifyPedalChanged(0);
+                }
             }
             break;
 
         case EMCC_Pedal2CC:
-            em.pedal2.cc = value;
-            if (!in_preset) {
-                notifyPedalChanged(0);
+            if (value != em.pedal2.cc) {
+                em.pedal2.cc = value;
+                if (!in_preset) {
+                    notifyPedalChanged(0);
+                }
             }
             break;
 
@@ -191,7 +197,9 @@ void Hc1Module::onChannel16CC(uint8_t cc, uint8_t value)
             auto kind = static_cast<RoundKind>((value & 0x06) >>1);
             if (kind != em.rounding.kind) {
                 em.rounding.kind = kind;
-                notifyRoundingChanged();
+                if (!in_preset) {
+                    notifyRoundingChanged();
+                }
             }
         } break;
 
@@ -201,55 +209,98 @@ void Hc1Module::onChannel16CC(uint8_t cc, uint8_t value)
             break;
 
         case EMCC_MinPedal1:
-            em.pedal1.min = value;
-            if (!in_preset) {
-                notifyPedalChanged(0);
+            if (value != em.pedal1.min) {
+                em.pedal1.min = value;
+                if (!in_preset) {
+                    notifyPedalChanged(0);
+                }
             }
             break;
         case EMCC_MaxPedal1:
-            em.pedal1.max = value;
-            if (!in_preset) {
-                notifyPedalChanged(0);
+            if (value != em.pedal1.max) {
+                em.pedal1.max = value;
+                if (!in_preset) {
+                    notifyPedalChanged(0);
+                }
             }
             break;
         case EMCC_MinPedal2:
-            em.pedal2.min = value;
-            if (!in_preset) {
-                notifyPedalChanged(1);
+            if (value != em.pedal2.min) {
+                em.pedal2.min = value;
+                if (!in_preset) {
+                    notifyPedalChanged(1);
+                }
             }
             break;
         case EMCC_MaxPedal2:
-            em.pedal2.max = value;
-            if (!in_preset) {
-                notifyPedalChanged(1);
+            if (value != em.pedal2.max) {
+                em.pedal2.max = value;
+                if (!in_preset) {
+                    notifyPedalChanged(1);
+                }
             }
             break;
 
         case EMCC_CompressorThreshold:
-            if (!in_preset) {
+            if (value != em.compressor.threshold) {
                 em.compressor.threshold = value;
-                notifyCompressorChanged();
+                if (!in_preset) {
+                    notifyCompressorChanged();
+                }
             }
             break;
 
         case EMCC_CompressorAttack:
-            em.compressor.attack = value;
-            if (!in_preset) {
-                notifyCompressorChanged();
+            if (value != em.compressor.attack) {
+                em.compressor.attack = value;
+                if (!in_preset) {
+                    notifyCompressorChanged();
+                }
             }
             break;
 
         case EMCC_CompressorRatio:
-            em.compressor.ratio = value;
-            if (!in_preset) {
-                notifyCompressorChanged();
+            if (value != em.compressor.ratio) {
+                em.compressor.ratio = value;
+                if (!in_preset) {
+                    notifyCompressorChanged();
+                }
             }
             break;
             
         case EMCC_CompressorMix:
-            em.compressor.mix = value;
-            if (!in_preset) {
-                notifyCompressorChanged();
+            if (value != em.compressor.mix) {
+                em.compressor.mix = value;
+                if (!in_preset) {
+                    notifyCompressorChanged();
+                }
+            }
+            break;
+
+        case EMCC_TiltEq:
+            if (value != em.tilt_eq.tilt) {
+                em.tilt_eq.tilt = value;
+                if (!in_preset) {
+                    notifyTiltEqChanged();
+                }
+            }
+            break;
+
+        case EMCC_TiltEqFrequency:
+            if (value != em.tilt_eq.frequency) {
+                em.tilt_eq.frequency = value;
+                if (!in_preset) {
+                    notifyTiltEqChanged();
+                }
+            }
+            break;
+
+        case EMCC_TiltEqMix:
+            if (value != em.tilt_eq.mix) {
+                em.tilt_eq.mix = value;
+                if (!in_preset) {
+                    notifyTiltEqChanged();
+                }
             }
             break;
 
@@ -300,7 +351,6 @@ void Hc1Module::onChannel16CC(uint8_t cc, uint8_t value)
                     phase->state = broken ? InitState::Broken : InitState::Complete;
                     if (!broken) {
                         std::sort(system_presets.begin(), system_presets.end(), getPresetSort(preset_order));
-                        readFavorites();
                     }
                     break;
             }
@@ -360,6 +410,8 @@ void Hc1Module::onChannel16Message(const midi::Message& msg)
                     finish_phase(InitPhase::PresetConfig);
                     notifyPresetChanged();
                     notifyPedalsChanged();
+                    notifyCompressorChanged();
+                    notifyTiltEqChanged();
                 } else
                 if (pending(InitPhase::DeviceConfig)) {
                     restore_midi_rate();
@@ -367,6 +419,8 @@ void Hc1Module::onChannel16Message(const midi::Message& msg)
                     notifyDeviceChanged();
                     notifyPresetChanged();
                     notifyPedalsChanged();
+                    notifyCompressorChanged();
+                    notifyTiltEqChanged();
                 } else
                 if (pending(InitPhase::PresetConfig)) {
                     restore_midi_rate();
@@ -384,6 +438,8 @@ void Hc1Module::onChannel16Message(const midi::Message& msg)
                     }
                     notifyPresetChanged();
                     notifyPedalsChanged();
+                    notifyCompressorChanged();
+                    notifyTiltEqChanged();
                 } else
                 if (is_gathering_presets()) {
                     if (broken) {

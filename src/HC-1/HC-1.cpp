@@ -162,6 +162,15 @@ void Hc1Module::notifyCompressorChanged()
     }
 }
 
+void Hc1Module::notifyTiltEqChanged()
+{
+    if (hc_event_subscriptions.empty()) return;
+    auto event = IHandleHcEvents::TiltEqChangedEvent{em.tilt_eq};
+    for (auto client: hc_event_subscriptions) {
+        client->onTiltEqChanged(event);
+    }
+}
+
 void Hc1Module::notifyDeviceChanged()
 {
     if (hc_event_subscriptions.empty()) return;
@@ -293,9 +302,7 @@ json_t * Hc1Module::dataToJson()
         json_object_set_new(root, "preset", current_preset->toJson());
     }
     json_object_set_new(root, "restore-preset", json_boolean(restore_saved_preset));
-    json_object_set_new(root, "cache-presets", json_boolean(cache_system_presets));
     json_object_set_new(root, "cache-user-presets", json_boolean(cache_user_presets));
-    //json_object_set_new(root, "heartbeat",  json_boolean(heart_beating));
     json_object_set_new(root, "favorites-file", json_string(favoritesFile.c_str()));
     return root;
 }
@@ -346,7 +353,6 @@ void Hc1Module::dataFromJson(json_t *root)
     if (j) {
         favoritesFile = json_string_value(j);
     }
-    cache_system_presets = GetBool(root, "cache-presets", cache_system_presets);
     cache_user_presets = GetBool(root, "cache-user-presets", cache_user_presets);
 }
 

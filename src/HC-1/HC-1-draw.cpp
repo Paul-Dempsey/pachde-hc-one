@@ -124,6 +124,9 @@ std::string Hc1ModuleWidget::getBannerText(NVGcontext * vg, std::shared_ptr<rack
 
     if (my_module->phase_pause) {
         auto next = NextPhase(my_module->current_phase);
+        while (InitPhase::Done != next && my_module->finished(next)) {
+            next = NextPhase(next);
+        }
         return format_string("Pause before %s ...", PhaseName(next));
     }
 

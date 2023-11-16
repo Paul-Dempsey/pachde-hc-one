@@ -6,6 +6,7 @@
 #include "em_types/em_pedal.hpp"
 #include "em_types/em_recirculator.hpp"
 #include "em_types/em_rounding.hpp"
+#include "em_types/em_tilteq.hpp"
 #include "em_types/em_tuning.hpp"
 
 namespace eagan_matrix {
@@ -19,6 +20,7 @@ struct EaganMatrix
     Rounding rounding;
     Recirculator recirculator;
     Compressor compressor;
+    TiltEq tilt_eq;
     PedalInfo pedal1;
     PedalInfo pedal2;
     bool reverse_surface;

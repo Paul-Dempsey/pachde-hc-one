@@ -84,7 +84,6 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, IMidiDeviceChange, midi
     };
     RestoreData * restore_ui_data = nullptr;
 
-    bool cache_system_presets = true;
     bool cache_user_presets = false;
     std::shared_ptr<Preset> current_preset = nullptr;
     std::shared_ptr<Preset> saved_preset = nullptr;
@@ -100,13 +99,11 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, IMidiDeviceChange, midi
     std::string moduleFavoritesPath();
     void clearFavorites();
     void saveFavorites();
-    void readFavorites();
     bool readFavoritesFile(const std::string& path, bool fresh);
     void writeFavoritesFile(const std::string& path);
     void openFavoritesFile(const std::string& path);
     void importHEGroupFile(const std::string& path);
     json_t* favoritesToJson();
-    void favoritesFromPresets();
 
     bool bulk_favoriting = false;
     class BulkFavoritingMode {
@@ -121,6 +118,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, IMidiDeviceChange, midi
     };
     std::string startupConfigPath();
     std::string userPresetsPath();
+    std::string systemPresetsResPath();
     std::string systemPresetsPath();
     void saveStartupConfig();
     void loadStartupConfig();
@@ -164,7 +162,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, IMidiDeviceChange, midi
     std::vector<InitPhaseInfo> init_phase = {
         //            Phase                      State                     MIDI rate              Post delay  Budget
         InitPhaseInfo{InitPhase::DeviceOutput,   InitState::Uninitialized, EMMidiRate::Full,      4.0f,       0.f },
-        InitPhaseInfo{InitPhase::DeviceInput,    InitState::Uninitialized, EMMidiRate::Full,      4.0f,       0.f },
+        InitPhaseInfo{InitPhase::DeviceInput,    InitState::Uninitialized, EMMidiRate::Full,      3.0f,       0.f },
         InitPhaseInfo{InitPhase::DeviceHello,    InitState::Uninitialized, EMMidiRate::Third,     1.0f,       4.f },
         InitPhaseInfo{InitPhase::DeviceConfig,   InitState::Uninitialized, EMMidiRate::Third,     1.0f,       4.f },
         InitPhaseInfo{InitPhase::CachedPresets,  InitState::Uninitialized, EMMidiRate::Full,      0.f,        0.f },
@@ -174,7 +172,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, IMidiDeviceChange, midi
         InitPhaseInfo{InitPhase::SavedPreset,    InitState::Uninitialized, EMMidiRate::Full,      1.0f,       4.f },
         InitPhaseInfo{InitPhase::PresetConfig,   InitState::Uninitialized, EMMidiRate::Full,      1.0f,       4.f },
         InitPhaseInfo{InitPhase::RequestUpdates, InitState::Uninitialized, EMMidiRate::Full,      0.f,        0.f },
-        InitPhaseInfo{InitPhase::Heartbeat,      InitState::Uninitialized, EMMidiRate::Full,      2.0f,       2.f },
+        InitPhaseInfo{InitPhase::Heartbeat,      InitState::Uninitialized, EMMidiRate::Full,      0.0f,       2.f },
         InitPhaseInfo{InitPhase::Done,           InitState::Uninitialized, EMMidiRate::Full,      0.f,        0.f }
     };
 
@@ -200,6 +198,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, IMidiDeviceChange, midi
     bool is_gathering_presets() { return pending(InitPhase::SystemPresets) || pending(InitPhase::UserPresets); }
     bool hasSystemPresets() { return finished(InitPhase::SystemPresets) && !system_presets.empty(); }
     bool hasUserPresets() { return finished(InitPhase::UserPresets) && !user_presets.empty(); }
+    bool hasFavorites()  { return finished(InitPhase::Favorites) && !favorite_presets.empty(); }
 
     EMMidiRate init_midi_rate = EMMidiRate::Full;
     void send_init_midi_rate(EMMidiRate rate);
@@ -290,6 +289,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, IMidiDeviceChange, midi
     void notifyPedalChanged(uint8_t pedal);
     void notifyRoundingChanged();
     void notifyCompressorChanged();
+    void notifyTiltEqChanged();
     void notifyDeviceChanged();
     void notifyDisconnect();
     void notifyFavoritesFileChanged();

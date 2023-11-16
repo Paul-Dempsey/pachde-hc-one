@@ -29,8 +29,8 @@ const char * PhaseName(InitPhase phase) {
     case InitPhase::DeviceHello:   return "request initial EM handshake";
     case InitPhase::DeviceConfig:  return "request device configuration";
     case InitPhase::CachedPresets: return "load cached presets";
-    case InitPhase::UserPresets:   return "request User presets";
-    case InitPhase::SystemPresets: return "request System presets";
+    case InitPhase::UserPresets:   return "load User presets";
+    case InitPhase::SystemPresets: return "load System presets";
     case InitPhase::Favorites:     return "load favorites";
     case InitPhase::SavedPreset:   return "restore saved preset";
     case InitPhase::PresetConfig:  return "request preset";

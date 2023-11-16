@@ -1,5 +1,6 @@
 #include "HC-2.hpp"
 #include "HC-2-layout.hpp"
+#include "header_widget.hpp"
 #include "../colors.hpp"
 #include "../misc.hpp"
 #include "../text.hpp"
@@ -30,10 +31,11 @@ inline uint8_t GetSmallParamValue(rack::app::ModuleWidget* w, int id, uint8_t de
 void Hc2ModuleWidget::createRoundingUI(float x, float y)
 {
     // Rounding cluster
+    addChild(createHeaderWidget(x, y, ROUND_BOX_WIDTH, KNOB_BOX_HEIGHT));
     addChild(createStaticTextLabel<StaticTextLabel>(Vec(x + MORE_PAD, y + PAD), 40.f, "Rounding", TextAlignment::Left));
 
     addParam(createParamCentered<SwitchHorz4>(
-        Vec(x + ROUND_COL2, y + MORE_PAD + HALF_KNOB),
+        Vec(x + ROUND_COL2, y + PAD + PAD + HALF_KNOB),
         module, Hc2P::P_ROUND_KIND));
  
     addChild(createModKnob(
@@ -58,7 +60,7 @@ void Hc2ModuleWidget::createRoundingUI(float x, float y)
         module, Hc2I::IN_ROUND_INITIAL));
 
     rounding_summary = createLazyDynamicTextLabel(
-        Vec(x + ROUND_BOX_HALF, y + ROUND_BOX_HEIGHT - 11.f),
+        Vec(x + ROUND_BOX_HALF, y + KNOB_BOX_HEIGHT - 11.f),
         Vec(100.f, 12.f),
         [=]() {
             bool initial = GetSmallParamValue(this, Hc2P::P_ROUND_INITIAL);
@@ -77,40 +79,73 @@ void Hc2ModuleWidget::createRoundingUI(float x, float y)
 
 void Hc2ModuleWidget::createCompressorUI(float x, float y)
 {
+    addChild(createHeaderWidget(x, y, COMP_BOX_WIDTH, KNOB_BOX_HEIGHT));
     addChild(createStaticTextLabel<StaticTextLabel>(Vec(x + COMP_BOX_WIDTH*.5f, y + PAD), 60.f, "Compressor", TextAlignment::Center));
-    addChild(createLightCentered<SmallSimpleLight<BlueLight>>(Vec(x + COMP_COL1 + 3.f * KNOB_SPREAD, y + 8.f), my_module, Hc2L::L_COMPRESSOR));
+    addChild(createLightCentered<SmallSimpleLight<BlueLight>>(Vec(x + KNOB_COL1 + 3.f * KNOB_SPREAD, y + 8.f), my_module, Hc2L::L_COMPRESSOR));
 
-    float cx = x + COMP_COL1;
-    addChild(createStaticTextLabel<StaticTextLabel>(Vec(cx, y + COMP_KNOB_ROW - STATIC_LABEL_OFFSET), 50.f, "Threshold", TextAlignment::Center));
+    float cx = x + KNOB_COL1;
+    addChild(createStaticTextLabel<StaticTextLabel>(Vec(cx, y + KNOB_ROW - STATIC_LABEL_OFFSET), 50.f, "Threshold", TextAlignment::Center));
     addChild(createModKnob(
-        Vec( cx, y + COMP_KNOB_ROW), 
+        Vec( cx, y + KNOB_ROW), 
         module, Hc2P::P_COMP_THRESHOLD, Hc2I::IN_COMP_THRESHOLD, Hc2P::P_COMP_THRESHOLD_REL));
-    addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<BlueLight>>>(Vec(cx - REL_OFFSET, y + COMP_KNOB_ROW - REL_VOFFSET), my_module, Hc2P::P_COMP_THRESHOLD_REL, Hc2L::L_COMP_THRESHOLD_REL));
-    addChild(createInputCentered<ColorPort>(Vec(cx - CV_COLUMN_OFFSET, y + COMP_KNOB_ROW + CV_ROW_OFFSET), my_module, Hc2I::IN_COMP_THRESHOLD));
+    addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<BlueLight>>>(Vec(cx - REL_OFFSET, y + KNOB_ROW - REL_VOFFSET), my_module, Hc2P::P_COMP_THRESHOLD_REL, Hc2L::L_COMP_THRESHOLD_REL));
+    addChild(createInputCentered<ColorPort>(Vec(cx - CV_COLUMN_OFFSET, y + KNOB_ROW + CV_ROW_OFFSET), my_module, Hc2I::IN_COMP_THRESHOLD));
 
     cx += KNOB_SPREAD;
-    addChild(createStaticTextLabel<StaticTextLabel>(Vec(cx, y + COMP_KNOB_ROW - STATIC_LABEL_OFFSET), 50.f, "Attack", TextAlignment::Center));
+    addChild(createStaticTextLabel<StaticTextLabel>(Vec(cx, y + KNOB_ROW - STATIC_LABEL_OFFSET), 50.f, "Attack", TextAlignment::Center));
     addChild(createModKnob(
-        Vec( cx, y + COMP_KNOB_ROW), 
+        Vec( cx, y + KNOB_ROW), 
         module, Hc2P::P_COMP_ATTACK, Hc2I::IN_COMP_ATTACK, Hc2P::P_COMP_ATTACK_REL));
-    addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<BlueLight>>>(Vec(cx - REL_OFFSET, y + COMP_KNOB_ROW - REL_VOFFSET), my_module, Hc2P::P_COMP_ATTACK_REL, Hc2L::L_COMP_ATTACK_REL));
-    addChild(createInputCentered<ColorPort>(Vec(cx - CV_COLUMN_OFFSET, y + COMP_KNOB_ROW + CV_ROW_OFFSET), my_module, Hc2I::IN_COMP_ATTACK));
+    addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<BlueLight>>>(Vec(cx - REL_OFFSET, y + KNOB_ROW - REL_VOFFSET), my_module, Hc2P::P_COMP_ATTACK_REL, Hc2L::L_COMP_ATTACK_REL));
+    addChild(createInputCentered<ColorPort>(Vec(cx - CV_COLUMN_OFFSET, y + KNOB_ROW + CV_ROW_OFFSET), my_module, Hc2I::IN_COMP_ATTACK));
 
     cx += KNOB_SPREAD;
-    addChild(createStaticTextLabel<StaticTextLabel>(Vec(cx, y + COMP_KNOB_ROW - STATIC_LABEL_OFFSET), 50.f, "Ratio", TextAlignment::Center));
+    addChild(createStaticTextLabel<StaticTextLabel>(Vec(cx, y + KNOB_ROW - STATIC_LABEL_OFFSET), 50.f, "Ratio", TextAlignment::Center));
     addChild(createModKnob(
-        Vec( cx, y + COMP_KNOB_ROW), 
+        Vec( cx, y + KNOB_ROW), 
         module, Hc2P::P_COMP_RATIO, Hc2I::IN_COMP_RATIO, Hc2P::P_COMP_RATIO_REL));
-    addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<BlueLight>>>(Vec(cx - REL_OFFSET, y + COMP_KNOB_ROW - REL_VOFFSET), my_module, Hc2P::P_COMP_RATIO_REL, Hc2L::L_COMP_RATIO_REL));
-    addChild(createInputCentered<ColorPort>(Vec(cx - CV_COLUMN_OFFSET, y + COMP_KNOB_ROW + CV_ROW_OFFSET), my_module, Hc2I::IN_COMP_RATIO));
+    addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<BlueLight>>>(Vec(cx - REL_OFFSET, y + KNOB_ROW - REL_VOFFSET), my_module, Hc2P::P_COMP_RATIO_REL, Hc2L::L_COMP_RATIO_REL));
+    addChild(createInputCentered<ColorPort>(Vec(cx - CV_COLUMN_OFFSET, y + KNOB_ROW + CV_ROW_OFFSET), my_module, Hc2I::IN_COMP_RATIO));
 
     cx += KNOB_SPREAD;
-    addChild(createStaticTextLabel<StaticTextLabel>(Vec(cx, y + COMP_KNOB_ROW - STATIC_LABEL_OFFSET), 50.f, "Mix", TextAlignment::Center));
+    addChild(createStaticTextLabel<StaticTextLabel>(Vec(cx, y + KNOB_ROW - STATIC_LABEL_OFFSET), 50.f, "Mix", TextAlignment::Center));
     addChild(createModKnob(
-        Vec( cx, y + COMP_KNOB_ROW), 
+        Vec( cx, y + KNOB_ROW), 
         module, Hc2P::P_COMP_MIX, Hc2I::IN_COMP_MIX, Hc2P::P_COMP_MIX_REL));
-    addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<BlueLight>>>(Vec(cx - REL_OFFSET, y + COMP_KNOB_ROW - REL_VOFFSET), my_module, Hc2P::P_COMP_MIX_REL, Hc2L::L_COMP_MIX_REL));
-    addChild(createInputCentered<ColorPort>(Vec(cx - CV_COLUMN_OFFSET, y + COMP_KNOB_ROW + CV_ROW_OFFSET), my_module, Hc2I::IN_COMP_MIX));
+    addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<BlueLight>>>(Vec(cx - REL_OFFSET, y + KNOB_ROW - REL_VOFFSET), my_module, Hc2P::P_COMP_MIX_REL, Hc2L::L_COMP_MIX_REL));
+    addChild(createInputCentered<ColorPort>(Vec(cx - CV_COLUMN_OFFSET, y + KNOB_ROW + CV_ROW_OFFSET), my_module, Hc2I::IN_COMP_MIX));
+}
+
+void Hc2ModuleWidget::createTiltEqUI(float x, float y)
+{
+    addChild(createHeaderWidget(x, y, TEQ_BOX_WIDTH, KNOB_BOX_HEIGHT));
+    addChild(createStaticTextLabel<StaticTextLabel>(Vec(x + TEQ_BOX_WIDTH*.5f, y + PAD), 60.f, "Tilt EQ", TextAlignment::Center));
+    addChild(createLightCentered<SmallSimpleLight<BlueLight>>(Vec(x + KNOB_COL1 + 2.f * KNOB_SPREAD, y + 8.f), my_module, Hc2L::L_TEQ));
+
+    float cx = x + KNOB_COL1;
+    addChild(createStaticTextLabel<StaticTextLabel>(Vec(cx, y + KNOB_ROW - STATIC_LABEL_OFFSET), 50.f, "Tilt", TextAlignment::Center));
+    addChild(createModKnob(
+        Vec( cx, y + KNOB_ROW), 
+        module, Hc2P::P_TEQ_TILT, Hc2I::IN_TEQ_TILT, Hc2P::P_TEQ_TILT_REL));
+    addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<BlueLight>>>(Vec(cx - REL_OFFSET, y + KNOB_ROW - REL_VOFFSET), my_module, Hc2P::P_TEQ_TILT_REL, Hc2L::L_TEQ_TILT_REL));
+    addChild(createInputCentered<ColorPort>(Vec(cx - CV_COLUMN_OFFSET, y + KNOB_ROW + CV_ROW_OFFSET), my_module, Hc2I::IN_TEQ_TILT));
+
+    cx += KNOB_SPREAD;
+    addChild(createStaticTextLabel<StaticTextLabel>(Vec(cx, y + KNOB_ROW - STATIC_LABEL_OFFSET), 55.f, "Frequency", TextAlignment::Center));
+    addChild(createModKnob(
+        Vec( cx, y + KNOB_ROW), 
+        module, Hc2P::P_TEQ_FREQ, Hc2I::IN_TEQ_FREQ, Hc2P::P_TEQ_FREQ_REL));
+    addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<BlueLight>>>(Vec(cx - REL_OFFSET, y + KNOB_ROW - REL_VOFFSET), my_module, Hc2P::P_TEQ_FREQ_REL, Hc2L::L_TEQ_FREQ_REL));
+    addChild(createInputCentered<ColorPort>(Vec(cx - CV_COLUMN_OFFSET, y + KNOB_ROW + CV_ROW_OFFSET), my_module, Hc2I::IN_TEQ_FREQ));
+
+    cx += KNOB_SPREAD;
+    addChild(createStaticTextLabel<StaticTextLabel>(Vec(cx, y + KNOB_ROW - STATIC_LABEL_OFFSET), 30.f, "Mix", TextAlignment::Center));
+    addChild(createModKnob(
+        Vec( cx, y + KNOB_ROW), 
+        module, Hc2P::P_TEQ_MIX, Hc2I::IN_TEQ_MIX, Hc2P::P_TEQ_MIX_REL));
+    addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<BlueLight>>>(Vec(cx - REL_OFFSET, y + KNOB_ROW - REL_VOFFSET), my_module, Hc2P::P_TEQ_MIX_REL, Hc2L::L_TEQ_MIX_REL));
+    addChild(createInputCentered<ColorPort>(Vec(cx - CV_COLUMN_OFFSET, y + KNOB_ROW + CV_ROW_OFFSET), my_module, Hc2I::IN_TEQ_MIX));
+
 }
 
 Hc2ModuleWidget::Hc2ModuleWidget(Hc2Module * module)
@@ -125,6 +160,7 @@ Hc2ModuleWidget::Hc2ModuleWidget(Hc2Module * module)
 
     createRoundingUI(ROUND_BOX_LEFT, ROUND_BOX_TOP);
     createCompressorUI(COMP_BOX_LEFT, COMP_BOX_TOP);
+    createTiltEqUI(TEQ_BOX_LEFT, TEQ_BOX_TOP);
 
     auto x = box.size.x * .5f;
     addChild(createCCMap<CCMap>(x, box.size.y - 24.f - 20.f, true, CCMapChannel::One, this));
@@ -160,10 +196,6 @@ Hc1Module* Hc2ModuleWidget::getPartner()
 void Hc2ModuleWidget::draw(const DrawArgs& args)
 {
     ModuleWidget::draw(args);
-
-    auto vg = args.vg;
-    BoxRect(vg, ROUND_BOX_LEFT, ROUND_BOX_TOP, ROUND_BOX_WIDTH, ROUND_BOX_HEIGHT, RampGray(G_40), 0.5f);
-    BoxRect(vg, COMP_BOX_LEFT, COMP_BOX_TOP, COMP_BOX_WIDTH, COMP_BOX_HEIGHT, RampGray(G_40), 0.5f);
 
     //auto partner = getPartner();
     //if (partner) {

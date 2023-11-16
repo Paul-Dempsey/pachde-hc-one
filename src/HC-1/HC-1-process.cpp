@@ -344,11 +344,7 @@ void Hc1Module::process_init_phase(const ProcessArgs& args)
     } break;
  
     case InitPhase::Favorites: {
-        if (favoritesFile.empty()) {
-            readFavorites();
-        } else {
-            readFavoritesFile(favoritesFile, true);
-        }
+        readFavoritesFile(favoritesFile.empty() ? moduleFavoritesPath() : favoritesFile, true);
         phase->finish();
     } break;
  
