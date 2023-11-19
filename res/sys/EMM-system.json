@@ -2083,14 +2083,14 @@
     {
       "hi": 127,
       "lo": 4,
-      "num": 75,
+      "num": 72,
       "name": "mBiraski",
       "text": "C=PT_SU_CN_IN_MT_MM"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 76,
+      "num": 73,
       "name": "mBiraski Ch1",
       "text": "C=PT_SU_CN_IN_MT_MM_C1"
     },
@@ -2392,1735 +2392,1714 @@
       "hi": 127,
       "lo": 2,
       "num": 84,
-      "name": "Mutable Bowl.9",
-      "text": "C=PT_SU_AC_MT_BH"
-    },
-    {
-      "hi": 127,
-      "lo": 2,
-      "num": 85,
       "name": "Mutate Looper",
       "text": "C=OT_AI_EC_LP_SY_DV_OS"
     },
     {
       "hi": 127,
       "lo": 2,
-      "num": 89,
+      "num": 88,
       "name": "Natural Law",
       "text": "C=OT_OR_AN_CH_EC_LP_SY_OS_WB_RO"
     },
     {
       "hi": 127,
       "lo": 2,
-      "num": 86,
+      "num": 85,
       "name": "NFS Train 900",
       "text": "C=CL_AN_DI_EC_LP_LY_SE_SY_KI_OP_OS"
     },
     {
       "hi": 127,
       "lo": 2,
-      "num": 87,
+      "num": 86,
       "name": "NGoni",
       "text": "C=ST_PL_AC_CN_SR_BB_MM_RO"
     },
     {
       "hi": 127,
       "lo": 2,
-      "num": 88,
+      "num": 87,
       "name": "NGoni - Kinetic",
       "text": "C=ST_PL_AC_CN_SR_DV_KI_RO"
     },
     {
       "hi": 127,
       "lo": 2,
-      "num": 90,
+      "num": 89,
       "name": "Noise - Out of Phase",
       "text": "C=UT"
     },
     {
       "hi": 127,
       "lo": 2,
-      "num": 91,
+      "num": 90,
       "name": "Noise - Pink",
       "text": "C=UT"
     },
     {
       "hi": 127,
       "lo": 2,
-      "num": 93,
+      "num": 92,
       "name": "Noise - White at -35 RMS",
       "text": "C=UT"
     },
     {
       "hi": 127,
       "lo": 2,
-      "num": 92,
+      "num": 91,
       "name": "Noise - White Stereo",
       "text": "C=UT"
     },
     {
       "hi": 127,
       "lo": 2,
-      "num": 94,
+      "num": 93,
       "name": "Noisy Old Oscillator",
       "text": "C=CL_AN_LF_NO_SY_KI_OP_OS"
     },
     {
       "hi": 127,
       "lo": 2,
-      "num": 95,
+      "num": 94,
       "name": "Northern Lights",
       "text": "C=ST_BO_AC_EV_IC_IN_LP_SY"
     },
     {
       "hi": 127,
       "lo": 2,
-      "num": 96,
+      "num": 95,
       "name": "Notch Lightning",
       "text": "C=CL_AN_BI_DI_SE_SY_DV_OS_RO"
     },
     {
       "hi": 127,
       "lo": 2,
-      "num": 97,
+      "num": 96,
       "name": "Octavator",
       "text": "C=OT_DI_EC_RV_SY_DS_OS"
     },
     {
       "hi": 127,
       "lo": 2,
-      "num": 98,
+      "num": 97,
       "name": "Octave Phases",
       "text": "C=OT_DA_EC_EV_LP_RV_SY_BB_OS_RO"
     },
     {
       "hi": 127,
       "lo": 2,
-      "num": 99,
+      "num": 98,
       "name": "Old Pad Machine",
       "text": "C=KY_OR_AN_EN_EV_SY_BB_DS_OP_RO"
     },
     {
       "hi": 127,
       "lo": 2,
-      "num": 100,
+      "num": 99,
       "name": "Omnisphere 1 Perform",
       "text": "C=MD"
     },
     {
       "hi": 127,
       "lo": 2,
-      "num": 101,
+      "num": 100,
       "name": "Omnisphere 2 Round",
       "text": "C=MD"
     },
     {
       "hi": 127,
       "lo": 2,
-      "num": 102,
+      "num": 101,
       "name": "Omnisphere 3 Initial Round",
       "text": "C=MD"
     },
     {
       "hi": 127,
       "lo": 2,
-      "num": 103,
+      "num": 102,
       "name": "Omnisphere 4 Semitone",
       "text": "C=MD"
     },
     {
       "hi": 127,
       "lo": 2,
-      "num": 104,
+      "num": 103,
       "name": "Omnisphere 5 Mono",
       "text": "C=MD"
     },
     {
       "hi": 127,
       "lo": 2,
-      "num": 105,
+      "num": 104,
       "name": "Orchester",
       "text": "C=OT_AI_BG_EN_EV_SY_BB_HM_OP_OS_WB_RO"
     },
     {
       "hi": 127,
       "lo": 2,
-      "num": 106,
+      "num": 105,
       "name": "Organo Espressivo",
       "text": "C=KY_OR_EL_OS_RO"
     },
     {
       "hi": 127,
       "lo": 2,
-      "num": 107,
+      "num": 106,
       "name": "Organzilla",
       "text": "C=KY_SY_OR_AG_AN_BG_BI_RV_WB_RO"
     },
     {
       "hi": 127,
       "lo": 2,
-      "num": 108,
+      "num": 107,
       "name": "Osc - A440 at -35",
       "text": "C=UT"
     },
     {
       "hi": 127,
       "lo": 2,
-      "num": 109,
+      "num": 108,
       "name": "Osc - Formula Delay",
       "text": "C=UT"
     },
     {
       "hi": 127,
       "lo": 2,
-      "num": 110,
+      "num": 109,
       "name": "Osc - Pitch via Z",
       "text": "C=UT"
     },
     {
       "hi": 127,
       "lo": 2,
-      "num": 111,
+      "num": 110,
       "name": "Osc - Random Pitch",
       "text": "C=UT"
     },
     {
       "hi": 127,
       "lo": 2,
-      "num": 112,
+      "num": 111,
       "name": "Osc - Sine Wave",
       "text": "C=UT"
     },
     {
       "hi": 127,
       "lo": 2,
-      "num": 113,
+      "num": 112,
       "name": "Osc - Subtractive Synth",
       "text": "C=UT"
     },
     {
       "hi": 127,
       "lo": 2,
-      "num": 114,
+      "num": 113,
       "name": "Osc - Waveshaping",
       "text": "C=UT"
     },
     {
       "hi": 127,
       "lo": 2,
-      "num": 115,
+      "num": 114,
       "name": "OvertoneBar",
       "text": "C=PT_AI_IC_IN_MT_NO_SY_BB_OS"
     },
     {
       "hi": 127,
       "lo": 2,
-      "num": 117,
+      "num": 116,
       "name": "Overtones",
       "text": "C=OT_AT_AG_NO_SD_SY_DV_KI_OS"
     },
     {
       "hi": 127,
       "lo": 2,
-      "num": 116,
+      "num": 115,
       "name": "OvertoneWind",
       "text": "C=WI_AI_NO_SY_OS"
     },
     {
       "hi": 127,
       "lo": 2,
-      "num": 120,
+      "num": 119,
       "name": "Pad Tie",
       "text": "C=OT_OR_PA_EV_SY_BB_OS_RO"
     },
     {
       "hi": 127,
       "lo": 2,
-      "num": 122,
+      "num": 121,
       "name": "Panpipe Loops",
       "text": "C=WI_AI_EC_LP_RV_BB"
     },
     {
       "hi": 127,
       "lo": 2,
-      "num": 121,
+      "num": 120,
       "name": "PanPipe Solo",
       "text": "C=WI_FL_AI_CN_NO_DM_OS"
     },
     {
       "hi": 127,
       "lo": 2,
-      "num": 123,
+      "num": 122,
       "name": "Patville",
       "text": "C=OT_PA_AN_EC_EN_SY_WA_OS_WB_RO"
     },
     {
       "hi": 127,
       "lo": 2,
-      "num": 118,
+      "num": 117,
       "name": "PCS Dandelion",
       "text": "C=OT_BI_EC_EV_IC_SY_OP_OS"
     },
     {
       "hi": 127,
       "lo": 2,
-      "num": 119,
+      "num": 118,
       "name": "PCS Fixed",
       "text": "C=KY_OR_AN_DY_EL_OJ_OS_RO"
     },
     {
       "hi": 127,
       "lo": 2,
-      "num": 124,
+      "num": 123,
       "name": "Phase Controled ModMan",
       "text": "C=OT_DI_EV_LF_RV_SY_MM_OJ_OP"
     },
     {
       "hi": 127,
       "lo": 2,
-      "num": 125,
+      "num": 124,
       "name": "Phaser",
       "text": "C=PR"
     },
     {
       "hi": 127,
       "lo": 2,
-      "num": 126,
+      "num": 125,
       "name": "Philco Chromatic",
       "text": "C=OT_AT_CN_DY_EL_SD_SY_OS"
     },
     {
       "hi": 127,
       "lo": 2,
-      "num": 127,
+      "num": 126,
       "name": "Pinched FM",
       "text": "C=OT_BI_DT_EL_SY"
     },
     {
       "hi": 127,
-      "lo": 3,
-      "num": 0,
+      "lo": 2,
+      "num": 127,
       "name": "Ping Pong",
       "text": "C=OT_AN_DY_LP_SE_SY_DV_OS"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 1,
+      "num": 0,
       "name": "Pipedreams",
       "text": "C=WI_FL_AC_AI_EC_LP_RV_SY_BH_OP_RO"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 2,
+      "num": 1,
       "name": "Pitch Shifter",
       "text": "C=PR"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 3,
+      "num": 2,
       "name": "Plane Tiv Organ",
       "text": "C=KY_OR_AN_CN_EL_OS_RO"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 4,
+      "num": 3,
       "name": "Pleasantness",
       "text": "C=CL_PA_EC_EV_SY_DV_OS_RO"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 5,
+      "num": 4,
       "name": "Plinklies",
       "text": "C=PT_SU_AC_IN_LP_MT_BB"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 6,
+      "num": 5,
       "name": "Pluck Tine",
       "text": "C=PT_SU_AC_MT"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 7,
+      "num": 6,
       "name": "Plucked Soup Can",
       "text": "C=ST_PL_AC_CN_HM"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 8,
+      "num": 7,
       "name": "Plutonium",
       "text": "C=CL_AN_EC_LP_SE_SY_WB_RO"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 9,
+      "num": 8,
       "name": "Polychromatic",
       "text": "C=OT_CH_SY_WA_OS"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 10,
+      "num": 9,
       "name": "Portable Reed",
       "text": "C=KY_RD_AC_CN_DY_IN"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 11,
+      "num": 10,
       "name": "Positiv Organ",
       "text": "C=KY_OR_AC_AI_CN_DY_BB_OS_RO"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 12,
+      "num": 11,
       "name": "Pterodactyl",
       "text": "C=OT_AT_AG_SD_SY_HM_OS"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 13,
+      "num": 12,
       "name": "Pulsar",
       "text": "C=PT_AC_EC_LP_RV_BB_DV"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 14,
+      "num": 13,
       "name": "Pulse",
       "text": "C=OT_AT_DI_EV_FM_LP_SY_OS"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 15,
+      "num": 14,
       "name": "Pusher",
       "text": "C=ST_PL_SY_BB_OS"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 16,
+      "num": 15,
       "name": "Quaverer",
       "text": "C=KY_OR_CN_EL_IN_RO"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 17,
+      "num": 16,
       "name": "Random Fun",
       "text": "C=OT_AT_EC_EV_LP_RN_SD_SY_OS"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 18,
+      "num": 17,
       "name": "Random Texture",
       "text": "C=OT_AT_AI_EC_RN_RV_SD_BB_BM_DV_OP_OS"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 19,
+      "num": 18,
       "name": "Random Trigger",
       "text": "C=OT_AT_AC_EC_RN_RV_SD_SE_BB"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 20,
+      "num": 19,
       "name": "Razor Loops",
       "text": "C=OT_DI_EL_EV_LP_MT_SD_DV"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 21,
+      "num": 20,
       "name": "Remembrance Bells",
       "text": "C=PT_SU_AC_EC_MT_RV_DS_HM"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 22,
+      "num": 21,
       "name": "Resizable Guitar",
       "text": "C=ST_PL_AC_EC_SR_BB_MI_PO_RO"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 23,
+      "num": 22,
       "name": "Resodynamic",
       "text": "C=ST_PL_AC_HM_OS_RO"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 24,
+      "num": 23,
       "name": "Resonant Drum 1",
       "text": "C=PE_AT_SU_AI_NO_WO_BB"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 25,
+      "num": 24,
       "name": "Resonant Drum 2",
       "text": "C=PE_AT_SU_MT_BB"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 26,
+      "num": 25,
       "name": "Rhythm And Bass",
       "text": "C=ST_BA_AC_MM_SV"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 27,
+      "num": 26,
       "name": "Ring Mod - Basic",
       "text": "C=UT"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 28,
+      "num": 27,
       "name": "Ring Mod - Voice",
       "text": "C=VO_LP_SY_OS_WB"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 29,
+      "num": 28,
       "name": "Ring Mod - Voice - Var1",
       "text": "C=VO_LP_SY_OS_WB"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 30,
+      "num": 29,
       "name": "Ring Mod - Voice 1",
       "text": "C=VO_LP_SY_OS_WB"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 31,
+      "num": 30,
       "name": "Ring Mod - Voice 2",
       "text": "C=VO_LP_SY_OS_WB"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 32,
+      "num": 31,
       "name": "RingMod Voice",
       "text": "C=PR"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 33,
+      "num": 32,
       "name": "Roller",
       "text": "C=DO"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 34,
+      "num": 33,
       "name": "Rosetta Alarm",
       "text": "C=DO"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 35,
+      "num": 34,
       "name": "Rosin Oscillator",
       "text": "C=OT_AI_RV_SY"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 36,
+      "num": 35,
       "name": "Roto String",
       "text": "C=ST_BO_AC_AI_LP_NO"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 37,
+      "num": 36,
       "name": "Rub",
       "text": "C=ST_BO_AC_BI_CN_SR_BB_OP"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 38,
+      "num": 37,
       "name": "Rub String",
       "text": "C=ST_PL_AC_CN_SR_BB_OS"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 39,
+      "num": 38,
       "name": "Rubber Band Stars",
       "text": "C=OT_EV_LP_SD_HM"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 40,
+      "num": 39,
       "name": "Sawblades",
       "text": "C=CL_PA_BG_EN_SY_DS_OS_RO"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 41,
+      "num": 40,
       "name": "Sawz",
       "text": "C=CL_PA_AI_BG_EC_EN_SE_DS_OP_OS"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 42,
+      "num": 41,
       "name": "Saxmosis",
       "text": "C=WI_RS_AC_AI_CN_HM"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 43,
+      "num": 42,
       "name": "Scratching FDN",
       "text": "C=OT_AT_AC_RV_SD_SR_DM"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 44,
+      "num": 43,
       "name": "Seasons Ch1",
       "text": "C=OT_PA_AN_BI_EC_EV_SY_DF_OS_WB_C1"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 45,
+      "num": 44,
       "name": "Sequencer 1 Ch1",
       "text": "C=OT_LP_LY_SY_EM_OS_WB_C1"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 46,
+      "num": 45,
       "name": "Shaper",
       "text": "C=PR_DT"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 47,
+      "num": 46,
       "name": "Shimmer",
       "text": "C=OT_PA_AI_CH_EV_LP_RV_SE_SY_BB_DS_OP"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 48,
+      "num": 47,
       "name": "Should I Stay or Should I Go",
       "text": "C=VO_CN_AD"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 50,
+      "num": 49,
       "name": "SiloString Pizz",
       "text": "C=ST_PL_AC_CN_HM_MI_PO"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 51,
+      "num": 50,
       "name": "Silver Mirror",
       "text": "C=ST_PL_EV_RV_HM_OS_MI_PO_RO"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 53,
+      "num": 52,
       "name": "Simple and Nice",
       "text": "C=OT_AN_EC_SY_WA_DS_OS"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 52,
+      "num": 51,
       "name": "Simple Organ",
       "text": "C=KY_OR_CN_EL_OS_RO"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 54,
+      "num": 53,
       "name": "Sine Chaser",
       "text": "C=CL_AN_CN_EC_SY_DS_OS"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 55,
+      "num": 54,
       "name": "Sine Kalimba",
       "text": "C=PT_SU_AC_IN_MT_HM_OS"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 56,
+      "num": 55,
       "name": "Sine2Sax",
       "text": "C=WI_RS_AC_CN_BB_SB_RO"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 57,
+      "num": 56,
       "name": "SineBank - Basic",
       "text": "C=UT"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 58,
+      "num": 57,
       "name": "SineBank FM String",
       "text": "C=ST_BI_CN_FM_SY_OS_SB"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 59,
+      "num": 58,
       "name": "SineBank Horn",
       "text": "C=WI_BR_AC_FM_SB"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 60,
+      "num": 59,
       "name": "SinePhases",
       "text": "C=OT_LP_SY_WA"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 61,
+      "num": 60,
       "name": "SineSpray - Basic",
       "text": "C=UT"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 62,
+      "num": 61,
       "name": "SineSpray Rain",
       "text": "C=DO"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 63,
+      "num": 62,
       "name": "SineSpray Rain via Surface",
       "text": "C=OT_AT_AG_IN_LP_NA_NO_RN_SD_SS"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 64,
+      "num": 63,
       "name": "Sineysitus",
       "text": "C=CL_OR_AN_LP_SY_WA_OS"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 65,
+      "num": 64,
       "name": "Singing Bamboo",
       "text": "C=ST_PL_AC_WO_BB_HM_RO"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 66,
+      "num": 65,
       "name": "Singing Bamboo 2",
       "text": "C=ST_PL_AC_WO_BB_HM_RO"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 67,
+      "num": 66,
       "name": "Singing Noise",
       "text": "C=OT_AI_NO_SY_BB_HM_RO"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 68,
+      "num": 67,
       "name": "Singing Oscillators",
       "text": "C=VO_PA_AI_SY_BM_DS_OS_RO"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 69,
+      "num": 68,
       "name": "Single Reed",
       "text": "C=WI_RS_AC_WA_WO_BB_HM"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 70,
+      "num": 69,
       "name": "Sinseong-ri",
       "text": "C=ST_PL_CN_IN_LP_SO_SR_MM"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 49,
+      "num": 48,
       "name": "SiTan",
       "text": "C=ST_BO_SU_BI_CN_SY_RO"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 71,
+      "num": 70,
       "name": "Slide Wind",
       "text": "C=WI_FL_AC_AI_WA"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 72,
+      "num": 71,
       "name": "Slide Wind EM",
       "text": "C=WI_FL_AC_AI_WA_BH_OS"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 73,
+      "num": 72,
       "name": "SlideyPizz",
       "text": "C=ST_BO_PL_AC_CN_IN_HM"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 74,
+      "num": 73,
       "name": "Slip Zen",
       "text": "C=OT_PL_AC_CN_EC_IN_LY_WA_BB_DS"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 75,
+      "num": 74,
       "name": "Slow Evolver",
       "text": "C=OT_OR_AN_CN_EL_EV_LP_SY_DS_WB"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 76,
+      "num": 75,
       "name": "Small Cloud Gamelan",
       "text": "C=PT_BO_SU_AC_MT_RV_MM_RO"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 77,
+      "num": 76,
       "name": "Small Steel",
       "text": "C=ST_PL_AC_CN_SR_BB_MI_PO_RO"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 78,
+      "num": 77,
       "name": "Snap Bass",
       "text": "C=ST_BA_AC_CN_HM"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 79,
+      "num": 78,
       "name": "Snap String",
       "text": "C=ST_PL_AC_MT_HM_MI_PO_RO"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 80,
+      "num": 79,
       "name": "Sonogram",
       "text": "C=OT_AT_LP_NO_SD_SE_SS"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 81,
+      "num": 80,
       "name": "Soothsayer",
       "text": "C=CL_BR_OS"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 82,
+      "num": 81,
       "name": "Soprano Recorder",
       "text": "C=WI_FL_AC_AI_CN_BB_BH_DM_OS_PO_SV"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 83,
+      "num": 82,
       "name": "Soundboard",
       "text": "C=OT_AT_AC_AG_RV_DM"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 84,
+      "num": 83,
       "name": "Space",
       "text": "C=OT_AI_CH_LP_RV_SE_SY_BB_DS"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 85,
+      "num": 84,
       "name": "Space Async",
       "text": "C=OT_AI_CH_EC_LP_SE_SY_BB_DS"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 86,
+      "num": 85,
       "name": "Space Flute",
       "text": "C=WI_FL_AI_EC_IN_LP_MT_SO_WA_BH_DV"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 87,
+      "num": 86,
       "name": "Space Jaw",
       "text": "C=OT_DI_EL_LP_DV_SS"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 88,
+      "num": 87,
       "name": "Spectral Marimba",
       "text": "C=PT_SU_AC_IN_SO_BB_HM_RO"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 89,
+      "num": 88,
       "name": "Spectrum with MidiClock",
       "text": "C=OT_EC_LP_RV_SY_DV_EM_OS"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 90,
+      "num": 89,
       "name": "Spiccato Tremolo Dual",
       "text": "C=ST_BO_AC_CN_EN_LP_SE_MM"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 91,
+      "num": 90,
       "name": "Spiccato Tremolo Single",
       "text": "C=ST_BO_AC_CN_LP_SE_MM"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 92,
+      "num": 91,
       "name": "Spinning Duet",
       "text": "C=WI_FL_AC_EC_EV_LP_HM"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 93,
+      "num": 92,
       "name": "Spinning Metal Rings",
       "text": "C=PT_CN_EV_IC_LP_MT_HM"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 94,
+      "num": 93,
       "name": "Spinning Oboe",
       "text": "C=WI_RD_EC_EV_LP_WA_HM"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 95,
+      "num": 94,
       "name": "Spiritus Subteranne",
       "text": "C=OT_PA_AI_NO_BH_RO"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 96,
+      "num": 95,
       "name": "Spit Tube",
       "text": "C=WI_FL_AI_LP_NO_RN_BB_DV"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 97,
+      "num": 96,
       "name": "Splat",
       "text": "C=DO"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 98,
+      "num": 97,
       "name": "Spring Shimming Bell",
       "text": "C=PT_SU_IN_LP_SO_KI_OS_RO"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 99,
+      "num": 98,
       "name": "Sputnik's Dream",
       "text": "C=OT_AT_DI_EC_LP_SD_SY_OS"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 100,
+      "num": 99,
       "name": "Square Bass",
       "text": "C=CL_BA_AN_DY_SY_WB_SV"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 101,
+      "num": 100,
       "name": "Square FM",
       "text": "C=CL_RS_AN_FM_SY_WA_OS"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 102,
+      "num": 101,
       "name": "Squaresville",
       "text": "C=CL_PA_EC_EN_EV_SY_WB_RO"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 103,
+      "num": 102,
       "name": "Squeaky Balloon String",
       "text": "C=ST_BO_AC_CN_SR_BB_KI"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 104,
+      "num": 103,
       "name": "Steel Pan Kalimba",
       "text": "C=PT_SU_MT_HM"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 105,
+      "num": 104,
       "name": "Stellar Bowls",
       "text": "C=ST_BO_PL_AC_MT_HM"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 106,
-      "name": "Strummed Gtr 3HRSolo",
-      "text": "C=ST_PL_AC_CN_SR_DV_OS_TA"
-    },
-    {
-      "hi": 127,
-      "lo": 3,
-      "num": 107,
-      "name": "Strummed Gtr Rythm T 950",
-      "text": "C=ST_PL_AC_CN_EL_SR_DV_OS_TA"
-    },
-    {
-      "hi": 127,
-      "lo": 3,
-      "num": 108,
+      "num": 105,
       "name": "Sub-Harmonic Generator",
       "text": "C=OT_CH_RV_SY_WA_OS_WB_PO_SV"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 109,
+      "num": 106,
       "name": "Submit Job to Mainframe",
       "text": "C=OT_AT_DI_DY_RN_SD_SY_OS"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 110,
+      "num": 107,
       "name": "SuperWave",
       "text": "C=OT_BG_EV_SY_WA_DV_OS"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 111,
+      "num": 108,
       "name": "Sweet Triangle",
       "text": "C=OT_EV_IN_SY_WB"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 112,
+      "num": 109,
       "name": "Swept Delay",
       "text": "C=OT_BG_EV_RV_SY_DV_OS_SV"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 113,
+      "num": 110,
       "name": "Swirl",
       "text": "C=OT_AT_DY_LP_SD_DV_OS"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 114,
+      "num": 111,
       "name": "Sympathetica",
       "text": "C=PT_AT_MT_HM_MM"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 115,
+      "num": 112,
       "name": "Sympathy String",
       "text": "C=ST_BO_PL_AC_EV_SY_BB_DV_OS"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 116,
+      "num": 113,
       "name": "Synchronous Orbits",
       "text": "C=ST_AC_EC_LP_RV_SR_WA_BB_HM_RO"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 117,
+      "num": 114,
       "name": "Synth Brass",
       "text": "C=CL_BR_AN_CN_SY_OS"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 118,
+      "num": 115,
       "name": "Synth Lead 1",
       "text": "C=CL_AN_EC_SY_DV_OS_PO_SV"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 119,
+      "num": 116,
       "name": "Synth Lead 2",
       "text": "C=CL_AN_CH_SY_OS_WB_PO_SV"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 120,
+      "num": 117,
       "name": "Synth Lead 3",
       "text": "C=CL_CH_EC_RV_SE_SY_DS_WB"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 121,
+      "num": 118,
       "name": "Synth Lead 4",
       "text": "C=CL_AN_CN_EC_SY_DF_OS_PO_SV"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 122,
+      "num": 119,
       "name": "Synth Lead 5",
       "text": "C=CL_AN_BI_EC_SY_OS_WB_PO_SV"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 123,
+      "num": 120,
       "name": "Synth Lead 6",
       "text": "C=CL_AI_EC_NO_SY_DS_OS_PO_SV"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 124,
+      "num": 121,
       "name": "Synthetic Cathedral",
       "text": "C=OT_AI_BG_EC_EN_SE_SY_DS_OP_OS"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 125,
+      "num": 122,
       "name": "Tanpura",
       "text": "C=ST_PL_AC_CN_RV_HM_RO"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 126,
+      "num": 123,
       "name": "Tap Sitar",
       "text": "C=ST_PL_AC_CN_RV_HM_RO"
     },
     {
       "hi": 127,
       "lo": 3,
-      "num": 127,
+      "num": 124,
       "name": "Tapestry",
       "text": "C=ST_BO_AC_CN_EC_RV_DS_MM"
     },
     {
       "hi": 127,
-      "lo": 4,
-      "num": 0,
+      "lo": 3,
+      "num": 125,
       "name": "Tesla Coil",
       "text": "C=OT_AT_AG_EL_NO_SD_DV_OS"
     },
     {
       "hi": 127,
-      "lo": 4,
-      "num": 1,
+      "lo": 3,
+      "num": 126,
       "name": "Tesla's Dream",
       "text": "C=OT_NO_SD_SE_SY_OS"
     },
     {
       "hi": 127,
-      "lo": 4,
-      "num": 2,
+      "lo": 3,
+      "num": 127,
       "name": "The Long Goodbye",
       "text": "C=OT_DI_EC_EV_LP_SY_BB_DF_OS"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 3,
+      "num": 0,
       "name": "The Satur",
       "text": "C=PR_AG_DT_DM"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 4,
+      "num": 1,
       "name": "The Slow Descent",
       "text": "C=OT_BG_EV_LP_RV_SD_SY_OS_WB"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 5,
+      "num": 2,
       "name": "The Touch Guitar",
       "text": "C=ST_PL_AC_EC_IN_RV_RO"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 6,
+      "num": 3,
       "name": "The Wind on Callisto",
       "text": "C=OT_AT_AI_BG_NA_NO_RV_SD_WA"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 7,
+      "num": 4,
       "name": "Three Cycles",
       "text": "C=OT_EV_LP_SY_DV_OS_SS"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 8,
+      "num": 5,
       "name": "Three Saws",
       "text": "C=CL_PA_BG_EN_SY_DS_OS_RO"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 9,
+      "num": 6,
       "name": "Three Sines",
       "text": "C=OT_OR_PA_AN_CN_EC_LP_SY_WA_DV_OS_RO"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 10,
+      "num": 7,
       "name": "Throat Battle",
       "text": "C=DO"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 11,
+      "num": 8,
       "name": "Through the Photodiode",
       "text": "C=OT_PA_AI_EV_IN_LP_SY_AD_OS_RO"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 12,
+      "num": 9,
       "name": "Tibetan Throat Stick",
       "text": "C=VO_CN_LP_SY_BM_DV_HM_OS"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 13,
+      "num": 10,
       "name": "Tick Bodies",
       "text": "C=OT_EC_LP_SE_BB"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 14,
+      "num": 11,
       "name": "Tick Tube",
       "text": "C=PT_SU_CN_DY_LP_BB"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 15,
+      "num": 12,
       "name": "Timbre Morph",
       "text": "C=PT_RD_SU_AC_MO"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 16,
+      "num": 13,
       "name": "Tin Whistle",
       "text": "C=WI_FL_CN_BH_DM_OS_PO_SV"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 17,
+      "num": 14,
       "name": "Tine",
       "text": "C=KY_EP_AC_CN_DY_EL_IN_BH_HM"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 18,
+      "num": 15,
       "name": "Transistor",
       "text": "C=OT_OR_AN_BI_EL_LF_NO_SY_DV_HM_OS"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 19,
+      "num": 16,
       "name": "Transporter",
       "text": "C=OT_AT_CH_DY_EV_SD_SE_SY_WB"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 20,
+      "num": 17,
       "name": "TrautoniumLite",
       "text": "C=CL_BR_OS"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 21,
+      "num": 18,
       "name": "Tremolo Resonator",
       "text": "C=PT_SU_IC_LP_MT_RV_BB_RO"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 22,
+      "num": 19,
       "name": "TriMod",
       "text": "C=OT_DI_FM_LP_SY_BB_OS"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 23,
+      "num": 20,
       "name": "Tubular Bells",
       "text": "C=PT_SU_AC_MT_RV_BB"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 24,
+      "num": 21,
       "name": "Tunable Tanpura",
       "text": "C=ST_PL_AC_CN_RV_HM_RO"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 25,
+      "num": 22,
       "name": "Tuned Reverb",
       "text": "C=PR"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 26,
+      "num": 23,
       "name": "Two Chords",
       "text": "C=DO"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 27,
+      "num": 24,
       "name": "Two Handed Voice",
       "text": "C=VO_AC_SY_BB_BM_OS_SP"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 28,
+      "num": 25,
       "name": "TwoOneDrone",
       "text": "C=DO"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 29,
+      "num": 26,
       "name": "Uki Bells",
       "text": "C=PT_SU_AC_CN_IN_HM_RO"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 30,
+      "num": 27,
       "name": "Uki Pizz 1",
       "text": "C=ST_PL_AC_CN_IN_HM_RO"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 31,
+      "num": 28,
       "name": "Uki Pizz 2",
       "text": "C=ST_PL_AC_CN_IN_HM_RO"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 32,
+      "num": 29,
       "name": "Uki Pizz w Snap",
       "text": "C=ST_PL_AC_CN_IN_HM_RO"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 33,
+      "num": 30,
       "name": "Unanswered Question",
       "text": "C=OT_AT_AI_MT_NO_RV_SD_OS"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 34,
+      "num": 31,
       "name": "Unstable Wave",
       "text": "C=OT_PA_AI_BI_EC_LF_NO_SY_DS_OS"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 35,
+      "num": 32,
       "name": "VBrass 1",
       "text": "C=WI_BR_AC_BI_CN_SY_OS"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 36,
+      "num": 33,
       "name": "VBrass 2",
       "text": "C=WI_BR_AC_BI_CN_SY_OS"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 37,
+      "num": 34,
       "name": "Venusian Beach",
       "text": "C=OT_PA_AI_EV_LP_SY_BB_OP_RO"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 38,
+      "num": 35,
       "name": "Victrola",
       "text": "C=OT_IN_LF_LP_NO_RV_SD_SY_BB_OS"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 39,
+      "num": 36,
       "name": "Victrola 2",
       "text": "C=OT_IN_LF_LP_NO_RV_SD_SY_BB_OS"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 40,
+      "num": 37,
       "name": "Vintage Electro",
       "text": "C=KY_OR_BI_EL_OP_RO"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 41,
+      "num": 38,
       "name": "Vln Vla Cel Bass 1",
       "text": "C=ST_BO_AC_CN_BB_HM"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 42,
+      "num": 39,
       "name": "Vln Vla Cel Bass 2",
       "text": "C=ST_BO_AC_CN_BB_HM"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 43,
+      "num": 40,
       "name": "Vln Vla Cel Bass 2 Ch1",
       "text": "C=ST_BO_AC_CN_BB_HM_C1"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 44,
+      "num": 41,
       "name": "Vln Vla Cel Bass 3",
       "text": "C=ST_BO_AC_CN_BB_HM"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 45,
+      "num": 42,
       "name": "Vln Vla Cel Bass 4",
       "text": "C=ST_BO_AC_CN_BB_HM"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 46,
+      "num": 43,
       "name": "Vln Vla Cel Bass Bridge",
       "text": "C=ST_BO_AC_CN_BB_HM"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 47,
+      "num": 44,
       "name": "VlnVlaVlcCbFull",
       "text": "C=ST_BO_AC_CN_EN_HM_RO"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 48,
+      "num": 45,
       "name": "VlnVlaVlcCbPlus",
       "text": "C=ST_BO_AC_EN_RV_DS_HM_RO"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 49,
+      "num": 46,
       "name": "Vocalise",
       "text": "C=VO_CN_SY_BM_OS"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 50,
+      "num": 47,
       "name": "Vocalized Buzzard",
       "text": "C=VO_BG_EV_SY_BB_BM_OP_OS"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 51,
+      "num": 48,
       "name": "Voice Jumper",
       "text": "C=CL_AN_LP_SY_BB_OS"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 52,
+      "num": 49,
       "name": "Voice of the Woods",
       "text": "C=OT_AT_AG_BG_EV_RV_SD_SY_BB_DV_SS"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 53,
+      "num": 50,
       "name": "Vowel",
       "text": "C=VO_CN_SY_BM_OS"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 54,
+      "num": 51,
       "name": "Voyager",
       "text": "C=OT_BI_EV_SY_DS_OS"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 55,
+      "num": 52,
       "name": "Waterphone Strings",
       "text": "C=ST_PA_LP_SY_DV_OS_RO"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 56,
+      "num": 53,
       "name": "Waterphonie",
       "text": "C=OT_AT_BI_MT_RV_SD_DM_OS"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 57,
+      "num": 54,
       "name": "WaveBank - Basic",
       "text": "C=UT"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 58,
+      "num": 55,
       "name": "WaveShaped",
       "text": "C=OT_AG_DT_EC_RV_SY_OS"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 59,
+      "num": 56,
       "name": "Whirligigs",
       "text": "C=OT_OR_PA_AI_EC_IC_LP_SY_WA_BH_RO"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 60,
+      "num": 57,
       "name": "Wind",
       "text": "C=WI_FL_AI_CN"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 61,
+      "num": 58,
       "name": "Wind Beach",
       "text": "C=OT_AT_DY_NA_NO_SD_BB"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 62,
+      "num": 59,
       "name": "Wind Drum",
       "text": "C=PE_AT_SU_AI_NO_BM_MM"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 63,
+      "num": 60,
       "name": "Windtube Air Reed",
       "text": "C=WI_FL_AC_AI_CN_BH_HM_SP"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 64,
+      "num": 61,
       "name": "Windtube Double Reed",
       "text": "C=WI_RD_AC_CN_BH_HM_OS"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 65,
+      "num": 62,
       "name": "Windtube Single Reed",
       "text": "C=WI_RS_AC_AI_CN_WO_BB_HM_OS"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 66,
+      "num": 63,
       "name": "Winter Skipping Pond",
       "text": "C=OT_EC_IC_LP_SD_SY_BB_DS"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 67,
+      "num": 64,
       "name": "Wobble Plate",
       "text": "C=OT_AT_MT_RV_SD_DV_OP"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 68,
+      "num": 65,
       "name": "Woodwind",
       "text": "C=WI_RS_AC_AI_CN_WO_BH"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 77,
+      "num": 74,
       "name": "xpStrings",
       "text": "C=ST_BO_AC_CN_BB_HM"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 69,
+      "num": 66,
       "name": "ZawiFlute8",
       "text": "C=WI_BR_FL_AI_LY_SY_BB_HM_OS"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 70,
+      "num": 67,
       "name": "Zazipad",
       "text": "C=OT_PA_AI_EC_EN_NO_RV_SY_OP_OS_WB_RO"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 71,
+      "num": 68,
       "name": "Zipper",
       "text": "C=OT_AT_CN_DY_NA_SD_SR_KI"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 72,
+      "num": 69,
       "name": "Zuie",
       "text": "C=PT_SU_CN_LP_MT_HM_OS"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 73,
+      "num": 70,
       "name": "Zwei Baende",
       "text": "C=CL_AN_SY_OS"
     },
     {
       "hi": 127,
       "lo": 4,
-      "num": 74,
+      "num": 71,
       "name": "Zwei Baende with Noise",
       "text": "C=CL_AN_SY_BB_OS"
     }
