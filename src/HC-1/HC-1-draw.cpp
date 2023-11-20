@@ -283,6 +283,9 @@ void Hc1ModuleWidget::draw(const DrawArgs& args)
         //     auto t = format_string("%d", my_module->midi_send_count);
         //     RightAlignText(vg, box.size.x - 2.f, box.size.y *.5f, t.c_str(), nullptr);
         // }
+#if not defined NDEBUG
+        Line(vg, PRESET_LEFT, PRESET_TOP - 15.f, PRESET_LEFT + 60, PRESET_TOP - 15.f, GetStockColor(StockColor::pachde_blue_medium), 2.f);
+#endif
     }
 
     drawStatusDots(vg);

@@ -39,7 +39,8 @@ struct CCMap : TipWidget
     void step() override;
     void drawMap(NVGcontext* vg, uint8_t * map, float x, float y);
     uint8_t * getMap();
-    void draw(const DrawArgs& args) override;
+    void drawLayer(const DrawArgs& args, int layer) override;
+    //void draw(const DrawArgs& args) override;
 };
 
 template <typename MAP = CCMap>

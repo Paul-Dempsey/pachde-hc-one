@@ -65,9 +65,16 @@ uint8_t * CCMap::getMap()
     }
 }
 
-void CCMap::draw(const DrawArgs& args)
+void CCMap::drawLayer(const DrawArgs &args, int layer)
 {
+    TipWidget::drawLayer(args, layer);
+    if (1 != layer) return;
     drawMap(args.vg, getMap(), 0.f, 0.f);
 }
+
+// void CCMap::draw(const DrawArgs& args)
+// {
+//     TipWidget::draw(args);
+// }
 
 }
