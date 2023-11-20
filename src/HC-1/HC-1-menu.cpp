@@ -253,9 +253,15 @@ void Hc1ModuleWidget::appendContextMenu(Menu *menu)
         addRecirculator(menu, EM_Recirculator::DigitalEchoHPF);
     }));
 
-    menu->addChild(createSubmenuItem("Module", "", [=](Menu* menu) {
-        menu->addChild(createMenuItem("Reboot HC-1", "",     [=](){ my_module->reboot(); }));
-        menu->addChild(createMenuItem("Send one handshake (ping)", "",   [=](){ 
+    menu->addChild(createSubmenuItem("Utility", "", [=](Menu* menu) {
+        menu->addChild(createMenuItem("Reboot HC-1", "", [=](){ my_module->reboot(); }));
+        menu->addChild(createCheckMenuItem(
+            "Reverse surface", "", [=](){ return my_module->em.reverse_surface; },
+            [=](){ my_module->sendSurfaceDirection(!my_module->em.reverse_surface); },
+            !ready
+        ));
+        menu->addChild(createMenuItem("Quiesce", "", [=](){ my_module->silence(true); }));
+        menu->addChild(createMenuItem("Send one handshake (ping)", "", [=](){ 
             my_module->fresh_phase(InitPhase::Heartbeat);
             my_module->current_phase = InitPhase::Heartbeat;
             //my_module->sendEditorPresent();

@@ -138,6 +138,12 @@ void Hc1Module::silence(bool reset)
     }
 }
 
+void Hc1Module::sendSurfaceDirection(bool reverse)
+{
+    em.reverse_surface = reverse; // doesn't get echoed back, so track here
+    sendControlChange(EM_SettingsChannel, EMCC_Reverse_Rounding, (static_cast<uint8_t>(em.rounding.kind) << 1) | (reverse ? 1 : 0));
+}
+
 void Hc1Module::sendEditorPresent()
 {
     sendControlChange(EM_SettingsChannel, EMCC_EditorPresent, tick_tock ? 85 : 42);

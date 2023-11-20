@@ -341,7 +341,7 @@ void Hc2Module::processRoundingControls()
             rounding.kind = kind;
             pushRounding();
             auto partner = getPartner();
-            uint8_t rev = partner ? partner->em.reverse_surface : 0;
+            uint8_t rev = partner ? (partner->em.reverse_surface ? 1 : 0) : 0;
             sendControlChange(EM_SettingsChannel, EMCC_Reverse_Rounding, (static_cast<uint8_t>(kind) << 1) | rev);
         }
     }
