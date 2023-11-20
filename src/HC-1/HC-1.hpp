@@ -143,7 +143,9 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, IMidiDeviceChange, midi
             case PresetTab::User: return user_presets;
             case PresetTab::System: return system_presets;
             case PresetTab::Favorite: return favorite_presets;
-            default: assert(false);
+            default:
+                assert(false);
+                return system_presets;
         }
     }
     
@@ -369,6 +371,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, IMidiDeviceChange, midi
     void transmitRequestConfiguration();
     void transmitRequestSystemPresets();
     void transmitRequestUserPresets();
+    void sendSurfaceDirection(bool reverse);
     void sendEditorPresent();
     void silence(bool reset);
     void beginPreset();

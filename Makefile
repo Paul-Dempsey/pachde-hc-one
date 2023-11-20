@@ -1,6 +1,11 @@
 RACK_DIR ?= ../..
 
-FLAGS +=
+ifdef BUILD_DEBUG
+FLAGS += -O0
+else
+FLAGS += -O3
+FLAGS += -DNDEBUG
+endif
 
 SOURCES += src/colors.cpp
 SOURCES += src/em_device.cpp
