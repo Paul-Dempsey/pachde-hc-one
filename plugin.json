@@ -32,10 +32,10 @@
         "tags": [ "Expander" ]
       },
       {
-        "slug": "pachde-hc-4",
-        "name": "HC-4",
-        "description": "Next HC One module",
-        "tags": [ "Expander" ]
+        "slug": "pachde-hc-round",
+        "name": "Round",
+        "description": "Rounding (HC-1 companion)",
+        "tags": [ "Controller", "MIDI", "Expander" ]
       },
       {
         "slug": "pachde-hc-pedal-1",

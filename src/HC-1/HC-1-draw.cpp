@@ -230,7 +230,7 @@ void Hc1ModuleWidget::drawPedalAssignment(
 
 void Hc1ModuleWidget::drawPedals(NVGcontext* vg, std::shared_ptr<rack::window::Font> font, bool stockPedals)
 {    
-    SetTextStyle(vg, font, RampGray(G_85), 10.f);
+    SetTextStyle(vg, font, GetStockColor(StockColor::Gold), 10.f);
     if (stockPedals) {
         drawPedalAssignment(vg, PRESET_RIGHT + 1.f, PRESET_BOTTOM - 19.f, '1', 64, 0);
         drawPedalAssignment(vg, PRESET_RIGHT + 1.f, PRESET_BOTTOM - 4.5f, '2', 66, 0);

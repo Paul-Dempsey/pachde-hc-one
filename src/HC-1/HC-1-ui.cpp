@@ -97,7 +97,7 @@ void Hc1ModuleWidget::createPresetPrevNext()
         });
     }
     addChild(w);
-    addChild(createStaticTextLabel<StaticTextLabel>(Vec(Vec(RIGHT_COLUMN_BUTTONS - 7.f, y + 5.f)), 25.f, "-", TextAlignment::Center, 9.f, false));
+    addChild(createStaticTextLabel<StaticTextLabel>(Vec(Vec(RIGHT_COLUMN_BUTTONS - 7.f, y + 5.f)), 25.f, "-", TextAlignment::Center, 10.f, true));
 
     w = createWidgetCentered<SmallSquareButton>(Vec(RIGHT_COLUMN_BUTTONS + 7.f, y));
     w->describe("Next preset\n  Shift+Click by 10\n  Ctrl+Click for device order");
@@ -111,10 +111,10 @@ void Hc1ModuleWidget::createPresetPrevNext()
         });
     }
     addChild(w);
-    addChild(createStaticTextLabel<StaticTextLabel>(Vec(Vec(RIGHT_COLUMN_BUTTONS + 7.f, y + 5.f)), 25.f, "+", TextAlignment::Center, 9.f, false));
+    addChild(createStaticTextLabel<StaticTextLabel>(Vec(Vec(RIGHT_COLUMN_BUTTONS + 7.f, y + 5.f)), 25.f, "+", TextAlignment::Center, 10.f, true));
     y += 12.f;
 
-    addChild(createStaticTextLabel<StaticTextLabel>(Vec(Vec(RIGHT_COLUMN_BUTTONS, y)), 25.f, "Preset", TextAlignment::Center, 9.f, false));
+    addChild(createStaticTextLabel<StaticTextLabel>(Vec(Vec(RIGHT_COLUMN_BUTTONS, y)), 25.f, "Preset", TextAlignment::Center, 10.f, true));
 }
 
 void Hc1ModuleWidget::createPresetPaging()

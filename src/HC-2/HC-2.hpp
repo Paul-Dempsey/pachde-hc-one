@@ -27,15 +27,6 @@ struct Hc2Module : Module, ISendMidi, IHandleHcEvents
 {
     enum Params
     {
-        P_ROUND_RATE,    // 0..127 cc25
-        P_ROUND_INITIAL, // 0..1 cc 28
-        P_ROUND_KIND,    // 0..3 ch16 cc61, but includes reverse surface bit
-        P_ROUND_TUNING,  // 0..69
-        P_ROUND_RATE_REL,
-
-        P_PEDAL1,
-        P_PEDAL2,
-
         P_COMP_THRESHOLD,
         P_COMP_ATTACK,
         P_COMP_RATIO,
@@ -56,9 +47,6 @@ struct Hc2Module : Module, ISendMidi, IHandleHcEvents
     };
     enum Inputs
     {
-        IN_ROUND_RATE,
-        IN_ROUND_INITIAL,
-
         IN_COMP_THRESHOLD,
         IN_COMP_ATTACK,
         IN_COMP_RATIO,
@@ -76,9 +64,6 @@ struct Hc2Module : Module, ISendMidi, IHandleHcEvents
     };
     enum Lights
     {
-        L_ROUND_RATE_REL,
-        L_ROUND_INITIAL,
-
         L_COMP_THRESHOLD_REL,
         L_COMP_ATTACK_REL,
         L_COMP_RATIO_REL,
@@ -95,7 +80,6 @@ struct Hc2Module : Module, ISendMidi, IHandleHcEvents
         NUM_LIGHTS
     };
 
-    Rounding rounding;
     Compressor compressor;
     TiltEq tilt_eq;
 
@@ -113,8 +97,6 @@ struct Hc2Module : Module, ISendMidi, IHandleHcEvents
     explicit Hc2Module();
     virtual ~Hc2Module();
 
-    void pullRounding(Hc1Module * partner = nullptr);
-    void pushRounding(Hc1Module * partner = nullptr);
     void pullCompressor(Hc1Module * partner = nullptr);
     void pushCompressor(Hc1Module * partner = nullptr);
     void pullTiltEq(Hc1Module * partner = nullptr);
@@ -145,9 +127,9 @@ struct Hc2Module : Module, ISendMidi, IHandleHcEvents
     bool readyToSend() override;
 
     // IHandleHcEvents
-    void onPresetChanged(const PresetChangedEvent& e) override;
+    //void onPresetChanged(const PresetChangedEvent& e) override;
     //void onPedalChanged(const PedalChangedEvent& e) override;
-    void onRoundingChanged(const RoundingChangedEvent& e) override;
+    //void onRoundingChanged(const RoundingChangedEvent& e) override;
     void onCompressorChanged(const CompressorChangedEvent& e) override;
     void onTiltEqChanged(const TiltEqChangedEvent& e) override;
     void onDeviceChanged(const DeviceChangedEvent& e) override;
@@ -158,7 +140,6 @@ struct Hc2ModuleWidget : ModuleWidget, IHandleHcEvents
 {
     Hc2Module* my_module = nullptr;
     PartnerPicker* partner_picker = nullptr;
-    DynamicTextLabel* rounding_summary = nullptr;
 
     explicit Hc2ModuleWidget(Hc2Module * module);
     virtual ~Hc2ModuleWidget() {
@@ -167,14 +148,13 @@ struct Hc2ModuleWidget : ModuleWidget, IHandleHcEvents
         // }
     }
     Hc1Module* getPartner();
-    void createRoundingUI(float x, float y);
     void createCompressorUI(float x, float y);
     void createTiltEqUI(float x, float y);
 
     // IHandleHcEvents
-    void onPresetChanged(const PresetChangedEvent& e) override;
+    //void onPresetChanged(const PresetChangedEvent& e) override;
     //void onPedalChanged(const PedalChangedEvent& e) override;
-    void onRoundingChanged(const RoundingChangedEvent& e) override;
+    //void onRoundingChanged(const RoundingChangedEvent& e) override;
     void onDeviceChanged(const DeviceChangedEvent& e) override;
     void onDisconnect(const DisconnectEvent& e) override;
 

@@ -60,7 +60,7 @@ void PedalUICore::createUI()
 
     /// pedal function knob
     float x_center = box.size.x * .5f;
-    addChild(pedal_assign = createStaticTextLabel<StaticTextLabel>(Vec(x_center, 37.f), 60.f, "Sustain", TextAlignment::Center, 10.f, true));
+    addChild(pedal_assign = createStaticTextLabel<StaticTextLabel>(Vec(x_center, 37.f), 60.f, "Sustain", TextAlignment::Center, 9.f, false, GetStockColor(StockColor::Gold)));
     addChild(createParamCentered<PedalKnob>(Vec(x_center, 64.f), module, PedalCore::P_PEDAL_ASSIGN));
 
     // value slider

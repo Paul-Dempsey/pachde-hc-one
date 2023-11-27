@@ -47,11 +47,14 @@ SOURCES += src/HC-2/cc_map_widget.cpp
 SOURCES += src/HC-3/HC-3.cpp
 SOURCES += src/HC-3/HC-3-ui.cpp
 
-SOURCES += src/HC-4/HC-4.cpp
-SOURCES += src/HC-4/HC-4-ui.cpp
+#SOURCES += src/HC-4/HC-4.cpp
+#SOURCES += src/HC-4/HC-4-ui.cpp
 
 SOURCES += src/Pedals/Pedals.cpp
 SOURCES += src/Pedals/Pedals-ui.cpp
+
+SOURCES += src/Round/Round.cpp
+SOURCES += src/Round/Round-ui.cpp
 
 DISTRIBUTABLES += res
 # DISTRIBUTABLES += presets
