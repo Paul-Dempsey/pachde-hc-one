@@ -68,8 +68,7 @@ void Hc4Module::onDisconnect(const DisconnectEvent& e)
 
 void Hc4Module::process(const ProcessArgs& args)
 {
-    if (++check_cv > CV_INTERVAL) {
-        check_cv = 0;
+    if (0 == ((args.frame + id) % CV_INTERVAL)) {
         auto partner = getPartner();
         if (partner) {
             // getOutput(Outputs::O_PEDAL1).setVoltage(10.f * partner->pedal1.value / 127);

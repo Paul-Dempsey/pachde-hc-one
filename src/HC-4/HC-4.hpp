@@ -37,7 +37,6 @@ struct Hc4Module : Module, IHandleHcEvents
 
     IHandleHcEvents * ui_event_sink = nullptr;
     const int CV_INTERVAL = 128;
-    int check_cv = 0;
 
     Hc4Module();
     virtual ~Hc4Module();

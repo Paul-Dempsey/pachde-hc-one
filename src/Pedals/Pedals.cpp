@@ -170,8 +170,7 @@ void PedalCore::process(const ProcessArgs& args)
         getOutput(Outputs::O_PEDAL_VALUE).setVoltage(10.f * pedal.value / 127);
     }
 
-    if (++check_cv > CV_INTERVAL) {
-        check_cv = 0;
+    if (0 == ((args.frame + id) % CV_INTERVAL)) {
         auto input = getInput(Inputs::I_PEDAL_VALUE);
         if (input.isConnected()) {
             float v = input.getVoltage();

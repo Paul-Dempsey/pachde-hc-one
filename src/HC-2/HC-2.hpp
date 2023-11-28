@@ -90,7 +90,6 @@ struct Hc2Module : Module, ISendMidi, IHandleHcEvents
 
     // cv processing
     const int CV_INTERVAL = 64;
-    int check_cv = 0;
     RateTrigger control_rate;
     rack::dsp::SchmittTrigger round_initial_trigger;
 

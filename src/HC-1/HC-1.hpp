@@ -270,7 +270,6 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, IMidiDeviceChange, midi
 
     // cv processing
     const int CV_INTERVAL = 64;
-    int check_cv = 0;
 
     rack::dsp::SchmittTrigger mute_trigger;
     rack::dsp::PulseGenerator ready_trigger;

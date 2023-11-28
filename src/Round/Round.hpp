@@ -49,7 +49,6 @@ struct RoundModule : Module, ISendMidi, IHandleHcEvents
 
     IHandleHcEvents * ui_event_sink = nullptr;
     const int CV_INTERVAL = 128;
-    int check_cv = 0;
     RateTrigger control_rate;
     rack::dsp::SchmittTrigger round_initial_trigger;
 

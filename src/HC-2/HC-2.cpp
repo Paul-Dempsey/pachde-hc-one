@@ -302,8 +302,7 @@ void Hc2Module::processControls()
 
 void Hc2Module::process(const ProcessArgs& args)
 {
-    if (++check_cv > CV_INTERVAL) {
-        check_cv = 0;
+    if ((0 == ((args.frame + id) % CV_INTERVAL))) {
         processCV(Params::P_COMP_THRESHOLD);
         processCV(Params::P_COMP_ATTACK);
         processCV(Params::P_COMP_RATIO);

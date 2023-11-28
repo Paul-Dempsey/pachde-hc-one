@@ -392,11 +392,22 @@ void Hc1Module::process(const ProcessArgs& args)
 {
     bool is_ready = ready();
 
-    if (++check_cv > CV_INTERVAL) {
-        check_cv = 0;
-        if (is_ready) {
-            processAllCV();
-            syncStatusLights();
+    if (is_ready && (0 == ((args.frame + id) % CV_INTERVAL))) {
+        processAllCV();
+        syncStatusLights();
+
+        auto pq = getParamQuantity(MUTE_PARAM);
+        bool new_mute = pq->getValue() >= 0.5f;
+        if (new_mute != muted) {
+            muted = new_mute;
+            if (muted) {
+                lights[MUTE_LIGHT].setBrightness(1.f);
+                sendControlChange(EM_SettingsChannel, EMCC_PostLevel, 0);
+            } else {
+                lights[MUTE_LIGHT].setBrightness(0.f);
+                auto vpq = dynamic_cast<CCParamQuantity*>(getParamQuantity(VOLUME_PARAM));
+                vpq->sendValue();
+            }
         }
     }
 
@@ -415,20 +426,7 @@ void Hc1Module::process(const ProcessArgs& args)
                 pq->setValue(1.0f * mute);
             }
         }
-        auto pq = getParamQuantity(MUTE_PARAM);
-        bool new_mute = pq->getValue() >= 0.5f;
-        if (new_mute != muted) {
-            muted = new_mute;
-            if (muted) {
-                lights[MUTE_LIGHT].setBrightness(1.f);
-                sendControlChange(EM_SettingsChannel, EMCC_PostLevel, 0);
-            } else {
-                lights[MUTE_LIGHT].setBrightness(0.f);
-                auto vpq = dynamic_cast<CCParamQuantity*>(getParamQuantity(VOLUME_PARAM));
-                vpq->sendValue();
-            }
-        }
-       
+      
     }
 
     if (broken) {

@@ -46,8 +46,7 @@ struct PedalCore : Module, ISendMidi, IHandleHcEvents
     Hc1Module* getPartner();
     bool partner_subscribed = false;
     RateTrigger control_rate;
-    const int CV_INTERVAL = 32;
-    int check_cv = 0;
+    const int CV_INTERVAL = 64;
     uint8_t last_pedal_value = 0;
     uint8_t last_pedal_min = 0;
     uint8_t last_pedal_max = 127;
