@@ -6,7 +6,9 @@ These include the Haken Continuum, Continuu Mini, and Eagan Matrix Module, and E
 If you're new to VCV Rack, make sure to get familiar with it.
 See [Getting Started](https://vcvrack.com/manual/GettingStarted) in the VCV Rack manual.
 
-Grab a current build for the latest features and fixes (must be signed into github): [![Build Status](https://github.com/Paul-Dempsey/pachde-hc-one/actions/workflows/build-plugin.yml/badge.svg)](https://github.com/Paul-Dempsey/pachde-hc-one/actions/workflows/build-plugin.yml)
+[![Build Status](https://github.com/Paul-Dempsey/pachde-hc-one/actions/workflows/build-plugin.yml/badge.svg)](https://github.com/Paul-Dempsey/pachde-hc-one/actions/workflows/build-plugin.yml)
+
+Grab a current build for the latest features and fixes: [HC-One Nightly](https://github.com/Paul-Dempsey/pachde-hc-one/releases/tag/Nightly)
 
 The beta 5 release announced online can be downloaded here: [HC-One 2.0.0-beta5](https://github.com/Paul-Dempsey/pachde-hc-one/releases/tag/v2.0.0-beta5).
 
