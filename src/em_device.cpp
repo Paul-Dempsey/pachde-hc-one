@@ -211,7 +211,7 @@ bool matchInOut(const std::string& input, const std::string& output)
 {
     if (0 == input.compare(output)) return true;
 #if defined ARCH_WIN   
-    if (is_osmose(input)) {
+    if (is_osmose(input) && is_osmose(output)) {
         return (0 == input.compare(0,7, "MIDIIN2", 0,7)) 
             && (0 == output.compare(0,8, "MIDIOUT2", 0,8));
     }
