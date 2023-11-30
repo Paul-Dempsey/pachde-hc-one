@@ -44,7 +44,7 @@ void Hc4Module::onPedalChanged(const PedalChangedEvent& e)
 
 void Hc4Module::onDeviceChanged(const DeviceChangedEvent& e)
 {
-    partner_binding.setClaim(e.device ? e.device->info.spec() : 0);
+    partner_binding.onDeviceChanged(e);
     if (ui_event_sink) {
         ui_event_sink->onDeviceChanged(e);
     }
@@ -53,7 +53,7 @@ void Hc4Module::onDeviceChanged(const DeviceChangedEvent& e)
 void Hc4Module::onDisconnect(const DisconnectEvent& e)
 {
     partner_subscribed = false;
-    partner_binding.forgetModule();
+    partner_binding.onDisconnect(e);
     if (ui_event_sink) {
         ui_event_sink->onDisconnect(e);
     }

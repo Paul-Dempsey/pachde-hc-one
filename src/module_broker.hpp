@@ -77,6 +77,9 @@ struct PartnerBinding
     void onDeviceChanged(const IHandleHcEvents::DeviceChangedEvent& e) {
         setClaim(e.device ? e.device->info.spec() : "");
     }
+    void onDisconnect(const IHandleHcEvents::DisconnectEvent& e) {
+        forgetModule();
+    }
 
     Hc1Module* getPartner()
     {

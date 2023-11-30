@@ -93,7 +93,7 @@ void PedalCore::onDeviceChanged(const DeviceChangedEvent& e)
 void PedalCore::onDisconnect(const DisconnectEvent& e)
 {
     partner_subscribed = false;
-    partner_binding.forgetModule();
+    partner_binding.onDisconnect(e);
     if (ui_event_sink) {
         ui_event_sink->onDisconnect(e);
     }

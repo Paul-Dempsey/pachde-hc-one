@@ -38,7 +38,9 @@ RoundModule::~RoundModule()
 json_t * RoundModule::dataToJson()
 {
     auto root = json_object();
-    json_object_set_new(root, "device", json_string(partner_binding.claim.c_str()));
+    if (!partner_binding.claim.empty()) {
+        json_object_set_new(root, "device", json_string(partner_binding.claim.c_str()));
+    }
     return root;
 }
 
@@ -48,6 +50,7 @@ void RoundModule::dataFromJson(json_t *root)
     if (j) {
         partner_binding.setClaim(json_string_value(j));
     }
+    //getPartner();
 }
 
 Hc1Module* RoundModule::getPartner()
@@ -120,7 +123,7 @@ void RoundModule::onRoundingChanged(const RoundingChangedEvent& e)
 
 void RoundModule::onDeviceChanged(const DeviceChangedEvent& e)
 {
-    partner_binding.setClaim(e.device ? e.device->info.spec() : 0);
+    partner_binding.onDeviceChanged(e);
     if (ui_event_sink) {
         ui_event_sink->onDeviceChanged(e);
     }
@@ -129,11 +132,12 @@ void RoundModule::onDeviceChanged(const DeviceChangedEvent& e)
 void RoundModule::onDisconnect(const DisconnectEvent& e)
 {
     partner_subscribed = false;
-    partner_binding.forgetModule();
+    partner_binding.onDisconnect(e);
     if (ui_event_sink) {
         ui_event_sink->onDisconnect(e);
     }
 }
+
 void RoundModule::pullRounding(Hc1Module * partner)
 {
     if (!partner) partner = getPartner();
@@ -238,6 +242,9 @@ void RoundModule::processControls()
 void RoundModule::process(const ProcessArgs& args)
 {
     if (0 == ((args.frame + id) % CV_INTERVAL)) {
+        if (!partner_subscribed) {
+            getPartner();
+        }
         processCV(Params::P_ROUND_RATE);
     }
 
@@ -250,7 +257,6 @@ void RoundModule::process(const ProcessArgs& args)
             pq->setValue(1.0f * ri);
         }
     }
-
     processControls();
 }
 

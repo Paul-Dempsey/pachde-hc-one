@@ -134,7 +134,7 @@ std::string MidiDeviceConnectionInfo::spec() const
 
 std::string MidiDeviceConnectionInfo::friendly(bool long_name) const
 {
-    std::string result = input_device_name;
+    std::string result = input_device_name.empty() ? "(Unknown)" : input_device_name;
     if (sequence > 0) {
         result.append(format_string("#%d", sequence));
     }
