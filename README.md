@@ -38,22 +38,22 @@ To install this plugin from the GitHub builds, you must first have VCV Rack, of 
 You'll need to know the Operating System (OS), and Architecture (ARCH) of your Rack install, and where to copy the downloaded plugin package to.
 
 - In Rack, choose **Help** / **Open user folder**.
-- Inside this folder, you should see a folder named `plugins-OS-ARCH`, where OS is your operating system (`win`, `mac` or `lin`), and ARCH is the CPU architecture of your Rack (`arm64` for Mac M1 or M2, or `x64`). Keep the file browser open so you have the target folder ready. Make a note of the OS and ARCH.
-- Downloading the *Release* and the *Latest build* are similar.
-  For a Release, you can download the vcvplugin directly, but latest builds are inside a zip file.
-  I recommend using the latest build that doesn't show an error, so I'll explain the latter.
-  Getting a latest build does require that you are signed into github. If you don't have a github account, only Releases are available.
-- Click the button to get to the builds: [![Build Status](https://github.com/Paul-Dempsey/pachde-hc-one/actions/workflows/build-plugin.yml/badge.svg)](https://github.com/Paul-Dempsey/pachde-hc-one/actions/workflows/build-plugin.yml).
-- This takes you to the Github **Actions** tab. Once there you'll see a list of builds. The **main** builds are off the main branch, and the **v2.0.0-beta2** is from the beta 2 release build tag. A good build has a circled check mark, and a bad build has a circled x. The title is the comment for the top commit in that build. Click the title for a good build.
-- On the build page, there is a list under **Artifacts**. Click on the OS-ARCH matching your OS and ARCH noted previously. This should download a zip containing the plugin file.
-- Rack cannot load the downloaded zip directly, so you must extract the `<plugin name>.vcvplugin` file. (the full name will be something like `pachde-hc-one-2.0.0-beta2-80970a7-win-x64.vcvplugin`).
-How unzipping/extraction is done depends on your OS and what zip management software you have, so I'll let you figure that out ;-).
-- Copy the `.vcvplugin` file to the plugins folder you opened previously.
+
+- Inside this folder, you should see a folder named `plugins-OS-ARCH`, where "OS" is your operating system (`win`, `mac` or `lin`), and "ARCH" is the CPU architecture of your Rack (`arm64` for Mac M1 or M2, or `x64`). Keep the file browser open so you have the target folder ready. Make a note of the OS and ARCH.
+
+- Downloading the *Release* and the *Nightly* (latest) are similar. I'll describe getting the Nightly here.
+
+- Go to the [HC-One Nightly](https://github.com/Paul-Dempsey/pachde-hc-one/releases/tag/Nightly) release.
+
+- Under **Assets** is a list of artifacts. Look for the `.vcvplugin` file for your OS and ARCH.
+
+- Download and copy the `.vcvplugin` file to the plugins folder you opened previously.
+
 - Restart Rack
 
 At this point you should see the pachde HC One modules in your module browser.
 Right click anywhere in Rack where there isn't a module to open the module browser.
-Filter by Brand and check **pachde** to see just the pachde modules.
+Filter by Brand and check **pachde** to see just the pachde modules. This might include modules from my other VCV Rack plugins.
 If you want to find other modules to use (including my other plugin **pachde One**), visit the VCV Rack library.
 
 ## Acknowledgements
@@ -67,6 +67,7 @@ Special thanks to these early adopters:
 
 - Richard Kram
 - António Machado
+- Justus Noll
 
 Let me know how it's going for you, even if you haven't found any issues.
 
