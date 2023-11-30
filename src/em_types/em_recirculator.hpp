@@ -22,7 +22,7 @@ struct Recirculator
     bool extended() { return r & EM_Recirculator::Extend; }
 
     void setExtended(bool extended) {
-        r = extended ? (r & EM_Recirculator::Extend) : (r & ~EM_Recirculator::Extend);
+        r = extended ? (r | EM_Recirculator::Extend) : (r & ~EM_Recirculator::Extend);
     }
 
     void setKind(EM_Recirculator kind) {

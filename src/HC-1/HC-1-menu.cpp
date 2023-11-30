@@ -38,7 +38,9 @@ void Hc1ModuleWidget::addRecirculator(Menu *menu, EM_Recirculator kind)
     menu->addChild(createCheckMenuItem(RecirculatorName(kind), "", 
          [=](){ return my_module->recirculatorType() == kind; },
          [=](){
-            my_module->em.recirculator = Recirculator(kind | EM_Recirculator::Extend);
+            bool extend = my_module->em.recirculator.extended();
+            my_module->em.recirculator = Recirculator(kind);
+            my_module->em.recirculator.setExtended(extend);
             my_module->sendControlChange(EM_SettingsChannel, EMCC_RecirculatorType, my_module->em.recirculator);
          }
     ));
@@ -204,8 +206,8 @@ void Hc1ModuleWidget::addFavoritesMenu(Menu *menu)
 void Hc1ModuleWidget::appendContextMenu(Menu *menu)
 {
     if (!my_module) { return; }
-    //menu->addChild(createMenuItem("", "", [this](){}));
     bool ready = my_module->ready();
+    //menu->addChild(createMenuItem("", "", [this](){}));
 
     menu->addChild(new MenuSeparator);
     menu->addChild(createSubmenuItem("Presets", "", [=](Menu* menu) {
