@@ -56,6 +56,9 @@ SOURCES += src/Pedals/Pedals-ui.cpp
 SOURCES += src/Round/Round.cpp
 SOURCES += src/Round/Round-ui.cpp
 
+SOURCES += src/Compress/Compress.cpp
+SOURCES += src/Compress/Compress-ui.cpp
+
 DISTRIBUTABLES += res
 # DISTRIBUTABLES += presets
 # DISTRIBUTABLES += selections

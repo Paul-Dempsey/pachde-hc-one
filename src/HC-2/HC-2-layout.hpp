@@ -16,12 +16,8 @@ constexpr const float CV_COLUMN_OFFSET = 24.f;
 constexpr const float CV_ROW_OFFSET = 6.f;
 constexpr const float STATIC_LABEL_OFFSET = 29.5f;
 
-constexpr const float COMP_BOX_LEFT = 7.5;
-constexpr const float COMP_BOX_TOP = 35.f;
-constexpr const float COMP_BOX_WIDTH = KNOB_SPREAD * 4.f;
-
 constexpr const float TEQ_BOX_LEFT = 7.5f;
-constexpr const float TEQ_BOX_TOP = COMP_BOX_TOP + KNOB_BOX_HEIGHT + 7.5f;
+constexpr const float TEQ_BOX_TOP = 35.f;
 constexpr const float TEQ_BOX_WIDTH = KNOB_SPREAD * 3.f;
 
 }

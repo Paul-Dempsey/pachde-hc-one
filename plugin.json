@@ -34,19 +34,25 @@
       {
         "slug": "pachde-hc-round",
         "name": "Round",
-        "description": "Rounding (HC-1 companion)",
+        "description": "Controller for EaganMatrix Rounding (HC-1 companion)",
         "tags": [ "Controller", "MIDI", "Expander" ]
       },
       {
         "slug": "pachde-hc-pedal-1",
         "name": "HC-Pedal-1",
-        "description": "Controller for EM Pedal 1 (HC-1 companion)",
+        "description": "Controller for EaganMatrix Pedal 1 (HC-1 companion)",
         "tags": [ "Controller", "Expander" ]
       },
       {
         "slug": "pachde-hc-pedal-2",
         "name": "HC-Pedal-2",
-        "description": "Controller for EM Pedal 2 (HC-1 companion)",
+        "description": "Controller for EaganMatrix Pedal 2 (HC-1 companion)",
+        "tags": [ "Controller", "Expander" ]
+      },
+      {
+        "slug": "pachde-hc-compressor",
+        "name": "HC-Compressor",
+        "description": "Controller for EaganMatrix Compressor (HC-1 companion)",
         "tags": [ "Controller", "Expander" ]
       }
     ]

@@ -10,4 +10,5 @@ extern Model* modelHc3;
 extern Model* modelPedal1;
 extern Model* modelPedal2;
 extern Model* modelRound;
+extern Model* modelCompress;
 

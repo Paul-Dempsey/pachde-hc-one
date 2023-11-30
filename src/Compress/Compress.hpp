@@ -1,6 +1,6 @@
 #pragma once
-#ifndef HC2_HPP_INCLUDED
-#define HC2_HPP_INCLUDED
+#ifndef Compress_HPP_INCLUDED
+#define Compress_HPP_INCLUDED
 #include <stdint.h>
 #include "../em_midi.hpp"
 #include "../em.hpp"
@@ -11,36 +11,33 @@
 #include "../presets.hpp"
 #include "../widgets/label_widget.hpp"
 #include "../widgets/partner_picker.hpp"
-#include "../widgets/symbol_widget.hpp"
-#include "cc_map_widget.hpp"
-
-// #define VERBOSE_LOG
-// #include "../debug_log.hpp"
 
 using namespace em_midi;
 namespace pachde {
 
-using Symbol = SymbolWidget::Symbol;
-struct Hc2ModuleWidget;
+struct CompressModuleWidget;
 
-struct Hc2Module : Module, ISendMidi, IHandleHcEvents
+struct CompressModule : Module, ISendMidi, IHandleHcEvents
 {
     enum Params
     {
-        P_TEQ_TILT,
-        P_TEQ_FREQ,
-        P_TEQ_MIX,
-        P_TEQ_TILT_REL,
-        P_TEQ_FREQ_REL,
-        P_TEQ_MIX_REL,
+        P_COMP_THRESHOLD,
+        P_COMP_ATTACK,
+        P_COMP_RATIO,
+        P_COMP_MIX,
+        P_COMP_THRESHOLD_REL,
+        P_COMP_ATTACK_REL,
+        P_COMP_RATIO_REL,
+        P_COMP_MIX_REL,
 
         NUM_PARAMS,
     };
     enum Inputs
     {
-        IN_TEQ_TILT,
-        IN_TEQ_FREQ,
-        IN_TEQ_MIX,
+        IN_COMP_THRESHOLD,
+        IN_COMP_ATTACK,
+        IN_COMP_RATIO,
+        IN_COMP_MIX,
 
         NUM_INPUTS
     };
@@ -50,11 +47,12 @@ struct Hc2Module : Module, ISendMidi, IHandleHcEvents
     };
     enum Lights
     {
-        L_TEQ_TILT_REL,
-        L_TEQ_FREQ_REL,
-        L_TEQ_MIX_REL,
+        L_COMP_THRESHOLD_REL,
+        L_COMP_ATTACK_REL,
+        L_COMP_RATIO_REL,
+        L_COMP_MIX_REL,
 
-        L_TEQ,
+        L_COMPRESSOR,
 
         NUM_LIGHTS
     };
@@ -72,18 +70,17 @@ struct Hc2Module : Module, ISendMidi, IHandleHcEvents
     RateTrigger control_rate;
     rack::dsp::SchmittTrigger round_initial_trigger;
 
-    explicit Hc2Module();
-    virtual ~Hc2Module();
+    explicit CompressModule();
+    virtual ~CompressModule();
 
     void pullCompressor(Hc1Module * partner = nullptr);
     void pushCompressor(Hc1Module * partner = nullptr);
-    void pullTiltEq(Hc1Module * partner = nullptr);
-    void pushTiltEq(Hc1Module * partner = nullptr);
+
+    void absoluteCV();
+    void relativeCV();
 
     void processCV(int paramId);
-    void processRoundingControls();
     void processCompressorControls();
-    void processTiltEqControls();
     void processControls();
 
     // Module
@@ -108,25 +105,25 @@ struct Hc2Module : Module, ISendMidi, IHandleHcEvents
     //void onPresetChanged(const PresetChangedEvent& e) override;
     //void onPedalChanged(const PedalChangedEvent& e) override;
     //void onRoundingChanged(const RoundingChangedEvent& e) override;
-    //void onCompressorChanged(const CompressorChangedEvent& e) override;
-    void onTiltEqChanged(const TiltEqChangedEvent& e) override;
+    void onCompressorChanged(const CompressorChangedEvent& e) override;
+    //void onTiltEqChanged(const TiltEqChangedEvent& e) override;
     void onDeviceChanged(const DeviceChangedEvent& e) override;
     void onDisconnect(const DisconnectEvent& e) override;
 };
 
-struct Hc2ModuleWidget : ModuleWidget, IHandleHcEvents
+struct CompressModuleWidget : ModuleWidget, IHandleHcEvents
 {
-    Hc2Module* my_module = nullptr;
+    CompressModule* my_module = nullptr;
     PartnerPicker* partner_picker = nullptr;
 
-    explicit Hc2ModuleWidget(Hc2Module * module);
-    virtual ~Hc2ModuleWidget() {
+    explicit CompressModuleWidget(CompressModule * module);
+    virtual ~CompressModuleWidget() {
         // if (my_module) {
         //     my_module->ui_event_sink = nullptr;
         // }
     }
     Hc1Module* getPartner();
-    void createTiltEqUI(float x, float y);
+    void createCompressorUI();
 
     // IHandleHcEvents
     //void onPresetChanged(const PresetChangedEvent& e) override;

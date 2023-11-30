@@ -27,45 +27,6 @@ inline uint8_t GetSmallParamValue(rack::app::ModuleWidget* w, int id, uint8_t de
     return U8(pq->getValue());
 }
 
-void Hc2ModuleWidget::createCompressorUI(float x, float y)
-{
-    addChild(createHeaderWidget(x, y, COMP_BOX_WIDTH, KNOB_BOX_HEIGHT));
-    addChild(createStaticTextLabel<StaticTextLabel>(Vec(x + COMP_BOX_WIDTH*.5f, y + PAD), 60.f, "Compressor", TextAlignment::Center));
-    addChild(createLightCentered<SmallSimpleLight<BlueLight>>(Vec(x + KNOB_COL1 + 3.f * KNOB_SPREAD, y + 8.f), my_module, Hc2L::L_COMPRESSOR));
-
-    float cx = x + KNOB_COL1;
-    addChild(createStaticTextLabel<StaticTextLabel>(Vec(cx, y + KNOB_ROW - STATIC_LABEL_OFFSET), 50.f, "Threshold", TextAlignment::Center));
-    addChild(createModKnob(
-        Vec( cx, y + KNOB_ROW), 
-        module, Hc2P::P_COMP_THRESHOLD, Hc2I::IN_COMP_THRESHOLD, Hc2P::P_COMP_THRESHOLD_REL));
-    addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<BlueLight>>>(Vec(cx - REL_OFFSET, y + KNOB_ROW - REL_VOFFSET), my_module, Hc2P::P_COMP_THRESHOLD_REL, Hc2L::L_COMP_THRESHOLD_REL));
-    addChild(createInputCentered<ColorPort>(Vec(cx - CV_COLUMN_OFFSET, y + KNOB_ROW + CV_ROW_OFFSET), my_module, Hc2I::IN_COMP_THRESHOLD));
-
-    cx += KNOB_SPREAD;
-    addChild(createStaticTextLabel<StaticTextLabel>(Vec(cx, y + KNOB_ROW - STATIC_LABEL_OFFSET), 50.f, "Attack", TextAlignment::Center));
-    addChild(createModKnob(
-        Vec( cx, y + KNOB_ROW), 
-        module, Hc2P::P_COMP_ATTACK, Hc2I::IN_COMP_ATTACK, Hc2P::P_COMP_ATTACK_REL));
-    addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<BlueLight>>>(Vec(cx - REL_OFFSET, y + KNOB_ROW - REL_VOFFSET), my_module, Hc2P::P_COMP_ATTACK_REL, Hc2L::L_COMP_ATTACK_REL));
-    addChild(createInputCentered<ColorPort>(Vec(cx - CV_COLUMN_OFFSET, y + KNOB_ROW + CV_ROW_OFFSET), my_module, Hc2I::IN_COMP_ATTACK));
-
-    cx += KNOB_SPREAD;
-    addChild(createStaticTextLabel<StaticTextLabel>(Vec(cx, y + KNOB_ROW - STATIC_LABEL_OFFSET), 50.f, "Ratio", TextAlignment::Center));
-    addChild(createModKnob(
-        Vec( cx, y + KNOB_ROW), 
-        module, Hc2P::P_COMP_RATIO, Hc2I::IN_COMP_RATIO, Hc2P::P_COMP_RATIO_REL));
-    addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<BlueLight>>>(Vec(cx - REL_OFFSET, y + KNOB_ROW - REL_VOFFSET), my_module, Hc2P::P_COMP_RATIO_REL, Hc2L::L_COMP_RATIO_REL));
-    addChild(createInputCentered<ColorPort>(Vec(cx - CV_COLUMN_OFFSET, y + KNOB_ROW + CV_ROW_OFFSET), my_module, Hc2I::IN_COMP_RATIO));
-
-    cx += KNOB_SPREAD;
-    addChild(createStaticTextLabel<StaticTextLabel>(Vec(cx, y + KNOB_ROW - STATIC_LABEL_OFFSET), 50.f, "Mix", TextAlignment::Center));
-    addChild(createModKnob(
-        Vec( cx, y + KNOB_ROW), 
-        module, Hc2P::P_COMP_MIX, Hc2I::IN_COMP_MIX, Hc2P::P_COMP_MIX_REL));
-    addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<BlueLight>>>(Vec(cx - REL_OFFSET, y + KNOB_ROW - REL_VOFFSET), my_module, Hc2P::P_COMP_MIX_REL, Hc2L::L_COMP_MIX_REL));
-    addChild(createInputCentered<ColorPort>(Vec(cx - CV_COLUMN_OFFSET, y + KNOB_ROW + CV_ROW_OFFSET), my_module, Hc2I::IN_COMP_MIX));
-}
-
 void Hc2ModuleWidget::createTiltEqUI(float x, float y)
 {
     addChild(createHeaderWidget(x, y, TEQ_BOX_WIDTH, KNOB_BOX_HEIGHT));
@@ -108,7 +69,6 @@ Hc2ModuleWidget::Hc2ModuleWidget(Hc2Module * module)
     setPanel(createPanel(asset::plugin(pluginInstance, "res/HC-2.svg")));
     addChild(partner_picker = createPartnerPicker(7.f, 14.f, 180.f, module ? &module->partner_binding : nullptr));
 
-    createCompressorUI(COMP_BOX_LEFT, COMP_BOX_TOP);
     createTiltEqUI(TEQ_BOX_LEFT, TEQ_BOX_TOP);
 
     auto x = box.size.x * .5f;
@@ -132,28 +92,28 @@ Hc1Module* Hc2ModuleWidget::getPartner()
     return my_module->getPartner();
 }
 
-void Hc2ModuleWidget::draw(const DrawArgs& args)
-{
-    ModuleWidget::draw(args);
+// void Hc2ModuleWidget::draw(const DrawArgs& args)
+// {
+//     ModuleWidget::draw(args);
 
-    //auto partner = getPartner();
-    //if (partner) {
-        // system_data
-        // auto font = GetPluginFontRegular();
-        // SetTextStyle(args.vg, font, RampGray(G_90), 10.f);
-        // std::string data;
-        // if (partner->system_data.empty()) {
-        //     data = "(empty)";
-        // } else {
-        //     for (auto b:partner->system_data) {
-        //         auto hex = format_string("%02x", b);
-        //         data.append(hex);
-        //     }
-        // }
-        // nvgText(args.vg, 7.5, box.size.y - 64, data.c_str(), nullptr);
-    //}
+//     //auto partner = getPartner();
+//     //if (partner) {
+//         // system_data
+//         // auto font = GetPluginFontRegular();
+//         // SetTextStyle(args.vg, font, RampGray(G_90), 10.f);
+//         // std::string data;
+//         // if (partner->system_data.empty()) {
+//         //     data = "(empty)";
+//         // } else {
+//         //     for (auto b:partner->system_data) {
+//         //         auto hex = format_string("%02x", b);
+//         //         data.append(hex);
+//         //     }
+//         // }
+//         // nvgText(args.vg, 7.5, box.size.y - 64, data.c_str(), nullptr);
+//     //}
 
-}
+// }
 
 void Hc2ModuleWidget::appendContextMenu(Menu *menu)
 {

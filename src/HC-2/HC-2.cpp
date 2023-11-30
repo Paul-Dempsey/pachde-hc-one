@@ -15,23 +15,6 @@ Hc2Module::Hc2Module()
 
     config(Params::NUM_PARAMS, Inputs::NUM_INPUTS, Outputs::NUM_OUTPUTS, Lights::NUM_LIGHTS);
 
-    configCCParam(EMCC_CompressorThreshold, false, this, P_COMP_THRESHOLD, IN_COMP_THRESHOLD, P_COMP_THRESHOLD_REL, L_COMP_THRESHOLD_REL, 0.f, 127.f, 127.f, "Threshold", "%", 0.f, 100.f/127.f)->snapEnabled = true;
-    configCCParam(EMCC_CompressorThreshold, false, this, P_COMP_ATTACK,     IN_COMP_ATTACK,     P_COMP_ATTACK_REL,     L_COMP_ATTACK_REL,     0.f, 127.f,  64.f, "Attack", "%", 0.f, 100.f/127.f)->snapEnabled = true;
-    configCCParam(EMCC_CompressorThreshold, false, this, P_COMP_RATIO,      IN_COMP_RATIO,      P_COMP_RATIO_REL,      L_COMP_RATIO_REL,      0.f, 127.f,  64.f, "Ratio", "%", 0.f, 100.f/127.f)->snapEnabled = true;
-    configCCParam(EMCC_CompressorThreshold, false, this, P_COMP_MIX,        IN_COMP_MIX,        P_COMP_MIX_REL,        L_COMP_MIX_REL,        0.f, 127.f,   0.f, "Mix", "%", 0.f, 100.f/127.f)->snapEnabled = true;
-
-    configInput(IN_COMP_THRESHOLD, "Compression threshold");
-    configInput(IN_COMP_ATTACK, "Compression attack");
-    configInput(IN_COMP_RATIO, "Compression ratio");
-    configInput(IN_COMP_MIX, "Compression mix");
-
-    configSwitch(P_COMP_THRESHOLD_REL, 0.f, 1.f, 0.f, "Threshold relative CV", offon);
-    configSwitch(P_COMP_ATTACK_REL,    0.f, 1.f, 0.f, "Attack relative CV", offon);
-    configSwitch(P_COMP_RATIO_REL,     0.f, 1.f, 0.f, "Ratio relative CV", offon);
-    configSwitch(P_COMP_MIX_REL,       0.f, 1.f, 0.f, "Mix relative CV", offon);
-
-    configLight(L_COMPRESSOR, "Compressor");
-
     configCCParam(EMCC_TiltEq,          false, this, P_TEQ_TILT, IN_TEQ_TILT, P_TEQ_TILT_REL, L_TEQ_TILT_REL, 0.f, 127.f,  64.f, "Tilt", "", 0.f, 1.f)->snapEnabled = true;
     configCCParam(EMCC_TiltEqFrequency, false, this, P_TEQ_FREQ, IN_TEQ_FREQ, P_TEQ_FREQ_REL, L_TEQ_FREQ_REL, 0.f, 127.f,  64.f, "Frequency", "%", 0.f, 100.f/127.f)->snapEnabled = true;
     configCCParam(EMCC_TiltEqMix,       false, this, P_TEQ_MIX,  IN_TEQ_MIX,  P_TEQ_MIX_REL,  L_TEQ_MIX_REL,  0.f, 127.f,   0.f, "Mix", "%", 0.f, 100.f/127.f)->snapEnabled = true;
@@ -77,41 +60,6 @@ Hc1Module* Hc2Module::getPartner()
     return getPartnerImpl<Hc2Module>(this);
 }
 
-void Hc2Module::onCompressorChanged(const CompressorChangedEvent &e)
-{
-    bool changed = false;
-    auto old = compressor;
-    compressor = e.compressor;
-
-    if (old.threshold != compressor.threshold) {
-        changed = true;
-        auto pq = dynamic_cast<CCParamQuantity*>(getParamQuantity(Params::P_COMP_THRESHOLD));
-        pq->setValueSilent(compressor.threshold);
-    }
-
-    if (old.attack != compressor.attack) {
-        changed = true;
-        auto pq = dynamic_cast<CCParamQuantity*>(getParamQuantity(Params::P_COMP_ATTACK));
-        pq->setValueSilent(compressor.attack);
-    }
-
-    if (old.ratio != compressor.ratio) {
-        changed = true;
-        auto pq = dynamic_cast<CCParamQuantity*>(getParamQuantity(Params::P_COMP_RATIO));
-        pq->setValueSilent(compressor.ratio);
-    }
-
-    if (old.mix != compressor.mix) {
-        changed = true;
-        auto pq = dynamic_cast<CCParamQuantity*>(getParamQuantity(Params::P_COMP_MIX));
-        pq->setValueSilent(compressor.mix);
-    }
-
-    if (changed && ui_event_sink) {
-        ui_event_sink->onCompressorChanged(e);
-    }
-}
-
 void Hc2Module::onTiltEqChanged(const TiltEqChangedEvent& e)
 {
     bool changed = false;
@@ -151,30 +99,6 @@ void Hc2Module::onDisconnect(const DisconnectEvent& e)
     partner_subscribed = false;
     if (ui_event_sink) {
         ui_event_sink->onDisconnect(e);
-    }
-}
-
-void Hc2Module::pullCompressor(Hc1Module *partner)
-{
-    if (!partner) partner = getPartner();
-    if (!partner) return;
-    compressor = partner->em.compressor;
-    getParamQuantity(Params::P_COMP_THRESHOLD)->setValue(compressor.threshold);
-    getParamQuantity(Params::P_COMP_ATTACK)->setValue(compressor.attack);
-    getParamQuantity(Params::P_COMP_RATIO)->setValue(compressor.ratio);
-    getParamQuantity(Params::P_COMP_MIX)->setValue(compressor.mix);
-    if (ui_event_sink) {
-        ui_event_sink->onCompressorChanged(CompressorChangedEvent{compressor});
-    }
-}
-
-void Hc2Module::pushCompressor(Hc1Module *partner)
-{
-    if (!partner) partner = getPartner();
-    if (!partner) return;
-    partner->em.compressor = compressor;
-    if (ui_event_sink) {
-        ui_event_sink->onCompressorChanged(CompressorChangedEvent{compressor});
     }
 }
 
@@ -227,42 +151,6 @@ void Hc2Module::processCV(int paramId)
     }
 }
 
-void Hc2Module::processCompressorControls()
-{
-    bool changed = false;
-    auto pq = dynamic_cast<CCParamQuantity*>(getParamQuantity(Params::P_COMP_THRESHOLD));
-    auto v = pq->valueToSend();
-    if (pq->last_value != v) {
-        compressor.threshold = v;
-        changed = true;
-        pq->syncValue();
-    }
-    pq = dynamic_cast<CCParamQuantity*>(getParamQuantity(Params::P_COMP_ATTACK));
-    v = pq->valueToSend();
-    if (pq->last_value != v) {
-        compressor.attack = v;
-        changed = true;
-        pq->syncValue();
-    }
-    pq = dynamic_cast<CCParamQuantity*>(getParamQuantity(Params::P_COMP_RATIO));
-    v = pq->valueToSend();
-    if (pq->last_value != v) {
-        compressor.ratio = v;
-        changed = true;
-        pq->syncValue();
-    }
-    pq = dynamic_cast<CCParamQuantity*>(getParamQuantity(Params::P_COMP_MIX));
-    v = pq->valueToSend();
-    if (pq->last_value != v) {
-        compressor.mix = v;
-        changed = true;
-        pq->syncValue();
-    }
-    if (changed) {
-        pushCompressor();
-    }
-}
-
 void Hc2Module::processTiltEqControls()
 {
     bool changed = false;
@@ -296,24 +184,18 @@ void Hc2Module::processTiltEqControls()
 void Hc2Module::processControls()
 {
     if (!control_rate.process()) { return; }
-    processCompressorControls();
     processTiltEqControls();
 }
 
 void Hc2Module::process(const ProcessArgs& args)
 {
     if ((0 == ((args.frame + id) % CV_INTERVAL))) {
-        processCV(Params::P_COMP_THRESHOLD);
-        processCV(Params::P_COMP_ATTACK);
-        processCV(Params::P_COMP_RATIO);
-        processCV(Params::P_COMP_MIX);
         processCV(Params::P_TEQ_TILT);
         processCV(Params::P_TEQ_FREQ);
         processCV(Params::P_TEQ_MIX);
     }
 
     processControls();
-    getLight(Lights::L_COMPRESSOR).setBrightness(static_cast<float>(compressor.mix)/127.f);
     getLight(Lights::L_TEQ).setBrightness(static_cast<float>(tilt_eq.mix)/127.f);
 }
 
