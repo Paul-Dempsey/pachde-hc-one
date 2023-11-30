@@ -13,13 +13,7 @@ using RP = RoundModule::Params;
 using RI = RoundModule::Inputs;
 using RL = RoundModule::Lights;
 
-constexpr const float REL_OFFSET = 20.f;
-constexpr const float REL_VOFFSET = 10.f;
-constexpr const float CV_COLUMN_OFFSET = 24.f;
-constexpr const float CV_ROW_OFFSET = 6.f;
-constexpr const float STATIC_LABEL_OFFSET = 29.5f;
 constexpr const float KNOB_RADIUS = 12.f;
-constexpr const float HALF_KNOB = KNOB_RADIUS *.5f;
 
 inline uint8_t GetSmallParamValue(rack::app::ModuleWidget* w, int id, uint8_t default_value = 0) {
     auto p = w->getParam(id);
