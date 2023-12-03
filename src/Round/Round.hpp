@@ -39,6 +39,7 @@ struct RoundModule : Module, ISendMidi, IHandleHcEvents
     {
         L_ROUND_RATE_REL,
         L_ROUND_INITIAL,
+        ROUND_Y_LIGHT, ROUND_INITIAL_LIGHT, ROUND_LIGHT, ROUND_RELEASE_LIGHT,
         NUM_LIGHTS
     };
 

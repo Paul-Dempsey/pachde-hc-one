@@ -23,6 +23,10 @@ RoundModule::RoundModule()
         "Inverse Y (None to full)"
         });
     configTuningParam(this, P_ROUND_TUNING);
+    configLight(Lights::ROUND_Y_LIGHT, "Round on Y");
+    configLight(Lights::ROUND_INITIAL_LIGHT, "Round initial");
+    configLight(Lights::ROUND_LIGHT, "Rounding");
+    configLight(Lights::ROUND_RELEASE_LIGHT, "Round on release");
 }
 
 RoundModule::~RoundModule()
@@ -246,6 +250,11 @@ void RoundModule::process(const ProcessArgs& args)
             getPartner();
         }
         processCV(Params::P_ROUND_RATE);
+        bool round = rounding.rate > 0;
+        getLight(Lights::ROUND_Y_LIGHT).setBrightness(1.0f * (round && (rounding.kind >= RoundKind::Y)));
+        getLight(Lights::ROUND_INITIAL_LIGHT).setBrightness(1.0f * (rounding.initial));
+        getLight(Lights::ROUND_LIGHT).setBrightness(1.0f * round);
+        getLight(Lights::ROUND_RELEASE_LIGHT).setBrightness(1.0f * (round && (rounding.kind <= RoundKind::Release)));
     }
 
     if (getInput(Inputs::IN_ROUND_INITIAL).isConnected()) {
