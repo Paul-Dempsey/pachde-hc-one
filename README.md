@@ -1,9 +1,9 @@
 # HC One
 
-HC One is a VCV Rack plugin with modules for working with Haken Audio's Eagan Matrix devices.
-These include the Haken Continuum, Continuu Mini, and Eagan Matrix Module, and Expressive E's Osmose.
+HC One is a VCV Rack plugin with modules for working with any Eagan Matrix device.
+These include the Haken Continuum, Continuu Mini, and Eagan Matrix Module from Haken Audio, and the Osmose from Expressive E.
 
-If you're new to VCV Rack, make sure to get familiar with it.
+If you are new to VCV Rack, make sure to get familiar with it.
 See [Getting Started](https://vcvrack.com/manual/GettingStarted) in the VCV Rack manual.
 
 [![Build Status](https://github.com/Paul-Dempsey/pachde-hc-one/actions/workflows/build-plugin.yml/badge.svg)](https://github.com/Paul-Dempsey/pachde-hc-one/actions/workflows/build-plugin.yml)
