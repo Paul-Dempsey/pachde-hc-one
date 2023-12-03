@@ -19,13 +19,17 @@ The beta 5 release announced online can be downloaded here: [HC-One 2.0.0-beta5]
   Donations help pachde's morale, and fund hardware for testing and developing this software.\
   ![Buy pachde a coffee with VenMo](doc/VenMo.png)
 
-Pachde and HC One are not affiliated with or sponsored by Haken Audio.
+Pachde and HC One are not affiliated with or sponsored by Haken Audio (but we're friends).
 
 ## Modules
 
 - **[HC-1](./doc/HC-1.md)** Fast access to favorite presets, with knobs and CV inputs for the essential controls: Macros and the Recirculator.
 
-- **[HC-2](./doc/HC-2.md)** Rounding, Compressor, TiltEQ, and CC maps (more to come).
+- **[Round](./doc/Round.md)** Control of rounding and the tuning scale, with CV and trigger.
+
+- **[Compress](./doc/Compress.md)** EaganMatrix compressor controls, with CV.
+
+- **[HC-2](./doc/HC-2.md)** TiltEQ, and CC maps (to be retired).
 
 - **[HC-3](./doc/HC-3.md)** Pushbuttons to access up to 16 Favorite files.
 

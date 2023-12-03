@@ -24,7 +24,11 @@ The HC-One modules shown here from left to right are:
 
 - **[Pedal 1 & Pedal 2](Pedals.md)** Pedal control, virtual pedals, and pedal CV in/out.
 
-- **[HC-2](HC-2.md)** Rounding, Compressor, TiltEQ, and CC maps (more to come).
+- **[Round](Round.md)** Control of rounding and the tuning scale, with CV and trigger.
+
+- **[Compress](Compress.md)** EaganMatrix compressor controls, with CV.
+
+- **[HC-2](HC-2.md)** TiltEQ, and CC maps (To Be Retired).
 
 - **[HC-3](HC-3.md)** Pushbuttons to access up to 16 Favorite files.
 

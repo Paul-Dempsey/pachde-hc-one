@@ -10,9 +10,9 @@ From top to bottom, left to right:
 
 - The knob controls the function assigned to the pedal. Click the knob to advance to the next item. Ctrl+click (Cmd on Mac) to go to the previous item. Right click for direct access to the menu of pedal functions.
 
-  Each pedal function is equivalent to a MIDI control code.
+  Each pedal function is equivalent to a MIDI control code (CC).
 
-- (NYI) On the left are controls to set the minimum and maximum values for the pedal.
+- On the left are sliders to set the minimum and maximum values for the pedal.
 
 - The slider is a virtual pedal. Drag the handle or click anywhere on the bar to change the pedal value.
   Like all Rack knobs and sliders, hold Ctrl (fine) or Shift (coarse) while dragging to change the speed.
