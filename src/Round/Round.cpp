@@ -27,16 +27,13 @@ RoundModule::RoundModule()
     configLight(Lights::ROUND_INITIAL_LIGHT, "Round initial");
     configLight(Lights::ROUND_LIGHT, "Rounding");
     configLight(Lights::ROUND_RELEASE_LIGHT, "Round on release");
+    partner_binding.setClient(this);
+
 }
 
 RoundModule::~RoundModule()
 {
-    if (!partner_subscribed) return;
-    auto partner = partner_binding.getPartner();
-    if (partner){
-        partner->unsubscribeHcEvents(this);
-        partner_subscribed = false;
-    }
+    partner_binding.unsubscribe();
 }
 
 json_t * RoundModule::dataToJson()
@@ -54,12 +51,12 @@ void RoundModule::dataFromJson(json_t *root)
     if (j) {
         partner_binding.setClaim(json_string_value(j));
     }
-    //getPartner();
+    getPartner();
 }
 
 Hc1Module* RoundModule::getPartner()
 {
-    return getPartnerImpl<RoundModule>(this);
+    return partner_binding.getPartner();
 }
 
 // ISendMidi
@@ -135,7 +132,6 @@ void RoundModule::onDeviceChanged(const DeviceChangedEvent& e)
 
 void RoundModule::onDisconnect(const DisconnectEvent& e)
 {
-    partner_subscribed = false;
     partner_binding.onDisconnect(e);
     if (ui_event_sink) {
         ui_event_sink->onDisconnect(e);
@@ -245,10 +241,10 @@ void RoundModule::processControls()
 
 void RoundModule::process(const ProcessArgs& args)
 {
+    auto partner = getPartner();
+    if (!partner || !partner->readyToSend()) return;
+
     if (0 == ((args.frame + id) % CV_INTERVAL)) {
-        if (!partner_subscribed) {
-            getPartner();
-        }
         processCV(Params::P_ROUND_RATE);
         bool round = rounding.rate > 0;
         getLight(Lights::ROUND_Y_LIGHT).setBrightness(1.0f * (round && (rounding.kind >= RoundKind::Y)));

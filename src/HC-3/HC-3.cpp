@@ -13,21 +13,17 @@ Hc3Module::Hc3Module()
         "1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8",
         "2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "2.7", "2.8",
     });
+    partner_binding.setClient(this);
 }
 
 Hc3Module::~Hc3Module()
 {
-    if (partner_subscribed) {
-        auto partner = partner_binding.getPartner();
-        if (partner) {
-            partner->unsubscribeHcEvents(this);
-            partner_subscribed = false;
-        }
-    }
+    partner_binding.unsubscribe();
 }
 
-Hc1Module* Hc3Module::getPartner() {
-    return getPartnerImpl<Hc3Module>(this);
+Hc1Module* Hc3Module::getPartner()
+{
+    return partner_binding.getPartner();
 }
 
 void Hc3Module::onDeviceChanged(const DeviceChangedEvent& e)
@@ -40,8 +36,7 @@ void Hc3Module::onDeviceChanged(const DeviceChangedEvent& e)
 
 void Hc3Module::onDisconnect(const DisconnectEvent& e)
 {
-    partner_subscribed = false;
-//    partner_binding.forgetModule();
+    partner_binding.onDisconnect(e);
     if (ui_event_sink) {
         ui_event_sink->onDisconnect(e);
     }
@@ -137,6 +132,7 @@ void Hc3Module::dataFromJson(json_t *root)
             files.push_back(json_string_value(jp));
         }
     }
+    getPartner();
 }
 
 void Hc3Module::openFile(int id) {
@@ -167,8 +163,7 @@ void Hc3Module::process(const ProcessArgs& args)
     if (time > POLL_RATE) {
         poll_timer.reset();
         auto partner = getPartner();
-        if (partner)
-        {
+        if (partner) {
             const std::string &partnerFile = partner->favoritesFile;
             if (partnerFile.empty()) {
                 setSynchronizedLoadedId(-1);

@@ -12,6 +12,14 @@ bool ExcludeDriver(const std::string& driver_name);
 bool is_EMDevice(const std::string& device_name);
 std::string FilterDeviceName(const std::string& text);
 
+enum class TextFormatLength
+{
+    Short,
+    Long,
+    Compact,
+    Abbreviated
+};
+
 struct MidiDeviceConnectionInfo
 {
     std::string driver_name;
@@ -52,7 +60,7 @@ struct MidiDeviceConnectionInfo
     }
     bool parse(const std::string & spec);
     std::string spec() const;
-    std::string friendly(bool long_name) const;
+    std::string friendly(TextFormatLength length) const;
 };
 
 struct MidiDeviceConnection

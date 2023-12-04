@@ -23,7 +23,7 @@ Hc3ModuleWidget::Hc3ModuleWidget(Hc3Module* module)
         my_module->ui_event_sink = this;
     }
     setPanel(createPanel(asset::plugin(pluginInstance, "res/HC-3.svg")));
-    addChild(partner_picker = createPartnerPicker(7.f, 14.f, 180.f, module ? &module->partner_binding : nullptr));
+    addChild(partner_picker = createPartnerPicker());
 
     float y = START_ROW;
     float x = 15.f;
@@ -55,12 +55,6 @@ void Hc3ModuleWidget::onFavoritesFileChanged(const FavoritesFileChangedEvent& e)
 void Hc3ModuleWidget::step() 
 {
     ModuleWidget::step();
-    // if (module && device_label->getText().empty()) {
-    //     auto partner = my_module->getPartner();
-    //     if (partner && partner->connection) {
-    //         device_label->text(partner->connection->info.friendly(false));
-    //     }
-    // }
     if (!module && !hacked_lights) {
         // Rack turns every light to full brightness in the module browser
         // we hack it here to show a more representative state.

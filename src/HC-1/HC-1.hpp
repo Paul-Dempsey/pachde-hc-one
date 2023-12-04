@@ -26,7 +26,7 @@ namespace pachde {
 const NVGcolor& StatusColor(StatusItem led);
 struct MidiInputWorker;
 
-struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, IMidiDeviceChange, midi::Input, Module
+struct Hc1Module : IPresetHolder, ISendMidi, IMidiDeviceHolder, IMidiDeviceChange, midi::Input, Module
 {
     enum Params
     {
@@ -165,7 +165,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, IMidiDeviceChange, midi
         //            Phase                      State                     MIDI rate              Post delay  Budget
         InitPhaseInfo{InitPhase::DeviceOutput,   InitState::Uninitialized, EMMidiRate::Full,      4.0f,       0.f },
         InitPhaseInfo{InitPhase::DeviceInput,    InitState::Uninitialized, EMMidiRate::Full,      3.0f,       0.f },
-        InitPhaseInfo{InitPhase::DeviceHello,    InitState::Uninitialized, EMMidiRate::Third,     1.0f,       4.f },
+        InitPhaseInfo{InitPhase::DeviceHello,    InitState::Uninitialized, EMMidiRate::Third,     2.0f,       4.f },
         InitPhaseInfo{InitPhase::DeviceConfig,   InitState::Uninitialized, EMMidiRate::Third,     1.0f,       4.f },
         InitPhaseInfo{InitPhase::CachedPresets,  InitState::Uninitialized, EMMidiRate::Full,      0.f,        0.f },
         InitPhaseInfo{InitPhase::UserPresets,    InitState::Uninitialized, EMMidiRate::Third,     1.0f,      12.f },
@@ -233,8 +233,9 @@ struct Hc1Module : IPresetHolder, ISendMidi, ISetDevice, IMidiDeviceChange, midi
     // IMidiDeviceChange
     void onRenewClaim() override;
 
-    // ISetDevice
-    void setMidiDevice(const std::string & claim) override;
+    // IMidiDeviceHolder
+    void setMidiDeviceClaim(const std::string & claim) override;
+    const std::string& getMidiDeviceClaim() override;
     bool in_reboot = false;
 
     MidiInputWorker* midi_input_worker{nullptr};

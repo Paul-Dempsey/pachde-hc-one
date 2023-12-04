@@ -9,15 +9,16 @@
 using namespace ::rack;
 namespace pachde {
 
-struct ISetDevice {
-    virtual void setMidiDevice(const std::string& claim) = 0;
+struct IMidiDeviceHolder {
+    virtual void setMidiDeviceClaim(const std::string& claim) = 0;
+    virtual const std::string& getMidiDeviceClaim() = 0;
 };
 
 struct EMPicker : TipWidget
 {
     widget::FramebufferWidget* fb;
     widget::SvgWidget* sw;
-    ISetDevice* setter;
+    IMidiDeviceHolder* setter;
     std::shared_ptr<MidiDeviceConnection> connection;
     EMPicker & operator=(const EMPicker &) = delete;
     EMPicker(const EMPicker&) = delete;
@@ -34,7 +35,7 @@ struct EMPicker : TipWidget
         fb->setDirty(true);
     }
 
-    void setCallback(ISetDevice * callback) {
+    void setCallback(IMidiDeviceHolder * callback) {
         assert(callback);
         setter = callback;
     }
@@ -57,7 +58,7 @@ struct EMPicker : TipWidget
 
         menu->addChild(createMenuLabel("Eagan Matrix device"));
         menu->addChild(new MenuSeparator);
-        menu->addChild(createMenuItem("Reset (auto)", "", [=](){ setter->setMidiDevice(""); }));
+        menu->addChild(createMenuItem("Reset (auto)", "", [=](){ setter->setMidiDeviceClaim(""); }));
         auto broker = MidiDeviceBroker::get();
         auto current_claim = connection ? connection->info.spec() : "";
 
@@ -68,9 +69,9 @@ struct EMPicker : TipWidget
                     bool mine = (0 == current_claim.compare(item_claim));
                     bool unavailable = mine ? false : !broker->is_available(item_claim);
 
-                    menu->addChild(createCheckMenuItem(conn->info.friendly(true), "",
+                    menu->addChild(createCheckMenuItem(conn->info.friendly(TextFormatLength::Long), "",
                         [=](){ return mine; },
-                        [=](){ setter->setMidiDevice(item_claim); }, unavailable));
+                        [=](){ setter->setMidiDeviceClaim(item_claim); }, unavailable));
                 }
                 return true;
             }
@@ -83,9 +84,9 @@ struct EMPicker : TipWidget
                     bool mine = (0 == current_claim.compare(item_claim));
                     bool unavailable = mine ? false : !broker->is_available(item_claim);
 
-                    menu->addChild(createCheckMenuItem(conn->info.friendly(true), "",
+                    menu->addChild(createCheckMenuItem(conn->info.friendly(TextFormatLength::Long), "",
                         [=](){ return mine; },
-                        [=](){ setter->setMidiDevice(item_claim); }, unavailable));
+                        [=](){ setter->setMidiDeviceClaim(item_claim); }, unavailable));
                     return true;
                 }
             );

@@ -33,7 +33,6 @@ struct Hc3Module : Module, IHandleHcEvents
     int loaded_id;
     std::vector<std::string> files;
     PartnerBinding partner_binding;
-    bool partner_subscribed = false;
     IHandleHcEvents * ui_event_sink = nullptr;
 
     const float POLL_RATE = 1.5f;

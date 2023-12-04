@@ -28,17 +28,14 @@ Hc2Module::Hc2Module()
     configSwitch(P_TEQ_MIX_REL,  0.f, 1.f, 0.f, "Mix relative CV", offon);
 
     configLight(L_TEQ, "Tilt EQ");
+    partner_binding.setClient(this);
 }
 
 Hc2Module::~Hc2Module()
 {
-    if (!partner_subscribed) return;
-    auto partner = partner_binding.getPartner();
-    if (partner){
-        partner->unsubscribeHcEvents(this);
-        partner_subscribed = false;
-    }
+    partner_binding.unsubscribe();
 }
+
 json_t * Hc2Module::dataToJson()
 {
     auto root = json_object();
@@ -57,7 +54,7 @@ void Hc2Module::dataFromJson(json_t *root)
 
 Hc1Module* Hc2Module::getPartner()
 {
-    return getPartnerImpl<Hc2Module>(this);
+    return partner_binding.getPartner();
 }
 
 void Hc2Module::onTiltEqChanged(const TiltEqChangedEvent& e)
@@ -96,7 +93,7 @@ void Hc2Module::onDeviceChanged(const DeviceChangedEvent& e)
 
 void Hc2Module::onDisconnect(const DisconnectEvent& e)
 {
-    partner_subscribed = false;
+    partner_binding.onDisconnect(e);
     if (ui_event_sink) {
         ui_event_sink->onDisconnect(e);
     }

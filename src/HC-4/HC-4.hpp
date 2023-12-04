@@ -33,7 +33,6 @@ struct Hc4Module : Module, IHandleHcEvents
     };
 
     PartnerBinding partner_binding;
-    bool partner_subscribed = false;
 
     IHandleHcEvents * ui_event_sink = nullptr;
     const int CV_INTERVAL = 128;

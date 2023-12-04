@@ -20,16 +20,12 @@ PedalCore::PedalCore(uint8_t pedal)
 
     configInput(Inputs::I_PEDAL_VALUE, "Pedal");
     configOutput(Outputs::O_PEDAL_VALUE, "Pedal");
+    partner_binding.setClient(this);
 }
 
 PedalCore::~PedalCore()
 {
-    if (!partner_subscribed) return;
-    auto partner = partner_binding.getPartner();
-    if (partner){
-        partner->unsubscribeHcEvents(this);
-        partner_subscribed = false;
-    }
+    partner_binding.unsubscribe();
 }
 
 json_t * PedalCore::dataToJson()
@@ -50,7 +46,7 @@ void PedalCore::dataFromJson(json_t *root)
 
 Hc1Module* PedalCore::getPartner()
 {
-    return getPartnerImpl<PedalCore>(this);
+    return partner_binding.getPartner();
 }
 
 // IHandleHcEvents
@@ -92,7 +88,6 @@ void PedalCore::onDeviceChanged(const DeviceChangedEvent& e)
 
 void PedalCore::onDisconnect(const DisconnectEvent& e)
 {
-    partner_subscribed = false;
     partner_binding.onDisconnect(e);
     if (ui_event_sink) {
         ui_event_sink->onDisconnect(e);
@@ -162,8 +157,7 @@ void PedalCore::syncValue(Hc1Module * partner)
 void PedalCore::process(const ProcessArgs& args)
 {
     auto partner = getPartner();
-    if (!partner) return;
-    if (!partner->readyToSend()) return;
+    if (!partner || !partner->readyToSend()) return;
 
     auto pedal = partner->getPedal(pedal_id);
     if (getOutput(Outputs::O_PEDAL_VALUE).isConnected()) {

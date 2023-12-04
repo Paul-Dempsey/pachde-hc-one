@@ -46,7 +46,6 @@ struct RoundModule : Module, ISendMidi, IHandleHcEvents
     Rounding rounding;
 
     PartnerBinding partner_binding;
-    bool partner_subscribed = false;
 
     IHandleHcEvents * ui_event_sink = nullptr;
     const int CV_INTERVAL = 128;

@@ -34,15 +34,25 @@ private:
     ModuleBroker();
 };
 
-// $CONSIDER: add hc_event subscription to partner binding
 struct PartnerBinding
 {
-    int64_t module_id;
+    int64_t partner_id;
     std::string claim;
+    bool subscribed;
+    Module* client;
 
-    PartnerBinding() : module_id(-1) {}
+    PartnerBinding() : partner_id(-1), subscribed(false), client(nullptr) {}
 
-    static bool iCanBindToExclusive(Hc1Module* hc1, Module *me) {
+    bool hasClient() { return client; }
+
+    void setClient(Module* the_module)
+    {
+        client = the_module;
+        assert(hasClient());
+    }
+
+    static bool iCanBindToExclusive(Hc1Module* hc1, Module* me)
+    {
         if (hc1->hc_event_subscriptions.empty()) {
             return true;
         }
@@ -55,54 +65,71 @@ struct PartnerBinding
         return true;
     }
 
-    bool is_bound() {
-        return (module_id != -1) || (!claim.empty());
-    }
-
-    Hc1Module* bindPartner(Module *self)
-    {
-        ModuleBroker* broker = ModuleBroker::get();
-        auto hc1 = broker->getHc1([self](Hc1Module* hc1){ return iCanBindToExclusive(hc1, self); });
-        if (hc1) {
-            setModule(hc1->Module::getId());
-            return hc1;
-        }
-        return nullptr;
-    }
-
-    void setClaim(std::string device_claim) { claim = device_claim; }
-    void setModule(int64_t id) { module_id = id; }
-    void forgetModule() { module_id = -1; }
+    void setClaim(const std::string& device_claim) { claim = device_claim; }
+    void setPartner(int64_t id) { partner_id = id; }
+    void forgetPartner() { partner_id = -1; }
     void forgetDevice() { claim = ""; }
+
     void onDeviceChanged(const IHandleHcEvents::DeviceChangedEvent& e) {
         setClaim(e.device ? e.device->info.spec() : "");
     }
+
     void onDisconnect(const IHandleHcEvents::DisconnectEvent& e) {
-        forgetModule();
+        subscribed = false;
+        forgetPartner();
     }
 
-    Hc1Module* getPartner()
+    void ensureSubscribed(Hc1Module* partner) 
+    {
+        if (!subscribed && partner && client) {
+            auto handler = dynamic_cast<IHandleHcEvents*>(client);
+            if (handler) {
+                partner->subscribeHcEvents(handler);
+                subscribed = true;
+            }
+        }
+    }
+
+    void unsubscribe()
+    {
+        if (!subscribed) return;
+
+        auto handler = dynamic_cast<IHandleHcEvents*>(client);
+        if (handler) {
+            auto partner = getPartner(false);
+            if (partner) {
+                partner->unsubscribeHcEvents(handler);
+                subscribed = false;
+            }
+        }
+    }
+
+    Hc1Module* getPartner(bool subscribe = true)
     {
         auto one = ModuleBroker::get();
 
-        // If no HC-1, forget any we remember and give up (but still remember
-        // the device claim, if one comes along that matches)
+        // If no HC-1, forget any we remember and give up 
+        // but still remember the device claim, if one comes along that matches
         if (0 == one->Hc1count()) {
-            forgetModule();
+            subscribed = false;
+            forgetPartner();
             return nullptr;
         }
 
         Hc1Module* partner = nullptr;
 
         // bind by retained id
-        if (module_id != -1)
+        if (partner_id != -1)
         {
-            partner = one->getHc1(module_id);
+            partner = one->getHc1(partner_id);
             if (partner) { 
-                return partner;
+                claim = partner->getMidiDeviceClaim();
+                ensureSubscribed(partner);
             } else {
-                forgetModule();
+                subscribed = false;
+                forgetPartner();
             }
+            return partner;
         }
 
         if (claim.empty()) {
@@ -110,51 +137,36 @@ struct PartnerBinding
             partner = one->getSoleHc1();
             if (!partner) {
                 // otherwise grab the first 
-                one->scan_while([&](Hc1Module* mod)->bool {
-                    if (!mod) return true;
-                    this->module_id = mod->getId();
+                one->scan_while([this, &partner](Hc1Module* mod)->bool {
+                    if (!mod || !iCanBindToExclusive(mod, client)) return true;
+                    partner_id = mod->getId();
                     partner = mod;
                     return false;
                 });
             }
         } else {
             // bind by device claim
-            one->scan_while([&](Hc1Module* const& mod)->bool {
-                if (mod 
+            one->scan_while([this, &partner](Hc1Module* const& mod)->bool {
+                if (mod
+                    && iCanBindToExclusive(mod, client)
                     && mod->connection
                     && mod->connection->info.spec() == claim) 
                 {
-                    module_id = mod->getId();
+                    partner_id = mod->getId();
                     partner = mod;
                     return false;
                 }
                 return true;
             });
         }
-        if (partner && partner->connection) {
-            claim = partner->connection->info.spec();
+
+        if (partner) {
+            claim = partner->getMidiDeviceClaim();
+            ensureSubscribed(partner);
         }
         return partner;
     }
 };
-
-template <typename SELF>
-Hc1Module* getPartnerImpl(SELF * self)
-{
-    Hc1Module* partner = nullptr;
-    if (self->partner_binding.is_bound()) {
-        partner = self->partner_binding.getPartner();
-    } else {
-        partner = self->partner_binding.bindPartner(self);
-    }
-    if (partner) {
-        if (!self->partner_subscribed) {
-            partner->subscribeHcEvents(self);
-            self->partner_subscribed = true;
-        }
-    }
-    return partner;
-}
 
 }
 #endif

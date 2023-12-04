@@ -132,13 +132,37 @@ std::string MidiDeviceConnectionInfo::spec() const
     return claim;
 }
 
-std::string MidiDeviceConnectionInfo::friendly(bool long_name) const
+std::string MidiDeviceConnectionInfo::friendly(TextFormatLength length) const
 {
     std::string result = input_device_name.empty() ? "(Unknown)" : input_device_name;
+    switch (length) {
+    case TextFormatLength::Compact: {
+        if (0 == result.compare(0, 9, "Continuum", 0, 9)) {
+            result.replace(0, 10, "Con..");
+        } else if (0 == result.compare(0, 12, "ContinuuMini", 0, 12)) {
+            result.erase(0, 8); // "Mini"
+        } else if (0 == result.compare(0, 18, "EaganMatrix Module", 0 , 18)) {
+            result.replace(0, 18, "EMM");
+        }
+    } break;
+    case TextFormatLength::Abbreviated:{
+        if (0 == result.compare(0, 9, "Continuum", 0, 9)) {
+            result.erase(1, 8); // "C"
+        } else if (0 == result.compare(0, 12, "ContinuuMini", 0, 12)) {
+            result.replace(0, 12, "M"); // substitute "M"
+        } else if (0 == result.compare(0, 18, "EaganMatrix Module", 0 , 18)) {
+            result.replace(0, 18, "EMM");
+        }
+    } break;
+    default:
+        break;
+    }
+
     if (sequence > 0) {
         result.append(format_string("#%d", sequence));
     }
-    if (long_name) {
+    
+    if (TextFormatLength::Long == length) {
         if (!output_device_name.empty()) {
             result.append(" and ");
             result.append(output_device_name);

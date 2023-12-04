@@ -5,16 +5,12 @@ namespace pachde {
 Hc4Module::Hc4Module()
 {
     config(Params::NUM_PARAMS, Inputs::NUM_INPUTS, Outputs::NUM_OUTPUTS, Lights::NUM_LIGHTS);
+    partner_binding.setClient(this);
 }
 
 Hc4Module::~Hc4Module()
 {
-    if (!partner_subscribed) return;
-    auto partner = partner_binding.getPartner();
-    if (partner){
-        partner->unsubscribeHcEvents(this);
-        partner_subscribed = false;
-    }
+    partner_binding.unsubscribe();
 }
 
 json_t * Hc4Module::dataToJson()
@@ -30,11 +26,12 @@ void Hc4Module::dataFromJson(json_t *root)
     if (j) {
         partner_binding.setClaim(json_string_value(j));
     }
+    getPartner();
 }
 
 Hc1Module* Hc4Module::getPartner()
 {
-    return getPartnerImpl<Hc4Module>(this);
+    return partner_binding.getPartner();
 }
 
 void Hc4Module::onPedalChanged(const PedalChangedEvent& e)
@@ -52,7 +49,6 @@ void Hc4Module::onDeviceChanged(const DeviceChangedEvent& e)
 
 void Hc4Module::onDisconnect(const DisconnectEvent& e)
 {
-    partner_subscribed = false;
     partner_binding.onDisconnect(e);
     if (ui_event_sink) {
         ui_event_sink->onDisconnect(e);

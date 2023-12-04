@@ -11,13 +11,12 @@ Hc4ModuleWidget::Hc4ModuleWidget(Hc4Module * module)
         my_module->ui_event_sink = this;
     }
     setPanel(createPanel(asset::plugin(pluginInstance, "res/HC-4.svg")));
-    addChild(partner_picker = createPartnerPicker(7.f, 14.f, 180.f, module ? &module->partner_binding : nullptr));
+    addChild(partner_picker = createPartnerPicker());
 }
 
 Hc1Module* Hc4ModuleWidget::getPartner()
 {
-    if (!module) return nullptr;
-    return my_module->getPartner();
+    return module ? my_module->getPartner() : nullptr;
 }
 
 void Hc4ModuleWidget::onDeviceChanged(const DeviceChangedEvent& e)

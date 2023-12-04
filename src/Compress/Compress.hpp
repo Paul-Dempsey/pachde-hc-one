@@ -63,7 +63,6 @@ struct CompressModule : Module, ISendMidi, IHandleHcEvents
     IHandleHcEvents * ui_event_sink = nullptr;
     PartnerBinding partner_binding;
     Hc1Module* getPartner();
-    bool partner_subscribed = false;
 
     // cv processing
     const int CV_INTERVAL = 64;

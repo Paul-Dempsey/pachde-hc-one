@@ -1,6 +1,5 @@
 #include "Compress.hpp"
 #include "../colors.hpp"
-#include "../knob_layout.hpp"
 #include "../misc.hpp"
 #include "../text.hpp"
 #include "../widgets/cc_param.hpp"
@@ -74,8 +73,7 @@ CompressModuleWidget::CompressModuleWidget(CompressModule * module)
         my_module->ui_event_sink = this;
     }
     setPanel(createPanel(asset::plugin(pluginInstance, "res/Compress.svg")));
-    addChild(partner_picker = createPartnerPicker(7.f, 14.f, 180.f, module ? &module->partner_binding : nullptr));
-
+    addChild(partner_picker = createPartnerPicker());
     createCompressorUI();
 }
 
@@ -94,29 +92,6 @@ Hc1Module* CompressModuleWidget::getPartner()
     if (!my_module) return nullptr;
     return my_module->getPartner();
 }
-
-// void CompressModuleWidget::draw(const DrawArgs& args)
-// {
-//     ModuleWidget::draw(args);
-
-//     //auto partner = getPartner();
-//     //if (partner) {
-//         // system_data
-//         // auto font = GetPluginFontRegular();
-//         // SetTextStyle(args.vg, font, RampGray(G_90), 10.f);
-//         // std::string data;
-//         // if (partner->system_data.empty()) {
-//         //     data = "(empty)";
-//         // } else {
-//         //     for (auto b:partner->system_data) {
-//         //         auto hex = format_string("%02x", b);
-//         //         data.append(hex);
-//         //     }
-//         // }
-//         // nvgText(args.vg, 7.5, box.size.y - 64, data.c_str(), nullptr);
-//     //}
-
-// }
 
 void CompressModuleWidget::appendContextMenu(Menu *menu)
 {

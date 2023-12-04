@@ -4,8 +4,6 @@ namespace pachde {
 constexpr const float PAD = 1.f;
 constexpr const float MORE_PAD = 4.f;
 constexpr const float KNOB_BOX_HEIGHT = 62.5f;
-constexpr const float KNOB_RADIUS = 12.f;
-constexpr const float HALF_KNOB = KNOB_RADIUS *.5f;
 constexpr const float KNOB_SPREAD = 54.25f;
 constexpr const float KNOB_COL1 = 35.f;
 constexpr const float KNOB_ROW = 44.f;

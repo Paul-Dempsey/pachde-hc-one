@@ -1,11 +1,14 @@
 #pragma once
-#ifndef KNOB_LAYOUT_HPP_INCLUDED
-#define KNOB_LAYOUT_HPP_INCLUDED
+#ifndef COMMON_LAYOUT_HPP_INCLUDED
+#define COMMON_LAYOUT_HPP_INCLUDED
 
 namespace pachde {
 
 constexpr const float KNOB_RADIUS = 12.f;
 constexpr const float HALF_KNOB = KNOB_RADIUS * .5f;
+constexpr const float PARTNER_LEFT = 2.5f;
+constexpr const float PARTNER_TOP = 14.f;
+constexpr const float PARTNER_WIDTH = 180.f;
 
 // Vertical knob+CV layout
 constexpr const float VK_REL_OFFSET = 14.f;

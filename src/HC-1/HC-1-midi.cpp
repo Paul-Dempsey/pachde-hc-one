@@ -51,7 +51,7 @@ void Hc1Module::onRenewClaim()
     }
 }
 
-void Hc1Module::setMidiDevice(const std::string & claim)
+void Hc1Module::setMidiDeviceClaim(const std::string & claim)
 {
     if (0 == device_claim.compare(claim)) return;
     if (!device_claim.empty()) {
@@ -59,6 +59,11 @@ void Hc1Module::setMidiDevice(const std::string & claim)
     }
     device_claim = claim;
     reboot();
+}
+
+const std::string& Hc1Module::getMidiDeviceClaim()
+{
+    return device_claim;
 }
 
 void Hc1Module::setMacroCCValue(int id, uint8_t value)

@@ -56,7 +56,7 @@ constexpr const float JUMP_SPREAD = 50.25f;
 
 void PedalUICore::createUI()
 {
-    addChild(partner_picker = createPartnerPicker(7.f, 14.f, 180.f, core_module ? &core_module->partner_binding : nullptr));
+    addChild(partner_picker = createPartnerPicker());
 
     /// pedal function knob
     float x_center = box.size.x * .5f;

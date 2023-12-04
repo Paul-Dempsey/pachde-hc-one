@@ -44,7 +44,7 @@ struct PedalCore : Module, ISendMidi, IHandleHcEvents
     IHandleHcEvents * ui_event_sink = nullptr;
     PartnerBinding partner_binding;
     Hc1Module* getPartner();
-    bool partner_subscribed = false;
+
     RateTrigger control_rate;
     const int CV_INTERVAL = 64;
     uint8_t last_pedal_value = 0;

@@ -30,17 +30,14 @@ CompressModule::CompressModule()
     configSwitch(P_COMP_MIX_REL,       0.f, 1.f, 0.f, "Mix relative CV", offon);
 
     configLight(L_COMPRESSOR, "Compressor");
+    partner_binding.setClient(this);
 }
 
 CompressModule::~CompressModule()
 {
-    if (!partner_subscribed) return;
-    auto partner = partner_binding.getPartner();
-    if (partner){
-        partner->unsubscribeHcEvents(this);
-        partner_subscribed = false;
-    }
+    partner_binding.unsubscribe();
 }
+
 json_t * CompressModule::dataToJson()
 {
     auto root = json_object();
@@ -56,12 +53,12 @@ void CompressModule::dataFromJson(json_t *root)
     if (j) {
         partner_binding.setClaim(json_string_value(j));
     }
-    //getPartner();
+    getPartner();
 }
 
 Hc1Module* CompressModule::getPartner()
 {
-    return getPartnerImpl<CompressModule>(this);
+    return partner_binding.getPartner();
 }
 
 void CompressModule::onCompressorChanged(const CompressorChangedEvent &e)
@@ -109,7 +106,6 @@ void CompressModule::onDeviceChanged(const DeviceChangedEvent& e)
 
 void CompressModule::onDisconnect(const DisconnectEvent& e)
 {
-    partner_subscribed = false;
     partner_binding.onDisconnect(e);
     if (ui_event_sink) {
         ui_event_sink->onDisconnect(e);
@@ -226,10 +222,10 @@ void CompressModule::processControls()
 
 void CompressModule::process(const ProcessArgs& args)
 {
+    auto partner = getPartner();
+    if (!partner || !partner->readyToSend()) return;
+
     if ((0 == ((args.frame + id) % CV_INTERVAL))) {
-        if (!partner_subscribed) {
-            getPartner();
-        }
         processCV(Params::P_COMP_THRESHOLD);
         processCV(Params::P_COMP_ATTACK);
         processCV(Params::P_COMP_RATIO);

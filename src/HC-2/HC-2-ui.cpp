@@ -67,7 +67,7 @@ Hc2ModuleWidget::Hc2ModuleWidget(Hc2Module * module)
         my_module->ui_event_sink = this;
     }
     setPanel(createPanel(asset::plugin(pluginInstance, "res/HC-2.svg")));
-    addChild(partner_picker = createPartnerPicker(7.f, 14.f, 180.f, module ? &module->partner_binding : nullptr));
+    addChild(partner_picker = createPartnerPicker());
 
     createTiltEqUI(TEQ_BOX_LEFT, TEQ_BOX_TOP);
 

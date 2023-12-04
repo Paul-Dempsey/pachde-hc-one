@@ -481,8 +481,8 @@ void Hc1ModuleWidget::onDeviceChanged(const DeviceChangedEvent& e)
 {
     bool have_device = e.device && (-1 != e.device->input_device_id);
     em_picker->setConnection(e.device);
-    em_picker->describe(have_device ? e.device->info.friendly(true) : "Choose an Eagan Matrix device");
-    device_label->text(have_device ? e.device->info.friendly(false) : "<Eagan Matrix device>");
+    em_picker->describe(have_device ? e.device->info.friendly(TextFormatLength::Long) : "Choose an Eagan Matrix device");
+    device_label->text(have_device ? e.device->info.friendly(TextFormatLength::Short) : "<Eagan Matrix device>");
     hardware_label->text(my_module ? HardwareName(my_module->em.hardware) : "");
     firmware_label->text(format_string("v%03.2f", (my_module ? my_module->em.firmware_version : 0)/100.f));
 }

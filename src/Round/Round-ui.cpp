@@ -1,11 +1,10 @@
 #include "Round.hpp"
-#include "../widgets/port.hpp"
-#include "../widgets/cc_param.hpp"
-#include "../widgets/switch_4.hpp"
 #include "../colors.hpp"
-#include "../knob_layout.hpp"
 #include "../misc.hpp"
 #include "../text.hpp"
+#include "../widgets/cc_param.hpp"
+#include "../widgets/port.hpp"
+#include "../widgets/switch_4.hpp"
 #include "tuning_ui.hpp"
 
 namespace pachde {
@@ -34,7 +33,7 @@ RoundModuleWidget::RoundModuleWidget(RoundModule * module)
         my_module->ui_event_sink = this;
     }
     setPanel(createPanel(asset::plugin(pluginInstance, "res/Round.svg")));
-    addChild(partner_picker = createPartnerPicker(7.f, 14.f, 180.f, module ? &module->partner_binding : nullptr));
+    addChild(partner_picker = createPartnerPicker(PARTNER_LEFT, PARTNER_TOP, PARTNER_WIDTH));
 
     { // Rounding LEDs
         float x = CENTER - (2.f * LIGHT_SPREAD) + 1;
