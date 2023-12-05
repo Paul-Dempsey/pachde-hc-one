@@ -24,6 +24,7 @@ Hc3ModuleWidget::Hc3ModuleWidget(Hc3Module* module)
     }
     setPanel(createPanel(asset::plugin(pluginInstance, "res/HC-3.svg")));
     addChild(partner_picker = createPartnerPicker());
+    partner_picker->setFormat(TextFormatLength::Short);
 
     float y = START_ROW;
     float x = 15.f;

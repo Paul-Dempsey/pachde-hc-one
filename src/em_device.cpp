@@ -5,14 +5,6 @@
 namespace pachde
 {
 
-bool is_osmose(const std::string& name)
-{
-    if (name.empty()) { return false; }
-    auto text = to_lower_case(name);
-    return std::string::npos != text.find("osmose")
-        && std::string::npos != text.find_first_of('2');
-}
-
 bool is_EMDevice(const std::string& name)
 {
     if (name.empty()) { return false; }
@@ -26,8 +18,8 @@ bool is_EMDevice(const std::string& name)
         return true;
     }
     // Osmose varies depending on OS, and must be Osmose port 2
-    return std::string::npos != text.find("osmose")
-        && std::string::npos != text.find_first_of('2');
+    return std::string::npos != text.find_first_of('2')
+        && std::string::npos != text.find("osmose");
 }
 
 #if defined ARCH_MAC
@@ -134,26 +126,40 @@ std::string MidiDeviceConnectionInfo::spec() const
 
 std::string MidiDeviceConnectionInfo::friendly(TextFormatLength length) const
 {
-    std::string result = input_device_name.empty() ? "(Unknown)" : input_device_name;
+    if (input_device_name.empty()) return "(Unknown)";
+    std::string result = input_device_name;
+
     switch (length) {
+    case TextFormatLength::Short: {
+        if (0 == result.compare("MIDIIN2 (Osmose)")) {
+            result = "Osmose";
+        }
+    } break;
+
     case TextFormatLength::Compact: {
         if (0 == result.compare(0, 9, "Continuum", 0, 9)) {
-            result.replace(0, 10, "Con..");
+            result.replace(0, 10, "Cont-");
         } else if (0 == result.compare(0, 12, "ContinuuMini", 0, 12)) {
             result.erase(0, 8); // "Mini"
-        } else if (0 == result.compare(0, 18, "EaganMatrix Module", 0 , 18)) {
+        } else if (0 == result.compare("EaganMatrix Module")) {
             result.replace(0, 18, "EMM");
+        } else if (0 == result.compare("MIDIIN2 (Osmose)")) {
+            result = "Osmose";
         }
     } break;
+
     case TextFormatLength::Abbreviated:{
         if (0 == result.compare(0, 9, "Continuum", 0, 9)) {
-            result.erase(1, 8); // "C"
+            result.replace(1, 9, "C-"); // "C-"
         } else if (0 == result.compare(0, 12, "ContinuuMini", 0, 12)) {
-            result.replace(0, 12, "M"); // substitute "M"
+            result.replace(0, 12, "M-"); // substitute "M-"
         } else if (0 == result.compare(0, 18, "EaganMatrix Module", 0 , 18)) {
             result.replace(0, 18, "EMM");
+        } else if (0 == result.compare("MIDIIN2 (Osmose)")) {
+            result = "Os";
         }
     } break;
+
     default:
         break;
     }
@@ -234,11 +240,11 @@ std::string MidiDeviceConnectionInfo::friendly(TextFormatLength length) const
 bool matchInOut(const std::string& input, const std::string& output)
 {
     if (0 == input.compare(output)) return true;
-#if defined ARCH_WIN   
-    if (is_osmose(input) && is_osmose(output)) {
-        return (0 == input.compare(0,7, "MIDIIN2", 0,7)) 
-            && (0 == output.compare(0,8, "MIDIOUT2", 0,8));
-    }
+#if defined ARCH_WIN
+    return (0 == input.compare(0,7, "MIDIIN2", 0,7))
+        && (0 == output.compare(0,8, "MIDIOUT2", 0,8)) 
+        && std::string::npos != input.find("Osmose")
+        && std::string::npos != output.find("Osmose");
 #endif
     return false;
 }

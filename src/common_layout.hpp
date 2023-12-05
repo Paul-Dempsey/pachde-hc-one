@@ -6,7 +6,9 @@ namespace pachde {
 
 constexpr const float KNOB_RADIUS = 12.f;
 constexpr const float HALF_KNOB = KNOB_RADIUS * .5f;
-constexpr const float PARTNER_LEFT = 2.5f;
+
+// partner widget
+constexpr const float PARTNER_LEFT = 3.5f;
 constexpr const float PARTNER_TOP = 14.f;
 constexpr const float PARTNER_WIDTH = 180.f;
 
