@@ -37,6 +37,8 @@ struct Hc1Module : IPresetHolder, ISendMidi, IMidiDeviceHolder, IMidiDeviceChang
         R1_REL_PARAM, R2_REL_PARAM, R3_REL_PARAM, R4_REL_PARAM, RMIX_REL_PARAM,
         VOLUME_REL_PARAM,
         RECIRC_EXTEND_PARAM,
+        RECIRC_ENABLE_PARAM,
+
         NUM_PARAMS,
         FIRST_REL_PARAM = M1_REL_PARAM,
     };
@@ -60,6 +62,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, IMidiDeviceHolder, IMidiDeviceChang
         HEART_LIGHT,
         MUTE_LIGHT,
         RECIRC_EXTEND_LIGHT,
+        RECIRC_ENABLE_LIGHT,
         ROUND_Y_LIGHT, ROUND_INITIAL_LIGHT, ROUND_LIGHT, ROUND_RELEASE_LIGHT,
         //TRANSPOSE_UP_LIGHT, TRANSPOSE_NONE_LIGHT, TRANSPOSE_DOWN_LIGHT,
 //        FILTER_LIGHT,
@@ -328,6 +331,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, IMidiDeviceHolder, IMidiDeviceChang
 
     EM_Recirculator recirculatorType() { return em.recirculator.kind(); }
     bool isExtendRecirculator() { return em.recirculator.extended(); }
+    bool isRecirculatorDisabled() { return em.recirculator.disabled(); }
     const std::string recirculatorName() { return em.recirculator.name(); }
     const std::string recirculatorParameterName(int r) { return em.recirculator.parameter_name(r); }
     void setRecirculatorCCValue(int id, uint8_t value);

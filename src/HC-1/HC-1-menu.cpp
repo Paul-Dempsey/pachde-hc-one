@@ -39,9 +39,9 @@ void Hc1ModuleWidget::addRecirculator(Menu *menu, EM_Recirculator kind)
          [=](){ return my_module->recirculatorType() == kind; },
          [=](){
             bool extend = my_module->em.recirculator.extended();
-            my_module->em.recirculator = Recirculator(kind);
+            my_module->em.recirculator.setKind(kind);
             my_module->em.recirculator.setExtended(extend);
-            my_module->sendControlChange(EM_SettingsChannel, EMCC_RecirculatorType, my_module->em.recirculator);
+            my_module->sendControlChange(EM_SettingsChannel, EMCC_RecirculatorType, my_module->em.recirculator.getValue());
          }
     ));
 }

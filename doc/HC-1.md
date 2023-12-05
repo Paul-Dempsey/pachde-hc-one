@@ -150,8 +150,14 @@ and the track around the knob becomes gold, with an indicator dot showing the ef
   CV inputs are processed only after the device has reached "Ready".
 
 - The boxed controls are the Eagan Matrix Recirculator.
-  The labels change to reflect the current preset's Recirculator type and the appropriate R1-R4 and Recirculator Mix (R5).
-  The indicator light button reflects the use of Extended (half-sample rate) computation. You can toggle extended computation on and off by clicking the light button.
+  The labels on the knobs change to reflect the current preset's Recirculator type and the appropriate R1-R4 and Recirculator Mix (R5) assignments.
+  When you see a number next a knob, it means that the corresponding pedal is assigned to that parameter. (You can change pedal assignments using the **Pedal 1** and **Pedal 2** modules.)
+
+  The left light button enables and disables the recirculator. When lit the recirculator is active.
+  Recirculator on/off is global and doesn't change between presets.
+  The right light button reflects the use of Extended (half-sample rate) computation.
+  You can toggle extended computation on and off by clicking the light button.
+
 
   You can temporarily change the Recirculator type in the **Recirculator** menu.
   Changes in recirculator type and extended mode are not saved.

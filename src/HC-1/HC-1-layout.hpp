@@ -35,7 +35,8 @@ constexpr const float RECIRC_BOX_HEIGHT = 52.5f;
 constexpr const float RECIRC_BOX_BOTTOM = RECIRC_BOX_TOP + RECIRC_BOX_HEIGHT;
 constexpr const float RECIRC_TITLE_WIDTH = 70.f;
 constexpr const float RECIRC_BOX_CENTER = RECIRC_BOX_LEFT + RECIRC_BOX_WIDTH *.5f;
-constexpr const float RECIRC_LIGHT_CENTER = RECIRC_BOX_CENTER + (RECIRC_TITLE_WIDTH * .5f) + 5.f;
+constexpr const float RECIRC_EXTEND_CENTER = RKNOB_LEFT + KNOB_SPREAD * 3.5f;
+constexpr const float RECIRC_ENABLE_CENTER = RKNOB_LEFT + KNOB_SPREAD * .5f;
 
 constexpr const float STATUS_LEFT = 48.f;
 constexpr const float STATUS_SPREAD = 4.95f;

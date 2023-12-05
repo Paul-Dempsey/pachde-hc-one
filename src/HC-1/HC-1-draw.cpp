@@ -268,9 +268,11 @@ void Hc1ModuleWidget::draw(const DrawArgs& args)
 #endif
         
         // recirculator
-        { // todo: move lines to SVG
-            Line(vg, RECIRC_BOX_LEFT, RECIRC_BOX_TOP, RECIRC_BOX_CENTER - (RECIRC_TITLE_WIDTH * .5f), RECIRC_BOX_TOP, RampGray(G_35), .5f);
-            Line(vg, RECIRC_LIGHT_CENTER + 15.f, RECIRC_BOX_TOP, RECIRC_BOX_RIGHT, RECIRC_BOX_TOP, RampGray(G_35), .5f);
+        {
+            Line(vg, RECIRC_BOX_LEFT, RECIRC_BOX_TOP, RECIRC_ENABLE_CENTER - 10.f, RECIRC_BOX_TOP, RampGray(G_35), .5f);
+            Line(vg, RECIRC_ENABLE_CENTER + 10.f, RECIRC_BOX_TOP, RECIRC_BOX_CENTER - RECIRC_TITLE_WIDTH *.5, RECIRC_BOX_TOP, RampGray(G_35), .5f);
+            Line(vg, RECIRC_BOX_CENTER + RECIRC_TITLE_WIDTH *.5, RECIRC_BOX_TOP, RECIRC_EXTEND_CENTER - 10.f, RECIRC_BOX_TOP, RampGray(G_35), .5f);
+            Line(vg, RECIRC_EXTEND_CENTER + 10.f, RECIRC_BOX_TOP, RECIRC_BOX_RIGHT, RECIRC_BOX_TOP, RampGray(G_35), .5f);
             Line(vg, RECIRC_BOX_LEFT,  RECIRC_BOX_TOP,    RECIRC_BOX_LEFT,  RECIRC_BOX_BOTTOM, RampGray(G_35), .5f);
             Line(vg, RECIRC_BOX_RIGHT, RECIRC_BOX_TOP,    RECIRC_BOX_RIGHT, RECIRC_BOX_BOTTOM, RampGray(G_35), .5f);
             Line(vg, RECIRC_BOX_LEFT,  RECIRC_BOX_BOTTOM, RECIRC_BOX_RIGHT, RECIRC_BOX_BOTTOM, RampGray(G_35), .5f);

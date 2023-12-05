@@ -24,6 +24,7 @@ struct EaganMatrix
     PedalInfo pedal1;
     PedalInfo pedal2;
     bool reverse_surface;
+    uint8_t global_ActionAesMenuRecirc;
 
     // levels (PreLevel/PostLevel/AudioIn/LineOut/HeadphoneOut)
     // convolution

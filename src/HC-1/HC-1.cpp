@@ -44,6 +44,7 @@ Hc1Module::Hc1Module()
     configSwitch(VOLUME_REL_PARAM, 0.f, 1.f, 0.f, "Post level relative-CV", {"off", "on"});
     configSwitch(MUTE_PARAM, 0.f, 1.f, 0.f, "Mute", {"off", "on"});
     configSwitch(RECIRC_EXTEND_PARAM, 0.f, 1.f, 0.f, "Extended recirculator", {"off", "on"});
+    configSwitch(RECIRC_ENABLE_PARAM, 0.f, 1.f, 1.f, "Recirculator enabled", {"off", "on"});
 
     configInput(M1_INPUT, "Macro i");
     configInput(M2_INPUT, "Macro ii");
@@ -68,6 +69,8 @@ Hc1Module::Hc1Module()
     configOutput(READY_TRIGGER, "Ready trigger");
 
     getLight(HEART_LIGHT).setBrightness(.8f);
+    getLight(RECIRC_ENABLE_LIGHT).setBrightness(em.recirculator.enabled() * 1.0f);
+
     clearCCValues();
     loadStartupConfig();
 }

@@ -401,7 +401,8 @@ void Hc1ModuleWidget::createUi()
     addChild(createInputCentered<ColorPort>(                                   Vec(RKNOB_LEFT + 5.f * KNOB_SPREAD + RB_OFFSET + 14.f, CV_ROW_2 - RB_VOFFSET), my_module, Hc1in::MUTE_INPUT));
     addChild(createStaticTextLabel<StaticTextLabel>(Vec(RKNOB_LEFT + KNOB_SPREAD * 5.f + 17.f, KNOB_ROW_2), 25.f, "Mute", TextAlignment::Left));
 
-    addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<BlueLight>>>(Vec(RECIRC_LIGHT_CENTER, RECIRC_BOX_TOP), my_module, Hc1p::RECIRC_EXTEND_PARAM, Hc1lt::RECIRC_EXTEND_LIGHT));
+    addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<BlueLight>>>(Vec(RECIRC_EXTEND_CENTER, RECIRC_BOX_TOP), my_module, Hc1p::RECIRC_EXTEND_PARAM, Hc1lt::RECIRC_EXTEND_LIGHT));
+    addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<BlueLight>>>(Vec(RECIRC_ENABLE_CENTER, RECIRC_BOX_TOP), my_module, Hc1p::RECIRC_ENABLE_PARAM, Hc1lt::RECIRC_ENABLE_LIGHT));
 
 #ifdef TRANSPOSE_BUTTONS
     createTranspose();

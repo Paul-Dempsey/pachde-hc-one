@@ -79,6 +79,18 @@ void Hc1Module::processAllCV()
         }
         getLight(Lights::RECIRC_EXTEND_LIGHT).setBrightness(isExtendRecirculator() * 1.0f);
     }
+    // recirculator enabled
+    {
+        auto pq = getParamQuantity(RECIRC_ENABLE_PARAM);
+        bool disabled = pq->getValue() <= 0.5f;
+        if (disabled != em.recirculator.disabled()) {
+            em.recirculator.setDisabled(disabled);
+            em.global_ActionAesMenuRecirc = (em.global_ActionAesMenuRecirc & ~0x40) | (disabled * 0x40);
+            sendControlChange(EM_SettingsChannel, EMCC_ActionAesMenuRecirc, em.global_ActionAesMenuRecirc);
+        }
+        getLight(Lights::RECIRC_ENABLE_LIGHT).setBrightness((!disabled) * 1.0f);
+    }
+
 }
 
 void Hc1Module::processReadyTrigger(bool ready, const ProcessArgs& args)

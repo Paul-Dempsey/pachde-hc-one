@@ -99,6 +99,15 @@ void Hc1Module::onChannel16CC(uint8_t cc, uint8_t value)
             preset0.bank_lo = value;
             break;
 
+        case EMCC_ActionAesMenuRecirc:
+            // TODO: Action, AES rate, Menu font also packed into this byte
+            if (value != em.global_ActionAesMenuRecirc) {
+                em.global_ActionAesMenuRecirc = value;
+                em.recirculator.setDisabled(value & 0x40);
+                getParamQuantity(RECIRC_ENABLE_PARAM)->setValue(static_cast<float>(em.recirculator.enabled()));
+            }
+            break;
+
         case EMCC_PedalType: {
             auto new_p1 = static_cast<PedalType>(value & 0x07);
             bool p1_change = new_p1 != em.pedal1.type;
@@ -209,7 +218,7 @@ void Hc1Module::onChannel16CC(uint8_t cc, uint8_t value)
         } break;
 
         case EMCC_RecirculatorType:
-            em.recirculator = value;
+            em.recirculator.setValue(value);
             getParamQuantity(RECIRC_EXTEND_PARAM)->setValue(isExtendRecirculator() * 1.f);
             break;
 
