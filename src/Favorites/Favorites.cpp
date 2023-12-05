@@ -1,9 +1,9 @@
-#include "HC-3.hpp"
+#include "Favorites.hpp"
 
 namespace pachde
 {
 
-Hc3Module::Hc3Module()
+FavoritesModule::FavoritesModule()
 : loaded_id(-1)
 {
     clearFiles();
@@ -16,17 +16,17 @@ Hc3Module::Hc3Module()
     partner_binding.setClient(this);
 }
 
-Hc3Module::~Hc3Module()
+FavoritesModule::~FavoritesModule()
 {
     partner_binding.unsubscribe();
 }
 
-Hc1Module* Hc3Module::getPartner()
+Hc1Module* FavoritesModule::getPartner()
 {
     return partner_binding.getPartner();
 }
 
-void Hc3Module::onDeviceChanged(const DeviceChangedEvent& e)
+void FavoritesModule::onDeviceChanged(const DeviceChangedEvent& e)
 {
     partner_binding.onDeviceChanged(e);
     if (ui_event_sink) {
@@ -34,7 +34,7 @@ void Hc3Module::onDeviceChanged(const DeviceChangedEvent& e)
     }
 }
 
-void Hc3Module::onDisconnect(const DisconnectEvent& e)
+void FavoritesModule::onDisconnect(const DisconnectEvent& e)
 {
     partner_binding.onDisconnect(e);
     if (ui_event_sink) {
@@ -42,7 +42,7 @@ void Hc3Module::onDisconnect(const DisconnectEvent& e)
     }
 }
 
-void Hc3Module::onFavoritesFileChanged(const FavoritesFileChangedEvent& e)
+void FavoritesModule::onFavoritesFileChanged(const FavoritesFileChangedEvent& e)
 {
     if (e.path.empty()) {
         setSynchronizedLoadedId(-1);
@@ -58,7 +58,7 @@ void Hc3Module::onFavoritesFileChanged(const FavoritesFileChangedEvent& e)
     }
 }
 
-void Hc3Module::clearFiles()
+void FavoritesModule::clearFiles()
 {
     loaded_id = -1;
     files.clear();
@@ -67,7 +67,7 @@ void Hc3Module::clearFiles()
     }
 }
 
-void Hc3Module::onReset()
+void FavoritesModule::onReset()
 {
     clearFiles();
     if (ui_event_sink) {
@@ -75,7 +75,7 @@ void Hc3Module::onReset()
     }
 }
 
-void Hc3Module::onRandomize()
+void FavoritesModule::onRandomize()
 {
     auto partner = getPartner();
     if (!partner) return;
@@ -93,7 +93,7 @@ void Hc3Module::onRandomize()
     partner->openFavoritesFile(files[loaded_id]);
 }
 
-void Hc3Module::useCurrentFavoriteFile(int id)
+void FavoritesModule::useCurrentFavoriteFile(int id)
 {
     const Hc1Module* partner = getPartner();
     if (!partner) return;
@@ -103,10 +103,13 @@ void Hc3Module::useCurrentFavoriteFile(int id)
     }
 }
 
-json_t * Hc3Module::dataToJson()
+json_t * FavoritesModule::dataToJson()
 {
     auto root = json_object();
     json_object_set_new(root, "device-claim", json_string(partner_binding.claim.c_str()));
+    if (!favorites_folder.empty()) {
+        json_object_set_new(root, "favorites-folder", json_string(favorites_folder.c_str()));
+    }
     if (!files.empty()) {
         auto jar = json_array();
         for (auto f: files) {
@@ -117,11 +120,15 @@ json_t * Hc3Module::dataToJson()
     return root;
 }
 
-void Hc3Module::dataFromJson(json_t *root)
+void FavoritesModule::dataFromJson(json_t *root)
 {
     auto j = json_object_get(root, "device-claim");
     if (j) {
         partner_binding.setClaim(json_string_value(j));
+    }
+    j = json_object_get(root, "favorites-folder");
+    if (j) {
+        favorites_folder = json_string_value(j);
     }
     auto jar = json_object_get(root, "fav_files");
     if (jar) {
@@ -135,7 +142,7 @@ void Hc3Module::dataFromJson(json_t *root)
     getPartner();
 }
 
-void Hc3Module::openFile(int id) {
+void FavoritesModule::openFile(int id) {
     if (id == loaded_id) return;
     setSynchronizedLoadedId(id);
     auto partner = getPartner();
@@ -152,12 +159,12 @@ void Hc3Module::openFile(int id) {
 }
 
 // no side effect on HC-1
-void Hc3Module::setSynchronizedLoadedId(int id) {
+void FavoritesModule::setSynchronizedLoadedId(int id) {
     loaded_id = id;
     getParamQuantity(Params::SELECTED_PARAM)->setValue(id);
 }
 
-void Hc3Module::process(const ProcessArgs& args)
+void FavoritesModule::process(const ProcessArgs& args)
 {
     float time = poll_timer.process(args.sampleTime);
     if (time > POLL_RATE) {
@@ -210,4 +217,4 @@ void Hc3Module::process(const ProcessArgs& args)
 }
 
 }
-Model *modelHc3 = createModel<pachde::Hc3Module, pachde::Hc3ModuleWidget>("pachde-hc-favorites");
+Model *modelFavorites = createModel<pachde::FavoritesModule, pachde::FavoritesModuleWidget>("pachde-hc-favorites");

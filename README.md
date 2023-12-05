@@ -25,15 +25,15 @@ Pachde and HC One are not affiliated with or sponsored by Haken Audio (but we're
 
 - **[HC-1](./doc/HC-1.md)** Fast access to favorite presets, with knobs and CV inputs for the essential controls: Macros and the Recirculator.
 
+- **[Pedal 1 & Pedal 2](./doc/Pedals.md)** Pedal control, virtual pedals, and pedal CV in/out.
+
 - **[Round](./doc/Round.md)** Control of rounding and the tuning scale, with CV and trigger.
 
 - **[Compress](./doc/Compress.md)** EaganMatrix compressor controls, with CV.
 
-- **[HC-2](./doc/HC-2.md)** TiltEQ, and CC maps (to be retired).
+- **[Favorites](./doc/Favorites.md)** Pushbuttons to access up to 16 Favorite files.
 
-- **[HC-3](./doc/HC-3.md)** Pushbuttons to access up to 16 Favorite files.
-
-- **[Pedal 1 & Pedal 2](./doc/Pedals.md)** Pedal control, virtual pedals, and pedal CV in/out.
+- **[HC-2](./doc/HC-2.md)** TiltEQ, and CC maps. This module will be going away.
 
 ## Installing
 

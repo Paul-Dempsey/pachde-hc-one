@@ -28,8 +28,9 @@ The HC-One modules shown here from left to right are:
 
 - **[Compress](Compress.md)** EaganMatrix compressor controls, with CV.
 
+- **[Favorites](Favorites.md)** Pushbuttons to access up to 16 Favorite files.
+
 - **[HC-2](HC-2.md)** TiltEQ, and CC maps (To Be Retired).
 
-- **[HC-3](HC-3.md)** Pushbuttons to access up to 16 Favorite files.
 
 ![pachde (#d) logo](Logo.svg)

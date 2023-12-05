@@ -1,4 +1,4 @@
-#include "HC-3.hpp"
+#include "Favorites.hpp"
 #include "../misc.hpp"
 #include "../module_broker.hpp"
 #include "../widgets/small_push.hpp"
@@ -10,12 +10,12 @@ constexpr const float START_ROW = 47.5f;
 constexpr const float ITEM_INTERVAL = 20.f;
 constexpr const float DIVIDER_OFFSET = 5.f;
 
-std::string hc3_sample_data[] = {
+std::string favorites_sample_data[] = {
     "Experimental", "Strings", "Winds", "Guitars", "Pads", "Leads", "Album 4", "Album 5",
     "Mon practice", "", "Th Jam", "Blues setlist", "Recital 6/15", "Community Concert 8/21", "" ,"empty"
 };
 
-Hc3ModuleWidget::Hc3ModuleWidget(Hc3Module* module)
+FavoritesModuleWidget::FavoritesModuleWidget(FavoritesModule* module)
 :   my_module(module)
 {
     setModule(module);
@@ -30,7 +30,7 @@ Hc3ModuleWidget::Hc3ModuleWidget(Hc3Module* module)
     float x = 15.f;
     for (auto i = 0; i < 16; ++i) {
         addChild(createPFWidget<PresetFileWidget>(Vec(x - 7.5, y - 7.5), module, i, &drawButton));
-        addChild(createLightCentered<SmallLight<BlueLight>>(Vec(x,y), module, Hc3Module::Lights::SETLIST + i));
+        addChild(createLightCentered<SmallLight<BlueLight>>(Vec(x,y), module, FavoritesModule::Lights::SETLIST + i));
         y += ITEM_INTERVAL;
         if (i == 7) {
             y += DIVIDER_OFFSET;
@@ -38,22 +38,22 @@ Hc3ModuleWidget::Hc3ModuleWidget(Hc3Module* module)
     }
 }
 
-void Hc3ModuleWidget::onDeviceChanged(const DeviceChangedEvent& e)
+void FavoritesModuleWidget::onDeviceChanged(const DeviceChangedEvent& e)
 {
     partner_picker->onDeviceChanged(e);
 }
 
-void Hc3ModuleWidget::onDisconnect(const DisconnectEvent& e)
+void FavoritesModuleWidget::onDisconnect(const DisconnectEvent& e)
 {
     partner_picker->onDisconnect(e);
 }
 
-void Hc3ModuleWidget::onFavoritesFileChanged(const FavoritesFileChangedEvent& e)
+void FavoritesModuleWidget::onFavoritesFileChanged(const FavoritesFileChangedEvent& e)
 {
     refreshDescriptions();
 }
 
-void Hc3ModuleWidget::step() 
+void FavoritesModuleWidget::step() 
 {
     ModuleWidget::step();
     if (!module && !hacked_lights) {
@@ -64,7 +64,7 @@ void Hc3ModuleWidget::step()
             auto light = dynamic_cast<BlueLight*>(child);
             if (light) {
                 NVGcolor co = *light->baseColors.begin();
-                co.a = n == CHOSEN_SAMPLE ? 1.f : hc3_sample_data[n].empty() ? 0.f : .3f;
+                co.a = n == CHOSEN_SAMPLE ? 1.f : favorites_sample_data[n].empty() ? 0.f : .3f;
                 light->color = co;
                 ++n;
             }
@@ -73,7 +73,7 @@ void Hc3ModuleWidget::step()
     }
 }
 
-void Hc3ModuleWidget::refreshDescriptions()
+void FavoritesModuleWidget::refreshDescriptions()
 {
     for (auto child: children) {
         auto w = dynamic_cast<PresetFileWidget*>(child);
@@ -87,7 +87,7 @@ void Hc3ModuleWidget::refreshDescriptions()
     }
 }
 
-void Hc3ModuleWidget::appendContextMenu(Menu *menu)
+void FavoritesModuleWidget::appendContextMenu(Menu *menu)
 {
     if (!module) return;
     ///pick companion hc1

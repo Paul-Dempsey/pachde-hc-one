@@ -7,7 +7,7 @@ void init(Plugin *p)
 	pluginInstance = p;
 	p->addModel(modelHc1);
 	p->addModel(modelHc2);
-	p->addModel(modelHc3);
+	p->addModel(modelFavorites);
 	//p->addModel(modelHc4);
 	p->addModel(modelPedal1);
 	p->addModel(modelPedal2);

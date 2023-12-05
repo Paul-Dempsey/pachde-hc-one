@@ -5,14 +5,14 @@
 #include "../widgets/tip_widget.hpp"
 #include "../open_file.hpp"
 #include "../colors.hpp"
-#include "HC-3.hpp"
+#include "Favorites.hpp"
 
 using namespace ::rack;
 namespace pachde {
 
 struct PresetFileWidget : TipWidget
 {
-    Hc3Module * my_module;
+    FavoritesModule * my_module;
     int id;
     DrawSquareButton * drawButton;
     bool pressed = false;
@@ -26,7 +26,7 @@ struct PresetFileWidget : TipWidget
     void setDrawButton(DrawSquareButton * draw) {
         drawButton = draw;
     }
-    void setModule(Hc3Module * module) { my_module = module; }
+    void setModule(FavoritesModule * module) { my_module = module; }
     void setId(int the_id) {
         assert(id == -1);
         assert(the_id >= 0);
@@ -35,14 +35,14 @@ struct PresetFileWidget : TipWidget
     int getId() { return id; }
     bool haveFile() { 
         if (my_module) { return !my_module->files[id].empty(); }
-        return !hc3_sample_data[id].empty();
+        return !favorites_sample_data[id].empty();
     }
     bool isCurrent() { 
         if (my_module) { return my_module->loaded_id == id; }
         return id == CHOSEN_SAMPLE;
     }
     std::string getLabel() {
-        return my_module ? system::getStem(my_module->files[id]) : hc3_sample_data[id];
+        return my_module ? system::getStem(my_module->files[id]) : favorites_sample_data[id];
     }
 
     void onDragStart(const DragStartEvent& e) override {
@@ -66,6 +66,7 @@ struct PresetFileWidget : TipWidget
         if (!e.paths.empty()) {
             auto path = *e.paths.cbegin();
             my_module->files[id] = path;
+            my_module->favorites_folder = system::getDirectory(path);
             describe(format_string("Open %s", path.c_str()));
             e.consume(this);
         }
@@ -142,7 +143,7 @@ struct PresetFileWidget : TipWidget
 
         menu->addChild(createMenuItem("Favorite file...", "", [=](){
             std::string path;
-            std::string folder = asset::user(pluginInstance->slug);
+            std::string folder = my_module->favorites_folder.empty() ? asset::user(pluginInstance->slug) : my_module->favorites_folder;
             system::createDirectories(folder);
             if (openFileDialog(
                 folder,
@@ -150,6 +151,7 @@ struct PresetFileWidget : TipWidget
                 "",
                 path)) {
                 my_module->files[id] = path;
+                my_module->favorites_folder = system::getDirectory(path);
                 describe(format_string("Open %s", path.c_str()));
             }
         }));
@@ -176,7 +178,7 @@ struct PresetFileWidget : TipWidget
 };
 
 template <typename TW = PresetFileWidget>
-TW* createPFWidget(Vec pos, Hc3Module* module, int id, DrawSquareButton* draw) {
+TW* createPFWidget(Vec pos, FavoritesModule* module, int id, DrawSquareButton* draw) {
     auto w = new TW;
     w->box.pos = pos;
     w->setModule(module);

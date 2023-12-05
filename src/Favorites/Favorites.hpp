@@ -1,6 +1,6 @@
 #pragma once
-#ifndef HC3_HPP_INCLUDED
-#define HC3_HPP_INCLUDED
+#ifndef Favorites_HPP_INCLUDED
+#define Favorites_HPP_INCLUDED
 #include <stdint.h>
 #include "../HC-1/HC-1.hpp"
 #include "../hc_events.hpp"
@@ -13,10 +13,10 @@
 
 namespace pachde {
 
-extern std::string hc3_sample_data[];
+extern std::string favorites_sample_data[];
 constexpr const int CHOSEN_SAMPLE = 11;
 
-struct Hc3Module : Module, IHandleHcEvents
+struct FavoritesModule : Module, IHandleHcEvents
 {
     enum Params {
         SELECTED_PARAM,
@@ -34,12 +34,13 @@ struct Hc3Module : Module, IHandleHcEvents
     std::vector<std::string> files;
     PartnerBinding partner_binding;
     IHandleHcEvents * ui_event_sink = nullptr;
+    std::string favorites_folder;
 
     const float POLL_RATE = 1.5f;
     rack::dsp::Timer poll_timer;
 
-    Hc3Module();
-    virtual ~Hc3Module();
+    FavoritesModule();
+    virtual ~FavoritesModule();
     void clearFiles();
 
     Hc1Module* getPartner();
@@ -62,15 +63,15 @@ struct Hc3Module : Module, IHandleHcEvents
     void process(const ProcessArgs& args) override;
 };
 
-struct Hc3ModuleWidget : ModuleWidget, IHandleHcEvents
+struct FavoritesModuleWidget : ModuleWidget, IHandleHcEvents
 {
-    Hc3Module* my_module;
+    FavoritesModule* my_module;
     DrawSquareButton drawButton;
 //    StaticTextLabel* device_label = nullptr;
     PartnerPicker* partner_picker = nullptr;
     bool hacked_lights = false;
 
-    explicit Hc3ModuleWidget(Hc3Module* module);
+    explicit FavoritesModuleWidget(FavoritesModule* module);
 
     void refreshDescriptions();
 
