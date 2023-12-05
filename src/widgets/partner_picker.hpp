@@ -8,8 +8,8 @@
 #include "tip_widget.hpp"
 namespace pachde {
 
-static const char * const LABEL_NONE = "(unavailable)";
-static const char * const DESCRIBE_NONE = "(No associated HC-1 available)";
+static const char * const LABEL_NONE = "none";
+static const char * const DESCRIBE_NONE = "No associated HC-1 available";
 
 struct PartnerPicker : TipWidget, IHandleHcEvents
 {
