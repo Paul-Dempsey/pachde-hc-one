@@ -99,6 +99,8 @@ void CompressModuleWidget::appendContextMenu(Menu *menu)
     menu->addChild(new MenuSeparator);
     menu->addChild(createMenuItem("Absolute CV", "", [=](){ my_module->absoluteCV(); }));
     menu->addChild(createMenuItem("Relative CV", "", [=](){ my_module->relativeCV(); }));
+    menu->addChild(new MenuSeparator);
+    my_module->partner_binding.appendContextMenu(menu);
 }
 
 }

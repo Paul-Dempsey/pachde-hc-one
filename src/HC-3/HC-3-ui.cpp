@@ -137,12 +137,7 @@ void Hc3ModuleWidget::appendContextMenu(Menu *menu)
     }, !any || 16 == count));
 
     menu->addChild(new MenuSeparator);
-    // menu->addChild(createMenuItem("Refresh HC-1 connection", "", [=]() {
-    //     auto partner = my_module->getPartner();
-    //     if (partner) {
-    //         device_label->text(partner->deviceName());
-    //     }
-    // }));
+    my_module->partner_binding.appendContextMenu(menu);
     menu->addChild(createMenuItem("Clear HC-1 Favorite tab", "", [=]() {
             auto partner = my_module->getPartner();
             if (partner) {

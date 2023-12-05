@@ -43,7 +43,8 @@ struct PartnerBinding
 
     PartnerBinding() : partner_id(-1), subscribed(false), client(nullptr) {}
 
-    bool hasClient() { return client; }
+    bool hasClient() { return static_cast<bool>(client); }
+    bool hasDevice() { return !claim.empty(); }
 
     void setClient(Module* the_module)
     {
@@ -165,6 +166,18 @@ struct PartnerBinding
             ensureSubscribed(partner);
         }
         return partner;
+    }
+
+    void appendContextMenu(Menu *menu) {
+        menu->addChild(createMenuItem(
+            "Reset partner module", "",
+            [&](){
+                forgetDevice();
+                unsubscribe();
+                forgetPartner();
+            },
+            !(hasClient() || hasDevice())
+        ));
     }
 };
 

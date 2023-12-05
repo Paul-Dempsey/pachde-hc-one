@@ -210,4 +210,4 @@ void Hc3Module::process(const ProcessArgs& args)
 }
 
 }
-Model *modelHc3 = createModel<pachde::Hc3Module, pachde::Hc3ModuleWidget>("pachde-hc-3");
+Model *modelHc3 = createModel<pachde::Hc3Module, pachde::Hc3ModuleWidget>("pachde-hc-favorites");

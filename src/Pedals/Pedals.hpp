@@ -99,6 +99,14 @@ struct PedalUICore : ModuleWidget, IHandleHcEvents
     // void onRoundingChanged(const RoundingChangedEvent& e) override;
     void onDeviceChanged(const DeviceChangedEvent& e) override;
     void onDisconnect(const DisconnectEvent& e) override;
+
+    void appendContextMenu(Menu *menu) override
+    {
+        if (!core_module) return;
+        menu->addChild(new MenuSeparator);
+        core_module->partner_binding.appendContextMenu(menu);
+    }
+
 };
 
 //

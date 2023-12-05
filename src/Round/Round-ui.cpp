@@ -123,5 +123,11 @@ void RoundModuleWidget::onDisconnect(const DisconnectEvent& e)
     partner_picker->onDisconnect(e);
 }
 
+void RoundModuleWidget::appendContextMenu(Menu *menu)
+{
+    if (!my_module) return;
+    menu->addChild(new MenuSeparator);
+    my_module->partner_binding.appendContextMenu(menu);
+}
 
 }

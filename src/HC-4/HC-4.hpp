@@ -79,6 +79,7 @@ struct Hc4ModuleWidget : ModuleWidget, IHandleHcEvents
     void onDisconnect(const DisconnectEvent& e) override;
     // void onFavoritesFileChanged(const FavoritesFileChangedEvent& e) override;
 
+    void appendContextMenu(Menu *menu) override;
 };
 
 

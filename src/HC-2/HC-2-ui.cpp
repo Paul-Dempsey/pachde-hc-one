@@ -117,6 +117,7 @@ Hc1Module* Hc2ModuleWidget::getPartner()
 
 void Hc2ModuleWidget::appendContextMenu(Menu *menu)
 {
+    if (!my_module) return;
     auto partner = getPartner();
     menu->addChild(new MenuSeparator);
     if (partner) {
@@ -125,6 +126,7 @@ void Hc2ModuleWidget::appendContextMenu(Menu *menu)
     } else {
         menu->addChild(createMenuItem("- Not Connected - ", "", [](){}, true));
     }
+    my_module->partner_binding.appendContextMenu(menu);
 }
 
 }

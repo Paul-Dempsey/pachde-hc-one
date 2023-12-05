@@ -29,5 +29,11 @@ void Hc4ModuleWidget::onDisconnect(const DisconnectEvent& e)
     partner_picker->onDisconnect(e);
 }
 
+void Hc4ModuleWidget::appendContextMenu(Menu *menu)
+{
+    if (!my_module) return;
+    menu->addChild(new MenuSeparator);
+    my_module->partner_binding.appendContextMenu(menu);
+}
 
 }
