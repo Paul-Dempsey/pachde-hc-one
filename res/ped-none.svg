@@ -11,6 +11,7 @@
     <path style="fill:#6a6a6a" d="m 9,15.650253 v -3.45759 l -9.0266627,-5.1949595 4.7438e-4,1.7373704 z"/>
     <path style="fill:#9d9d9d" d="M 9,15.650253 17.973336,9.9973782 V 7.0140706 L 9,12.192663 Z"  />
     <path style="fill:#b8b8b8" d="M 8.9699662,12.204358 17.973336,7.0140706 8.9699662,1.8082027 -0.0266627,6.9977035 Z" />
-    <path style="fill:none;stroke:#e278c1;stroke-width:1px;" d="M 2,15 15,2" />
+    <path style="fill:none;stroke:#e278c1;stroke-width:1px;" d="M 2.5,7 15,7" />
+    <path style="fill:none;stroke:#e278c1;stroke-width:1px;" d="M 8.9,3 8.8,11" />
   </g>
 </svg>

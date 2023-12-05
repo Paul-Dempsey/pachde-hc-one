@@ -26,8 +26,8 @@
         "tags": [ "Controller", "MIDI", "Expander" ]
       },
       {
-        "slug": "pachde-hc-3",
-        "name": "HC-3",
+        "slug": "pachde-hc-favorites",
+        "name": "Favorites",
         "description": "Eagan Matrix favorites files (a.k.a. set lists) (HC-1 companion)",
         "tags": [ "Expander" ]
       },
