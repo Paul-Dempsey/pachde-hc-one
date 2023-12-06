@@ -2,7 +2,7 @@
 
 Controls for rounding (quantization).
 
-![Round module](Round.png)
+![Round module](./image/Round.png)
 
 At the top of the module are lights that display the same information as the LEDs on the lower right corner of the display on Continuum and ContinuuMini.
 
@@ -18,8 +18,8 @@ Below the button is the **Round initial trigger input** for automation.
 The **Rate** knob controls the rounding rate from none, to slow, to very fast.
 The Round rate can be CV-controlled, in absolute and relative mode, just like the main HC-1 knobs.
 
-Slug: `pachde-hc-round`
-
 ---
 
-![pachde (#d) logo](Logo.svg)
+**Slug** `pachde-hc-round`
+
+![pachde (#d) logo](./image/Logo.svg)

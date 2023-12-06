@@ -22,7 +22,7 @@ To install the plugin from Github, please see **Install** in the [README](https:
 
 Here is the HC-1 module:
 
-![The HC-1 module](HC-1.png)
+![The HC-1 module](./image/HC-1.png)
 
 When first loaded, there is a long initialization time (a minute or two) to find the EM device, initialize the MIDI ports, and read all user and system presets from the device.
 By default, the list of system presets are saved, so the next time you open the patch, it skips loading the list from the device and you should be up and running quickly.
@@ -141,7 +141,7 @@ next to the knob, indicating which pedal is assigned to that knob.
   The Relative mode indicator light is lit when the control is in relative mode,
 and the track around the knob becomes gold, with an indicator dot showing the effective value.
 
-  ![Anatomy of HC-1 controls](knob-anatomy.svg)
+  ![Anatomy of HC-1 controls](./image/knob-anatomy.svg)
 
   There are menu options under **Knob control** to set all controls to Absolute or Relative mode, and to set all knobs to zero or middle position at once.
 
@@ -157,7 +157,6 @@ and the track around the knob becomes gold, with an indicator dot showing the ef
   Recirculator on/off is global and doesn't change between presets.
   The right light button reflects the use of Extended (half-sample rate) computation.
   You can toggle extended computation on and off by clicking the light button.
-
 
   You can temporarily change the Recirculator type in the **Recirculator** menu.
   Changes in recirculator type and extended mode are not saved.
@@ -384,4 +383,8 @@ That's not really suitable for a VCV rack module and it would require additional
 
     - User preset save, load, archive-all, and restore-all. This possibly in a separate program rather than VCV Rack modules.
 
-![pachde (#d) logo](Logo.svg)
+---
+
+**Slug** `pachde-hc-1`
+
+![pachde (#d) logo](./image/Logo.svg)

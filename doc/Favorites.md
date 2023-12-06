@@ -3,7 +3,7 @@
 **Favorites** is a companion for HC-1, offering easy access for up to 16 HC-1 favorites files.
 If you want access to more than 16, just add another instance of **Favorites**.
 
-![Favorites module](Favorites.png)
+![Favorites module](./image/Favorites.png)
 
 Favorites is initially blank when added to a ptach. Right click a button to choose an existing favorites file for that button, or drag and drop a favorites file onto the button.
 If a Favorites file is currently open in HC-1, you can choose **Use _file_** to attach it to the button.
@@ -22,4 +22,6 @@ Similarly, if the favorites file contains user presets that are no longer on the
 
 ---
 
-![pachde (#d) logo](Logo.svg)
+**Slug** `pachde-hc-favorites`
+
+![pachde (#d) logo](./image/Logo.svg)

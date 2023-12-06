@@ -2,7 +2,7 @@
 
 The Pedal 1 & 2 modules provide for pedal control, virtual pedals, and CV in/out.
 
-![Pedal 1 and Pedal 2 modules](pedals.png)
+![Pedal 1 and Pedal 2 modules](./image/pedals.png)
 
 From top to bottom, left to right:
 
@@ -41,3 +41,9 @@ From top to bottom, left to right:
   Some makes or models of pedals may not be accurately detected, and you may need to interact with the pedal before it is identified by the EM.
 
 - At the bottom are CV input and output ports. CV are Unipolar 0v to 10v values. CV input sends the corresponding pedal value to the device. CV output is driven by the physical or virtual pedal, so you can easily connect a pedal to any module in the patch.
+
+---
+
+**Slugs** `pachde-hc-pedal-1`, `pachde-hc-pedal-2`
+
+![pachde (#d) logo](./image/Logo.svg)

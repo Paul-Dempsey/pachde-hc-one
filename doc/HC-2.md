@@ -4,7 +4,7 @@ HC-2 is a companion to HC-1, offering control Tilt EQ, and a live map of MIDI ch
 
 HC-2 is in the process of being retired, and the required EM functionality is being moved to separate modules.
 
-![HC-2 module](HC-2.png)
+![HC-2 module](./image/HC-2.png)
 
 ## Tilt EQ
 
@@ -32,3 +32,9 @@ Everything else is light gray.
 CC maps may not survive to release.
 They have proven to be useful to the developer during the development of this plugin, which involves a fair amount of poking and prodding the device to discover how things works.
 It's also a bit of eye candy, so why not, if we don't need the space for something more important?
+
+---
+
+**Slug** `pachde-hc-2`
+
+![pachde (#d) logo](./image/Logo.svg)

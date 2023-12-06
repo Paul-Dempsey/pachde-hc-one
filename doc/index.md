@@ -11,7 +11,7 @@ Pachde does not own an Osmose or EMM, so any help testing and documenting any is
 HC One is *not* intended to be a replacement for the Haken Editor.
 The intention is to build out a performance companion for the device.
 
-![HC One modules](HC-One-modules.png)
+![HC One modules](./image/HC-One-modules.png)
 
 HC-1 is the main module.
 The rest are companion modules to HC-1, and require an HC-1 in the patch to do anything.
@@ -32,5 +32,6 @@ The HC-One modules shown here from left to right are:
 
 - **[HC-2](HC-2.md)** TiltEQ, and CC maps (To Be Retired).
 
+---
 
-![pachde (#d) logo](Logo.svg)
+![pachde (#d) logo](./image/Logo.svg)

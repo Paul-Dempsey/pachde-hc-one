@@ -39,19 +39,19 @@
       },
       {
         "slug": "pachde-hc-pedal-1",
-        "name": "HC-Pedal-1",
+        "name": "Pedal-1",
         "description": "Controller for EaganMatrix Pedal 1 (HC-1 companion)",
         "tags": [ "Controller", "Expander" ]
       },
       {
         "slug": "pachde-hc-pedal-2",
-        "name": "HC-Pedal-2",
+        "name": "Pedal-2",
         "description": "Controller for EaganMatrix Pedal 2 (HC-1 companion)",
         "tags": [ "Controller", "Expander" ]
       },
       {
         "slug": "pachde-hc-compressor",
-        "name": "HC-Compressor",
+        "name": "Compressor",
         "description": "Controller for EaganMatrix Compressor (HC-1 companion)",
         "tags": [ "Controller", "Expander" ]
       }
