@@ -22,15 +22,15 @@ The HC-One modules shown here from left to right are:
 
 - **[HC-1](HC-1.md)** Fast access to favorite presets, with knobs and CV inputs for the essential controls: Macros and the Recirculator.
 
-- **[Pedal 1 & Pedal 2](Pedals.md)** Pedal control, virtual pedals, and pedal CV in/out.
+- **[Pedal 1 & Pedal 2](Pedals.md#modules-pedal-1-and-pedal-2)** Pedal control, virtual pedals, and pedal CV in/out.
 
-- **[Round](Round.md)** Control of rounding and the tuning scale, with CV and trigger.
+- **[Round](Round.md#module-round)** Control of rounding and the tuning scale, with CV and trigger.
 
-- **[Compress](Compress.md)** EaganMatrix compressor controls, with CV.
+- **[Compress](Compress.md#module-compress)** EaganMatrix compressor controls, with CV.
 
-- **[Favorites](Favorites.md)** Pushbuttons to access up to 16 Favorite files.
+- **[Favorites](Favorites.md#module-favorites)** Pushbuttons to access up to 16 Favorite files.
 
-- **[HC-2](HC-2.md)** TiltEQ, and CC maps (To Be Retired).
+- **[HC-2](HC-2.md#module-hc-2)** TiltEQ, and CC maps (To Be Retired).
 
 ---
 

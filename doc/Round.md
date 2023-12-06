@@ -1,4 +1,4 @@
-# Round module
+# Module Round
 
 Controls for rounding (quantization).
 

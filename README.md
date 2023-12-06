@@ -17,7 +17,7 @@ The beta 5 release announced online can be downloaded here: [HC-One 2.0.0-beta5]
 - [Buy pachde a coffee](https://venmo.com/u/pcdempsey). Thank you!
 
   Donations help pachde's morale, and fund hardware for testing and developing this software.\
-  ![Buy pachde a coffee with VenMo](doc/VenMo.png)
+  ![Buy pachde a coffee with VenMo](./doc/image/VenMo.png)
 
 Pachde and HC One are not affiliated with or sponsored by Haken Audio (but we're friends).
 
