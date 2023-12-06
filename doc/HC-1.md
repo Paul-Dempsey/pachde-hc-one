@@ -32,13 +32,13 @@ When everything is connected and working as expected, all the dots are blue, and
 
 ## Troubleshooting
 
-If you are running on Windows, remember that no other software can open the same MIDI device, unless you have third-party virtual MIDI software or drivers installed.
+If you are running on Microsoft Windows, remember that no other software can open the same MIDI device, unless you have third-party virtual MIDI software or drivers installed.
 So, make sure that you are not running the Haken Editor, a DAW, or other software that has the device open.
 
 If HC-1 is unable to successfully connect and initialize fully, check that the Haken Editor can connect to the device.
 If the Haken Editor cannot connect, then neither can HC-1.
 
-Eagan Matrix devices require a high-quality MIDI connection.
+Eagan Matrix devices require a high-quality MIDI connection on all operating systems.
 The HC-1 initialization process can sometimes fail, especially when you have a poor MIDI connection.
 When this happens, you may need to reboot HC-1 from the menu, unplug and re-plug the MIDI connection, or power cycle the device.
 In some cases on Windows, you may even need to reboot your computer.
@@ -262,21 +262,20 @@ The default `startup-config.json` looks like this:
 
 ```json
 {
-  "heartbeat_period": 4.0,
   "phase-device-output": {
     "delay": 4.0,
     "midi_rate": 0,
     "budget": 0
   },
   "phase-device-input": {
-    "delay": 4.0,
+    "delay": 3.0,
     "midi_rate": 0,
     "budget": 0
   },
   "phase-device-hello": {
-    "delay": 1.0,
+    "delay": 2.0,
     "midi_rate": 1,
-    "budget": 2
+    "budget": 4
   },
   "phase-device-config": {
     "delay": 1.0,
@@ -295,7 +294,7 @@ The default `startup-config.json` looks like this:
   },
   "phase-system-presets": {
     "delay": 1.0,
-    "midi_rate": 1,
+    "midi_rate": 2,
     "budget": 25
   },
   "phase-favorites": {
@@ -319,7 +318,7 @@ The default `startup-config.json` looks like this:
     "budget": 0
   },
   "phase-heartbeat": {
-    "delay": 2.0,
+    "delay": 0.0,
     "midi_rate": 0,
     "budget": 2
   },
@@ -331,8 +330,8 @@ The default `startup-config.json` looks like this:
 }
 ```
 
-This configure the initialization process, and the midi transmission rate for the queries that HC-1 sends to the device.
-In between these requests and when HC-One is fully initialized, the full transmission rate is used.
+This configures the initialization process and the midi transmission rate for the queries that HC-1 sends to the device.
+In between these requests and after HC-1 is fully initialized, the full transmission rate is used.
 
 For each initialization phase, there are three options:
 
@@ -342,13 +341,13 @@ For each initialization phase, there are three options:
 | `midi_rate` | 0-2 | Sets the Midi transmission rate for the phase. **0** = full (fastest), **1** = 1/3 full rate, **2** = 1/20 full rate (meant for bluetooth MIDI). |
 | `budget` | float | Seconds allowed for a phase to complete. If the phase is not complete in the alloted time it is retried with a lower MIDI transmission rate. If it fails after a maximum of three attempts, HC-1 is rebooted. |
 
-The delays allow time for both the device and HC-1 to settle and be ready for the next phase.
+The delays allow time for both the EMinstrument and HC-1 to settle and be ready for the next phase.
 
 ## Technical Information
 
-Input CV is assumed to be Unipolar 0-10v. When a knob is set to relative mode, then the voltage is assumed to be bipolar.
-The voltage is converted to MIDI data to send to the device according to the range supported by the particular control.
-The Macro section (**i** through **vi**) and Volume (EM Post level) support 14-bit MIDI, and the recirculator section is 7-bit MIDI (0-127).
+Input control voltage (CV) is assumed to be Unipolar 0 to 10v. When a knob is set to relative mode, then the voltage is assumed to be bipolar -5 to 5v.
+The resulting voltage is converted to MIDI data to send to the device according to the range supported by the particular control.
+The Macro section (**i** through **vi**) and **Volume** (EM Post level) support 14-bit MIDI, and the recirculator section is 7-bit MIDI (0-127).
 
 ## Notes
 

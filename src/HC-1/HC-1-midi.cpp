@@ -383,7 +383,9 @@ void Hc1Module::onChannel16CC(uint8_t cc, uint8_t value)
         case EMCC_DSP: {
             auto d = (value >> 5) -1;
             auto pct = (value & 0x1F) * 4;
-            dsp[d] = pct;
+            if (dsp_client) {
+                dsp_client->set_dsp_value(d, pct);
+            }
         } break;
 
         case EMCC_EditorReply: {

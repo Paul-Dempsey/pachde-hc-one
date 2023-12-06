@@ -17,6 +17,7 @@ Hc1ModuleWidget::Hc1ModuleWidget(Hc1Module* module)
     if (my_module) {
         tab = my_module->tab;
         page = my_module->getTabPage(tab);
+        my_module->dsp_client = this;
     }
     createUi();
     if (my_module) {
@@ -404,6 +405,8 @@ void Hc1ModuleWidget::createUi()
     addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<BlueLight>>>(Vec(RECIRC_EXTEND_CENTER, RECIRC_BOX_TOP), my_module, Hc1p::RECIRC_EXTEND_PARAM, Hc1lt::RECIRC_EXTEND_LIGHT));
     addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<BlueLight>>>(Vec(RECIRC_ENABLE_CENTER, RECIRC_BOX_TOP), my_module, Hc1p::RECIRC_ENABLE_PARAM, Hc1lt::RECIRC_ENABLE_LIGHT));
 
+    addChild(dsp_widget = createWidget<DspWidget>(Vec(RIGHT_COLUMN_BUTTONS - DSP_WIDTH * .5f, 86.f)));
+
 #ifdef TRANSPOSE_BUTTONS
     createTranspose();
 #endif
@@ -434,6 +437,18 @@ void Hc1ModuleWidget::pageDown()
     updatePresetWidgets();
     page_up->enable(true);
     page_down->enable(static_cast<unsigned>(page*24) < max-24);
+}
+
+//
+// IDsp
+//
+void Hc1ModuleWidget::set_dsp_ready(bool ready)
+{
+    dsp_widget->set_dsp_ready(ready);
+}
+void Hc1ModuleWidget::set_dsp_value(int index, uint8_t value)
+{
+    dsp_widget->set_dsp_value(index, value);
 }
 
 //

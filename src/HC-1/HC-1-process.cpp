@@ -17,7 +17,11 @@ void Hc1Module::beginPreset()
 {
     in_preset = true;
     clearPreset();
-    dsp[2] = dsp[1] = dsp[0] = 0;
+    if (dsp_client) {
+        for (int i = 0; i < 3; ++i) {
+            dsp_client->set_dsp_value(i, 0);
+        }
+    }
 }
 
 void Hc1Module::processCV(int paramId)
@@ -96,13 +100,18 @@ void Hc1Module::processAllCV()
 void Hc1Module::processReadyTrigger(bool ready, const ProcessArgs& args)
 {
     bool high = ready_trigger.process(args.sampleTime);
-    if ((ready || first_beat)
-        && getOutput(READY_TRIGGER).isConnected()
-        && !high
-        && !ready_sent
-        ) {
-        ready_trigger.trigger();
-        ready_sent = true;
+    if (ready || first_beat)
+    {
+        if (dsp_client) {
+            dsp_client->set_dsp_ready(true);
+        }
+        if (getOutput(READY_TRIGGER).isConnected()
+            && !high
+            && !ready_sent
+            ) {
+                ready_trigger.trigger();
+                ready_sent = true;
+        }
     }
     getOutput(READY_TRIGGER).setVoltage(high * 10.f);
 }

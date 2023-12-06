@@ -12,7 +12,7 @@ Grab a current build for the latest features and fixes: [HC-One Nightly](https:/
 
 The beta 5 release announced online can be downloaded here: [HC-One 2.0.0-beta5](https://github.com/Paul-Dempsey/pachde-hc-one/releases/tag/v2.0.0-beta5).
 
-- [Documentation](doc/index.md)
+- [Documentation](doc/index.md#pachde-d-hc-one)
 
 - [Buy pachde a coffee](https://venmo.com/u/pcdempsey). Thank you!
 

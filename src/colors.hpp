@@ -377,20 +377,26 @@ std::string ToString(Theme theme);
 Theme ParseTheme(const std::string& text);
 Theme ThemeFromJson(json_t * root);
 
-void FillRect(NVGcontext *vg, float x, float y, float width, float height, NVGcolor color);
-void GradientRect(NVGcontext * vg, float x, float y, float width, float height, NVGcolor top, NVGcolor bottom, float y1, float y2);
-void RoundRect(NVGcontext *vg, float x, float y, float width, float height, NVGcolor color, float radius);
-void BoxRect(NVGcontext *vg, float x, float y, float width, float height, NVGcolor color, float strokeWidth = 1.0);
-void RoundBoxRect(NVGcontext *vg, float x, float y, float width, float height, NVGcolor color, float radius, float strokeWidth = 1.0);
-void Line(NVGcontext * vg, float x1, float y1, float x2, float y2, NVGcolor color, float strokeWidth = 1.0);
-void CircleGradient(NVGcontext * vg, float cx, float cy, float r, NVGcolor top, NVGcolor bottom);
-void Circle(NVGcontext * vg, float cx, float cy, float r, NVGcolor fill);
-void OpenCircle(NVGcontext * vg, float cx, float cy, float r, NVGcolor stroke, float stroke_width = 1.f);
+void FillRect(NVGcontext *vg, float x, float y, float width, float height, const NVGcolor& color);
+void GradientRect(NVGcontext * vg, float x, float y, float width, float height, const NVGcolor& top, const NVGcolor& bottom, float y1, float y2);
+void RoundRect(NVGcontext *vg, float x, float y, float width, float height, const NVGcolor& color, float radius);
+void BoxRect(NVGcontext *vg, float x, float y, float width, float height, const NVGcolor& color, float strokeWidth = 1.0);
+void RoundBoxRect(NVGcontext *vg, float x, float y, float width, float height, const NVGcolor& color, float radius, float strokeWidth = 1.0);
+void Line(NVGcontext * vg, float x1, float y1, float x2, float y2, const NVGcolor& color, float strokeWidth = 1.0);
+void CircleGradient(NVGcontext * vg, float cx, float cy, float r, const NVGcolor& top, const NVGcolor& bottom);
+void Circle(NVGcontext * vg, float cx, float cy, float r, const NVGcolor& fill);
+void OpenCircle(NVGcontext * vg, float cx, float cy, float r, const NVGcolor& stroke, float stroke_width = 1.f);
 void Dot(NVGcontext*vg, float x, float y, const NVGcolor& co, bool filled = true);
-void CircularHalo(NVGcontext* vg, float cx, float cy, float inner_radius, float halo_radius, const NVGcolor & haloColor);
+void CircularHalo(NVGcontext* vg, float cx, float cy, float inner_radius, float halo_radius, const NVGcolor& haloColor);
 
 template <class TMenuItem = rack::ui::MenuEntry>
-rack::ui::MenuEntry* createColorMenuItem(PackedColor previewColor, std::string text, std::string rightText, std::function<bool()> checked, std::function<void()> action, bool disabled = false, bool alwaysConsume = false)
+rack::ui::MenuEntry* createColorMenuItem(
+    PackedColor previewColor,
+    std::string text, std::string rightText,
+    std::function<bool()> checked,
+    std::function<void()> action,
+    bool disabled = false,
+    bool alwaysConsume = false)
 {
     struct ColorItem : rack::ui::MenuEntry {
         NVGcolor preview;

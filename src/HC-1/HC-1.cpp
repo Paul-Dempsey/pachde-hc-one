@@ -385,6 +385,9 @@ void Hc1Module::reboot()
     broken_idle = 0.f;
     first_beat = false;
     ready_sent = false;
+    if (dsp_client) {
+        dsp_client->set_dsp_ready(false);
+    }
     preset0.clear();
     system_presets.clear();
     user_presets.clear();

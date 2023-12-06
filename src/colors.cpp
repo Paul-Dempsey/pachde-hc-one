@@ -298,7 +298,7 @@ const NVGcolor GrayRamp[] = {
     GRAY85,GRAY90,GRAY95,WHITE
 };
 
-void FillRect(NVGcontext *vg, float x, float y, float width, float height, NVGcolor color)
+void FillRect(NVGcontext *vg, float x, float y, float width, float height, const NVGcolor& color)
 {
     nvgBeginPath(vg);
     nvgRect(vg, x, y, width, height);
@@ -306,7 +306,7 @@ void FillRect(NVGcontext *vg, float x, float y, float width, float height, NVGco
     nvgFill(vg);
 }
 
-void GradientRect(NVGcontext * vg, float x, float y, float width, float height, NVGcolor top, NVGcolor bottom, float y1, float y2)
+void GradientRect(NVGcontext * vg, float x, float y, float width, float height, const NVGcolor& top, const NVGcolor& bottom, float y1, float y2)
 {
     nvgBeginPath(vg);
     auto gradient = nvgLinearGradient(vg, x, y1, x, y2, top, bottom);
@@ -315,7 +315,7 @@ void GradientRect(NVGcontext * vg, float x, float y, float width, float height, 
     nvgFill(vg);
 }
 
-void RoundRect(NVGcontext *vg, float x, float y, float width, float height, NVGcolor color, float radius)
+void RoundRect(NVGcontext *vg, float x, float y, float width, float height, const NVGcolor& color, float radius)
 {
     nvgBeginPath(vg);
     nvgRoundedRect(vg, x, y, width, height, radius);
@@ -323,7 +323,7 @@ void RoundRect(NVGcontext *vg, float x, float y, float width, float height, NVGc
     nvgFill(vg);
 }
 
-void BoxRect(NVGcontext *vg, float x, float y, float width, float height, NVGcolor color, float strokeWidth)
+void BoxRect(NVGcontext *vg, float x, float y, float width, float height, const NVGcolor& color, float strokeWidth)
 {
     nvgBeginPath(vg);
     nvgRect(vg, x, y, width, height);
@@ -332,7 +332,7 @@ void BoxRect(NVGcontext *vg, float x, float y, float width, float height, NVGcol
     nvgStroke(vg);
 }
 
-void RoundBoxRect(NVGcontext *vg, float x, float y, float width, float height, NVGcolor color, float radius, float strokeWidth)
+void RoundBoxRect(NVGcontext *vg, float x, float y, float width, float height, const NVGcolor& color, float radius, float strokeWidth)
 {
     nvgBeginPath(vg);
     nvgRoundedRect(vg, x, y, width, height, radius);
@@ -341,7 +341,7 @@ void RoundBoxRect(NVGcontext *vg, float x, float y, float width, float height, N
     nvgStroke(vg);
 }
 
-void Line(NVGcontext * vg, float x1, float y1, float x2, float y2, NVGcolor color, float strokeWidth)
+void Line(NVGcontext * vg, float x1, float y1, float x2, float y2, const NVGcolor& color, float strokeWidth)
 {
     nvgBeginPath(vg);
     nvgMoveTo(vg, x1, y1);
@@ -353,7 +353,7 @@ void Line(NVGcontext * vg, float x1, float y1, float x2, float y2, NVGcolor colo
 
 // for light/dark overlay use something like
 // nvgRGBAf(0.9f,0.9f,0.9f,0.2f), nvgRGBAf(0.,0.,0.,0.3f)
-void CircleGradient(NVGcontext * vg, float cx, float cy, float r, NVGcolor top, NVGcolor bottom)
+void CircleGradient(NVGcontext * vg, float cx, float cy, float r, const NVGcolor& top, const NVGcolor& bottom)
 {
     nvgBeginPath(vg);
     auto gradient = nvgLinearGradient(vg, cx, cy - r, cx, cy + r, top, bottom);
@@ -362,16 +362,7 @@ void CircleGradient(NVGcontext * vg, float cx, float cy, float r, NVGcolor top, 
     nvgFill(vg);
 }
 
-// void CircleGradient(NVGcontext * vg, float cx, float cy, float r, float dy1, float dy2, NVGcolor top, NVGcolor bottom)
-// {
-//     nvgBeginPath(vg);
-//     auto gradient = nvgLinearGradient(vg, cx, 0.f + dy1, cx, 2.f * r + dy2, top, bottom);
-//     nvgFillPaint(vg, gradient);
-//     nvgCircle(vg, cx, cy, r);
-//     nvgFill(vg);
-// }
-
-void Circle(NVGcontext * vg, float cx, float cy, float r, NVGcolor fill)
+void Circle(NVGcontext * vg, float cx, float cy, float r, const NVGcolor& fill)
 {
     nvgBeginPath(vg);
     nvgFillColor(vg, fill);
@@ -379,7 +370,7 @@ void Circle(NVGcontext * vg, float cx, float cy, float r, NVGcolor fill)
     nvgFill(vg);
 }
 
-void OpenCircle(NVGcontext * vg, float cx, float cy, float r, NVGcolor stroke, float stroke_width)
+void OpenCircle(NVGcontext * vg, float cx, float cy, float r, const NVGcolor& stroke, float stroke_width)
 {
     nvgBeginPath(vg);
     nvgStrokeColor(vg, stroke);
@@ -397,7 +388,7 @@ void Dot(NVGcontext*vg, float x, float y, const NVGcolor& co, bool filled)
     }
 }
 
-void CircularHalo(NVGcontext* vg, float cx, float cy, float inner_radius, float halo_radius, const NVGcolor & haloColor)
+void CircularHalo(NVGcontext* vg, float cx, float cy, float inner_radius, float halo_radius, const NVGcolor& haloColor)
 {
     if (rack::settings::rackBrightness < 0.968f && rack::settings::haloBrightness > 0.f) {
         nvgBeginPath(vg);

@@ -31,37 +31,6 @@ const NVGcolor& StatusColor(StatusItem led)
     }
 }
 
-// TODO: Candidate for caching. Only updates on heartbeat.
-void Hc1ModuleWidget::drawDSP(NVGcontext* vg)
-{
-    const float h = 10.f;
-    const float w = 2.5f;
-    const float width = w * 3.f + 5.f;
-    const float height = h + 3.f;
-    float x = RIGHT_COLUMN_BUTTONS - width * .5f;
-    float y = 90.f;
-
-    FillRect(vg, x, y, width, height, RampGray(G_30));
-
-    bool module_ready = my_module && my_module->ready();
-    const uint8_t tdsp[] = { 65, 30, 75 };
-    const uint8_t* pdsp = module_ready ? &my_module->dsp[0] : &tdsp[0];
-
-    if (!module_ready) {
-        BoxRect(vg, x, y, width, height, green_light, .5f);
-    }
-
-    x += 1.5f;
-    y += 1.5f;
-    for (auto n = 0; n < 3; n++) {
-        auto pct = pdsp[n];
-        auto co = pct < 85 ? green_light : red_light;
-        auto bh = h * (pct / 100.f);
-        FillRect(vg, x, y + h - bh, w, bh, co);
-        x += w + 1;
-    }
-}
-
 void Hc1ModuleWidget::drawStatusDots(NVGcontext* vg)
 {
     if (my_module) { return; }
@@ -199,7 +168,6 @@ void Hc1ModuleWidget::drawLayer(const DrawArgs& args, int layer)
         //     Circle(vg, cx, y, 1.25f, yellow_light);
         // }
     }
-    drawDSP(vg);
 }
 
 void drawPedalKnobAssignment(NVGcontext * vg, uint8_t ped, const char * text)
@@ -269,13 +237,15 @@ void Hc1ModuleWidget::draw(const DrawArgs& args)
         
         // recirculator
         {
-            Line(vg, RECIRC_BOX_LEFT, RECIRC_BOX_TOP, RECIRC_ENABLE_CENTER - 10.f, RECIRC_BOX_TOP, RampGray(G_35), .5f);
-            Line(vg, RECIRC_ENABLE_CENTER + 10.f, RECIRC_BOX_TOP, RECIRC_BOX_CENTER - RECIRC_TITLE_WIDTH *.5, RECIRC_BOX_TOP, RampGray(G_35), .5f);
-            Line(vg, RECIRC_BOX_CENTER + RECIRC_TITLE_WIDTH *.5, RECIRC_BOX_TOP, RECIRC_EXTEND_CENTER - 10.f, RECIRC_BOX_TOP, RampGray(G_35), .5f);
-            Line(vg, RECIRC_EXTEND_CENTER + 10.f, RECIRC_BOX_TOP, RECIRC_BOX_RIGHT, RECIRC_BOX_TOP, RampGray(G_35), .5f);
-            Line(vg, RECIRC_BOX_LEFT,  RECIRC_BOX_TOP,    RECIRC_BOX_LEFT,  RECIRC_BOX_BOTTOM, RampGray(G_35), .5f);
-            Line(vg, RECIRC_BOX_RIGHT, RECIRC_BOX_TOP,    RECIRC_BOX_RIGHT, RECIRC_BOX_BOTTOM, RampGray(G_35), .5f);
-            Line(vg, RECIRC_BOX_LEFT,  RECIRC_BOX_BOTTOM, RECIRC_BOX_RIGHT, RECIRC_BOX_BOTTOM, RampGray(G_35), .5f);
+            const NVGcolor& line_color = RampGray(G_35);
+            Line(vg, RECIRC_BOX_LEFT, RECIRC_BOX_TOP, RECIRC_ENABLE_CENTER - 10.f, RECIRC_BOX_TOP, line_color, .5f);
+            Line(vg, RECIRC_ENABLE_CENTER + 10.f, RECIRC_BOX_TOP, RECIRC_BOX_CENTER - RECIRC_TITLE_WIDTH *.5, RECIRC_BOX_TOP, line_color, .5f);
+            Line(vg, RECIRC_BOX_CENTER + RECIRC_TITLE_WIDTH *.5, RECIRC_BOX_TOP, RECIRC_EXTEND_CENTER - 10.f, RECIRC_BOX_TOP,line_color, .5f);
+            Line(vg, RECIRC_EXTEND_CENTER + 10.f, RECIRC_BOX_TOP, RECIRC_BOX_RIGHT, RECIRC_BOX_TOP, line_color, .5f);
+            Line(vg, RECIRC_BOX_LEFT,  RECIRC_BOX_TOP,    RECIRC_BOX_LEFT,  RECIRC_BOX_BOTTOM, line_color, .5f);
+            Line(vg, RECIRC_BOX_RIGHT, RECIRC_BOX_TOP,    RECIRC_BOX_RIGHT, RECIRC_BOX_BOTTOM, line_color, .5f);
+            Line(vg, RECIRC_BOX_LEFT,  RECIRC_BOX_BOTTOM, RECIRC_BOX_RIGHT, RECIRC_BOX_BOTTOM, line_color, .5f);
+
             SetTextStyle(vg, font, RampGray(G_90), 12.f);
             CenterText(vg, RECIRC_BOX_CENTER, RECIRC_BOX_TOP + 2.f, RecirculatorName(rt), nullptr);
         }

@@ -10,6 +10,7 @@
 #include "../preset_meta.hpp"
 #include "../presets.hpp"
 #include "../text.hpp"
+#include "../widgets/dsp_widget.hpp"
 #include "../widgets/em_picker.hpp"
 #include "../widgets/favorite_widget.hpp"
 #include "../widgets/label_widget.hpp"
@@ -261,7 +262,6 @@ struct Hc1Module : IPresetHolder, ISendMidi, IMidiDeviceHolder, IMidiDeviceChang
     uint8_t note = 0;
     uint64_t midi_receive_count = 0;
     uint64_t midi_send_count = 0;
-    uint8_t dsp[3] {0};
     int data_stream = -1;
     uint8_t ch0_cc_value[127];
     uint8_t ch15_cc_value[127];
@@ -269,6 +269,8 @@ struct Hc1Module : IPresetHolder, ISendMidi, IMidiDeviceHolder, IMidiDeviceChang
         memset(ch0_cc_value, 0, 127); 
         memset(ch15_cc_value, 0, 127);
     }
+
+    IDsp* dsp_client = nullptr;
 
     EaganMatrix em;
 
@@ -404,7 +406,7 @@ using Hc1in = Hc1Module::Inputs;
 using Hc1out = Hc1Module::Outputs;
 using Hc1lt = Hc1Module::Lights;
 
-struct Hc1ModuleWidget : ModuleWidget, IPresetHolder, IHandleHcEvents
+struct Hc1ModuleWidget : ModuleWidget, IPresetHolder, IHandleHcEvents, IDsp
 {
     Hc1Module* my_module = nullptr;
     StaticTextLabel* hardware_label = nullptr;
@@ -417,6 +419,7 @@ struct Hc1ModuleWidget : ModuleWidget, IPresetHolder, IHandleHcEvents
     SquareButton* page_down = nullptr;
     GrayModuleLightWidget * status_light = nullptr;
     EMPicker* em_picker = nullptr;
+    DspWidget* dsp_widget = nullptr;
     std::vector<PresetWidget*> presets;
     int page = 0;
     bool have_preset_widgets = false;
@@ -449,6 +452,10 @@ struct Hc1ModuleWidget : ModuleWidget, IPresetHolder, IHandleHcEvents
     void updatePresetWidgets();
     bool showCurrentPreset(bool changeTab);
 
+    // IDsp
+    void set_dsp_ready(bool ready) override;
+    void set_dsp_value(int index, uint8_t value) override;
+
     // IPresetHolder
     void setPreset(std::shared_ptr<Preset> preset) override;
     bool isCurrentPreset(std::shared_ptr<Preset> preset) override;
@@ -464,7 +471,6 @@ struct Hc1ModuleWidget : ModuleWidget, IPresetHolder, IHandleHcEvents
     void onFavoritesFileChanged(const FavoritesFileChangedEvent& e) override;
 
     // HC-1.draw.cpp
-    void drawDSP(NVGcontext* vg);
     void drawStatusDots(NVGcontext* vg);
     void drawPedalAssignment(NVGcontext* vg, float x, float y, char ped_char, uint8_t ped, uint8_t ped_value);
     void drawPedals(NVGcontext* vg, std::shared_ptr<rack::window::Font> font, bool stockPedals);
