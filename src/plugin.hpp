@@ -11,4 +11,5 @@ extern Model* modelPedal1;
 extern Model* modelPedal2;
 extern Model* modelRound;
 extern Model* modelCompress;
+extern Model* modelPolyMidi;
 

@@ -10,7 +10,7 @@ namespace eagan_matrix {
 
 struct Compressor
 {
-    uint8_t threshold;  // EMCC_CompressorThreshold = 90;
+    uint8_t threshold;  // EMCC_CompressorThreshold  = 90;
     uint8_t attack;     // EMCC_CompressorAttack     = 91;
     uint8_t ratio;      // EMCC_CompressorRatio      = 92;
     uint8_t mix;        // EMCC_CompressorMix        = 93;

@@ -297,6 +297,10 @@ struct Hc1Module : IPresetHolder, ISendMidi, IMidiDeviceHolder, IMidiDeviceChang
     void notifyRoundingChanged();
     void notifyCompressorChanged();
     void notifyTiltEqChanged();
+    void notifyRoutingChanged();
+    void notifyPolyphonyChanged();
+    void notifyNotePriorityChanged();
+    void notifyMpeChanged();
     void notifyDeviceChanged();
     void notifyDisconnect();
     void notifyFavoritesFileChanged();

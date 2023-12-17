@@ -42,12 +42,13 @@ struct Hc4Module : Module, IHandleHcEvents
     Hc1Module * getPartner();
 
     // IHandleHcEvents
-//    void onPresetChanged(const PresetChangedEvent& e) override;
-//    void onRoundingChanged(const RoundingChangedEvent& e) override;
-    void onPedalChanged(const PedalChangedEvent& e) override;
+    // void onPresetChanged(const PresetChangedEvent& e) override;
+    // void onRoundingChanged(const RoundingChangedEvent& e) override;
+    // void onPedalChanged(const PedalChangedEvent& e) override;
+    // void onRoutingChanged(const RoutingChangedEvent& e) override;
     void onDeviceChanged(const DeviceChangedEvent& e) override;
     void onDisconnect(const DisconnectEvent& e) override;
-    //void onFavoritesFileChanged(const FavoritesFileChangedEvent& e) override;
+    // void onFavoritesFileChanged(const FavoritesFileChangedEvent& e) override;
 
     // Module
     json_t *dataToJson() override;

@@ -8,7 +8,7 @@
     "authorEmail": "pcdempsey@live.com",
     "authorUrl": "",
     "pluginUrl": "",
-    "manualUrl": "https://github.com/Paul-Dempsey/pachde-hc-one/blob/main/doc/index.md",
+    "manualUrl": "https://github.com/Paul-Dempsey/pachde-hc-one/blob/main/doc/index.md#pachde-d-hc-one",
     "sourceUrl": "https://github.com/Paul-Dempsey/pachde-hc-one",
     "donateUrl": "https://venmo.com/u/pcdempsey",
     "changelogUrl": "",
@@ -41,19 +41,25 @@
         "slug": "pachde-hc-pedal-1",
         "name": "Pedal-1",
         "description": "Controller for EaganMatrix Pedal 1 (HC-1 companion)",
-        "tags": [ "Controller", "Expander" ]
+        "tags": [ "Controller", "MIDI", "Expander" ]
       },
       {
         "slug": "pachde-hc-pedal-2",
         "name": "Pedal-2",
         "description": "Controller for EaganMatrix Pedal 2 (HC-1 companion)",
-        "tags": [ "Controller", "Expander" ]
+        "tags": [ "Controller",  "MIDI", "Expander" ]
       },
       {
         "slug": "pachde-hc-compressor",
         "name": "Compressor",
         "description": "Controller for EaganMatrix Compressor (HC-1 companion)",
-        "tags": [ "Controller", "Expander" ]
+        "tags": [ "Controller",  "MIDI", "Expander" ]
+      },
+      {
+        "slug": "pachde-hc-polymidi",
+        "name": "PolyMidi",
+        "description": "Controller for EaganMatrix Polyphony and MIDI (HC-1 companion)",
+        "tags": [ "Controller", "Expander", "MIDI" ]
       }
     ]
   }

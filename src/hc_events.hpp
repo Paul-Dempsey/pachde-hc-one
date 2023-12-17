@@ -45,6 +45,31 @@ struct IHandleHcEvents
     };
     virtual void onDeviceChanged(const DeviceChangedEvent& e) {}
 
+    struct RoutingChangedEvent {
+        const uint8_t routing;
+    };
+    virtual void onRoutingChanged(const RoutingChangedEvent& e) {}
+
+    struct PolyphonyChangedEvent {
+        const eagan_matrix::Polyphony polyphony;
+    };
+    virtual void onPolyphonyChanged(const PolyphonyChangedEvent& e) {}
+
+    struct NotePriorityChangedEvent {
+        const eagan_matrix::NotePriority piority;
+    };
+    virtual void onNotePriorityChanged(const NotePriorityChangedEvent& e) {}
+
+    struct MpeChangedEvent {
+        const eagan_matrix::Mpe& mpe;
+    };
+    virtual void onMpeChanged(const MpeChangedEvent& e) {}
+
+    struct VelocityChangedEvent {
+        const eagan_matrix::VelocitySplit & velocity;
+    };
+    virtual void onVelocityChanged(const VelocityChangedEvent& e) {}
+
     struct DisconnectEvent { };
     virtual void onDisconnect(const DisconnectEvent& e) {}
 

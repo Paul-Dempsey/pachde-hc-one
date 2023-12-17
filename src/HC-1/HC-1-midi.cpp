@@ -108,6 +108,11 @@ void Hc1Module::onChannel16CC(uint8_t cc, uint8_t value)
             }
             break;
 
+        case EMCC_Routing:
+            em.routing = value;
+            notifyRoutingChanged();
+            break;
+
         case EMCC_PedalType: {
             auto new_p1 = static_cast<PedalType>(value & 0x07);
             bool p1_change = new_p1 != em.pedal1.type;
@@ -123,8 +128,53 @@ void Hc1Module::onChannel16CC(uint8_t cc, uint8_t value)
             }
         } break;
 
+        case EMCC_Polyphony:
+            //if (em.polyphony.to_raw() != value) {
+                em.polyphony.set_raw(value);
+                notifyPolyphonyChanged();
+            //}
+            break;
+
+        case EMCC_BendRange:
+            //if (em.mpe.get_bend() != value) {
+            //    Mpe old = em.mpe;
+                em.mpe.set_bend_with_side_effects(value);
+            //    if (old != em.mpe) {
+                    notifyMpeChanged();
+            //    }
+            //}
+            break;
+
+        case EMCC_YCC:
+            //if (U8(em.mpe.get_y()) != value) {
+            //    Mpe old = em.mpe;
+                em.mpe.set_y_with_side_effects(static_cast<EMY>(value));
+            //    if (old != em.mpe) {
+                    notifyMpeChanged();
+            //    }
+            //}
+            break;
+
+        case EMCC_ZCC:
+            //if (U8(em.mpe.get_z()) != value) {
+            //    Mpe old = em.mpe;
+                em.mpe.set_z_with_side_effects(static_cast<EMZ>(value));
+            //    if (old != em.mpe) {
+                    notifyMpeChanged();
+            //    }
+            //}
+            break;
+
         case EMCC_MiddleC:
             em.middle_c = value;
+            break;
+
+        case EMCC_Priority:
+            //if (em.priority.to_raw() != value)
+            //{
+                em.priority.set_raw(value);
+                notifyNotePriorityChanged();
+            //}
             break;
 
         case EMCC_TuningGrid: {

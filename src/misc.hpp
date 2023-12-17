@@ -38,6 +38,18 @@ inline bool in_range_limit(T value, T minimum, T limit) { return minimum <= valu
 bool GetBool(const json_t* root, const char* key, bool default_value);
 float GetFloat(const json_t* root, const char* key, float default_value);
 
+inline uint8_t GetByteParamValue(rack::ParamQuantity* pq, uint8_t default_value = 0) {
+    if (!pq) return default_value;
+    return U8(std::round(pq->getValue()));
+}
+
+inline uint8_t GetSmallParamValue(rack::app::ModuleWidget* w, int id, uint8_t default_value = 0) {
+    auto p = w->getParam(id);
+    if (!p) return default_value;
+    return GetByteParamValue(p->getParamQuantity(), default_value);
+}
+
+
 enum class InitState : uint8_t {
     Uninitialized,
     Pending,

@@ -13,8 +13,8 @@ constexpr const float PARTNER_TOP = 14.f;
 constexpr const float PARTNER_WIDTH = 180.f;
 
 // Vertical knob+CV layout
-constexpr const float VK_REL_OFFSET = 14.f;
-constexpr const float VK_REL_VOFFSET = 15.f;
+constexpr const float VK_REL_OFFSET = 13.f;
+constexpr const float VK_REL_VOFFSET = 16.25f;
 constexpr const float VK_CV_VOFFSET = 23.f;
 }
 #endif

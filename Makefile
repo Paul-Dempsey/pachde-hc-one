@@ -11,6 +11,7 @@ SOURCES += src/colors.cpp
 SOURCES += src/em_device.cpp
 SOURCES += src/em_midi.cpp
 SOURCES += src/em_types/em_pedal.cpp
+SOURCES += src/em_types/em_priority.cpp
 SOURCES += src/em_types/em_rounding.cpp
 SOURCES += src/em_types/em_tuning.cpp
 SOURCES += src/he_group.cpp
@@ -58,6 +59,9 @@ SOURCES += src/Round/Round-ui.cpp
 
 SOURCES += src/Compress/Compress.cpp
 SOURCES += src/Compress/Compress-ui.cpp
+
+SOURCES += src/PolyMidi/PolyMidi.cpp
+SOURCES += src/PolyMidi/PolyMidi-ui.cpp
 
 DISTRIBUTABLES += res
 # DISTRIBUTABLES += presets

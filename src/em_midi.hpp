@@ -136,18 +136,65 @@ constexpr const uint8_t EMCC_Category       = 32;
 constexpr const uint8_t EMCC_ActionAesMenuRecirc = 33;
 
 constexpr const uint8_t EMCC_Routing        = 36;
+enum EM_ROUTE_BITS : uint8_t {
+    Surface_Midi	= 0x01,	//	route playing surface to Midi Out
+    Surface_Dsp		= 0x02,	//	route playing surface to internal sounds
+    Surface_Cvc		= 0x04,	//	route playing surface to CVC
+    Midi_Midi		= 0x08,	//	route Midi In to Midi Out
+    Midi_Dsp		= 0x10,	//	route Midi In to internal sounds
+    Midi_Cvc		= 0x20,	//	route Midi In to CVC
+    DefaultRoute    = 63,	//	default is to set all routing bits
+};
+
 constexpr const uint8_t EMCC_PedalType      = 37;
 
 constexpr const uint8_t EMCC_Polyphony      = 39;
 constexpr const uint8_t EMCC_BendRange      = 40; //MPE_MIN=12, default|max=96
-constexpr const uint8_t EMCC_YCC            = 41; //0=none, 127 = no_shelf
-constexpr const uint8_t EMCC_ZCC            = 42; //0=none 11=default(Expression) 69=channel pressure, 70=MPE+, 127=MPE
+
+constexpr const uint8_t EMCC_YCC            = 41;
+enum class EMY : uint8_t {
+    None             = 0,
+    CC_1_Modulation  = 1,
+    CC_2_Breath      = 2,
+    CC_3             = 3,
+    CC_4_Foot        = 4,
+    CC_7_Volume      = 7,
+    CC_11_Expression = 11,
+    CC_74_Bright     = 74,
+    Default_Y        = CC_74_Bright,
+    CC_74_NoShelf    = 127
+};
+
+constexpr const uint8_t EMCC_ZCC            = 42;
+enum class EMZ : uint8_t {
+    None                    = 0,
+    CC_1_Modulation         = 1,
+    CC_2_Breath             = 2,
+    CC_3                    = 3,
+    CC_4_Foot               = 4,
+    CC_7_Volume             = 7,
+    CC_11_Expression        = 11,
+    Default_Zcc             = CC_11_Expression,
+    Midi_ChannelPressure    = 69,
+    MpePlus_ChannelPressure = 70,
+    Mpe_ChannelPressure     = 127
+};
+constexpr const uint8_t EMCC_VelSplit       = 43; // includes split mode, but that is being removed
+enum class EM_Velocity : uint8_t {
+    Static127 = 0,
+    Dynamic   = 1,
+    FormulaV  = 2,
+    NoNotes   = 3,
+    Theremin  = 4,
+    Kyma      = 5,
+    MASK      = 0x07
+};
 constexpr const uint8_t EMCC_MiddleC        = 44;
 constexpr const uint8_t EMCC_SplitPoint     = 45;
 constexpr const uint8_t EMCC_MonoFunction   = 46;
 //ctlReciCol
 constexpr const uint8_t EMCC_MonoInterval   = 48;
-constexpr const uint8_t EMCC_Priority       = 49;
+constexpr const uint8_t EMCC_Priority       = 49; // includes NotePriority comp rate, immediate/toggle oct shift
 constexpr const uint8_t EMCC_TuningGrid     = 51;
 constexpr const uint8_t EMCC_Pedal1CC       = 52;
 constexpr const uint8_t EMCC_Pedal2CC       = 53;

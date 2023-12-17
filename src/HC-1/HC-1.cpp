@@ -174,6 +174,41 @@ void Hc1Module::notifyTiltEqChanged()
     }
 }
 
+void Hc1Module::notifyRoutingChanged()
+{
+    if (hc_event_subscriptions.empty()) return;
+    auto event = IHandleHcEvents::RoutingChangedEvent{em.routing};
+    for (auto client: hc_event_subscriptions) {
+        client->onRoutingChanged(event);
+    }
+}
+
+void Hc1Module::notifyPolyphonyChanged()
+{
+    if (hc_event_subscriptions.empty()) return;
+    auto event = IHandleHcEvents::PolyphonyChangedEvent{em.polyphony};
+    for (auto client: hc_event_subscriptions) {
+        client->onPolyphonyChanged(event);
+    }
+}
+
+void Hc1Module::notifyNotePriorityChanged()
+{
+    if (hc_event_subscriptions.empty()) return;
+    auto event = IHandleHcEvents::NotePriorityChangedEvent{em.priority};
+    for (auto client: hc_event_subscriptions) {
+        client->onNotePriorityChanged(event);
+    }
+}
+void Hc1Module::notifyMpeChanged()
+{
+    if (hc_event_subscriptions.empty()) return;
+    auto event = IHandleHcEvents::MpeChangedEvent{em.mpe};
+    for (auto client: hc_event_subscriptions) {
+        client->onMpeChanged(event);
+    }
+}
+
 void Hc1Module::notifyDeviceChanged()
 {
     if (hc_event_subscriptions.empty()) return;

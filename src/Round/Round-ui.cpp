@@ -17,14 +17,6 @@ constexpr const float KNOB_SPREAD = 80.f;
 constexpr const float LIGHT_SPREAD = 4.f;
 constexpr const float CENTER = 22.5f;
 
-inline uint8_t GetSmallParamValue(rack::app::ModuleWidget* w, int id, uint8_t default_value = 0) {
-    auto p = w->getParam(id);
-    if (!p) return default_value;
-    auto pq = p->getParamQuantity();
-    if (!pq) return default_value;
-    return U8(pq->getValue());
-}
-
 RoundModuleWidget::RoundModuleWidget(RoundModule * module)
 : my_module(module)
 {

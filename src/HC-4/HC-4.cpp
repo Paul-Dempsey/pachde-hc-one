@@ -34,11 +34,6 @@ Hc1Module* Hc4Module::getPartner()
     return partner_binding.getPartner();
 }
 
-void Hc4Module::onPedalChanged(const PedalChangedEvent& e)
-{
-
-}
-
 void Hc4Module::onDeviceChanged(const DeviceChangedEvent& e)
 {
     partner_binding.onDeviceChanged(e);
@@ -55,20 +50,11 @@ void Hc4Module::onDisconnect(const DisconnectEvent& e)
     }
 }
 
-// void Hc4Module::onFavoritesFileChanged(const FavoritesFileChangedEvent& e)
-// {
-//     if (ui_event_sink) {
-//         ui_event_sink->onFavoritesFileChanged(e);
-//     }
-// }
-
 void Hc4Module::process(const ProcessArgs& args)
 {
     if (0 == ((args.frame + id) % CV_INTERVAL)) {
         auto partner = getPartner();
         if (partner) {
-            // getOutput(Outputs::O_PEDAL1).setVoltage(10.f * partner->pedal1.value / 127);
-            // getOutput(Outputs::O_PEDAL2).setVoltage(10.f * partner->pedal2.value / 127);
         }
     }
 }

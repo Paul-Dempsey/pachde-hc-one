@@ -17,20 +17,11 @@ using CmpI = CompressModule::Inputs;
 using CmpO = CompressModule::Outputs;
 using CmpL = CompressModule::Lights;
 
-inline uint8_t GetSmallParamValue(rack::app::ModuleWidget* w, int id, uint8_t default_value = 0) {
-    auto p = w->getParam(id);
-    if (!p) return default_value;
-    auto pq = p->getParamQuantity();
-    if (!pq) return default_value;
-    return U8(pq->getValue());
-}
-
-
 void CompressModuleWidget::createCompressorUI()
 {
     addChild(createLightCentered<SmallSimpleLight<BlueLight>>(Vec(CENTER, 40.f), my_module, CmpL::L_COMPRESSOR));
 
-    float x_rel = CENTER - VK_REL_VOFFSET;
+    float x_rel = CENTER - VK_REL_OFFSET;
     float y = 88.f;
     // Threshold
     addChild(createModKnob(

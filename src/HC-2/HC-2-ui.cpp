@@ -19,14 +19,6 @@ using Hc2I = Hc2Module::Inputs;
 using Hc2O = Hc2Module::Outputs;
 using Hc2L = Hc2Module::Lights;
 
-inline uint8_t GetSmallParamValue(rack::app::ModuleWidget* w, int id, uint8_t default_value = 0) {
-    auto p = w->getParam(id);
-    if (!p) return default_value;
-    auto pq = p->getParamQuantity();
-    if (!pq) return default_value;
-    return U8(pq->getValue());
-}
-
 void Hc2ModuleWidget::createTiltEqUI(float x, float y)
 {
     addChild(createHeaderWidget(x, y, TEQ_BOX_WIDTH, KNOB_BOX_HEIGHT));
@@ -68,6 +60,7 @@ Hc2ModuleWidget::Hc2ModuleWidget(Hc2Module * module)
     }
     setPanel(createPanel(asset::plugin(pluginInstance, "res/HC-2.svg")));
     addChild(partner_picker = createPartnerPicker());
+    partner_picker->setFormat(TextFormatLength::Short);
 
     createTiltEqUI(TEQ_BOX_LEFT, TEQ_BOX_TOP);
 
