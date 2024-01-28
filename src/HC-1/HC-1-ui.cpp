@@ -27,6 +27,7 @@ Hc1ModuleWidget::Hc1ModuleWidget(Hc1Module* module)
 
 Hc1ModuleWidget::~Hc1ModuleWidget()
 {
+    dsp_widget = nullptr;
     if (module) {
         my_module->unsubscribeHcEvents(this);
     }
@@ -444,10 +445,12 @@ void Hc1ModuleWidget::pageDown()
 //
 void Hc1ModuleWidget::set_dsp_ready(bool ready)
 {
+    if (!dsp_widget) return;
     dsp_widget->set_dsp_ready(ready);
 }
 void Hc1ModuleWidget::set_dsp_value(int index, uint8_t value)
 {
+    if (!dsp_widget) return;
     dsp_widget->set_dsp_value(index, value);
 }
 
@@ -456,7 +459,7 @@ void Hc1ModuleWidget::set_dsp_value(int index, uint8_t value)
 //
 void Hc1ModuleWidget::setPreset(std::shared_ptr<Preset> preset)
 {
-    if (! my_module) return;
+    if (!my_module) return;
     my_module->setPreset(preset);
 }
 bool Hc1ModuleWidget::isCurrentPreset(std::shared_ptr<Preset> preset)

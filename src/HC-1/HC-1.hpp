@@ -173,7 +173,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, IMidiDeviceHolder, IMidiDeviceChang
         InitPhaseInfo{InitPhase::DeviceConfig,   InitState::Uninitialized, EMMidiRate::Third,     1.0f,       4.f },
         InitPhaseInfo{InitPhase::CachedPresets,  InitState::Uninitialized, EMMidiRate::Full,      0.f,        0.f },
         InitPhaseInfo{InitPhase::UserPresets,    InitState::Uninitialized, EMMidiRate::Third,     1.0f,      12.f },
-        InitPhaseInfo{InitPhase::SystemPresets,  InitState::Uninitialized, EMMidiRate::Twentieth, 1.0f,      25.f },
+        InitPhaseInfo{InitPhase::SystemPresets,  InitState::Uninitialized, EMMidiRate::Twentieth, 1.0f,      45.f },
         InitPhaseInfo{InitPhase::Favorites,      InitState::Uninitialized, EMMidiRate::Full,      0.f,        0.f },
         InitPhaseInfo{InitPhase::SavedPreset,    InitState::Uninitialized, EMMidiRate::Full,      1.0f,       4.f },
         InitPhaseInfo{InitPhase::PresetConfig,   InitState::Uninitialized, EMMidiRate::Full,      1.0f,       4.f },

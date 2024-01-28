@@ -30,7 +30,7 @@ struct EnumQuantity : SwitchQuantity
     void setEnumValue(TEnum evalue) {
         auto it = std::find(map.cbegin(), map.cend(), evalue);
         if (it == map.cend()) {
-            setValue(clipToMax ? maxValue : defaultValue);
+            setValue(clip_max ? maxValue : defaultValue);
         } else {
             setValue(static_cast<float>(std::distance(map.cbegin(), it)));
         }

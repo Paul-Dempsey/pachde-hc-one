@@ -49,7 +49,7 @@ PolyMidiModuleWidget::PolyMidiModuleWidget(PolyMidiModule * module)
     addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<BlueLight>>>(
         Vec(CENTER, 68.f), module, PMP::P_COMPUTE, PML::L_COMPUTE));
 
-    auto tw = createStaticTextLabel(Vec(L_KNOB, 130.f), 80.f, "MPE+", TextAlignment::Center, 9.f, false, gold);
+    auto tw = createStaticTextLabel(Vec(L_KNOB, 134.f), 80.f, "MPE+", TextAlignment::Center, 9.f, false, gold);
     midi_ui = createWidgetCentered<MpeBurger>(Vec(L_KNOB, 120));
     midi_ui->setLabel(tw);
     if (module) midi_ui->setParam(module->getParamQuantity(PMP::P_MPE));
@@ -65,6 +65,10 @@ PolyMidiModuleWidget::PolyMidiModuleWidget(PolyMidiModule * module)
     addChild(createParamCentered<SmallBlackKnob>(Vec(L_KNOB, 240.f), module, PMP::P_VELOCITY));
 
     addChild(createParamCentered<SmallBlackKnob>(Vec(R_KNOB, 120.f), module, PMP::P_X_BEND));
+    addChild(bend_text = createLazyDynamicTextLabel(
+        Vec(R_KNOB, 134.f), Vec(100.f, 12.f),
+        [&](){ return BendDisplayValue(my_module ? my_module->mpe.get_bend() : 96, true); },
+        9.f, false, TextAlignment::Center, gold, false));
     addChild(createParamCentered<SmallBlackKnob>(Vec(R_KNOB, 180.f), module, PMP::P_Y));
     addChild(createParamCentered<SmallBlackKnob>(Vec(R_KNOB, 240.f), module, PMP::P_Z));
 
@@ -105,6 +109,7 @@ void PolyMidiModuleWidget::onPolyphonyChanged(const PolyphonyChangedEvent &e)
 {
     poly_text->modified();
 }
+
 void PolyMidiModuleWidget::onNotePriorityChanged(const NotePriorityChangedEvent& e)
 {
     poly_text->modified();
@@ -114,7 +119,7 @@ void PolyMidiModuleWidget::onNotePriorityChanged(const NotePriorityChangedEvent&
 void PolyMidiModuleWidget::onMpeChanged(const MpeChangedEvent &e)
 {
     midi_ui->setMode(e.mpe.mode());
-    
+    bend_text->modified();
 }
 
 void PolyMidiModuleWidget::onDeviceChanged(const DeviceChangedEvent &e)

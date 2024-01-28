@@ -108,8 +108,9 @@ struct PolyMidiModuleWidget : ModuleWidget, IHandleHcEvents
     PartnerPicker* partner_picker = nullptr;
     DynamicTextLabel* poly_text = nullptr;
     DynamicTextLabel* priority_text = nullptr;
-    MpeBurger* midi_ui = nullptr;
     DynamicTextLabel* midi_text = nullptr;
+    DynamicTextLabel* bend_text = nullptr;
+    MpeBurger* midi_ui = nullptr;
 
     explicit PolyMidiModuleWidget(PolyMidiModule * module);
 

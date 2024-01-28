@@ -6,6 +6,16 @@
 using namespace ::rack;
 namespace pachde {
 
+inline std::string BendDisplayValue(uint8_t value, bool label = false)
+{
+    if (value <= 96) {
+        return format_string(label ? "Bend %d" : "%d", value);
+    } else {
+        int ch1Bend = std::max(1, value - 96);
+        return format_string(label ? "Bend 96:%d": "96:%d", ch1Bend);
+    }
+}
+
 struct BendParamQuantity : engine::ParamQuantity
 {
     bool is_mpe;
@@ -15,13 +25,7 @@ struct BendParamQuantity : engine::ParamQuantity
     }
 
     std::string getDisplayValueString() override {
-        auto value = getBendValue();
-        if (value <= 96) {
-            return format_string("%d", value);
-        } else {
-            int ch1Bend = std::max(1, value - 96);
-            return format_string("96:%d", ch1Bend);
-        }
+        return BendDisplayValue(getBendValue());
     }
 
     void setValue(float v) override {
