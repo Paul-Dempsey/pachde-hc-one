@@ -27,8 +27,10 @@ Hc1ModuleWidget::Hc1ModuleWidget(Hc1Module* module)
 
 Hc1ModuleWidget::~Hc1ModuleWidget()
 {
+    dsp_widget = nullptr;
     if (module) {
         my_module->unsubscribeHcEvents(this);
+        module = nullptr;
     }
 }
 
@@ -444,11 +446,11 @@ void Hc1ModuleWidget::pageDown()
 //
 void Hc1ModuleWidget::set_dsp_ready(bool ready)
 {
-    dsp_widget->set_dsp_ready(ready);
+    if (dsp_widget) dsp_widget->set_dsp_ready(ready);
 }
 void Hc1ModuleWidget::set_dsp_value(int index, uint8_t value)
 {
-    dsp_widget->set_dsp_value(index, value);
+    if (dsp_widget) dsp_widget->set_dsp_value(index, value);
 }
 
 //
