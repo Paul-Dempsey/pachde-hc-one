@@ -11,23 +11,10 @@ namespace pachde {
 
 Hc2Module::Hc2Module()
 {
-    std::vector<std::string> offon = {"off", "on"};
+    //std::vector<std::string> offon = {"off", "on"};
 
     config(Params::NUM_PARAMS, Inputs::NUM_INPUTS, Outputs::NUM_OUTPUTS, Lights::NUM_LIGHTS);
 
-    configCCParam(EMCC_TiltEq,          false, this, P_TEQ_TILT, IN_TEQ_TILT, P_TEQ_TILT_REL, L_TEQ_TILT_REL, 0.f, 127.f,  64.f, "Tilt", "", 0.f, 1.f)->snapEnabled = true;
-    configCCParam(EMCC_TiltEqFrequency, false, this, P_TEQ_FREQ, IN_TEQ_FREQ, P_TEQ_FREQ_REL, L_TEQ_FREQ_REL, 0.f, 127.f,  64.f, "Frequency", "%", 0.f, 100.f/127.f)->snapEnabled = true;
-    configCCParam(EMCC_TiltEqMix,       false, this, P_TEQ_MIX,  IN_TEQ_MIX,  P_TEQ_MIX_REL,  L_TEQ_MIX_REL,  0.f, 127.f,   0.f, "Mix", "%", 0.f, 100.f/127.f)->snapEnabled = true;
-
-    configInput(IN_TEQ_TILT, "Tilt EQ tilt");
-    configInput(IN_TEQ_FREQ, "Tilt EQ frequency");
-    configInput(IN_TEQ_MIX, "Tilt EQ mix");
-
-    configSwitch(P_TEQ_TILT_REL, 0.f, 1.f, 0.f, "Tilt relative CV", offon);
-    configSwitch(P_TEQ_FREQ_REL, 0.f, 1.f, 0.f, "Frequency relative CV", offon);
-    configSwitch(P_TEQ_MIX_REL,  0.f, 1.f, 0.f, "Mix relative CV", offon);
-
-    configLight(L_TEQ, "Tilt EQ");
     partner_binding.setClient(this);
 }
 
@@ -57,32 +44,6 @@ Hc1Module* Hc2Module::getPartner()
     return partner_binding.getPartner();
 }
 
-void Hc2Module::onTiltEqChanged(const TiltEqChangedEvent& e)
-{
-    bool changed = false;
-    auto old = tilt_eq;
-    tilt_eq = e.tilt_eq;
-
-    if (old.tilt != tilt_eq.tilt) {
-        changed = true;
-        auto pq = dynamic_cast<CCParamQuantity*>(getParamQuantity(Params::P_TEQ_TILT));
-        pq->setValueSilent(tilt_eq.tilt);
-    }
-    if (old.frequency != tilt_eq.frequency) {
-        changed = true;
-        auto pq = dynamic_cast<CCParamQuantity*>(getParamQuantity(Params::P_TEQ_FREQ));
-        pq->setValueSilent(tilt_eq.frequency);
-    }
-    if (old.mix != tilt_eq.mix) {
-        changed = true;
-        auto pq = dynamic_cast<CCParamQuantity*>(getParamQuantity(Params::P_TEQ_MIX));
-        pq->setValueSilent(tilt_eq.mix);
-    }
-    if (changed && ui_event_sink) {
-        ui_event_sink->onTiltEqChanged(e);
-    }
-}
-
 void Hc2Module::onDeviceChanged(const DeviceChangedEvent& e)
 {
     partner_binding.onDeviceChanged(e);
@@ -96,29 +57,6 @@ void Hc2Module::onDisconnect(const DisconnectEvent& e)
     partner_binding.onDisconnect(e);
     if (ui_event_sink) {
         ui_event_sink->onDisconnect(e);
-    }
-}
-
-void Hc2Module::pullTiltEq(Hc1Module *partner)
-{
-    if (!partner) partner = getPartner();
-    if (!partner) return;
-    tilt_eq = partner->em.tilt_eq;
-    getParamQuantity(Params::P_TEQ_TILT)->setValue(tilt_eq.tilt);
-    getParamQuantity(Params::P_TEQ_FREQ)->setValue(tilt_eq.frequency);
-    getParamQuantity(Params::P_TEQ_MIX)->setValue(tilt_eq.mix);
-    if (ui_event_sink) {
-        ui_event_sink->onTiltEqChanged(TiltEqChangedEvent{tilt_eq});
-    }
-}
-
-void Hc2Module::pushTiltEq(Hc1Module *partner)
-{
-    if (!partner) partner = getPartner();
-    if (!partner) return;
-    partner->em.tilt_eq = tilt_eq;
-    if (ui_event_sink) {
-        ui_event_sink->onTiltEqChanged(TiltEqChangedEvent{tilt_eq});
     }
 }
 
@@ -148,52 +86,19 @@ void Hc2Module::processCV(int paramId)
     }
 }
 
-void Hc2Module::processTiltEqControls()
-{
-    bool changed = false;
-
-    auto pq = dynamic_cast<CCParamQuantity*>(getParamQuantity(Params::P_TEQ_TILT));
-    auto v = pq->valueToSend();
-    if (pq->last_value != v) {
-        tilt_eq.tilt = v;
-        changed = true;
-        pq->syncValue();
-    }
-    pq = dynamic_cast<CCParamQuantity*>(getParamQuantity(Params::P_TEQ_FREQ));
-    v = pq->valueToSend();
-    if (pq->last_value != v) {
-        tilt_eq.frequency = v;
-        changed = true;
-        pq->syncValue();
-    }
-    pq = dynamic_cast<CCParamQuantity*>(getParamQuantity(Params::P_TEQ_MIX));
-    v = pq->valueToSend();
-    if (pq->last_value != v) {
-        tilt_eq.mix = v;
-        changed = true;
-        pq->syncValue();
-    }
-    if (changed) {
-        pushTiltEq();
-    }
-}
-
 void Hc2Module::processControls()
 {
     if (!control_rate.process()) { return; }
-    processTiltEqControls();
 }
 
 void Hc2Module::process(const ProcessArgs& args)
 {
     if ((0 == ((args.frame + id) % CV_INTERVAL))) {
-        processCV(Params::P_TEQ_TILT);
-        processCV(Params::P_TEQ_FREQ);
-        processCV(Params::P_TEQ_MIX);
+        // processCV(Params::P_whatever);
     }
 
     processControls();
-    getLight(Lights::L_TEQ).setBrightness(static_cast<float>(tilt_eq.mix)/127.f);
+    //getLight(Lights::L_whatever).setBrightness(static_cast<float>(some_value)/127.f);
 }
 
 // ISendMidi

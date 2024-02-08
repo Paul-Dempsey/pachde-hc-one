@@ -27,38 +27,6 @@ inline uint8_t GetSmallParamValue(rack::app::ModuleWidget* w, int id, uint8_t de
     return U8(pq->getValue());
 }
 
-void Hc2ModuleWidget::createTiltEqUI(float x, float y)
-{
-    addChild(createHeaderWidget(x, y, TEQ_BOX_WIDTH, KNOB_BOX_HEIGHT));
-    addChild(createStaticTextLabel<StaticTextLabel>(Vec(x + TEQ_BOX_WIDTH*.5f, y + PAD), 60.f, "Tilt EQ", TextAlignment::Center));
-    addChild(createLightCentered<SmallSimpleLight<BlueLight>>(Vec(x + KNOB_COL1 + 2.f * KNOB_SPREAD, y + 8.f), my_module, Hc2L::L_TEQ));
-
-    float cx = x + KNOB_COL1;
-    addChild(createStaticTextLabel<StaticTextLabel>(Vec(cx, y + KNOB_ROW - STATIC_LABEL_OFFSET), 50.f, "Tilt", TextAlignment::Center));
-    addChild(createModKnob(
-        Vec( cx, y + KNOB_ROW), 
-        module, Hc2P::P_TEQ_TILT, Hc2I::IN_TEQ_TILT, Hc2P::P_TEQ_TILT_REL));
-    addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<BlueLight>>>(Vec(cx - REL_OFFSET, y + KNOB_ROW - REL_VOFFSET), my_module, Hc2P::P_TEQ_TILT_REL, Hc2L::L_TEQ_TILT_REL));
-    addChild(createInputCentered<ColorPort>(Vec(cx - CV_COLUMN_OFFSET, y + KNOB_ROW + CV_ROW_OFFSET), my_module, Hc2I::IN_TEQ_TILT));
-
-    cx += KNOB_SPREAD;
-    addChild(createStaticTextLabel<StaticTextLabel>(Vec(cx, y + KNOB_ROW - STATIC_LABEL_OFFSET), 55.f, "Frequency", TextAlignment::Center));
-    addChild(createModKnob(
-        Vec( cx, y + KNOB_ROW), 
-        module, Hc2P::P_TEQ_FREQ, Hc2I::IN_TEQ_FREQ, Hc2P::P_TEQ_FREQ_REL));
-    addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<BlueLight>>>(Vec(cx - REL_OFFSET, y + KNOB_ROW - REL_VOFFSET), my_module, Hc2P::P_TEQ_FREQ_REL, Hc2L::L_TEQ_FREQ_REL));
-    addChild(createInputCentered<ColorPort>(Vec(cx - CV_COLUMN_OFFSET, y + KNOB_ROW + CV_ROW_OFFSET), my_module, Hc2I::IN_TEQ_FREQ));
-
-    cx += KNOB_SPREAD;
-    addChild(createStaticTextLabel<StaticTextLabel>(Vec(cx, y + KNOB_ROW - STATIC_LABEL_OFFSET), 30.f, "Mix", TextAlignment::Center));
-    addChild(createModKnob(
-        Vec( cx, y + KNOB_ROW), 
-        module, Hc2P::P_TEQ_MIX, Hc2I::IN_TEQ_MIX, Hc2P::P_TEQ_MIX_REL));
-    addParam(createLightParamCentered<PDLightLatch<TinySimpleLight<BlueLight>>>(Vec(cx - REL_OFFSET, y + KNOB_ROW - REL_VOFFSET), my_module, Hc2P::P_TEQ_MIX_REL, Hc2L::L_TEQ_MIX_REL));
-    addChild(createInputCentered<ColorPort>(Vec(cx - CV_COLUMN_OFFSET, y + KNOB_ROW + CV_ROW_OFFSET), my_module, Hc2I::IN_TEQ_MIX));
-
-}
-
 Hc2ModuleWidget::Hc2ModuleWidget(Hc2Module * module)
 {
     my_module = module;
@@ -68,8 +36,6 @@ Hc2ModuleWidget::Hc2ModuleWidget(Hc2Module * module)
     }
     setPanel(createPanel(asset::plugin(pluginInstance, "res/HC-2.svg")));
     addChild(partner_picker = createPartnerPicker());
-
-    createTiltEqUI(TEQ_BOX_LEFT, TEQ_BOX_TOP);
 
     auto x = box.size.x * .5f;
     addChild(createCCMap<CCMap>(x, box.size.y - 24.f - 20.f, true, CCMapChannel::One, this));

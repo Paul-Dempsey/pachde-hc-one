@@ -59,6 +59,10 @@ SOURCES += src/Round/Round-ui.cpp
 SOURCES += src/Compress/Compress.cpp
 SOURCES += src/Compress/Compress-ui.cpp
 
+SOURCES += src/Tilt/Tilt.cpp
+SOURCES += src/Tilt/Tilt-ui.cpp
+
+
 DISTRIBUTABLES += res
 # DISTRIBUTABLES += presets
 # DISTRIBUTABLES += selections
