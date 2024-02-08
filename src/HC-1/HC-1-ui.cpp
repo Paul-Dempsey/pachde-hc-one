@@ -27,6 +27,7 @@ Hc1ModuleWidget::Hc1ModuleWidget(Hc1Module* module)
 
 Hc1ModuleWidget::~Hc1ModuleWidget()
 {
+    my_module->dsp_client = NULL;
     dsp_widget = nullptr;
     if (module) {
         my_module->unsubscribeHcEvents(this);
