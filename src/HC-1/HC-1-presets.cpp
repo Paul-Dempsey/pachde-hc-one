@@ -23,7 +23,7 @@ bool Hc1Module::requireFirmwareVersionMatch(const std::string &path, json_t* roo
         ver = json_integer_value(j);
     }
     if (ver != em.firmware_version) {
-        WARN("%s: Loading %d presets on %d hardware", path, ver, em.firmware_version);
+        WARN("%s: Loading %d presets on %d hardware", path.c_str(), ver, em.firmware_version);
         return false;
     }
     return true;

@@ -143,6 +143,14 @@ void Hc1ModuleWidget::drawLayer(const DrawArgs& args, int layer)
         SetTextStyle(vg, normal_font, RampGray(G_85), 12.f);
         auto text = getBannerText(vg, normal_font, bold_font);
         CenterText(vg, box.size.x/2.f, 15.f, text.c_str(), nullptr);
+
+        // red * next to firmware version if greater than supported
+        uint16_t fw = my_module ? my_module->em.firmware_version : 0;
+        if (fw > 1009) {
+            SetTextStyle(vg, bold_font, GetStockColor(StockColor::Red), 12.f);
+            nvgText(vg, firmware_label->box.pos.x + firmware_label->box.size.x + 2.5f, firmware_label->box.pos.y + firmware_label->box.size.y - 1.5f, "*", nullptr);
+        }
+
     } else {
         SetTextStyle(vg, bold_font, preset_name_color, 16.f);
         CenterText(vg, box.size.x/2.f, 15.f, "My Amazing Preset", nullptr);

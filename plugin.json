@@ -1,7 +1,7 @@
 {
     "slug": "pachde-hc-one",
     "name": "HC One",
-    "version": "2.0.0-beta7",
+    "version": "2.0.0-beta6",
     "license": "GPL-3.0-or-later",
     "brand": "pachde",
     "author": "pachde",
@@ -22,8 +22,8 @@
       {
         "slug": "pachde-hc-2",
         "name": "HC-2",
-        "description": "More Eagan Matrix controls (HC-1 companion)",
-        "tags": [ "Controller", "MIDI", "Expander" ]
+        "description": "Experimental controls (HC-1 companion)",
+        "hidden": true
       },
       {
         "slug": "pachde-hc-favorites",
@@ -56,7 +56,7 @@
         "tags": [ "Controller", "Expander" ]
       },
       {
-        "slug": "pachde-hc-tilt-eq",
+        "slug": "pachde-hc-tilteq",
         "name": "TiltEQ",
         "description": "Controller for EaganMatrix Tilt EQ (HC-1 companion)",
         "tags": [ "Controller", "Expander" ]

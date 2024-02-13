@@ -215,4 +215,4 @@ void TiltModule::process(const ProcessArgs& args)
 
 }
 
-Model *modelTilt = createModel<pachde::TiltModule, pachde::TiltModuleWidget>("pachde-hc-tilt-eq");
+Model *modelTilt = createModel<pachde::TiltModule, pachde::TiltModuleWidget>("pachde-hc-tilteq");

@@ -82,6 +82,7 @@ Hc1Module::~Hc1Module()
 
 void Hc1Module::Uninit()
 {
+    dsp_client = nullptr;
     midi_dispatch.clear();
     silence(true);
     dispatchMidi();

@@ -101,6 +101,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, IMidiDeviceHolder, IMidiDeviceChang
 
     std::string favoritesFile;
     std::string moduleFavoritesPath();
+    bool requireFirmwareVersionMatch(const std::string &path, json_t* root);
     void clearFavorites();
     void saveFavorites();
     bool readFavoritesFile(const std::string& path, bool fresh);

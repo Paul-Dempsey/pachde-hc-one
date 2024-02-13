@@ -10,8 +10,6 @@ See [Getting Started](https://vcvrack.com/manual/GettingStarted) in the VCV Rack
 
 Grab a current build for the latest features and fixes: [HC-One Nightly](https://github.com/Paul-Dempsey/pachde-hc-one/releases/tag/Nightly)
 
-The beta 5 release announced online can be downloaded here: [HC-One 2.0.0-beta5](https://github.com/Paul-Dempsey/pachde-hc-one/releases/tag/v2.0.0-beta5).
-
 - [Documentation](doc/index.md#pachde-d-hc-one)
 
 - [Buy pachde a coffee](https://venmo.com/u/pcdempsey). Thank you!
@@ -19,27 +17,30 @@ The beta 5 release announced online can be downloaded here: [HC-One 2.0.0-beta5]
   Donations help pachde's morale, and fund hardware for testing and developing this software.\
   ![Buy pachde a coffee with VenMo](./doc/image/VenMo.png)
 
-Pachde and HC One are not affiliated with or sponsored by Haken Audio (but we're friends).
+Pachde and HC One are not affiliated with or sponsored by Haken Audio or Expressive E.
+
+**Note**  — HC One has been designed and tested with EaganMatrix firmware version 10.09.
+Some features are not operational with newer firmware (version > 10.09), and an update to HC One will be required.
 
 ## Modules
 
 - **[HC-1](./doc/HC-1.md)** Fast access to favorite presets, with knobs and CV inputs for the essential controls: Macros and the Recirculator.
 
-- **[Pedal 1 & Pedal 2](./doc/Pedals.md)** Pedal control, virtual pedals, and pedal CV in/out.
+- **[Pedal 1 & Pedal 2](./doc/Pedals.md#modules-pedal-1-and-pedal-2)** Pedal control, virtual pedals, and pedal CV in/out.
 
-- **[Round](./doc/Round.md)** Control of rounding and the tuning scale, with CV and trigger.
+- **[Round](./doc/Round.md#module-round)** Control of rounding and the tuning scale, with CV and trigger.
 
-- **[Compress](./doc/Compress.md)** EaganMatrix compressor controls, with CV.
+- **[Compress](./doc/Compress.md#module-compress)** EaganMatrix compressor controls, with CV.
 
-- **[Favorites](./doc/Favorites.md)** Pushbuttons to access up to 16 Favorite files.
+- **[TiltEQ](./doc/Tilt.md#module-tilteq)** EaganMatrix Tilt EQ controls, with CV.
 
-- **[HC-2](./doc/HC-2.md)** TiltEQ, and CC maps. This module will be going away.
+- **[Favorites](./doc/Favorites.md#module-favorites)** Pushbuttons to access up to 16 Favorite files.
 
-## Installing
+## Installing from Github builds
 
-To install this plugin from the GitHub builds, you must first have VCV Rack, of course, so do that if you haven't yet.
+To install this plugin, you must first have VCV Rack of course, so go get it if you haven't yet. See [Getting Started](https://vcvrack.com/manual/GettingStarted) in the VCV Rack manual.
 
-You'll need to know the Operating System (OS), and Architecture (ARCH) of your Rack install, and where to copy the downloaded plugin package to.
+You'll need to know the Operating System (OS) and Architecture (ARCH) of your Rack install, and where to copy the downloaded plugin package to.
 
 - In Rack, choose **Help** / **Open user folder**.
 
