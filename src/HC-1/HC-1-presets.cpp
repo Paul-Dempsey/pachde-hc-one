@@ -2,6 +2,33 @@
 #include "../he_group.hpp"
 namespace pachde {
 
+
+// TODO:
+//
+// We have a weak compatibility scheme for all types of preset files.
+//
+// Need to track device class, firmware version, and device instance. The latter
+// being the most difficult because we don't have unique device ids on all devices
+// (Osmose, EMM) required to validate user presets/favorites.
+//
+// So at the moment we only validate firmware version.
+// Newer firmware, or cross device favorites will require the ability to import
+// and match strictly by preset name.
+//
+bool Hc1Module::requireFirmwareVersionMatch(const std::string &path, json_t* root)
+{
+    uint16_t ver = 1009;
+    json_t* j = json_object_get(root, "firmware");
+    if (j) {
+        ver = json_integer_value(j);
+    }
+    if (ver != em.firmware_version) {
+        WARN("%s: Loading %d presets on %d hardware", path, ver, em.firmware_version);
+        return false;
+    }
+    return true;
+}
+
 void Hc1Module::tryCachedPresets()
 {
     if (EM_Hardware::Unknown != em.hardware) {
@@ -87,7 +114,7 @@ void Hc1Module::loadStartupConfig()
 	json_error_t error;
 	json_t* root = json_loadf(file, 0, &error);
 	if (!root) {
-		DebugLog("Invalid JSON at %d:%d %s in %s", error.line, error.column, error.text, path.c_str());
+		WARN("Invalid JSON at %d:%d %s in %s", error.line, error.column, error.text, path.c_str());
         return;
     }
 	DEFER({json_decref(root);});
@@ -176,10 +203,15 @@ void Hc1Module::loadUserPresets()
 	json_t* root = json_loadf(file, 0, &error);
 	if (!root) {
         phase->fail();
-		DebugLog("Invalid JSON at %d:%d %s in %s", error.line, error.column, error.text, path.c_str());
+		WARN("Invalid JSON at %d:%d %s in %s", error.line, error.column, error.text, path.c_str());
         return;
     }
 	DEFER({json_decref(root);});
+    if (!requireFirmwareVersionMatch(path, root)) {
+        phase->fail();
+        return;
+    }
+
     auto jar = json_object_get(root, "user");
     if (jar) {
         json_t* jp;
@@ -219,10 +251,15 @@ void Hc1Module::loadSystemPresets()
 	json_t* root = json_loadf(file, 0, &error);
 	if (!root) {
         phase->fail();
-		DebugLog("Invalid JSON at %d:%d %s in %s", error.line, error.column, error.text, path.c_str());
+		WARN("Invalid JSON at %d:%d %s in %s", error.line, error.column, error.text, path.c_str());
         return;
     }
 	DEFER({json_decref(root);});
+    if (!requireFirmwareVersionMatch(path, root)) {
+        phase->fail();
+        return;
+    }
+
     auto jar = json_object_get(root, "system");
     if (jar) {
         json_t* jp;
@@ -239,7 +276,9 @@ void Hc1Module::loadSystemPresets()
 
 void Hc1Module::userPresetsToJson(json_t* root)
 {
-    json_object_set_new(root, "device", json_string(connection->info.spec().c_str()));
+    json_object_set_new(root, "connection", json_string(connection->info.spec().c_str()));
+    json_object_set_new(root, "hardware", json_string(HardwarePresetClass(em.hardware)));
+    json_object_set_new(root, "firmware", json_integer(em.firmware_version));
 
     auto jaru = json_array();
     for (auto preset: user_presets) {
@@ -251,6 +290,7 @@ void Hc1Module::userPresetsToJson(json_t* root)
 void Hc1Module::systemPresetsToJson(json_t* root)
 {
     json_object_set_new(root, "hardware", json_string(HardwarePresetClass(em.hardware)));
+    json_object_set_new(root, "firmware", json_integer(em.firmware_version));
 
     auto jars = json_array();
     for (auto preset: system_presets) {
@@ -279,7 +319,9 @@ void Hc1Module::clearFavorites()
 json_t* Hc1Module::favoritesToJson()
 {
     json_t* root = json_object();
-    json_object_set_new(root, "device", json_string(HardwarePresetClass(em.hardware)));
+    json_object_set_new(root, "connection", json_string(connection->info.spec().c_str()));
+    json_object_set_new(root, "hardware", json_string(HardwarePresetClass(em.hardware)));
+    json_object_set_new(root, "firmware", json_integer(em.firmware_version));
     auto ar = json_array();
     for (auto preset: system_presets) {
         if (preset->favorite) {
@@ -340,10 +382,13 @@ bool Hc1Module::readFavoritesFile(const std::string& path, bool fresh)
         json_error_t error;
         json_t* root = json_loadf(file, 0, &error);
         if (!root) {
-            DebugLog("Invalid JSON at %d:%d %s in %s", error.line, error.column, error.text, path.c_str());
+            WARN("Invalid JSON at %d:%d %s in %s", error.line, error.column, error.text, path.c_str());
             return false;
         }
         DEFER({json_decref(root);});
+        if (!requireFirmwareVersionMatch(path, root)) {
+            return false;
+        }
         auto bulk = BulkFavoritingMode(this);
         auto jar = json_object_get(root, "favorites");
         if (jar) {
