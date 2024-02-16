@@ -30,6 +30,14 @@ By default, the list of system presets are saved, so the next time you open the 
 You can watch the prograss of the multi-step initialization process with the row of dots on the bottom.
 When everything is connected and working as expected, all the dots are blue, and you can begin playing.
 
+Classic Continuui connected to your computer via the Roland UM-One are not automatically recognized by HC-1 because the MIDI connection is not the name of an EaganMatrix device.However, you should be able to manually connect using the Advanced menu of the MIDI selector on the bottom left.
+Some manual editing of startup-config may be necessary to use these older devices.
+
+Similarly, if you are connecting via intermediate virtual MIDI, you will need to connect manually, unless the connection is named exactly like a direct EM Device connection.
+
+HC-One has not been tested with Rack as a VST in a DAW or other plugin environment.
+I expect this to not work or be very troublesome to configure and work properly.
+
 ## Troubleshooting
 
 If you are running on Microsoft Windows, remember that no other software can open the same MIDI device, unless you have third-party virtual MIDI software or drivers installed.
@@ -257,7 +265,7 @@ To find the plugin's user folder:
 
 Once you've found the plugin user folder, open the `startup-config.json` file in a plain-text editor.
 
-The default `startup-config.json` looks like this:
+The default `startup-config.json` is similar to this:
 
 ```json
 {
@@ -289,12 +297,12 @@ The default `startup-config.json` looks like this:
   "phase-user-presets": {
     "delay": 1.0,
     "midi_rate": 1,
-    "budget": 12
+    "budget": 25
   },
   "phase-system-presets": {
     "delay": 1.0,
     "midi_rate": 2,
-    "budget": 25
+    "budget": 45
   },
   "phase-favorites": {
     "delay": 0.0,
@@ -360,7 +368,7 @@ You can, of course, save favorites anywhere you like, but this is the default pe
 - **Preset `.mid`:** At this time, this plugin has no support for managing preset .mid files.
 I do have plans to build such functionality, but it may not be in the Rack plugin format.
 
-- **Multiple EM Devices:** 
+- **Multiple EM Devices:**
 
   If you own multiple EM-based devices, you can use an instance of HC-1 for each device in the same Rack patch to control multiple devices.
   The automatic discovery chooses a second (or third) device if there is already an HC-1 bound to the first device.
@@ -368,20 +376,13 @@ I do have plans to build such functionality, but it may not be in the Rack plugi
 
 - **Factory presets:** For beta, there are no Rack module factory presets.
 Please let me know if you have something useful that comes from using Rack module presets.
-Module presets are important to use for HC-3 to save the list for use in other patches.
+Module presets are important to use for **Favorite**** to save the list for use in other patches.
 
 - **More functionality:** I plan to add expander modules for controlling most other things on the device.
 I am *not* planning to create a preset (matrix) editor.
-That's not really suitable for a VCV rack module and it would require additional proprietary internal information from Haken Audio.
+That's not really suitable for a VCV rack module and it would require additional proprietary internal information from Haken Audio (not to mentionn a huge undertaking).
 
   I am interested to hear from you what will be most important controls to include in future HC modules.
-
-  - I have some ideas for other potential useful features, such as:
-
-    - Save and load profiles. These would contain a profile of settings including pedal assignments, rounding, MIDI routing, and so on.
-    These could be independent and also optionally associated with a specific preset (or presets), so that when you load a preset of any kind (user, favorite, or system), the associated profile is applied. This won't come until I've covered the basic controls.
-
-    - User preset save, load, archive-all, and restore-all. This possibly in a separate program rather than VCV Rack modules.
 
 ---
 

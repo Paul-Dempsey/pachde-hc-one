@@ -20,7 +20,7 @@ Grab a current build for the latest features and fixes: [HC-One Nightly](https:/
 Pachde and HC One are not affiliated with or sponsored by Haken Audio or Expressive E.
 
 **Note**  — HC One has been designed and tested with EaganMatrix firmware version 10.09.
-Some features are not operational with newer firmware (version > 10.09), and an update to HC One will be required.
+Some features may not be operational with newer firmware (version > 10.09), and an update to HC One will be required.
 
 ## Modules
 
@@ -64,15 +64,13 @@ If you want to find other modules to use (including my other plugin **pachde One
 ## Acknowledgements
 
 Special thanks to Lippold Haken (and the Haken Audio team), for creating the Continuum.
-Lippold personally has provided generous support by sharing technical details that make this software possible.
+Lippold personally has provided generous support by sharing internal technical details that make this software possible.
+
+Special thanks to Richard Kram for stellar beta feedback and encouragement.
 
 Beta testers are critical for success and covering the scenarios and hardware out there, and help me fill in the gaps on useful scenarios.
 
-Special thanks to these early adopters:
-
-- Richard Kram
-- António Machado
-- Justus Noll
+Special thanks to other early adopters who reported issues and moral support, including: António Machado, Justus Noll.
 
 Let me know how it's going for you, even if you haven't found any issues.
 
