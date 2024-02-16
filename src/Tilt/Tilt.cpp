@@ -14,9 +14,9 @@ TiltModule::TiltModule()
     std::vector<std::string> offon = {"off", "on"};
     config(Params::NUM_PARAMS, Inputs::NUM_INPUTS, Outputs::NUM_OUTPUTS, Lights::NUM_LIGHTS);
 
-    configCCParam(EMCC_TiltEq,          false, this, P_TEQ_TILT, IN_TEQ_TILT, P_TEQ_TILT_REL, L_TEQ_TILT_REL, 0.f, 127.f,  64.f, "Tilt", "", 0.f, 1.f)->snapEnabled = true;
-    configCCParam(EMCC_TiltEqFrequency, false, this, P_TEQ_FREQ, IN_TEQ_FREQ, P_TEQ_FREQ_REL, L_TEQ_FREQ_REL, 0.f, 127.f,  64.f, "Frequency", "%", 0.f, 100.f/127.f)->snapEnabled = true;
-    configCCParam(EMCC_TiltEqMix,       false, this, P_TEQ_MIX,  IN_TEQ_MIX,  P_TEQ_MIX_REL,  L_TEQ_MIX_REL,  0.f, 127.f,   0.f, "Mix", "%", 0.f, 100.f/127.f)->snapEnabled = true;
+    configCCParam0(EMCC_TiltEq,          false, this, P_TEQ_TILT, IN_TEQ_TILT, P_TEQ_TILT_REL, L_TEQ_TILT_REL, 0.f, 127.f,  64.f, "Tilt", "", 0.f, 1.f)->snapEnabled = true;
+    configCCParam0(EMCC_TiltEqFrequency, false, this, P_TEQ_FREQ, IN_TEQ_FREQ, P_TEQ_FREQ_REL, L_TEQ_FREQ_REL, 0.f, 127.f,  64.f, "Frequency", "", 0.f, 1.f)->snapEnabled = true;
+    configCCParam0(EMCC_TiltEqMix,       false, this, P_TEQ_MIX,  IN_TEQ_MIX,  P_TEQ_MIX_REL,  L_TEQ_MIX_REL,  0.f, 127.f,   0.f, "Mix", "%", 0.f, 100.f/127.f)->snapEnabled = true;
 
     configInput(IN_TEQ_TILT, "Tilt EQ Tilt");
     configInput(IN_TEQ_FREQ, "Tilt EQ Frequency");

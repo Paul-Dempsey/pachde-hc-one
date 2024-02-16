@@ -11,8 +11,8 @@ RoundModule::RoundModule()
 
     configInput(Inputs::IN_ROUND_RATE, "Round rate");
 
-    auto p = configCCParam(EMCC_RoundRate, false, this, Params::P_ROUND_RATE, Inputs::IN_ROUND_RATE, Params::P_ROUND_RATE_REL, Lights::L_ROUND_RATE_REL, 0.f, 127.f, 0.f, "Round rate");
-    p->snapEnabled = true;
+    configCCParam0(EMCC_RoundRate, false, this, Params::P_ROUND_RATE, Inputs::IN_ROUND_RATE, Params::P_ROUND_RATE_REL, Lights::L_ROUND_RATE_REL, 0.f, 127.f, 0.f, "Round rate", "", 0.f, 1.f)
+        ->snapEnabled = true;
     configSwitch(P_ROUND_RATE_REL, 0.f, 1.f, 0.f, "Round rate CV-relative", offon);
     configSwitch(P_ROUND_INITIAL, 0.f, 1.f, 0.f, "Round initial", offon);
     configInput(Inputs::IN_ROUND_INITIAL, "Round initial trigger");

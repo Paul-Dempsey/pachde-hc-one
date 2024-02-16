@@ -220,7 +220,6 @@ constexpr const uint8_t EMCC_MPE            = 127; // value = polyphony
 
 constexpr const uint8_t EM_MasterChannel    = 0;
 constexpr const uint8_t EM_MPE1Channel      = 1;
-constexpr const uint8_t EM_KentonChannel     = 13;
 constexpr const uint8_t EM_MatrixChannel     = 14;
 constexpr const uint8_t EM_SettingsChannel   = 15;
 

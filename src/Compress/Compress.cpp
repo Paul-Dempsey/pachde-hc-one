@@ -14,10 +14,10 @@ CompressModule::CompressModule()
 
     config(Params::NUM_PARAMS, Inputs::NUM_INPUTS, Outputs::NUM_OUTPUTS, Lights::NUM_LIGHTS);
 
-    configCCParam(EMCC_CompressorThreshold, false, this, P_COMP_THRESHOLD, IN_COMP_THRESHOLD, P_COMP_THRESHOLD_REL, L_COMP_THRESHOLD_REL, 0.f, 127.f, 127.f, "Threshold", "%", 0.f, 100.f/127.f)->snapEnabled = true;
-    configCCParam(EMCC_CompressorAttack, false, this, P_COMP_ATTACK,     IN_COMP_ATTACK,     P_COMP_ATTACK_REL,     L_COMP_ATTACK_REL,     0.f, 127.f,  64.f, "Attack", "%", 0.f, 100.f/127.f)->snapEnabled = true;
-    configCCParam(EMCC_CompressorRatio, false, this, P_COMP_RATIO,      IN_COMP_RATIO,      P_COMP_RATIO_REL,      L_COMP_RATIO_REL,      0.f, 127.f,  64.f, "Ratio", "%", 0.f, 100.f/127.f)->snapEnabled = true;
-    configCCParam(EMCC_CompressorMix, false, this, P_COMP_MIX,        IN_COMP_MIX,        P_COMP_MIX_REL,        L_COMP_MIX_REL,        0.f, 127.f,   0.f, "Mix", "%", 0.f, 100.f/127.f)->snapEnabled = true;
+    configCCParam0(EMCC_CompressorThreshold, false, this, P_COMP_THRESHOLD,  IN_COMP_THRESHOLD,  P_COMP_THRESHOLD_REL,  L_COMP_THRESHOLD_REL, 0.f, 127.f, 127.f, "Threshold", "", 0.f, 1.f)->snapEnabled = true;
+    configCCParam0(EMCC_CompressorAttack,    false, this, P_COMP_ATTACK,     IN_COMP_ATTACK,     P_COMP_ATTACK_REL,     L_COMP_ATTACK_REL,    0.f, 127.f,  64.f, "Attack", "",    0.f, 1.f)->snapEnabled = true;
+    configCCParam0(EMCC_CompressorRatio,     false, this, P_COMP_RATIO,      IN_COMP_RATIO,      P_COMP_RATIO_REL,      L_COMP_RATIO_REL,     0.f, 127.f,  64.f, "Ratio", "",     0.f, 1.f)->snapEnabled = true;
+    configCCParam0(EMCC_CompressorMix,       false, this, P_COMP_MIX,        IN_COMP_MIX,        P_COMP_MIX_REL,        L_COMP_MIX_REL,       0.f, 127.f,   0.f, "Mix", "%",       0.f, 100.f/127.f);
 
     configInput(IN_COMP_THRESHOLD, "Compression threshold");
     configInput(IN_COMP_ATTACK, "Compression attack");

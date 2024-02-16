@@ -23,11 +23,11 @@ Hc1Module::Hc1Module()
     configCCParam(em_midi::EMCC_iv,  true, this, M4_PARAM, M4_INPUT, M4_REL_PARAM, M4_REL_LIGHT, 0.f, EM_Max14f, EM_Max14f/2.f, "iv");
     configCCParam(em_midi::EMCC_v,   true, this, M5_PARAM, M5_INPUT, M5_REL_PARAM, M5_REL_LIGHT, 0.f, EM_Max14f, EM_Max14f/2.f, "v");
     configCCParam(em_midi::EMCC_vi,  true, this, M6_PARAM, M6_INPUT, M6_REL_PARAM, M6_REL_LIGHT, 0.f, EM_Max14f, EM_Max14f/2.f, "vi");
-    configCCParam(em_midi::EMCC_R1,   false, this, R1_PARAM, R1_INPUT, R1_REL_PARAM, R1_REL_LIGHT, 0.f, 127.f, 64.f, "R1", "", 0.f, 1.f);
-    configCCParam(em_midi::EMCC_R2,   false, this, R2_PARAM, R2_INPUT, R2_REL_PARAM, R2_REL_LIGHT, 0.f, 127.f, 64.f, "R2", "", 0.f, 1.f);
-    configCCParam(em_midi::EMCC_R3,   false, this, R3_PARAM, R3_INPUT, R3_REL_PARAM, R3_REL_LIGHT, 0.f, 127.f, 64.f, "R3", "", 0.f, 1.f);
-    configCCParam(em_midi::EMCC_R4,   false, this, R4_PARAM, R4_INPUT, R4_REL_PARAM, R4_REL_LIGHT, 0.f, 127.f, 64.f, "R4", "", 0.f, 1.f);
-    configCCParam(em_midi::EMCC_RMIX, false, this, RMIX_PARAM, RMIX_INPUT, RMIX_REL_PARAM, RMIX_REL_LIGHT, 0.f, 127.f, 64.f, "Recirculator Mix", "", 0.f, 1.f);
+    configCCParam(em_midi::EMCC_R1,   false, this, R1_PARAM, R1_INPUT, R1_REL_PARAM, R1_REL_LIGHT, 0.f, 127.f, 64.f, "R1", "", 0.f, 1.f)->snapEnabled = true;
+    configCCParam(em_midi::EMCC_R2,   false, this, R2_PARAM, R2_INPUT, R2_REL_PARAM, R2_REL_LIGHT, 0.f, 127.f, 64.f, "R2", "", 0.f, 1.f)->snapEnabled = true;
+    configCCParam(em_midi::EMCC_R3,   false, this, R3_PARAM, R3_INPUT, R3_REL_PARAM, R3_REL_LIGHT, 0.f, 127.f, 64.f, "R3", "", 0.f, 1.f)->snapEnabled = true;
+    configCCParam(em_midi::EMCC_R4,   false, this, R4_PARAM, R4_INPUT, R4_REL_PARAM, R4_REL_LIGHT, 0.f, 127.f, 64.f, "R4", "", 0.f, 1.f)->snapEnabled = true;
+    configCCParam(em_midi::EMCC_RMIX, false, this, RMIX_PARAM, RMIX_INPUT, RMIX_REL_PARAM, RMIX_REL_LIGHT, 0.f, 127.f, 64.f, "Recirculator Mix", "", 0.f, 1.f)->snapEnabled = true;
     configCCParam(em_midi::EMCC_PostLevel, true, this, VOLUME_PARAM, VOLUME_INPUT, VOLUME_REL_PARAM, VOLUME_REL_LIGHT, 0.f, EM_Max14f, EM_Max14f/2.f, "Post level");
 
     configSwitch(M1_REL_PARAM, 0.f, 1.f, 0.f, "Macro i relative-CV", {"off", "on"});

@@ -11,6 +11,7 @@ using namespace em_midi;
 struct CCParamQuantity : rack::engine::ParamQuantity
 {
     uint8_t cc = 0; // never a valid cc for param
+    uint8_t send_channel = EM_SettingsChannel;
     uint16_t last_value = 0;
     bool high_resolution = true;
     bool enabled = true;
@@ -57,12 +58,12 @@ struct CCParamQuantity : rack::engine::ParamQuantity
             if (high_resolution) {
                 uint8_t lo = to_send & 0x7f;
                 if (lo) {
-                    iSend->sendControlChange(EM_SettingsChannel, EMCC_PedalFraction, lo);
+                    iSend->sendControlChange(send_channel, EMCC_PedalFraction, lo);
                 }
                 uint8_t hi = to_send >> 7;
-                iSend->sendControlChange(EM_SettingsChannel, cc, hi);
+                iSend->sendControlChange(send_channel, cc, hi);
             } else {
-                iSend->sendControlChange(EM_SettingsChannel, cc, to_send & 0x7f);
+                iSend->sendControlChange(send_channel, cc, to_send & 0x7f);
             }
         }
     }
@@ -119,6 +120,13 @@ TCCPQ* configCCParam(uint8_t cc, bool hiRes, Module* module, int paramId, int in
     p->value = q->getDefaultValue();
 
     return q;
+}
+template <class TCCPQ = CCParamQuantity>
+TCCPQ* configCCParam0(uint8_t cc, bool hiRes, Module* module, int paramId, int inputId, int relativeParamId, int lightId, float minValue, float maxValue, float defaultValue, std::string name = "", std::string unit = "%", float displayBase = 0.f, float displayMultiplier = 100.f/EM_Max14f, float displayOffset = 0.f)
+{
+    auto p = configCCParam(cc, hiRes, module, paramId, inputId, relativeParamId, lightId, minValue, maxValue, defaultValue, name, unit, displayBase, displayMultiplier, displayOffset);
+    p->send_channel = 0;
+    return p;
 }
 
 const NVGcolor connected_track_color = nvgRGB(0x73, 0x5d, 0x26);

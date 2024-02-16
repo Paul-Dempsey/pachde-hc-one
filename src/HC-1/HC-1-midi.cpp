@@ -154,6 +154,42 @@ void Hc1Module::onChannel16CC(uint8_t cc, uint8_t value)
                 }
             }
             break;
+            
+        case EMCC_CompressorThreshold:
+            if (value != em.compressor.threshold) {
+                em.compressor.threshold = value;
+                if (!in_preset) {
+                    notifyCompressorChanged();
+                }
+            }
+            break;
+
+        case EMCC_CompressorAttack:
+            if (value != em.compressor.attack) {
+                em.compressor.attack = value;
+                if (!in_preset) {
+                    notifyCompressorChanged();
+                }
+            }
+            break;
+
+        case EMCC_CompressorRatio:
+            if (value != em.compressor.ratio) {
+                em.compressor.ratio = value;
+                if (!in_preset) {
+                    notifyCompressorChanged();
+                }
+            }
+            break;
+            
+        case EMCC_CompressorMix:
+            if (value != em.compressor.mix) {
+                em.compressor.mix = value;
+                if (!in_preset) {
+                    notifyCompressorChanged();
+                }
+            }
+            break;
 
         case EMCC_DataStream: {
             switch (value) {
@@ -251,69 +287,6 @@ void Hc1Module::onChannel16CC(uint8_t cc, uint8_t value)
                 em.pedal2.max = value;
                 if (!in_preset) {
                     notifyPedalChanged(1);
-                }
-            }
-            break;
-
-        case EMCC_CompressorThreshold:
-            if (value != em.compressor.threshold) {
-                em.compressor.threshold = value;
-                if (!in_preset) {
-                    notifyCompressorChanged();
-                }
-            }
-            break;
-
-        case EMCC_CompressorAttack:
-            if (value != em.compressor.attack) {
-                em.compressor.attack = value;
-                if (!in_preset) {
-                    notifyCompressorChanged();
-                }
-            }
-            break;
-
-        case EMCC_CompressorRatio:
-            if (value != em.compressor.ratio) {
-                em.compressor.ratio = value;
-                if (!in_preset) {
-                    notifyCompressorChanged();
-                }
-            }
-            break;
-            
-        case EMCC_CompressorMix:
-            if (value != em.compressor.mix) {
-                em.compressor.mix = value;
-                if (!in_preset) {
-                    notifyCompressorChanged();
-                }
-            }
-            break;
-
-        case EMCC_TiltEq:
-            if (value != em.tilt_eq.tilt) {
-                em.tilt_eq.tilt = value;
-                if (!in_preset) {
-                    notifyTiltEqChanged();
-                }
-            }
-            break;
-
-        case EMCC_TiltEqFrequency:
-            if (value != em.tilt_eq.frequency) {
-                em.tilt_eq.frequency = value;
-                if (!in_preset) {
-                    notifyTiltEqChanged();
-                }
-            }
-            break;
-
-        case EMCC_TiltEqMix:
-            if (value != em.tilt_eq.mix) {
-                em.tilt_eq.mix = value;
-                if (!in_preset) {
-                    notifyTiltEqChanged();
                 }
             }
             break;
@@ -609,6 +582,70 @@ void Hc1Module::onChannelOneCC(uint8_t cc, uint8_t value)
                 notifyRoundingChanged();
             }
         } break;
+        
+        case EMCC_TiltEq:
+            if (value != em.tilt_eq.tilt) {
+                em.tilt_eq.tilt = value;
+                if (!in_preset) {
+                    notifyTiltEqChanged();
+                }
+            }
+            break;
+
+        case EMCC_TiltEqFrequency:
+            if (value != em.tilt_eq.frequency) {
+                em.tilt_eq.frequency = value;
+                if (!in_preset) {
+                    notifyTiltEqChanged();
+                }
+            }
+            break;
+
+        case EMCC_TiltEqMix:
+            if (value != em.tilt_eq.mix) {
+                em.tilt_eq.mix = value;
+                if (!in_preset) {
+                    notifyTiltEqChanged();
+                }
+            }
+            break;
+
+
+        case EMCC_CompressorThreshold:
+            if (value != em.compressor.threshold) {
+                em.compressor.threshold = value;
+                if (!in_preset) {
+                    notifyCompressorChanged();
+                }
+            }
+            break;
+
+        case EMCC_CompressorAttack:
+            if (value != em.compressor.attack) {
+                em.compressor.attack = value;
+                if (!in_preset) {
+                    notifyCompressorChanged();
+                }
+            }
+            break;
+
+        case EMCC_CompressorRatio:
+            if (value != em.compressor.ratio) {
+                em.compressor.ratio = value;
+                if (!in_preset) {
+                    notifyCompressorChanged();
+                }
+            }
+            break;
+            
+        case EMCC_CompressorMix:
+            if (value != em.compressor.mix) {
+                em.compressor.mix = value;
+                if (!in_preset) {
+                    notifyCompressorChanged();
+                }
+            }
+            break;
 
         case MidiCC_AllSoundOff: onSoundOff(); break;
     }
@@ -658,7 +695,7 @@ void Hc1Module::onMidiMessage(uMidiMessage umsg)
         onChannelOneMessage(msg);
         break;
 
-    case EM_KentonChannel: // 13 (channel 14)
+    case 13: // 13 (channel 14)
         break;
 
     case EM_MatrixChannel:  // 14 (channel 15)
