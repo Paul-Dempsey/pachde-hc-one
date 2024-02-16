@@ -1,3 +1,4 @@
+// Copyright (C) Paul Chase Dempsey
 #include "module_broker.hpp"
 
 namespace pachde {

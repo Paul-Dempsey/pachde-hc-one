@@ -1,3 +1,4 @@
+// Copyright (C) Paul Chase Dempsey
 #pragma once
 #ifndef MISC_HPP_INCLUDED
 #define MISC_HPP_INCLUDED

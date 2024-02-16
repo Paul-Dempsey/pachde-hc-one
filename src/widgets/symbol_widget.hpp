@@ -1,3 +1,4 @@
+// Copyright (C) Paul Chase Dempsey
 #pragma once
 #ifndef SYMBOL_WIDGET_HPP_INCLUDE
 #define SYMBOL_WIDGET_HPP_INCLUDE

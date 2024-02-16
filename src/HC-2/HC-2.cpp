@@ -1,3 +1,4 @@
+// Copyright (C) Paul Chase Dempsey
 #include "HC-2.hpp"
 #include "../colors.hpp"
 #include "../misc.hpp"

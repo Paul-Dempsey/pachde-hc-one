@@ -1,3 +1,4 @@
+// Copyright (C) Paul Chase Dempsey
 #include "Compress.hpp"
 #include "../colors.hpp"
 #include "../misc.hpp"

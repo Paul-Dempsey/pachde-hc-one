@@ -1,3 +1,4 @@
+// Copyright (C) Paul Chase Dempsey
 #pragma once
 #ifndef PRESET_META_HPP_INCLUDED
 #define PRESET_META_HPP_INCLUDED

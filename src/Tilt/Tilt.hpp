@@ -1,3 +1,4 @@
+// Copyright (C) Paul Chase Dempsey
 #pragma once
 #ifndef TILT_HPP_INCLUDED
 #define TILT_HPP_INCLUDED

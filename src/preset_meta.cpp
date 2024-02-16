@@ -1,3 +1,4 @@
+// Copyright (C) Paul Chase Dempsey
 #include "preset_meta.hpp"
 
 namespace pachde {

@@ -1,3 +1,4 @@
+// Copyright (C) Paul Chase Dempsey
 #include "small_push.hpp"
 
 namespace pachde {

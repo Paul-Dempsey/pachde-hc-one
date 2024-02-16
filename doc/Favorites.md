@@ -24,4 +24,5 @@ Similarly, if the favorites file contains user presets that are no longer on the
 
 **Slug** `pachde-hc-favorites`
 
+// Copyright © Paul Chase Dempsey\
 ![pachde (#d) logo](./image/Logo.svg)

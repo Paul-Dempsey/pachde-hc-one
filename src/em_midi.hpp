@@ -1,3 +1,4 @@
+// Copyright (C) Paul Chase Dempsey
 #pragma once
 #ifndef EM_MIDI_HPP
 #define EM_MIDI_HPP

@@ -1,3 +1,4 @@
+// Copyright (C) Paul Chase Dempsey
 #pragma once
 #ifndef PARTNER_PICKER_HPP_INCLUDED
 #define PARTNER_PICKER_HPP_INCLUDED

@@ -1,3 +1,4 @@
+// Copyright (C) Paul Chase Dempsey
 // parse Haken Editor group file
 #pragma once
 #include <rack.hpp>

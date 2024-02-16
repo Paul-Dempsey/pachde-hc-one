@@ -1,3 +1,4 @@
+// Copyright (C) Paul Chase Dempsey
 #pragma once
 #ifndef TIP_WIDGET_HPP_INCLUDED
 #define TIP_WIDGET_HPP_INCLUDED

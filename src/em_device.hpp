@@ -1,3 +1,4 @@
+// Copyright (C) Paul Chase Dempsey
 #pragma once
 #ifndef EM_DEVICE_HPP_INCLUDED
 #define EM_DEVICE_HPP_INCLUDED

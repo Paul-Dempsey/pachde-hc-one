@@ -22,4 +22,5 @@ The Round rate can be CV-controlled, in absolute and relative mode, just like th
 
 **Slug** `pachde-hc-round`
 
+// Copyright © Paul Chase Dempsey\
 ![pachde (#d) logo](./image/Logo.svg)

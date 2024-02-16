@@ -1,3 +1,4 @@
+// Copyright (C) Paul Chase Dempsey
 #include "Favorites.hpp"
 #include "../misc.hpp"
 #include "../module_broker.hpp"

@@ -1,3 +1,4 @@
+// Copyright (C) Paul Chase Dempsey
 #pragma once
 #ifndef SQUARE_BUTTON_HPP_INCLUDED
 #define SQUARE_BUTTON_HPP_INCLUDED

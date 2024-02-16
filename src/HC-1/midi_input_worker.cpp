@@ -1,3 +1,4 @@
+// Copyright (C) Paul Chase Dempsey
 #include "midi_input_worker.hpp"
 
 namespace pachde {

@@ -1,3 +1,4 @@
+// Copyright (C) Paul Chase Dempsey
 #pragma once
 #ifndef HEADER_WIDGET_HPP_INCLUDED
 #define HEADER_WIDGET_HPP_INCLUDED

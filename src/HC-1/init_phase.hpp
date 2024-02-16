@@ -1,3 +1,4 @@
+// Copyright (C) Paul Chase Dempsey
 #pragma once
 #ifndef INIT_PHASE_HPP_INCLUDED
 #define INIT_PHASE_HPP_INCLUDED

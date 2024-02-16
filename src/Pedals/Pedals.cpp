@@ -1,3 +1,4 @@
+// Copyright (C) Paul Chase Dempsey
 #include "Pedals.hpp"
 #include "../widgets/pedal_param.hpp"
 namespace pachde {

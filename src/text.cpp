@@ -1,3 +1,4 @@
+// Copyright (C) Paul Chase Dempsey
 #include "text.hpp"
 #include <cctype>
 

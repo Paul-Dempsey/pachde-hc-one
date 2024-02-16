@@ -1,3 +1,4 @@
+// Copyright (C) Paul Chase Dempsey
 #pragma once
 #include "../plugin.hpp"
 #include "../colors.hpp"

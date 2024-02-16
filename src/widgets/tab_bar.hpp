@@ -1,3 +1,4 @@
+// Copyright (C) Paul Chase Dempsey
 #pragma once
 #ifndef TAB_BAR_HPP_INCLUDED
 #define TAB_BAR_HPP_INCLUDED

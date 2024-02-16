@@ -1,3 +1,4 @@
+// Copyright (C) Paul Chase Dempsey
 #pragma once
 #ifndef VERT_SLIDER_HPP_INCLUDED
 #define VERT_SLIDER_HPP_INCLUDED

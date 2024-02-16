@@ -42,4 +42,5 @@ There is one hidden module, used for development:
 
 ---
 
+// Copyright © Paul Chase Dempsey\
 ![pachde (#d) logo](./image/Logo.svg)

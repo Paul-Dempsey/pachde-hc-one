@@ -1,3 +1,4 @@
+// Copyright (C) Paul Chase Dempsey
 #include "init_phase.hpp"
 
 namespace pachde {

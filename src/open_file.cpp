@@ -1,3 +1,4 @@
+// Copyright (C) Paul Chase Dempsey
 #include "open_file.hpp"
 #include <rack.hpp>
 #include <osdialog.h>

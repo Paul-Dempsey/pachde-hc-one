@@ -1,3 +1,4 @@
+// Copyright (C) Paul Chase Dempsey
 #pragma once
 #ifndef EM_TUNING_HPP_INCLUDED
 #define EM_TUNING_HPP_INCLUDED

@@ -13,4 +13,5 @@ Each parameter accepts absolute and relative control voltage the same way as the
 
 **Slug** `pachde-hc-compressor`
 
+// Copyright © Paul Chase Dempsey\
 ![pachde (#d) logo](./image/Logo.svg)

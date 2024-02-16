@@ -1,3 +1,4 @@
+// Copyright (C) Paul Chase Dempsey
 #pragma once
 #ifndef ROUND_HPP_INCLUDED
 #define ROUND_HPP_INCLUDED

@@ -108,4 +108,7 @@ If you have a fix for the bug, then that's fantastic. Bug fix PRs are always wel
 
 At this time, pull requests are accepted only from forks. GitHub makes it super easy to create a fork.
 
-![pachde (#d) logo](doc/Logo.svg)
+---
+
+// Copyright © Paul Chase Dempsey\
+![pachde (#d) logo](./doc/image/Logo.svg)

@@ -1,3 +1,4 @@
+// Copyright (C) Paul Chase Dempsey
 #pragma once
 #ifndef INDICATOR_WIDGET_INCLUDED
 #define INDICATOR_WIDGET_INCLUDED

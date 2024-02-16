@@ -1,3 +1,4 @@
+// Copyright (C) Paul Chase Dempsey
 #include "Round.hpp"
 #include "../widgets/cc_param.hpp"
 #include "tuning_ui.hpp"

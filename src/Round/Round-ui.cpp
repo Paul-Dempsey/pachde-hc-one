@@ -1,3 +1,4 @@
+// Copyright (C) Paul Chase Dempsey
 #include "Round.hpp"
 #include "../colors.hpp"
 #include "../misc.hpp"

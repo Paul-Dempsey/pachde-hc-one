@@ -1,3 +1,4 @@
+// Copyright (C) Paul Chase Dempsey
 #pragma once
 #ifndef PEDALS_HPP_INCLUDED
 #define PEDALS_HPP_INCLUDED

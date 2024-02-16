@@ -1,3 +1,4 @@
+// Copyright (C) Paul Chase Dempsey
 #include "em_device.hpp"
 #include "misc.hpp"
 #include <unordered_map>

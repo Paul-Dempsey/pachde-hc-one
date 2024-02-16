@@ -1,3 +1,4 @@
+// Copyright (C) Paul Chase Dempsey
 #pragma once
 #ifndef TUNING_UI_HPP_INCLUDED
 #define TUNING_UI_HPP_INCLUDED

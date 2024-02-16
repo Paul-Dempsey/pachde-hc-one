@@ -1,3 +1,4 @@
+// Copyright (C) Paul Chase Dempsey
 #include "vert_slider.hpp"
 #include "../misc.hpp"
 

@@ -1,3 +1,4 @@
+// Copyright (C) Paul Chase Dempsey
 #include "HC-1.hpp"
 #include "midi_input_worker.hpp"
 #include "../module_broker.hpp"

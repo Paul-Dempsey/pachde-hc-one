@@ -1,3 +1,4 @@
+// Copyright (C) Paul Chase Dempsey
 #pragma once
 #ifndef COMMON_LAYOUT_HPP_INCLUDED
 #define COMMON_LAYOUT_HPP_INCLUDED

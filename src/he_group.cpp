@@ -1,3 +1,4 @@
+// Copyright (C) Paul Chase Dempsey
 #include "he_group.hpp"
 namespace he_group {
 

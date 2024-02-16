@@ -1,3 +1,4 @@
+// Copyright (C) Paul Chase Dempsey
 #include "port.hpp"
 
 namespace pachde {

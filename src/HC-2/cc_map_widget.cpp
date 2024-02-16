@@ -1,3 +1,4 @@
+// Copyright (C) Paul Chase Dempsey
 #include "cc_map_widget.hpp"
 
 namespace pachde {

@@ -1,3 +1,4 @@
+// Copyright (C) Paul Chase Dempsey
 #pragma once
 #ifndef SWITCH_VERT_4_HPP_INCLUDED
 #define SWITCH_VERT_4_HPP_INCLUDED

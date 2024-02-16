@@ -1,3 +1,4 @@
+// Copyright (C) Paul Chase Dempsey
 #pragma once
 #ifndef EM_RECIRCULATOR_HPP_INCLUDED
 #define EM_RECIRCULATOR_HPP_INCLUDED

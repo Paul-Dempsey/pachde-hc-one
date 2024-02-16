@@ -1,3 +1,4 @@
+// Copyright (C) Paul Chase Dempsey
 #include "Tilt.hpp"
 #include "../colors.hpp"
 #include "../misc.hpp"

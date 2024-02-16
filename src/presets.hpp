@@ -1,3 +1,4 @@
+// Copyright (C) Paul Chase Dempsey
 #pragma once
 #ifndef PRESETS_HPP_INCLUDED
 #define PRESETS_HPP_INCLUDED

@@ -1,3 +1,4 @@
+// Copyright (C) Paul Chase Dempsey
 #pragma once
 #ifndef MIDI_INPUT_WORKER_HPP_INCLUDED
 #define MIDI_INPUT_WORKER_HPP_INCLUDED

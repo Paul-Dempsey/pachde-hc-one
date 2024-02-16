@@ -1,3 +1,4 @@
+// Copyright (C) Paul Chase Dempsey
 #include "HC-1.hpp"
 #include "../module_broker.hpp"
 #include "../widgets/cc_param.hpp"

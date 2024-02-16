@@ -1,3 +1,4 @@
+// Copyright (C) Paul Chase Dempsey
 #include "HC-4.hpp"
 #include "../widgets/port.hpp"
 

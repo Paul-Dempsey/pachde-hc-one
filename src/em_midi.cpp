@@ -1,3 +1,4 @@
+// Copyright (C) Paul Chase Dempsey
 #include "em_midi.hpp"
 #include "misc.hpp"
 

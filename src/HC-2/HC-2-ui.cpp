@@ -1,3 +1,4 @@
+// Copyright (C) Paul Chase Dempsey
 #include "HC-2.hpp"
 #include "HC-2-layout.hpp"
 #include "header_widget.hpp"

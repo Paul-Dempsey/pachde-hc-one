@@ -1,3 +1,4 @@
+// Copyright (C) Paul Chase Dempsey
 #include "em_pedal.hpp"
 #include "../misc.hpp"
 

@@ -1,3 +1,4 @@
+// Copyright (C) Paul Chase Dempsey
 #pragma once
 #ifndef Favorites_HPP_INCLUDED
 #define Favorites_HPP_INCLUDED

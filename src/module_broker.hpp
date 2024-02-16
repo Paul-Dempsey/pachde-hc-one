@@ -1,3 +1,4 @@
+// Copyright (C) Paul Chase Dempsey
 #pragma once
 #ifndef MODULE_BROKER_HPP_INCLUDED
 #define MODULE_BROKER_HPP_INCLUDED

@@ -1,3 +1,4 @@
+// Copyright (C) Paul Chase Dempsey
 #include <rack.hpp>
 #include "colors.hpp"
 

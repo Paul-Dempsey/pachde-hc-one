@@ -46,4 +46,5 @@ From top to bottom, left to right:
 
 **Slugs** `pachde-hc-pedal-1`, `pachde-hc-pedal-2`
 
+// Copyright © Paul Chase Dempsey\
 ![pachde (#d) logo](./image/Logo.svg)

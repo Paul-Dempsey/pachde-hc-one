@@ -387,4 +387,5 @@ That's not really suitable for a VCV rack module and it would require additional
 
 **Slug** `pachde-hc-1`
 
+// Copyright © Paul Chase Dempsey\
 ![pachde (#d) logo](./image/Logo.svg)

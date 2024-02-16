@@ -1,3 +1,4 @@
+// Copyright (C) Paul Chase Dempsey
 #pragma once
 #ifndef EM_PICKER_HPP_INCLUDED
 #define EM_PICKER_HPP_INCLUDED
