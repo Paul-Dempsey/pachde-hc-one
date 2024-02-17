@@ -18,13 +18,6 @@ using TL = TiltModule::Lights;
 
 constexpr const float KNOB_SPREAD = 80.f;
 constexpr const float CENTER = 22.5f;
-constexpr const float PAD = 1.f;
-constexpr const float MORE_PAD = 4.f;
-constexpr const float REL_OFFSET = 20.f;
-constexpr const float REL_VOFFSET = 10.f;
-constexpr const float CV_COLUMN_OFFSET = 24.f;
-constexpr const float CV_ROW_OFFSET = 6.f;
-constexpr const float STATIC_LABEL_OFFSET = 29.5f;
 
 TiltModuleWidget::TiltModuleWidget(TiltModule * module)
 : my_module(module)
