@@ -472,20 +472,20 @@ inline int MessageBytes(uint8_t status_byte)
 }
 
 union uMidiMessage {
-    uint64_t dwData;
+    uint32_t data;
     uint8_t bytes[4];
-    uMidiMessage() : dwData(0) {}
-    uMidiMessage(uint64_t dw) : dwData(dw) {}
-    uMidiMessage(uint8_t b1, uint8_t b2) : dwData(0) {
+    uMidiMessage() : data(0) {}
+    uMidiMessage(uint64_t dw) : data(dw) {}
+    uMidiMessage(uint8_t b1, uint8_t b2) : data(0) {
         bytes[0] = b1;
         bytes[1] = b2;
     }
-    uMidiMessage(uint8_t b0, uint8_t b1, uint8_t b2) : dwData(0) {
+    uMidiMessage(uint8_t b0, uint8_t b1, uint8_t b2) : data(0) {
         bytes[0] = b0;
         bytes[1] = b1;
         bytes[2] = b2;
     }
-    uMidiMessage(const midi::Message& msg) : dwData(0) {
+    uMidiMessage(const midi::Message& msg) : data(0) {
         size_t i = 0;
         for (auto b: msg.bytes) {
             bytes[i++] = b;
@@ -523,7 +523,7 @@ union uMidiMessage {
 	inline uint8_t channel() { return bytes[0] & 0x0f; }
 	inline uint8_t b1() { return bytes[1]; }
 	inline uint8_t b2() { return bytes[2]; }
-    inline uint64_t raw() { return dwData; }
+    inline uint64_t raw() { return data; }
 };
 
 inline uint8_t Status(uint64_t msg) { return uMidiMessage(msg).status(); }

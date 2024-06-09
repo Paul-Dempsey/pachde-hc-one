@@ -459,6 +459,22 @@ void Hc1Module::onChannel16Message(const midi::Message& msg)
             }
             break;
 
+        // FW 10.34
+        case MidiStatus_PolyKeyPressure:
+            if (in_preset && !broken) {
+                switch (data_stream) {
+                    case EM_StreamType::Name:
+                        preset0.build_name(msg.bytes[1]);
+                        preset0.build_name(msg.bytes[2]);
+                        break;
+                    case EM_StreamType::ConText:
+                        preset0.build_text(msg.bytes[1]);
+                        preset0.build_text(msg.bytes[2]);
+                        break;
+                }
+            }
+            break;
+
         case MidiStatus_ChannelPressure:
             if (in_preset && !broken) {
                 switch (data_stream) {
