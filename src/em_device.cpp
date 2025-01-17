@@ -318,6 +318,10 @@ struct MidiDeviceBroker::Internal
     std::vector<std::shared_ptr<MidiDeviceConnection>> devices;
     std::map<std::string, int64_t> claims; // spec:module_id
 
+    Internal() {
+        ensureDevices();
+    }
+
     void clear() {
         devices.clear();
         claims.clear();

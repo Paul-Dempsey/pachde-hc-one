@@ -140,7 +140,8 @@ void PedalCore::syncValue(Hc1Module * partner)
         if (!partner->readyToSend()) return;
         PedalInfo & pedal = partner->getPedal(pedal_id);
         pedal.min = value;
-        partner->sendControlChange(EM_SettingsChannel, pedal_id ? EMCC_MinPedal2 : EMCC_MinPedal1, value);
+        //partner->sendControlChange(EM_SettingsChannel, pedal_id ? EMCC_MinPedal2 : EMCC_MinPedal1, value);
+        partner->sendControlChange(0, pedal_id ? EMCC_MinPedal2 : EMCC_MinPedal1, value);
     }
 
     pq = getParamQuantity(Params::P_PEDAL_MAX);
@@ -151,7 +152,8 @@ void PedalCore::syncValue(Hc1Module * partner)
         if (!partner->readyToSend()) return;
         PedalInfo & pedal = partner->getPedal(pedal_id);
         pedal.max = value;
-        partner->sendControlChange(EM_SettingsChannel, pedal_id ? EMCC_MaxPedal2 : EMCC_MaxPedal1, value);
+        //partner->sendControlChange(EM_SettingsChannel, pedal_id ? EMCC_MaxPedal2 : EMCC_MaxPedal1, value);
+        partner->sendControlChange(0, pedal_id ? EMCC_MaxPedal2 : EMCC_MaxPedal1, value);
     }
 }
 

@@ -4,14 +4,6 @@
 
 namespace pachde {
     
-// void AddCategoryFilterItem(Menu *menu, Hc1Module * my_module, std::string name, uint16_t code)
-// {
-//     menu->addChild(createCheckMenuItem(name, "", 
-//         [=](){ return !my_module->preset_filter.isFiltered() || my_module->preset_filter.isShow(ST); },
-//         [=](){ my_module->preset_filter.toggleShow(ST); }
-//     ));
-// }
-
 void Hc1ModuleWidget::addSortBy(Menu *menu, std::string name, PresetOrder order)
 {
     menu->addChild(createCheckMenuItem(name, "", 
@@ -71,21 +63,6 @@ void Hc1ModuleWidget::addSystemMenu(Menu *menu)
         addSortBy(menu, "in System order", PresetOrder::System);
     }));
 
-    // menu->addChild(createSubmenuItem("Filter by Category", "", [=](Menu* menu) {
-    //     AddCategoryFilterItem(menu, my_module, "Strings", ST);
-    //     AddCategoryFilterItem(menu, my_module, "Winds", WI);
-    //     AddCategoryFilterItem(menu, my_module, "Vocal", VO);
-    //     AddCategoryFilterItem(menu, my_module, "Keyboard", KY);
-    //     AddCategoryFilterItem(menu, my_module, "Classic", CL);
-    //     AddCategoryFilterItem(menu, my_module, "Other", OT);
-    //     AddCategoryFilterItem(menu, my_module, "Percussion", PE);
-    //     AddCategoryFilterItem(menu, my_module, "Tuned Percussion",PT);
-    //     AddCategoryFilterItem(menu, my_module, "Processor", PR);
-    //     AddCategoryFilterItem(menu, my_module, "Drone", DO);
-    //     AddCategoryFilterItem(menu, my_module, "Midi", MD);
-    //     AddCategoryFilterItem(menu, my_module, "Control Voltage",CV);
-    //     AddCategoryFilterItem(menu, my_module, "Utility", UT);
-    //     }));
 }
 
 void Hc1ModuleWidget::addFavoritesMenu(Menu *menu)
@@ -267,15 +244,16 @@ void Hc1ModuleWidget::appendContextMenu(Menu *menu)
         menu->addChild(createMenuItem("Send one handshake (ping)", "", [=](){ 
             my_module->fresh_phase(InitPhase::Heartbeat);
             my_module->current_phase = InitPhase::Heartbeat;
-            //my_module->sendEditorPresent();
         }));
+
         menu->addChild(createMenuItem("Remake QSPI Data", "", [=]() {
             my_module->sendControlChange(EM_SettingsChannel, EMCC_Download, EM_DownloadItem::remakeSRMahl); }));
         }));
 
-
-    // now right click on system tab
-    // addSystemMenu(menu);
+    menu->addChild(createMenuItem("Refresh current preset info", "", [=](){ 
+        my_module->fresh_phase(InitPhase::PresetConfig);
+        my_module->current_phase = InitPhase::PresetConfig;
+    }));
 }
 
 }

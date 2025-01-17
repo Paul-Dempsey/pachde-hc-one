@@ -18,13 +18,12 @@ namespace pachde {
 //
 bool Hc1Module::requireFirmwareVersionMatch(const std::string &path, json_t* root)
 {
-    uint16_t ver = 1009;
+    uint16_t ver = 0;
     json_t* j = json_object_get(root, "firmware");
     if (j) {
         ver = json_integer_value(j);
     }
     if (ver != em.firmware_version) {
-        WARN("%s: Loading %d presets on %d hardware", path.c_str(), ver, em.firmware_version);
         return false;
     }
     return true;
@@ -33,10 +32,10 @@ bool Hc1Module::requireFirmwareVersionMatch(const std::string &path, json_t* roo
 void Hc1Module::tryCachedPresets()
 {
     if (EM_Hardware::Unknown != em.hardware) {
-        loadSystemPresets();
+        loadSystemPresetsFile();
     }
     if (cache_user_presets && connection) {
-        loadUserPresets();
+        loadUserPresetsFile();
     }
 }
 
@@ -57,19 +56,13 @@ std::string Hc1Module::userPresetsPath()
 {
     if (!connection) return "";
     auto conn = to_file_safe(connection->info.spec(), false);
-    return asset::user(format_string("%s/%s-user.json", pluginInstance->slug.c_str(), conn.c_str()));
-}
-
-std::string Hc1Module::systemPresetsResPath()
-{
-    if (EM_Hardware::Unknown == em.hardware) return "";
-    return asset::plugin(pluginInstance, format_string("res/sys/%s-system.json", HardwarePresetClass(em.hardware)));
+    return asset::user(format_string("%s/%s-user-%d.json", pluginInstance->slug.c_str(), conn.c_str(), em.firmware_version));
 }
 
 std::string Hc1Module::systemPresetsPath()
 {
     if (EM_Hardware::Unknown == em.hardware) return "";
-    return asset::user(format_string("%s/%s-system.json", pluginInstance->slug.c_str(), HardwarePresetClass(em.hardware)));
+    return asset::user(format_string("%s/%s-system-%d.json", pluginInstance->slug.c_str(), HardwarePresetClass(em.hardware), em.firmware_version));
 }
 
 void Hc1Module::saveStartupConfig()
@@ -186,7 +179,7 @@ void Hc1Module::savePresets()
     saveUserPresets();
 }
 
-void Hc1Module::loadUserPresets()
+void Hc1Module::loadUserPresetsFile()
 {
     auto path = userPresetsPath();
     if (path.empty()) return;
@@ -226,15 +219,10 @@ void Hc1Module::loadUserPresets()
     phase->finish();
 }
 
-void Hc1Module::loadSystemPresets()
+void Hc1Module::loadSystemPresetsFile()
 {
     auto path = systemPresetsPath();
-    if (path.empty()) return;
-    if (!system::exists(path)) {
-        path = systemPresetsResPath();
-        if (path.empty()) return;
-    }
-    if (!system::exists(path)) {
+    if (path.empty() || !system::exists(path)) {
         return;
     }
     auto phase = get_phase(InitPhase::SystemPresets);
@@ -290,6 +278,7 @@ void Hc1Module::userPresetsToJson(json_t* root)
 
 void Hc1Module::systemPresetsToJson(json_t* root)
 {
+    json_object_set_new(root, "connection", json_string(connection->info.spec().c_str()));
     json_object_set_new(root, "hardware", json_string(HardwarePresetClass(em.hardware)));
     json_object_set_new(root, "firmware", json_integer(em.firmware_version));
 

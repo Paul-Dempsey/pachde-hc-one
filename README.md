@@ -14,13 +14,25 @@ Grab a current build for the latest features and fixes: [HC-One Nightly](https:/
 
 - [Buy pachde a coffee](https://venmo.com/u/pcdempsey). Thank you!
 
-  Donations help pachde's morale, and fund hardware for testing and developing this software.\
+  Donations help pachde's morale, and fund hardware for testing and developing this and other pachde software.\
   ![Buy pachde a coffee with VenMo](./doc/image/VenMo.png)
 
 Pachde and HC One are not affiliated with or sponsored by Haken Audio or Expressive E.
 
-**Note**  — HC One has been designed and tested with EaganMatrix firmware version 10.09.
-Some features may not be operational with newer firmware (version > 10.09), and an update to HC One will be required.
+**Note**  — HC One was been designed and tested with EaganMatrix firmware version 10.09.
+Some features are not operational, and some recirculator labels are incorrect with newer firmware (version > 10.09).
+Unfortunately, Expressive E has made incompatible changes in version 2 of it's software, and HC One is no longer usable with an Osmose.
+
+A replacement for the HC One plugin with full support of EM firmware 10.44 and later is under development.
+You can find the project here: [pachde CHEM](https://github.com/Paul-Dempsey/pachde-CHEM).
+
+## Updates
+
+### Version 2.0.1
+
+- Support preset gathering from post-10.09 firmware devices.
+- Minor updates for post 10.09 firmware to render HC-1 not completely broken.
+- Fix ghost reappearances of HC-1 that have been deleted from a patch.
 
 ## Modules
 

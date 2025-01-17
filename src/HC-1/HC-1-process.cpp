@@ -393,7 +393,13 @@ void Hc1Module::process_init_phase(const ProcessArgs& args)
     } break;
  
     case InitPhase::RequestUpdates: {
-        sendControlChange(EM_SettingsChannel, EMCC_Preserve, 1); // bit 1 means request config
+        if (em.firmware_version > 1009) {
+            sendControlChange(EM_SettingsChannel, EMCC_DataStream, 20); //s_Mat_Poke
+            sendKeyPressure(EM_SettingsChannel, 59, 1);
+            sendControlChange(EM_SettingsChannel, EMCC_DataStream, 127); //end
+        } else {
+            sendControlChange(EM_SettingsChannel, EMCC_Preserve, 1); // bit 1 means request config
+        }
         phase->finish();
     } break;
 

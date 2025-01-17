@@ -124,7 +124,6 @@ struct Hc1Module : IPresetHolder, ISendMidi, IMidiDeviceHolder, IMidiDeviceChang
     };
     std::string startupConfigPath();
     std::string userPresetsPath();
-    std::string systemPresetsResPath();
     std::string systemPresetsPath();
     void saveStartupConfig();
     void loadStartupConfig();
@@ -132,8 +131,8 @@ struct Hc1Module : IPresetHolder, ISendMidi, IMidiDeviceHolder, IMidiDeviceChang
     void saveSystemPresets();
     void savePresets();
     void loadPresets();
-    void loadUserPresets();
-    void loadSystemPresets();
+    void loadUserPresetsFile();
+    void loadSystemPresetsFile();
     void userPresetsToJson(json_t * root);
     void systemPresetsToJson(json_t * root);
 
@@ -156,6 +155,7 @@ struct Hc1Module : IPresetHolder, ISendMidi, IMidiDeviceHolder, IMidiDeviceChang
     }
     
     bool is_eagan_matrix = false;
+    bool is_104x() { return em.firmware_version >= 1040; }
 
     //
     // initialization phases
