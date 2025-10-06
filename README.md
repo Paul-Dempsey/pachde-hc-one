@@ -23,8 +23,8 @@ Pachde and HC One are not affiliated with or sponsored by Haken Audio or Express
 Some features are not operational, and some recirculator labels are incorrect with newer firmware (version > 10.09).
 Unfortunately, Expressive E has made incompatible changes in version 2 of it's software, and HC One is no longer usable with an Osmose.
 
-A replacement for the HC One plugin with full support of EM firmware 10.44 and later is under development.
-You can find the project here: [pachde CHEM](https://github.com/Paul-Dempsey/pachde-CHEM).
+A replacement for the HC One plugin with full support of EM firmware 10.44 and later has been submitted to the VCV Rack library (but not yet published).
+You can download the plugin from the project here: [pachde CHEM](https://github.com/Paul-Dempsey/pachde-CHEM).
 
 ## Updates
 
