@@ -1,14 +1,14 @@
 # HC One
 
-HC One is a VCV Rack plugin with modules for working with any Eagan Matrix device.
+HC One is a VCV Rack plugin with modules for working with Eagan Matrix devices running firmware version 10.09.
 These include the Haken Continuum, Continuu Mini, and Eagan Matrix Module from Haken Audio, and the Osmose from Expressive E.
+
+If you have an EM device running firmware later than 10.09 (and I hope you are), please use HC-1's successor **[#d CHEM](https://library.vcvrack.com/plugins?query=pachde-chem)**.
 
 If you are new to VCV Rack, make sure to get familiar with it.
 See [Getting Started](https://vcvrack.com/manual/GettingStarted) in the VCV Rack manual.
 
 [![Build Status](https://github.com/Paul-Dempsey/pachde-hc-one/actions/workflows/build-plugin.yml/badge.svg)](https://github.com/Paul-Dempsey/pachde-hc-one/actions/workflows/build-plugin.yml)
-
-Grab a current build for the latest features and fixes: [HC-One Nightly](https://github.com/Paul-Dempsey/pachde-hc-one/releases/tag/Nightly)
 
 - [Documentation](doc/index.md#pachde-d-hc-one)
 
@@ -18,13 +18,6 @@ Grab a current build for the latest features and fixes: [HC-One Nightly](https:/
   ![Buy pachde a coffee with VenMo](./doc/image/VenMo.png)
 
 Pachde and HC One are not affiliated with or sponsored by Haken Audio or Expressive E.
-
-**Note**  — HC One was been designed and tested with EaganMatrix firmware version 10.09.
-Some features are not operational, and some recirculator labels are incorrect with newer firmware (version > 10.09).
-Unfortunately, Expressive E has made incompatible changes in version 2 of it's software, and HC One is no longer usable with an Osmose.
-
-A replacement for the HC One plugin with full support of EM firmware 10.44 and later has been submitted to the VCV Rack library (but not yet published).
-You can download the plugin from the project here: [pachde CHEM](https://github.com/Paul-Dempsey/pachde-CHEM).
 
 ## Updates
 

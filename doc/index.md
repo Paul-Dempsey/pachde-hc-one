@@ -4,13 +4,14 @@
 The Eagan Matrix is the synth engine for a variety of hardware devices.
 These include the Haken Continuum, ContinuuMini, EaganMatrix Module, and the Osmose from Expressive E.
 
+> **IMPORTANT** — If you have an EM device running firmware later than 10.09 (and I hope you are), please use HC-1's successor **[#d CHEM](https://library.vcvrack.com/plugins?query=pachde-chem)**.
+
 **Note** — Osmose has known issues when interfacing with external software.
 Not all EaganMatrix features work with the Osmose.
 Changes can be operational, but are not immediately displayed on the Osmose display.
-Pachde does not own an Osmose or EMM, so any help testing and documenting any issues with these devices is welcome.
 
 **Note**  — HC One has been designed and tested with EaganMatrix firmware version 10.09.
-Some features are not operational with newer firmware (version > 10.09), and an update to HC One will be required to restore full function (see issue #28).
+Some features are not operational with newer firmware (version > 10.09).
 
 HC One is *not* intended to be a replacement for the Haken Editor.
 HC One is a complementary performance companion and automation tool.
